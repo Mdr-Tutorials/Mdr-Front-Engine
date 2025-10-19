@@ -10,6 +10,14 @@
   --color-8: #1A1A1A;
   --color-9: #0D0D0D;
   --color-10: #000000;
+  --color-danger: #ff6265;
+  --color-danger-hover: #D9363E;
+  --color-subdanger: #ff8080;
+  --color-subdanger-hover: #D9363E23;
+  --color-warning: #ffb007;
+  --color-warning-hover: #eb9901;
+  --color-subwarning: #ffb728;
+  --color-subwarning-hover: #e08e0027;
 }
 
 * {
