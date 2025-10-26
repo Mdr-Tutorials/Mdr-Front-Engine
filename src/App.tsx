@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router'
-import './App.css'
+import './App.scss'
 import Home from './home/Home'
 import Editor from './features/design/Editor'
 

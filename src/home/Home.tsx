@@ -1,5 +1,5 @@
-import MdrButton from '../components/ui/MdrButton';
-import './Home.css'
+import MdrButton from '../components/ui/button/MdrButton';
+import './Home.scss'
 
 function Home() {
     return (

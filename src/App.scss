@@ -1,0 +1,10 @@
+#root {
+  background-color: var(--color-0);
+}
+
+@media (prefers-color-scheme: dark) {
+  #root {
+    background-color: var(--color-9);
+  }
+
+}
