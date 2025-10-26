@@ -65,22 +65,26 @@
     }
 
     &.Primary {
-        background-color: var(--color-10);
-        color: var(--color-0);
-        border-color: var(--color-10);
+        background-color: var(--color-9);
+        color: var(--color-1);
+        border-color: var(--color-9);
 
         &:not(.Disabled):hover {
-            @include button-hover(var(--color-primary-hover), null, var(--color-primary-hover));
+            @include button-hover(var(--color-7), var(--color-0), var(--color-6));
         }
     }
 
     &.Secondary {
-        background-color: var(--color-secondary);
-        color: var(--color-10);
-        border-color: var(--color-secondary);
+        background-color: var(--color-0);
+        color: var(--color-9);
+        border-color: var(--color-7);
 
         &:not(.Disabled):hover {
-            @include button-hover(var(--color-secondary-hover));
+            @include button-hover(var(--color-2), var(--color-10));
+        }
+
+        &:not(.Disabled):active {
+            opacity: .75;
         }
     }
 
@@ -140,7 +144,6 @@
 /* 暗色模式主题 - 使用 prefers-color-scheme 媒体查询 */
 @media (prefers-color-scheme: dark) {
     .MdrButton {
-        // 禁用状态在暗色模式下保持一致（继承父级规则）
 
         &.Primary {
             background-color: var(--color-1);
@@ -148,17 +151,17 @@
             border-color: var(--color-1);
 
             &:not(.Disabled):hover {
-                @include button-hover(var(--color-4), null, var(--color-4));
+                @include button-hover(var(--color-4), var(--color-10), var(--color-4));
             }
         }
 
         &.Secondary {
-            background-color: var(--color-9);
+            background-color: var(--color-10);
             color: var(--color-1);
             border-color: var(--color-5);
 
             &:not(.Disabled):hover {
-                @include button-hover(var(--color-7));
+                @include button-hover(var(--color-8), var(--color-0), var(--color-5));
             }
         }
 

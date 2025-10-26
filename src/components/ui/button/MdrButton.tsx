@@ -1,27 +1,51 @@
 import './MdrButton.scss'
+import { type MdrComponent } from '../../../types/MdrComponent';
+import type React from 'react';
 
-function MdrButton({ text, size = 'Medium', category = 'Secondary', disabled = false, onlyIcon = false, icon, iconPosition = 'Right' }:
-    {
-        text?: string,
-        size?: 'Big' | 'Medium' | 'Small' | 'Tiny',
-        category?: 'Primary' | 'Secondary' | 'Danger' | 'SubDanger' | 'Warning' | 'SubWarning' | 'Ghost',
-        disabled?: boolean,
-        icon?: React.ReactNode,
-        onlyIcon?: boolean,
-        iconPosition?: 'Left' | 'Right',
-        onClick?: () => void,
-    }
+interface MdrButtonSpecificProps {
+    text?: string,
+    size?: 'Big' | 'Medium' | 'Small' | 'Tiny',
+    category?: 'Primary' | 'Secondary' | 'Danger' | 'SubDanger' | 'Warning' | 'SubWarning' | 'Ghost',
+    disabled?: boolean,
+    icon?: React.ReactNode,
+    onlyIcon?: boolean,
+    iconPosition?: 'Left' | 'Right',
+}
+
+interface MdrButtonProps extends MdrComponent, MdrButtonSpecificProps { }
+
+function MdrButton({
+    text,
+    size = 'Medium',
+    category = 'Secondary',
+    disabled = false,
+    onlyIcon = false,
+    icon,
+    iconPosition = 'Right',
+    className,
+    style,
+    id,
+    dataAttributes = {},
+    onClick,
+    as: Component = 'button',
+}: MdrButtonProps
 ) {
+    const fullClassName = `MdrButton ${size} ${category} ${disabled ? 'Disabled' : ''} ${className || ''}`.trim();
+
+    const dataProps = { ...dataAttributes }
+
+    const Element = Component as React.ElementType
+
     if (onlyIcon && icon) {
-        return <button className={`MdrButton ${size} ${category} ${disabled ? 'Disabled' : ''}`}>{icon}</button>;
+        return <Element className={fullClassName} style={style} id={id} onClick={onClick} {...dataProps} >{icon}</Element>;
     }
     if (icon && iconPosition === 'Left') {
-        return <button className={`MdrButton ${size} ${category} ${disabled ? 'Disabled' : ''}`}>{icon}<span>{text}</span></button>;
+        return <Element className={fullClassName} style={style} id={id} onClick={onClick} {...dataProps} >{icon}<span>{text}</span></Element>;
     }
     if (icon && iconPosition === 'Right') {
-        return <button className={`MdrButton ${size} ${category} ${disabled ? 'Disabled' : ''}`}><span>{text}</span>{icon}</button>;
+        return <Element className={fullClassName} style={style} id={id} onClick={onClick} {...dataProps} ><span>{text}</span>{icon}</Element>;
     }
-    return <button className={`MdrButton ${size} ${category} ${disabled ? 'Disabled' : ''}`}>{text}</button>;
+    return <Element className={fullClassName} style={style} id={id} onClick={onClick} {...dataProps} >{text}</Element>;
 }
 
 export default MdrButton;

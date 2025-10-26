@@ -16,28 +16,35 @@
         align-items: center;
 
         .nav-left {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 1rem;
+
             p {
                 font-family: 'Lexend', sans-serif;
                 font-size: 32px;
                 font-weight: 900;
-                color: var(--color-1);
+                color: var(--color-9);
             }
         }
 
         .nav-right {
             display: flex;
             flex-direction: row;
-            gap: 36px;
 
             p {
                 font-size: 18px;
-                color: var(--color-3);
+                color: var(--color-7);
                 cursor: pointer;
-                transition: color 0.3s ease;
+                transition: color 0.3s ease, background-color 0.3s ease;
                 font-weight: 500;
+                padding: 8px 25px;
+                border-radius: 18px;
 
                 &:hover {
-                    color: var(--color-0);
+                    color: var(--color-10);
+                    background-color: var(--color-1);
                 }
             }
         }
@@ -49,7 +56,7 @@
         .titles {
             display: flex;
             flex-direction: column;
-            color: var(--color-2);
+            color: var(--color-9);
             margin-top: 100px;
 
             h1 {
@@ -60,13 +67,13 @@
                     font-weight: 800;
                     text-decoration: underline 4px wavy;
                     text-underline-offset: 7px;
-                    color: var(--color-0);
+                    color: var(--color-10);
                 }
             }
         }
 
         h2 {
-            color: var(--color-4);
+            color: var(--color-6);
             margin-top: 15px;
             font-size: 20px;
             font-weight: 400;
@@ -78,5 +85,44 @@
         flex-direction: row;
         gap: 24px;
         margin-top: 80px;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+
+    .home {
+        .nav {
+            .nav-left {
+                p {
+                    color: var(--color-1);
+                }
+            }
+
+            .nav-right {
+                p {
+                    color: var(--color-3);
+
+                    &:hover {
+                        color: var(--color-0);
+                    }
+                }
+            }
+        }
+
+        .content {
+            .titles {
+                color: var(--color-2);
+
+                h1 {
+                    span {
+                        color: var(--color-0);
+                    }
+                }
+            }
+
+            h2 {
+                color: var(--color-4);
+            }
+        }
     }
 }
