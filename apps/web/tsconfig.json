@@ -1,0 +1,32 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "composite": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ],
+            "@mdr/shared": [
+                "../../packages/shared/src"
+            ],
+            "@mdr/ui": [
+                "../../packages/ui/src"
+            ]
+        }
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules"
+    ],
+    "references": [
+        {
+            "path": "../../packages/shared"
+        },
+        {
+            "path": "../../packages/ui"
+        }
+    ]
+}

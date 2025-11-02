@@ -1,4 +1,4 @@
-import type { MdrComponent } from '../../../shared/types/MdrComponent';
+import type { MdrComponent } from '@mdr/shared';
 import './MdrNav.scss'
 
 interface MdrNavSpecificProps {

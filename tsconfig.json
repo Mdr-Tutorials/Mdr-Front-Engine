@@ -2,20 +2,13 @@
   "files": [],
   "references": [
     {
-      "path": "./tsconfig.app.json"
+      "path": "./apps/web"
     },
     {
-      "path": "./tsconfig.node.json"
+      "path": "./packages/shared"
+    },
+    {
+      "path": "./packages/ui"
     }
-  ],
-  "compilerOptions": {
-    "verbatimModuleSyntax": true, // 修复 1484: 允许类型导入
-    "strict": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": [
-        "apps/web/src/*"
-      ]
-    }
-  }
+  ]
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, type To } from 'react-router';
-import { type MdrComponent } from '../../../shared/types/MdrComponent';
+import { type MdrComponent } from '@mdr/shared';
 import './MdrLink.scss';
 
 interface MdrLinkSpecific {

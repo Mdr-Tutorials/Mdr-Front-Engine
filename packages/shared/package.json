@@ -1,0 +1,18 @@
+{
+    "name": "@mdr/shared",
+    "version": "0.1.0",
+    "private": true,
+    "main": "./src/index.ts",
+    "types": "./src/index.ts",
+    "exports": {
+        ".": "./src/index.ts",
+        "./types/*": "./src/types/*"
+    },
+    "devDependencies": {
+        "@types/react": "^19.1.16",
+        "typescript": "~5.9.3"
+    },
+    "peerDependencies": {
+        "react": "^19.1.1"
+    }
+}
