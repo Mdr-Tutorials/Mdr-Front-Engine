@@ -1,5 +1,5 @@
 import './MdrButton.scss'
-import { type MdrComponent } from '../../../types/MdrComponent';
+import { type MdrComponent } from '../../../shared/types/MdrComponent';
 import type React from 'react';
 
 interface MdrButtonSpecificProps {

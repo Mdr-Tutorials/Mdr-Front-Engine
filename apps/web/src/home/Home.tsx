@@ -1,4 +1,4 @@
-import MdrButton from '../components/ui/button/MdrButton';
+import MdrButton from '../../../../packages/ui/src/button/MdrButton';
 import './Home.scss'
 
 function Home() {
