@@ -1,0 +1,21 @@
+{
+    "name": "@mdr/vscode-debugger",
+    "version": "0.0.1",
+    "description": "VS Code Debug Adapter for MIR",
+    "main": "lib/debugAdapter.js",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "test": "vitest run",
+        "start": "node lib/debugAdapter.js"
+    },
+    "dependencies": {
+        "@vscode/debugadapter": "^1.68.0",
+        "@vscode/debugprotocol": "^1.68.0"
+    },
+    "devDependencies": {
+        "@types/node": "^20.19.24",
+        "typescript": "^5.9.3",
+        "vitest": "^1.6.1"
+    }
+}
