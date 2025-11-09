@@ -22,7 +22,7 @@ MIT License | 支持本地运行 + 云端协作
 
 ## 快速开始
 
-前置要求：Node >= 1.18.x， PNPM >= 8.x
+前置要求：Node >= 18.x（推荐 20.x 或以上的 LTS），PNPM >= 8.x，Go >= 1.24
 
 ```bash
 git clone https://github.com/Mdr-Tutorials/mdr-front-engine
@@ -154,7 +154,7 @@ apps/web/
 
 #### `apps/backend/` - 后端服务
 
-**技术栈**: Go 1.24
+**技术栈**: Go 1.24, Gin v1.11
 
 提供 API 服务、数据持久化、用户认证等后端能力。
 
@@ -1583,22 +1583,21 @@ UI 操作：显示消息提示, 打开对话框, 播放动画, 聚焦元素, 滚
 
 ### 核心技术栈
 
-- 前端框架: React 18
-- 状态管理: Zustand / Pinia
-- 样式方案: Tailwind CSS / CSS-in-JS
-- 代码编辑: Monaco Editor
-- 节点图: React Flow / Rete.js
+- 前端框架: React 19
+- 状态管理: Zustand
+- 样式方案: SCSS
+- 代码编辑: CodeMirror
+- 节点图: Rete.js
 - 3D 渲染: Three.js / WebGPU
-- 构建工具: Vite / Turbopack
+- 构建工具: Vite
 - 测试框架: Vitest / Cypress
 
 ### 后端服务
 
-- 数据库: Supabase（PostgreSQL）
+- 数据库: PostgreSQL
 - 认证: Supabase Auth / Auth0
 - 存储: Cloudflare R2 / S3
 - CDN: Cloudflare
-- Serverless: Vercel Functions / Cloudflare Workers
 
 ### 第三方集成
 

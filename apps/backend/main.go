@@ -1,8 +1,16 @@
 package main
 
-import ("log")
+import "github.com/gin-gonic/gin"
 
 func main() {
-	log.Println("Backend service is running...")
-	// Additional backend logic can be added here
+	r := gin.Default()
+
+	// 定义路由和处理函数
+	r.GET("/api/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
+
+	r.Run()
 }
