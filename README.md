@@ -11,11 +11,12 @@ MIT License | 支持本地运行 + 云端协作
 
 1. [快速开始](#快速开始)
 2. [整体架构](#整体架构)
-3. [核心功能详解](#核心功能详解)
-4. [跨阶段通用能力](#跨阶段通用能力)
-5. [用户角色功能映射](#用户角色功能映射)
-6. [技术栈与集成](#技术栈与集成)
-7. [MVP 路线图](#路线图)
+3. [项目结构](#项目结构)
+4. [核心功能详解](#核心功能详解)
+5. [跨阶段通用能力](#跨阶段通用能力)
+6. [用户角色功能映射](#用户角色功能映射)
+7. [技术栈与集成](#技术栈与集成)
+8. [MVP 路线图](#路线图)
 
 ---
 
@@ -39,6 +40,584 @@ pnpm run dev
  ↓      ↓     ↓      ↓      ↓      ↓
 视觉   逻辑   验证   生成   发布   协作
 ```
+
+---
+
+## 项目结构
+
+MdrFrontEngine 采用 **Monorepo** 架构,使用 **pnpm workspace** + **Turborepo** 管理多包依赖与构建流程。
+
+### 📁 目录结构总览
+
+```txt
+mdr-front-engine/
+├── apps/                    # 应用层 - 可独立部署的应用
+│   ├── backend/            # Go 后端服务
+│   ├── cli/                # 命令行工具
+│   ├── docs/               # 文档站点 (VitePress)
+│   ├── vscode/             # VS Code 扩展
+│   └── web/                # 主 Web 应用 (React)
+│
+├── packages/               # 共享包 - 可复用的库与工具
+│   ├── eslint-plugin-mdr/  # ESLint 插件 (MIR 静态分析)
+│   ├── mir-compiler/       # MIR 编译器核心
+│   ├── shared/             # 共享类型与工具
+│   ├── ui/                 # UI 组件库
+│   └── vscode-debugger/    # VS Code 调试适配器
+│
+├── specs/                  # 规范文档
+│   ├── mir/                # MIR 语言规范
+│   └── rfc/                # RFC 提案模板
+│
+├── tests/                  # E2E 测试 (Playwright)
+│   └── e2e/
+│
+├── .turbo/                 # Turborepo 缓存
+├── node_modules/           # 依赖目录 (Hoisted)
+│
+├── package.json            # 根配置
+├── pnpm-workspace.yaml     # Workspace 配置
+├── turbo.json              # Turborepo 任务配置
+└── tsconfig.base.json      # TypeScript 基础配置
+```
+
+---
+
+### 🚀 应用层 (apps/)
+
+#### `apps/web/` - 主前端应用
+
+**技术栈**: React 19 + TypeScript + Vite + React Router 7
+
+可视化编辑器的主要 Web 应用,提供完整的前端开发工作流。
+
+```txt
+apps/web/
+├── src/
+│   ├── core/              # 核心引擎
+│   │   ├── executor/      # 节点图执行器
+│   │   ├── nodes/         # 内置节点定义
+│   │   ├── types/         # 类型定义
+│   │   └── worker/        # Web Worker 隔离执行
+│   │
+│   ├── debug/             # 调试系统
+│   │   ├── breakpoints/   # 断点管理
+│   │   ├── stateMonitor/  # 状态监控
+│   │   ├── timeline/      # 时间轴
+│   │   └── variables/     # 变量查看器
+│   │
+│   ├── editor/            # 编辑器 UI
+│   │   ├── blueprint/     # 蓝图编辑器 (可视化布局)
+│   │   └── node/          # 节点图编辑器
+│   │       ├── canvas/    # 画布渲染
+│   │       ├── interaction/ # 交互逻辑
+│   │       ├── layout/    # 自动布局算法
+│   │       ├── ports/     # 端口渲染
+│   │       └── states/    # 节点状态样式
+│   │
+│   ├── features/          # 功能模块
+│   │   └── design/        # 设计阶段功能
+│   │
+│   ├── home/              # 首页
+│   ├── mir/               # MIR 相关
+│   │   ├── ast/           # 抽象语法树解析
+│   │   ├── converter/     # AST ↔ MIR 转换
+│   │   ├── generator/     # MIR → 代码生成
+│   │   ├── schema/        # MIR 类型定义
+│   │   └── validator/     # MIR 校验器
+│   │
+│   ├── themes/            # 主题系统
+│   │   ├── base/          # 基础样式
+│   │   ├── presets/       # 预设主题
+│   │   ├── semantic/      # 语义化颜色
+│   │   └── utils/         # 主题工具
+│   │
+│   ├── App.tsx            # 根组件
+│   ├── main.tsx           # 应用入口
+│   └── index.scss         # 全局样式
+│
+├── public/                # 静态资源
+├── index.html             # HTML 模板
+├── vite.config.ts         # Vite 配置
+├── vitest.config.ts       # 单元测试配置
+└── package.json
+```
+
+**核心功能**:
+
+- 🎨 拖拽式组件设计
+- 🔗 节点图逻辑编排
+- 🐞 实时调试与状态追踪
+- 🎭 MIR 代码生成与预览
+
+---
+
+#### `apps/backend/` - 后端服务
+
+**技术栈**: Go 1.24
+
+提供 API 服务、数据持久化、用户认证等后端能力。
+
+```txt
+apps/backend/
+├── main.go           # 服务入口
+├── go.mod            # Go 模块定义
+└── Makefile          # 构建脚本
+```
+
+**职责**:
+
+- 🔐 用户认证与授权
+- 💾 项目数据存储
+- 🌐 API 接口服务
+- 🚀 部署集成
+
+---
+
+#### `apps/cli/` - 命令行工具
+
+**技术栈**: Node.js + Commander
+
+提供本地开发与自动化能力。
+
+```txt
+apps/cli/
+├── src/
+│   ├── cli.ts            # CLI 入口
+│   ├── commands/         # 命令实现
+│   │   ├── build.ts      # 构建命令
+│   │   ├── deploy.ts     # 部署命令
+│   │   └── export.ts     # 导出命令
+│   └── utils/
+│       └── logger.ts     # 日志工具
+│
+├── bin/
+│   └── mdr.js            # 可执行脚本
+└── package.json
+```
+
+**功能**:
+
+```bash
+mdr build      # 构建 MIR 项目
+mdr export     # 导出静态站点
+mdr deploy     # 一键部署
+```
+
+---
+
+#### `apps/vscode/` - VS Code 扩展
+
+**技术栈**: TypeScript + VS Code Extension API
+
+为 `.mir.json` 文件提供编辑器支持。
+
+```txt
+apps/vscode/
+├── src/
+│   ├── extension.ts           # 扩展主入口
+│   ├── index.ts               # 激活逻辑
+│   ├── commands/              # 命令实现
+│   │   └── previewMIR.ts      # 预览 MIR
+│   ├── debugger/              # 调试适配器
+│   │   └── debuggerAdapter.ts
+│   └── language/              # 语言支持
+│       ├── mir.language-configuration.json
+│       └── mirDocumentSymbolProvider.ts
+│
+├── language/
+│   └── mir.language-configuration.json  # 语言配置
+├── package.json               # 扩展清单
+└── esbuild.js                 # 构建脚本
+```
+
+**功能**:
+
+- 📝 `.mir.json` 语法高亮
+- 🔍 符号导航
+- 🐞 断点调试
+- 👁️ 实时预览
+
+---
+
+#### `apps/docs/` - 文档站点
+
+**技术栈**: VitePress 1.6
+
+项目文档与教程中心。
+
+```txt
+apps/docs/
+├── .vitepress/
+│   └── config.mts        # VitePress 配置
+├── index.md              # 首页
+├── reference/
+│   └── reference.md      # 核心文档
+└── package.json
+```
+
+**访问**: `http://localhost:5173/docs`
+
+---
+
+### 📦 共享包 (packages/)
+
+#### `packages/ui/` - UI 组件库
+
+**技术栈**: React + Sass + TypeScript
+
+可复用的 UI 组件，遵循黑白设计语言。
+
+```txt
+packages/ui/
+├── src/
+│   ├── button/
+│   │   ├── MdrButton.tsx
+│   │   └── MdrButton.scss
+│   ├── link/
+│   │   ├── MdrLink.tsx
+│   │   └── MdrLink.scss
+│   ├── nav/
+│   │   ├── MdrNav.tsx
+│   │   └── MdrNav.scss
+│   └── index.ts          # 统一导出
+│
+├── tsconfig.json
+└── package.json
+```
+
+**特点**:
+
+- 🎨 基于 10 级灰度设计系统
+- 🌓 自动亮暗模式支持
+- ♿ WCAG 2.1 AA 无障碍标准
+- 📱 完全响应式
+
+**使用示例**:
+
+```tsx
+import { MdrButton } from '@mdr/ui';
+
+<MdrButton 
+  text="提交" 
+  size="Big" 
+  category="Primary" 
+/>
+```
+
+---
+
+#### `packages/shared/` - 共享类型
+
+**技术栈**: TypeScript
+
+跨包共享的类型定义与工具函数。
+
+```txt
+packages/shared/
+├── src/
+│   ├── types/
+│   │   └── MdrComponent.ts   # 组件基类接口
+│   └── index.ts              # 导出
+│
+└── tsconfig.json
+```
+
+**导出内容**:
+
+```typescript
+export interface MdrComponent {
+  className?: string;
+  style?: React.CSSProperties;
+  id?: string;
+  dataAttributes?: Record<string, string>;
+  onClick?: (e: React.MouseEvent) => void;
+  as?: React.ElementType;
+}
+```
+
+---
+
+#### `packages/mir-compiler/` - MIR 编译器
+
+**技术栈**: TypeScript
+
+将 MIR 中间表示编译为目标框架代码。
+
+```txt
+packages/mir-compiler/
+├── src/
+│   ├── parser/           # MIR 解析器
+│   ├── optimizer/        # 代码优化
+│   ├── codegen/          # 代码生成
+│   │   ├── react.ts      # React 生成器
+│   │   ├── vue.ts        # Vue 生成器
+│   │   └── html.ts       # 原生 HTML 生成器
+│   └── index.ts
+│
+└── package.json
+```
+
+**支持目标**:
+
+- ⚛️ React / Preact
+- 💚 Vue 3
+- 🅰️ Angular
+- 🌐 原生 HTML/CSS/JS
+- 🔷 SolidJS
+
+---
+
+#### `packages/eslint-plugin-mdr/` - ESLint 插件
+
+**技术栈**: TypeScript + ESLint API
+
+为 MIR 提供静态分析能力。
+
+```txt
+packages/eslint-plugin-mdr/
+├── src/
+│   ├── rules/
+│   │   ├── no-circular.ts      # 检测循环依赖
+│   │   ├── no-type-error.ts    # 类型错误检测
+│   │   └── no-unused-var.ts    # 未使用变量
+│   └── index.ts                # 插件入口
+│
+└── package.json
+```
+
+**集成方式**:
+
+```json
+{
+  "plugins": ["@mdr/eslint"],
+  "rules": {
+    "@mdr/no-circular": "error"
+  }
+}
+```
+
+---
+
+#### `packages/vscode-debugger/` - VS Code 调试适配器
+
+**技术栈**: TypeScript + VS Code Debug Protocol
+
+为 MIR 提供调试能力。
+
+```txt
+packages/vscode-debugger/
+├── src/
+│   ├── debugAdapter.ts       # DAP 实现
+│   ├── runtime.ts            # 运行时模拟器
+│   └── protocol.ts           # 协议定义
+│
+└── package.json
+```
+
+**功能**:
+
+- ⏸️ 断点设置
+- 🔍 变量查看
+- 📊 调用栈追踪
+- ⏭️ 单步执行
+
+---
+
+### 📋 规范文档 (specs/)
+
+#### `specs/mir/` - MIR 语言规范
+
+```txt
+specs/mir/
+├── MIR-v1.0.json             # JSON Schema 定义
+└── decisions/
+    └── 01.monochrome-ui.md   # 设计决策文档
+```
+
+**内容**:
+
+- MIR 语法规范
+- 类型系统定义
+- 设计决策记录 (ADR)
+
+---
+
+#### `specs/rfc/` - RFC 提案
+
+```txt
+specs/rfc/
+└── template.md               # RFC 提案模板
+```
+
+用于提出重大功能变更。
+
+---
+
+### 🧪 测试 (tests/)
+
+#### `tests/e2e/` - 端到端测试
+
+**技术栈**: Playwright
+
+```txt
+tests/e2e/
+├── specs/                    # 测试用例
+│   ├── debug-breakpoint.spec.ts
+│   ├── node-diff.spec.ts
+│   ├── node-state.spec.ts
+│   └── performance.spec.ts
+│
+├── fixtures/                 # 测试数据
+│   └── todo-app.mir.json
+│
+├── pages/                    # Page Object
+│   └── EditorPage.ts
+│
+└── playwright.config.ts      # Playwright 配置
+```
+
+**运行**:
+
+```bash
+pnpm test:e2e
+```
+
+---
+
+### 🔧 配置文件
+
+#### 根目录配置
+
+| 文件                  | 用途                          |
+| --------------------- | ----------------------------- |
+| `package.json`        | 根 package.json,定义全局脚本  |
+| `pnpm-workspace.yaml` | pnpm workspace 配置           |
+| `turbo.json`          | Turborepo 任务编排            |
+| `tsconfig.base.json`  | 共享 TypeScript 配置          |
+| `tsconfig.json`       | TypeScript Project References |
+| `.prettierrc`         | Prettier 代码格式化           |
+| `.eslintrc.cjs`       | ESLint 配置                   |
+| `.gitignore`          | Git 忽略规则                  |
+
+---
+
+### 📦 依赖管理
+
+#### Workspace 协议
+
+```json
+{
+  "dependencies": {
+    "@mdr/shared": "workspace:*",
+    "@mdr/ui": "workspace:*"
+  }
+}
+```
+
+使用 `workspace:*` 协议引用 monorepo 内部包。
+
+#### 公共依赖 Hoisting
+
+所有包共享的依赖被提升到根 `node_modules/`,减少重复安装。
+
+---
+
+### 🚀 构建流程
+
+#### Turborepo 任务拓扑
+
+```mermaid
+graph TD
+    A[packages/shared] --> B[packages/ui]
+    A --> C[apps/web]
+    B --> C
+    A --> D[apps/cli]
+```
+
+**执行顺序**:
+
+1. 先构建 `packages/shared`
+2. 并行构建 `packages/ui` 和 `apps/cli`
+3. 最后构建 `apps/web`
+
+**命令**:
+
+```bash
+# 构建所有包
+pnpm build
+
+# 只构建 web 应用及其依赖
+pnpm build:web
+
+# 开发模式 (并行启动所有 dev 任务)
+pnpm dev
+```
+
+---
+
+### 🎯 编写模块
+
+#### 1. 新增功能模块
+
+```bash
+# 在 apps/web 中新增功能
+apps/web/src/features/[feature-name]/
+├── components/
+├── hooks/
+├── utils/
+└── index.ts
+```
+
+#### 2. 新增共享包
+
+```bash
+# 创建新包
+packages/[package-name]/
+├── src/
+├── tsconfig.json
+└── package.json
+
+# 在 pnpm-workspace.yaml 中无需手动添加
+# 只要符合 packages/* 通配符即可
+```
+
+#### 3. 跨包引用
+
+```typescript
+// ✅ 正确 - 使用 workspace 协议
+import { MdrButton } from '@mdr/ui';
+
+// ❌ 错误 - 不要使用相对路径
+import { MdrButton } from '../../../packages/ui';
+```
+
+#### 4. 类型安全
+
+```typescript
+// 所有包都继承自 tsconfig.base.json
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,  // 启用 Project References
+    "declaration": true // 生成 .d.ts
+  }
+}
+```
+
+---
+
+### 📚 相关资源
+
+- [Turborepo 官方文档](https://turbo.build/repo/docs)
+- [pnpm Workspace](https://pnpm.io/workspaces)
+- [TypeScript Project References](https://www.typescriptlang.org/docs/handbook/project-references.html)
+- [Monorepo 最佳实践](https://monorepo.tools/)
+
+---
+
+**维护者**: Minsecrus  
+**许可证**: MIT
 
 ---
 
