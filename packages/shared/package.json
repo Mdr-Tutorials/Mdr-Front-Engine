@@ -8,11 +8,20 @@
         ".": "./src/index.ts",
         "./types/*": "./src/types/*"
     },
+    "scripts": {
+        "generate-types": "node scripts/generate-types.js"
+    },
     "devDependencies": {
         "@types/react": "^19.2.2",
+        "json-schema-to-typescript": "^15.0.4",
         "typescript": "~5.9.3"
     },
     "peerDependencies": {
         "react": "^19.1.1"
+    },
+    "dependencies": {
+        "ajv": "^8.17.1",
+        "ajv-formats": "^3.0.1",
+        "chalk": "^5.6.2"
     }
 }
