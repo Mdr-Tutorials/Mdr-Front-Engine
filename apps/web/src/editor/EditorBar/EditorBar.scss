@@ -1,0 +1,15 @@
+.EditorBar {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: var(--color-9);
+    padding: 12px;
+    min-height: 100vh;
+    max-height: 100vh;
+}
+
+.EditorBar .EditorBarTop {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}

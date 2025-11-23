@@ -33,7 +33,6 @@
     &.Disabled {
         opacity: 0.5;
         cursor: not-allowed;
-        pointer-events: none; // 防止交互
 
         &:hover,
         &:active {
@@ -138,6 +137,26 @@
         &:not(.Disabled):hover {
             @include button-hover(var(--color-subwarning-hover), var(--color-warning), var(--color-warning-hover));
         }
+    }
+
+    &.OnlyIcon {
+        padding: 8px;
+    }
+
+    &.OnlyIcon.Big {
+        font-size: 40px;
+    }
+
+    &.OnlyIcon.Medium {
+        font-size: 32px;
+    }
+
+    &.OnlyIcon.Small {
+        font-size: 24px;
+    }
+
+    &.OnlyIcon.Tiny {
+        font-size: 16px;
     }
 }
 

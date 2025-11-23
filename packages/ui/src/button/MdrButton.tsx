@@ -12,7 +12,7 @@ interface MdrButtonSpecificProps {
     iconPosition?: 'Left' | 'Right',
 }
 
-interface MdrButtonProps extends MdrComponent, MdrButtonSpecificProps { }
+export interface MdrButtonProps extends MdrComponent, MdrButtonSpecificProps { }
 
 function MdrButton({
     text,
@@ -30,7 +30,7 @@ function MdrButton({
     as: Component = 'button',
 }: MdrButtonProps
 ) {
-    const fullClassName = `MdrButton ${size} ${category} ${disabled ? 'Disabled' : ''} ${className || ''}`.trim();
+    const fullClassName = `MdrButton ${size} ${category} ${onlyIcon ? 'OnlyIcon' : ''} ${disabled ? 'Disabled' : ''} ${className || ''}`.trim();
 
     const dataProps = { ...dataAttributes }
 

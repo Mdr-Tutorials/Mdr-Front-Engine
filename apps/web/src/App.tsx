@@ -1,8 +1,8 @@
 import { BrowserRouter, Route, Routes } from 'react-router'
 import './App.scss'
 import Home from './home/Home'
-import Editor from './features/design/Editor'
-import EditorHome from './features/design/EditorHome'
+import Editor from './editor/Editor'
+import EditorHome from './editor/EditorHome'
 
 function App() {
 
@@ -10,10 +10,10 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route index element={<Home />} />
-        <Route path="editor/*" element={<Editor />} >
+        <Route path="editor" element={<Editor />} >
           <Route index element={<EditorHome />} />
-          <Route path="project/:projectId" element={<div>Project Editor</div>} >
-            <Route index element={<div>Project Editor Home</div>} />
+          <Route path="project/:projectId" element={<Editor />} >
+            <Route index element={<EditorHome />} />
             <Route path="blueprint" element={<div>Blueprint Editor</div>} />
             <Route path="nodegraph" element={<div>Node Graph Editor</div>} />
             <Route path="component" element={<div>Component Editor</div>} />

@@ -6,6 +6,7 @@ import './MdrLink.scss';
 interface MdrLinkSpecific {
     to: To;
     text?: string;
+    disabled?: boolean;
     children?: React.ReactNode;
 }
 
@@ -14,6 +15,7 @@ interface MdrLinkProps extends MdrComponent, MdrLinkSpecific { }
 function MdrLink({
     to,
     text,
+    disabled = false,
     children,
     className,
     style,
@@ -24,7 +26,7 @@ function MdrLink({
 }: MdrLinkProps) {
     const content = children ?? text ?? 'Link';
 
-    const fullClassName = `MdrLink ${className || ''}`.trim();
+    const fullClassName = `MdrLink ${disabled ? 'Disabled' : ''} ${className || ''}`.trim();
 
     const dataProps = { ...dataAttributes };
 
@@ -37,6 +39,12 @@ function MdrLink({
         onClick: onClick,
         ...dataProps,
     };
+
+    const handleClick = disabled ? (e: React.MouseEvent) => {
+        e.preventDefault();
+    } : onClick;
+    linkProps.onClick = handleClick;
+
 
     return <Element {...linkProps}>{content}</Element>;
 }

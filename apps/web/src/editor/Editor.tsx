@@ -1,11 +1,10 @@
 import { Outlet } from "react-router"
+import './Editor.scss';
 
 function Editor() {
     return (
-        <div>Editor Component
-
-            <Outlet />
-        </div>
+        <div className="Editor">
+            <Outlet /></div>
     )
 }
 
