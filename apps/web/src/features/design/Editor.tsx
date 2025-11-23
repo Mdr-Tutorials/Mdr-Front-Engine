@@ -1,6 +1,11 @@
-function Editor(){
+import { Outlet } from "react-router"
+
+function Editor() {
     return (
-        <div>Editor Component</div>
+        <div>Editor Component
+
+            <Outlet />
+        </div>
     )
 }
 
