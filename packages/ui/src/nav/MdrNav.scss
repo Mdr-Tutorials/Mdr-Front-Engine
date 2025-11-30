@@ -6,7 +6,6 @@
     gap: 16px;
     padding: 12px 20px;
     box-sizing: border-box;
-    border-bottom: 1px solid var(--color-2);
     background-color: var(--color-0);
     color: var(--color-10);
 
@@ -64,16 +63,49 @@
 .MdrNavRight {
     display: flex;
     align-items: center;
-    gap: 12px;
 }
 
 .MdrNavLeft,
 .MdrNavRight {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     min-width: 140px;
 }
 
 .MdrNavCenter {
     justify-content: center;
+}
+
+.MdrNavLeft {
+    justify-content: flex-start;
+}
+
+.MdrNavRight {
+    justify-content: flex-end;
+
+    p {
+        font-size: 18px;
+        color: var(--color-7);
+        cursor: pointer;
+        transition: color 0.3s ease, background-color 0.3s ease;
+        font-weight: 500;
+        padding: 8px 25px;
+        border-radius: 18px;
+
+        &:hover {
+            color: var(--color-10);
+            background-color: var(--color-1);
+        }
+    }
+}
+
+.MdrNavHeading {
+    font-family: 'Lexend', sans-serif;
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--color-9);
+    margin: 0 1rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -89,6 +121,20 @@
 
         &.Blurred {
             background-color: rgba(var(--color-10-rgb), 0.8);
+        }
+    }
+
+    .MdrNavHeading {
+        color: var(--color-1);
+    }
+
+    .MdrNavRight {
+        p {
+            color: var(--color-3);
+
+            &:hover {
+                color: var(--color-0);
+            }
         }
     }
 }

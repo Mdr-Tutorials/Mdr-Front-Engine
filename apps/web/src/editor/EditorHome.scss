@@ -1,0 +1,197 @@
+.EditorHome {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    background: linear-gradient(120deg, var(--color-0) 20%, var(--color-1) 100%);
+    color: var(--color-9);
+}
+
+.EditorHomeMain {
+    flex: 1;
+    padding: 48px 56px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    overflow-y: auto;
+}
+
+.EditorHomeHeader {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 720px;
+}
+
+.EditorHomeHeader h1 {
+    font-size: 2.5rem;
+    line-height: 1.25;
+    color: var(--color-10);
+}
+
+.EditorHomeSubTitle {
+    font-size: 1rem;
+    color: var(--color-7);
+}
+
+.EditorHomeEyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 0.75rem;
+    color: var(--color-6);
+}
+
+.EditorHomeActions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 420px;
+}
+
+.EditorHomeNewProjectButton {
+    width: 100%;
+    justify-content: center;
+}
+
+.EditorHomeActionHint {
+    font-size: 0.9rem;
+    color: var(--color-6);
+}
+
+.EditorHomeTips {
+    border: 1px solid var(--color-3);
+    border-radius: 24px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background-color: var(--color-0);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.05);
+    max-width: 680px;
+}
+
+.EditorHomeTips header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.EditorHomeTipCount {
+    font-size: 0.85rem;
+    color: var(--color-6);
+}
+
+.EditorHomeTipCard {
+    border: 1px solid transparent;
+    border-radius: 20px;
+    padding: 24px;
+    background: var(--color-1);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.EditorHomeTipCard:hover,
+.EditorHomeTipCard:focus {
+    border-color: var(--color-4);
+    transform: translateY(-2px);
+    outline: none;
+}
+
+.EditorHomeTipCard h2 {
+    font-size: 1.5rem;
+    color: var(--color-9);
+}
+
+.EditorHomeTipCard p {
+    color: var(--color-7);
+    font-size: 1rem;
+}
+
+.EditorHomeTipAction {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-6);
+}
+
+.EditorHomeTipDots {
+    display: flex;
+    gap: 8px;
+}
+
+.EditorHomeTipDot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: none;
+    background: var(--color-3);
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.EditorHomeTipDot.Active {
+    background: var(--color-8);
+    transform: scale(1.15);
+}
+
+@media (max-width: 900px) {
+    .EditorHome {
+        flex-direction: column;
+    }
+
+    .EditorHomeMain {
+        padding: 32px 20px;
+    }
+}
+
+.EditorHomeMainCentered {
+    margin: 0 auto;
+    padding: 80px 20px;
+    max-width: 900px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.EditorHomeTitle {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.EditorHomeBigAction {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin: 64px;
+}
+
+/* 巨大的大方形按钮 */
+.EditorHomeNewProjectHugeButton {
+    width: 260px; // 方形宽度
+    height: 260px; // 方形高度
+    font-size: 22px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 24px;
+}
+
+/* 图标和文字居中 */
+.EditorHomeNewProjectHugeButton .MdrButtonIcon {
+    margin-bottom: 12px;
+}
+
+.EditorHomeSmallTip {
+    font-size: 14px;
+    color: #999;
+    margin-top: 12px;
+}

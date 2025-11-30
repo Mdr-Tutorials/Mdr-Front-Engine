@@ -5,6 +5,6 @@ export interface MdrComponent {
     style?: React.CSSProperties;
     id?: string;
     dataAttributes?: Record<string, string>;
-    onClick?: (e: React.MouseEvent<HTMLElement>) => void;
+    onClick?: React.MouseEventHandler
     as?: React.ElementType;
 }

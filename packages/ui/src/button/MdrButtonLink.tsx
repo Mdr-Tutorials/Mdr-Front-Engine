@@ -3,14 +3,14 @@ import { type To } from 'react-router';
 import MdrButton, { type MdrButtonProps } from './MdrButton';
 import MdrLink from '../link/MdrLink';
 
-type ButtonLinkProps = MdrButtonProps & {
+export interface MdrButtonLinkSpecificProps extends MdrButtonProps, React.RefAttributes<HTMLAnchorElement> {
     to: To;
     replace?: boolean;
     state?: any;
-} & React.RefAttributes<HTMLAnchorElement>;
+}
 
-function MdrButtonLink(props: ButtonLinkProps) {
-    return <MdrLink to={props.to} disabled={props.disabled} >
+function MdrButtonLink(props: MdrButtonLinkSpecificProps) {
+    return <MdrLink className="MdrButtonLink" to={props.to} disabled={props.disabled} >
         <MdrButton {...props} />
     </MdrLink>
 }

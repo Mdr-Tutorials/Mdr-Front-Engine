@@ -3,14 +3,14 @@ import { Link, type To } from 'react-router';
 import { type MdrComponent } from '@mdr/shared';
 import './MdrLink.scss';
 
-interface MdrLinkSpecific {
+interface MdrLinkSpecificProps {
     to: To;
     text?: string;
     disabled?: boolean;
     children?: React.ReactNode;
 }
 
-interface MdrLinkProps extends MdrComponent, MdrLinkSpecific { }
+export interface MdrLinkProps extends MdrComponent, MdrLinkSpecificProps { }
 
 function MdrLink({
     to,

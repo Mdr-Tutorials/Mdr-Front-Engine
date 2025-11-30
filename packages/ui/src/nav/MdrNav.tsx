@@ -13,7 +13,7 @@ interface MdrNavSpecificProps {
 interface MdrNavProps extends MdrComponent, MdrNavSpecificProps { }
 
 function MdrNav({
-    columns = 3,
+    columns = 2,
     canHide = false,
     isFloat = false,
     backgroundStyle = 'Solid',
@@ -64,8 +64,17 @@ function MdrNavRight({ children }: MdrNavAreaProps) {
     );
 }
 
+function MdrNavHeading({ heading }: { heading: string }) {
+    return (
+        <h1 className="MdrNavHeading">
+            {heading}
+        </h1>
+    );
+}
+
 MdrNav.Left = MdrNavLeft;
 MdrNav.Center = MdrNavCenter;
 MdrNav.Right = MdrNavRight;
+MdrNav.Heading = MdrNavHeading;
 
 export default MdrNav;

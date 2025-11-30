@@ -1,19 +1,17 @@
 import { IconMdr } from '../components/icons/IconMdr';
-import { MdrButtonLink } from '@mdr/ui';
+import { MdrButtonLink, MdrNav } from '@mdr/ui';
 import './Home.scss'
 
 function Home() {
     return (
         <div className="home">
-            <nav className="nav">
-                <div className="nav-left">
+            <MdrNav className='nav'>
+                <MdrNav.Left>
                     <IconMdr size={30} color="black" />
-                    <p>MdrFrontEngine</p>
-                </div>
-                <div className="nav-right">
-                    <p>社区</p><p>教程</p><p>文档</p>
-                </div>
-            </nav>
+                    <MdrNav.Heading heading="MdrFrontEngine" />
+                </MdrNav.Left>
+                <MdrNav.Right><p>社区</p><p>教程</p><p>文档</p></MdrNav.Right>
+            </MdrNav>
             <div className="content">
                 <div className="titles">
                     <h1 className="">
