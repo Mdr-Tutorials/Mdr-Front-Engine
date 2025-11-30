@@ -1,0 +1,94 @@
+.MdrNav {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--color-2);
+    background-color: var(--color-0);
+    color: var(--color-10);
+
+    &.Float {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    &.CanHide {
+        transition: transform 0.25s ease, opacity 0.25s ease;
+
+        &.Hidden {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+    }
+
+    &.Transparent {
+        background-color: transparent;
+        border-color: transparent;
+        box-shadow: none;
+    }
+
+    &.Solid {
+        background-color: var(--color-0);
+    }
+
+    &.Blurred {
+        background-color: rgba(var(--color-0-rgb), 0.8);
+        backdrop-filter: blur(12px);
+    }
+
+    &.Columns-2 {
+        .MdrNavCenter {
+            display: none;
+        }
+
+        .MdrNavLeft,
+        .MdrNavRight {
+            flex: 1;
+        }
+    }
+
+    &.Columns-3 {
+        .MdrNavCenter {
+            flex: 1;
+        }
+    }
+}
+
+.MdrNavLeft,
+.MdrNavCenter,
+.MdrNavRight {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.MdrNavLeft,
+.MdrNavRight {
+    min-width: 140px;
+}
+
+.MdrNavCenter {
+    justify-content: center;
+}
+
+@media (prefers-color-scheme: dark) {
+    .MdrNav {
+        border-color: var(--color-7);
+        background-color: var(--color-10);
+        color: var(--color-1);
+
+        &.Transparent {
+            background-color: transparent;
+            border-color: transparent;
+        }
+
+        &.Blurred {
+            background-color: rgba(var(--color-10-rgb), 0.8);
+        }
+    }
+}
