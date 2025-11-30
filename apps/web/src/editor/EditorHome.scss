@@ -2,7 +2,6 @@
     flex: 1;
     width: 100%;
     display: flex;
-    background: linear-gradient(120deg, var(--color-0) 20%, var(--color-1) 100%);
     color: var(--color-9);
 }
 
@@ -28,113 +27,6 @@
     color: var(--color-10);
 }
 
-.EditorHomeSubTitle {
-    font-size: 1rem;
-    color: var(--color-7);
-}
-
-.EditorHomeEyebrow {
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    font-size: 0.75rem;
-    color: var(--color-6);
-}
-
-.EditorHomeActions {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-width: 420px;
-}
-
-.EditorHomeNewProjectButton {
-    width: 100%;
-    justify-content: center;
-}
-
-.EditorHomeActionHint {
-    font-size: 0.9rem;
-    color: var(--color-6);
-}
-
-.EditorHomeTips {
-    border: 1px solid var(--color-3);
-    border-radius: 24px;
-    padding: 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    background-color: var(--color-0);
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.05);
-    max-width: 680px;
-}
-
-.EditorHomeTips header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.EditorHomeTipCount {
-    font-size: 0.85rem;
-    color: var(--color-6);
-}
-
-.EditorHomeTipCard {
-    border: 1px solid transparent;
-    border-radius: 20px;
-    padding: 24px;
-    background: var(--color-1);
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    transition: border-color 0.2s ease, transform 0.2s ease;
-}
-
-.EditorHomeTipCard:hover,
-.EditorHomeTipCard:focus {
-    border-color: var(--color-4);
-    transform: translateY(-2px);
-    outline: none;
-}
-
-.EditorHomeTipCard h2 {
-    font-size: 1.5rem;
-    color: var(--color-9);
-}
-
-.EditorHomeTipCard p {
-    color: var(--color-7);
-    font-size: 1rem;
-}
-
-.EditorHomeTipAction {
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--color-6);
-}
-
-.EditorHomeTipDots {
-    display: flex;
-    gap: 8px;
-}
-
-.EditorHomeTipDot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: none;
-    background: var(--color-3);
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.EditorHomeTipDot.Active {
-    background: var(--color-8);
-    transform: scale(1.15);
-}
 
 @media (max-width: 900px) {
     .EditorHome {
@@ -194,4 +86,18 @@
     font-size: 14px;
     color: #999;
     margin-top: 12px;
+}
+
+@media (prefers-color-scheme: dark) {
+    .EditorHome {
+        color: var(--color-2);
+    }
+
+    .EditorHomeHeader h1 {
+        color: var(--color-0);
+    }
+
+    .EditorHomeSmallTip {
+        color: var(--color-4);
+    }
 }

@@ -59,7 +59,7 @@ function EditorTipsRandom() {
     const tip = TIPS[active];
 
     return (
-        <div onClick={clickNext}>
+        <div className="EditorHomeSmallTip" onClick={clickNext}>
             <p>Tip: {tip.body}</p>
         </div>
     );

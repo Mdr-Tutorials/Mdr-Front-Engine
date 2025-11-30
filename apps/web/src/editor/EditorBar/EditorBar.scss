@@ -13,3 +13,9 @@
     flex-direction: column;
     gap: 12px;
 }
+
+@media (prefers-color-scheme: dark) {
+    .EditorBar {
+        background-color: var(--color-2);
+    }
+}

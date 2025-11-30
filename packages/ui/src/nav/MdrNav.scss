@@ -114,6 +114,10 @@
         background-color: var(--color-10);
         color: var(--color-1);
 
+        &.Solid {
+            background-color: transparent;
+        }
+
         &.Transparent {
             background-color: transparent;
             border-color: transparent;
@@ -134,6 +138,7 @@
 
             &:hover {
                 color: var(--color-0);
+                background-color: var(--color-8);
             }
         }
     }

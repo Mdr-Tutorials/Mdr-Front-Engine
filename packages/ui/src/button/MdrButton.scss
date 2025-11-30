@@ -75,8 +75,8 @@
 
     &.Secondary {
         background-color: var(--color-0);
-        color: var(--color-9);
-        border-color: var(--color-7);
+        color: var(--color-8);
+        border-color: var(--color-6);
 
         &:not(.Disabled):hover {
             @include button-hover(var(--color-2), var(--color-10));
@@ -176,7 +176,7 @@
 
         &.Secondary {
             background-color: var(--color-10);
-            color: var(--color-1);
+            color: var(--color-3);
             border-color: var(--color-5);
 
             &:not(.Disabled):hover {
