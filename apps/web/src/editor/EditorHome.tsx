@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import { MdAdd } from "react-icons/md"
+import { Plus } from "lucide-react"
 import { MdrButton } from "@mdr/ui"
 import EditorBar from "./EditorBar/EditorBar"
 import "./EditorHome.scss"
@@ -85,7 +85,7 @@ function EditorHome() {
                         text="新建项目"
                         iconPosition="Left"
                         size="Big"
-                        icon={<MdAdd size={165} />}   // 巨大图标
+                        icon={<Plus size={165} />}   // 巨大图标
                         className="EditorHomeNewProjectHugeButton"
                         onClick={handleNewProject}
                     />
@@ -93,7 +93,7 @@ function EditorHome() {
                         text="新建独立组件"
                         iconPosition="Left"
                         size="Big"
-                        icon={<MdAdd size={165} />}   // 巨大图标
+                        icon={<Plus size={165} />}   // 巨大图标
                         className="EditorHomeNewProjectHugeButton"
                         onClick={handleNewProject}
                     />
@@ -101,7 +101,7 @@ function EditorHome() {
                         text="新建独立节点图"
                         iconPosition="Left"
                         size="Big"
-                        icon={<MdAdd size={165} />}   // 巨大图标
+                        icon={<Plus size={165} />}   // 巨大图标
                         className="EditorHomeNewProjectHugeButton"
                         onClick={handleNewProject}
                     />
@@ -109,7 +109,7 @@ function EditorHome() {
                         text="新建项目"
                         iconPosition="Left"
                         size="Big"
-                        icon={<MdAdd size={165} />}   // 巨大图标
+                        icon={<Plus size={165} />}   // 巨大图标
                         className="EditorHomeNewProjectHugeButton"
                         onClick={handleNewProject}
                     />
