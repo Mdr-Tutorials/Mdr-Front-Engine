@@ -106,7 +106,7 @@ function MdrIcon({
     return (
         <span
             className={fullClassName}
-            style={{ ...wrapperSizeStyle, ...style }}
+            style={{ ...(wrapperSizeStyle as React.CSSProperties), ...(style as React.CSSProperties) }}
             id={id}
             onClick={onClick}
             {...accessibilityProps}

@@ -11,7 +11,8 @@
         "./nav": "./src/nav/MdrNav.tsx"
     },
     "dependencies": {
-        "@mdr/shared": "workspace:*"
+        "@mdr/shared": "workspace:*",
+        "@mdr/themes": "workspace:*"
     },
     "devDependencies": {
         "@storybook/addon-a11y": "^10.1.10",

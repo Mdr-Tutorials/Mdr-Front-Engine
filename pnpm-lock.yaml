@@ -295,6 +295,9 @@ importers:
       '@mdr/shared':
         specifier: workspace:*
         version: link:../shared
+      '@mdr/themes':
+        specifier: workspace:*
+        version: link:../themes
     devDependencies:
       '@storybook/addon-a11y':
         specifier: ^10.1.10

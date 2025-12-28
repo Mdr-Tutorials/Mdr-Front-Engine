@@ -1,7 +1,7 @@
-import React from 'react';
 import type { Preview } from "@storybook/react";
-// ✅ 引入 MemoryRouter
+// 引入 MemoryRouter
 import { MemoryRouter } from 'react-router';
+import '@mdr/themes'
 
 const preview: Preview = {
   parameters: {
@@ -12,7 +12,7 @@ const preview: Preview = {
       },
     },
   },
-  // ✅ 添加装饰器
+  // 添加装饰器
   decorators: [
     (Story) => (
       <MemoryRouter initialEntries={['/']}>

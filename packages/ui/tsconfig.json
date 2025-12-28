@@ -10,6 +10,9 @@
         "paths": {
             "@mdr/shared": [
                 "../shared/src"
+            ],
+            "@mdr/themes": [
+                "../themes"
             ]
         }
     },
@@ -23,6 +26,9 @@
     "references": [
         {
             "path": "../shared"
+        },
+        {
+            "path": "../themes"
         }
     ]
 }
