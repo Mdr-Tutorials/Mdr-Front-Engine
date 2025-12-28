@@ -13,15 +13,15 @@
     }
 
     &.PaddingSmall {
-        padding: 16px;
+        padding: var(--spacing-md);
     }
 
     &.PaddingMedium {
-        padding: 32px;
+        padding: var(--spacing-lg);
     }
 
     &.PaddingLarge {
-        padding: 64px;
+        padding: var(--spacing-xl);
     }
 
     &.Small {
@@ -72,7 +72,7 @@
     }
 }
 
-@media (prefers-color-scheme: dark) {
+[data-theme="dark"] {
     .MdrSection {
         &.Default {
             background-color: var(--color-10);
@@ -89,7 +89,7 @@
         }
 
         &.Primary {
-            background-color: var(--color-1);
+            background-color: var(--color-2);
             color: var(--color-10);
         }
 

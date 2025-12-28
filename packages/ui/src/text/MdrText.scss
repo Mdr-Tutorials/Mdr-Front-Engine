@@ -21,23 +21,23 @@
     }
 
     &.Tiny {
-        font-size: 12px;
+        font-size: var(--font-size-xs);
     }
 
     &.Small {
-        font-size: 14px;
+        font-size: var(--font-size-sm);
     }
 
     &.Medium {
-        font-size: 16px;
+        font-size: var(--font-size-md);
     }
 
     &.Large {
-        font-size: 18px;
+        font-size: var(--font-size-lg);
     }
 
     &.Big {
-        font-size: 20px;
+        font-size: var(--font-size-xl);
     }
 
     &.Light {
@@ -89,7 +89,7 @@
     }
 }
 
-@media (prefers-color-scheme: dark) {
+[data-theme="dark"] {
     .MdrText {
         &.Default {
             color: var(--color-0);

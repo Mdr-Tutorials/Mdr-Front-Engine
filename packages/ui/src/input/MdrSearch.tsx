@@ -1,4 +1,5 @@
 import React from 'react';
+import './MdrSearch.scss'
 import { type MdrComponent } from '@mdr/shared';
 
 interface MdrSearchSpecificProps {

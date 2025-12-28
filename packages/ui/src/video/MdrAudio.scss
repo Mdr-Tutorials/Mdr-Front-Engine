@@ -1,10 +1,10 @@
 .MdrAudio {
     display: block;
-    padding: 16px;
-    background-color: var(--mdr-color-neutral-50);
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease;
+    padding: var(--spacing-md);
+    background-color: var(--color-3);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-normal);
 
     audio {
         width: 100%;
@@ -12,17 +12,17 @@
     }
 
     &:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--shadow-md);
     }
 }
 
-@media (prefers-color-scheme: dark) {
+[data-theme="dark"] {
     .MdrAudio {
-        background-color: var(--mdr-color-neutral-800);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        background-color: var(--color-7);
+        box-shadow: var(--shadow-sm);
 
         &:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow-md);
         }
     }
 }

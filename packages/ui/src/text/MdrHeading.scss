@@ -16,27 +16,27 @@
     }
 
     &.Level1 {
-        font-size: 36px;
+        font-size: var(--font-size-4xl);
     }
 
     &.Level2 {
-        font-size: 30px;
+        font-size: var(--font-size-3xl);
     }
 
     &.Level3 {
-        font-size: 24px;
+        font-size: var(--font-size-2xl);
     }
 
     &.Level4 {
-        font-size: 20px;
+        font-size: var(--font-size-xl);
     }
 
     &.Level5 {
-        font-size: 18px;
+        font-size: var(--font-size-lg);
     }
 
     &.Level6 {
-        font-size: 16px;
+        font-size: var(--font-size-md);
     }
 
     &.Light {
@@ -88,7 +88,7 @@
     }
 }
 
-@media (prefers-color-scheme: dark) {
+[data-theme="dark"] {
     .MdrHeading {
         &.Default {
             color: var(--color-0);

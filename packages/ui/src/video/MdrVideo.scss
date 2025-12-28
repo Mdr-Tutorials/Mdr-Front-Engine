@@ -1,14 +1,14 @@
 .MdrVideo {
     display: block;
-    transition: all 0.2s ease;
+    transition: all var(--transition-normal);
 
     > div {
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
     }
 
     video {
-        background-color: #000;
+        background-color: var(--color-10);
     }
 
     &.aspect-16-9 {
@@ -36,16 +36,16 @@
     }
 
     &:hover > div {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        box-shadow: var(--shadow-md);
     }
 }
 
-@media (prefers-color-scheme: dark) {
+[data-theme="dark"] {
     .MdrVideo > div {
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        box-shadow: var(--shadow-sm);
     }
 
     .MdrVideo:hover > div {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        box-shadow: var(--shadow-md);
     }
 }

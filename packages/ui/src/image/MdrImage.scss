@@ -1,7 +1,7 @@
 .MdrImage {
     display: block;
     object-fit: cover;
-    transition: all 0.2s ease;
+    transition: all var(--transition-normal);
 
     &.Small {
         width: 64px;
@@ -45,14 +45,14 @@
     }
 
     &.Square {
-        border-radius: 0;
+        border-radius: var(--radius-none);
     }
 
     &.Rounded {
-        border-radius: 8px;
+        border-radius: var(--radius-md);
     }
 
     &.Circle {
-        border-radius: 50%;
+        border-radius: var(--radius-full);
     }
 }

@@ -1,6 +1,6 @@
 .MdrIconLink {
     color: var(--color-1);
-    transition: color .3s ease;
+    transition: color var(--transition-normal);
 
     &:hover {
         color: var(--color-4);

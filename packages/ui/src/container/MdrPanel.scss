@@ -1,15 +1,15 @@
 .MdrPanel {
     box-sizing: border-box;
     background-color: var(--color-0);
-    border-radius: 6px;
-    transition: all 0.2s ease;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-normal);
     color: var(--color-10);
 
     .MdrPanelHeader {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 12px 16px;
+        padding: var(--spacing-sm) var(--spacing-md);
         border-bottom: 1px solid var(--color-6);
         cursor: default;
     }
@@ -21,6 +21,10 @@
         &:hover {
             background-color: var(--color-2);
         }
+    }
+
+    &.Collapsed .MdrPanelHeader {
+        border-bottom: none;
     }
 
     .MdrPanelTitle {
@@ -37,9 +41,9 @@
         background: transparent;
         color: var(--color-10);
         cursor: pointer;
-        padding: 4px;
-        border-radius: 4px;
-        transition: background-color 0.2s ease;
+        padding: var(--spacing-xs);
+        border-radius: var(--radius-sm);
+        transition: background-color var(--transition-fast);
 
         &:hover {
             background-color: var(--color-3);
@@ -52,13 +56,9 @@
 
     .MdrPanelContent {
         overflow: hidden;
-        transition: max-height 0.3s ease, opacity 0.3s ease;
+        transition: max-height var(--transition-normal), opacity var(--transition-normal);
     }
 
-    &.Collapsed .MdrPanelContent {
-        max-height: 0;
-        opacity: 0;
-    }
 
     &:not(.Collapsed) .MdrPanelContent {
         max-height: 1000px;
@@ -70,27 +70,21 @@
     }
 
     &.PaddingSmall .MdrPanelContent {
-        padding: 12px;
+        padding: var(--spacing-sm);
     }
 
     &.PaddingMedium .MdrPanelContent {
-        padding: 16px;
+        padding: var(--spacing-md);
     }
 
     &.PaddingLarge .MdrPanelContent {
-        padding: 24px;
+        padding: var(--spacing-lg);
     }
 
-    &.Small {
-        min-height: 80px;
-    }
-
-    &.Medium {
-        min-height: 150px;
-    }
-
-    &.Large {
-        min-height: 250px;
+    &.Collapsed .MdrPanelContent {
+        max-height: 0;
+        padding: 0;
+        opacity: 0;
     }
 
     &.Default {
@@ -101,9 +95,78 @@
         border: 2px solid var(--color-6);
     }
 
-    &.Filled {
+    &.Elevated {
         border: 1px solid var(--color-6);
+        box-shadow: var(--shadow-md);
+    }
+
+    &.Flat {
+        border: none;
         background-color: var(--color-2);
+    }
+
+    &.Hoverable {
+        &:hover {
+            box-shadow: var(--shadow-lg);
+        }
+    }
+
+    &.Clickable {
+        cursor: pointer;
+
+        &:hover {
+            border-color: var(--color-9);
+            box-shadow: var(--shadow-md);
+        }
+    }
+}
+
+[data-theme="dark"] {
+    .MdrPanel {
+        background-color: var(--color-10);
+        color: var(--color-0);
+
+        .MdrPanelHeader {
+            border-bottom-color: var(--color-5);
+
+            &:hover {
+                background-color: var(--color-8);
+            }
+        }
+
+        .MdrPanelToggle {
+            color: var(--color-0);
+
+            &:hover {
+                background-color: var(--color-7);
+            }
+
+            &:active {
+                background-color: var(--color-6);
+            }
+        }
+
+        &.Default {
+            border-color: var(--color-5);
+        }
+
+        &.Bordered {
+            border-color: var(--color-5);
+        }
+
+        &.Elevated {
+            border-color: var(--color-5);
+            box-shadow: var(--shadow-lg);
+        }
+
+        &.Flat {
+            background-color: var(--color-8);
+        }
+
+        &.Filled {
+            border: 1px solid var(--color-6);
+            background-color: var(--color-2);
+        }
     }
 }
 

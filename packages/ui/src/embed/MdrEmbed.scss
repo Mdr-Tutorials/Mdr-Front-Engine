@@ -1,75 +1,75 @@
 .MdrEmbed {
     display: block;
-    transition: all 0.2s ease;
+    transition: all var(--transition-normal);
 
-    > div {
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        background-color: var(--mdr-color-neutral-50);
+    >div {
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+        background-color: var(--color-3);
     }
 
     iframe {
-        background-color: #fff;
+        background-color: var(--color-0);
     }
 
     &.aspect-16-9 {
-        > div {
+        >div {
             aspect-ratio: 16 / 9;
         }
     }
 
     &.aspect-4-3 {
-        > div {
+        >div {
             aspect-ratio: 4 / 3;
         }
     }
 
     &.aspect-1-1 {
-        > div {
+        >div {
             aspect-ratio: 1 / 1;
         }
     }
 
     &.aspect-21-9 {
-        > div {
+        >div {
             aspect-ratio: 21 / 9;
         }
     }
 
     &.YouTube,
     &.Vimeo {
-        > div {
-            background-color: #000;
+        >div {
+            background-color: var(--color-10);
         }
     }
 
     &.Twitter,
     &.Instagram,
     &.Facebook {
-        > div {
-            background-color: #fff;
+        >div {
+            background-color: var(--color-0);
         }
     }
 
-    &:hover > div {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    &:hover>div {
+        box-shadow: var(--shadow-md);
     }
 }
 
-@media (prefers-color-scheme: dark) {
-    .MdrEmbed > div {
-        background-color: var(--mdr-color-neutral-800);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+[data-theme="dark"] {
+    .MdrEmbed>div {
+        background-color: var(--color-7);
+        box-shadow: var(--shadow-sm);
     }
 
-    .MdrEmbed:hover > div {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    .MdrEmbed:hover>div {
+        box-shadow: var(--shadow-md);
     }
 
     .MdrEmbed.YouTube,
     .MdrEmbed.Vimeo {
-        > div {
-            background-color: #000;
+        >div {
+            background-color: var(--color-10);
         }
     }
 }

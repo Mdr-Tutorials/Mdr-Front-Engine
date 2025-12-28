@@ -5,9 +5,9 @@
     width: 100%;
     max-width: 400px;
     border: 1px solid;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     background-color: var(--color-0);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
     border-color: var(--color-6);
 
     &:focus-within {
@@ -56,9 +56,9 @@
         background: transparent;
         color: var(--color-6);
         cursor: pointer;
-        padding: 4px;
-        border-radius: 4px;
-        transition: background-color 0.2s ease, color 0.2s ease;
+        padding: var(--spacing-xs);
+        border-radius: var(--radius-sm);
+        transition: background-color var(--transition-fast), color var(--transition-fast);
         flex-shrink: 0;
 
         &:hover {
@@ -77,51 +77,51 @@
 
     &.Small {
         .MdrSearchIcon {
-            padding: 6px 8px;
+            padding: var(--spacing-xs) var(--spacing-sm);
         }
 
         input {
-            padding: 6px 8px;
+            padding: var(--spacing-xs) var(--spacing-sm);
             font-size: 14px;
         }
 
         .MdrSearchClear {
-            padding: 4px 6px;
+            padding: var(--spacing-xs);
         }
     }
 
     &.Medium {
         .MdrSearchIcon {
-            padding: 10px 12px;
+            padding: var(--spacing-sm) var(--spacing-md);
         }
 
         input {
-            padding: 10px 12px;
+            padding: var(--spacing-sm) var(--spacing-md);
             font-size: 16px;
         }
 
         .MdrSearchClear {
-            padding: 6px 8px;
+            padding: var(--spacing-xs) var(--spacing-sm);
         }
     }
 
     &.Large {
         .MdrSearchIcon {
-            padding: 14px 16px;
+            padding: var(--spacing-md) var(--spacing-lg);
         }
 
         input {
-            padding: 14px 16px;
+            padding: var(--spacing-md) var(--spacing-lg);
             font-size: 18px;
         }
 
         .MdrSearchClear {
-            padding: 8px 10px;
+            padding: var(--spacing-sm) var(--spacing-md);
         }
     }
 }
 
-@media (prefers-color-scheme: dark) {
+[data-theme="dark"] {
     .MdrSearch {
         background-color: var(--color-10);
         border-color: var(--color-5);

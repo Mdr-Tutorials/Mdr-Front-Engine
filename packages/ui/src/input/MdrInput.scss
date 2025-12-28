@@ -5,56 +5,55 @@
     width: 100%;
     max-width: 400px;
 
-    input {
-        width: 100%;
-        border: 1px solid;
-        border-radius: 6px;
-        padding: 0 12px;
-        font-size: 16px;
-        line-height: 1.5;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        outline: none;
-        background-color: var(--color-0);
-        color: var(--color-10);
-        border-color: var(--color-6);
+    width: 100%;
+    border: 1px solid;
+    border-radius: var(--radius-md);
+    padding: 0 var(--spacing-sm);
+    font-size: 16px;
+    line-height: 1.5;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    outline: none;
+    background-color: var(--color-0);
+    color: var(--color-10);
+    border-color: var(--color-6);
 
-        &::placeholder {
-            color: var(--color-6);
-        }
-
-        &:focus {
-            border-color: var(--color-9);
-            box-shadow: 0 0 0 3px rgba(var(--color-9-rgb), 0.1);
-        }
-
-        &:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            background-color: var(--color-2);
-        }
-
-        &:read-only {
-            background-color: var(--color-2);
-            cursor: default;
-        }
+    &::placeholder {
+        color: var(--color-6);
     }
 
-    &.Small input {
-        padding: 6px 10px;
+    &:focus {
+        border-color: var(--color-primary, var(--color-9));
+        box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, var(--color-9-rgb)), 0.1);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: var(--color-2);
+    }
+
+    &:read-only {
+        background-color: var(--color-2);
+        cursor: default;
+    }
+
+
+    &.Small {
+        padding: var(--spacing-xs) var(--spacing-sm);
         font-size: 14px;
     }
 
-    &.Medium input {
-        padding: 10px 14px;
+    &.Medium {
+        padding: var(--spacing-sm) var(--spacing-md);
         font-size: 16px;
     }
 
-    &.Large input {
-        padding: 14px 18px;
+    &.Large {
+        padding: var(--spacing-md) var(--spacing-lg);
         font-size: 18px;
     }
 
-    &.Error input {
+    &.Error {
         border-color: var(--color-danger);
 
         &:focus {
@@ -63,7 +62,7 @@
         }
     }
 
-    &.Warning input {
+    &.Warning {
         border-color: var(--color-warning);
 
         &:focus {
@@ -72,38 +71,38 @@
         }
     }
 
-    &.Success input {
-        border-color: var(--color-success, #10b981);
+    &.Success {
+        border-color: var(--color-success);
 
         &:focus {
-            border-color: var(--color-success, #10b981);
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+            border-color: var(--color-success);
+            box-shadow: 0 0 0 3px rgba(var(--color-success-rgb), 0.1);
         }
     }
 
     &.WithIcon {
         input {
-            padding-left: 40px;
+            padding-left: var(--spacing-xl);
         }
 
-        &.Small input {
-            padding-left: 36px;
+        &.Small {
+            padding-left: var(--spacing-lg);
         }
 
-        &.Large input {
-            padding-left: 44px;
+        &.Large {
+            padding-left: var(--spacing-xl);
         }
 
-        &.WithIcon input {
-            padding-right: 40px;
+        &.WithIcon {
+            padding-right: var(--spacing-xl);
         }
 
-        &.Small.WithIcon input {
-            padding-right: 36px;
+        &.Small.WithIcon {
+            padding-right: var(--spacing-lg);
         }
 
-        &.Large.WithIcon input {
-            padding-right: 44px;
+        &.Large.WithIcon {
+            padding-right: var(--spacing-xl);
         }
     }
 
@@ -116,32 +115,32 @@
         pointer-events: none;
 
         &.Left {
-            left: 12px;
+            left: var(--spacing-sm);
         }
 
         &.Right {
-            right: 12px;
+            right: var(--spacing-sm);
         }
     }
 
     &.Small .MdrInputIcon.Left {
-        left: 10px;
+        left: var(--spacing-sm);
     }
 
     &.Small .MdrInputIcon.Right {
-        right: 10px;
+        right: var(--spacing-sm);
     }
 
     &.Large .MdrInputIcon.Left {
-        left: 14px;
+        left: var(--spacing-md);
     }
 
     &.Large .MdrInputIcon.Right {
-        right: 14px;
+        right: var(--spacing-md);
     }
 }
 
-@media (prefers-color-scheme: dark) {
+[data-theme="dark"] {
     .MdrInput input {
         background-color: var(--color-10);
         color: var(--color-0);
@@ -152,8 +151,8 @@
         }
 
         &:focus {
-            border-color: var(--color-1);
-            box-shadow: 0 0 0 3px rgba(var(--color-1-rgb), 0.1);
+            border-color: var(--color-primary, var(--color-1));
+            box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, var(--color-1-rgb)), 0.1);
         }
 
         &:disabled {
@@ -165,25 +164,32 @@
         }
     }
 
-    .MdrInput.Error input {
+    .MdrInput.Error {
         &:focus {
             box-shadow: 0 0 0 3px rgba(var(--color-danger-rgb), 0.2);
         }
     }
 
-    .MdrInput.Warning input {
+    .MdrInput.Warning {
         &:focus {
             box-shadow: 0 0 0 3px rgba(var(--color-warning-rgb), 0.2);
         }
     }
 
-    .MdrInput.Success input {
+    .MdrInput.Success {
         &:focus {
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+            box-shadow: 0 0 0 3px rgba(var(--color-success-rgb), 0.2);
         }
     }
 
-    .MdrInput .MdrInputIcon {
+    .MdrInputIcon {
         color: var(--color-5);
     }
+}
+
+.MdrInput-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: var(--spacing-sm);
+    align-items: center;
 }

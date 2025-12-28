@@ -16,15 +16,15 @@
     }
 
     &.Small {
-        font-size: 14px;
+        font-size: var(--font-size-sm);
     }
 
     &.Medium {
-        font-size: 16px;
+        font-size: var(--font-size-md);
     }
 
     &.Large {
-        font-size: 18px;
+        font-size: var(--font-size-lg);
     }
 
     &.Light {
@@ -72,7 +72,7 @@
     }
 }
 
-@media (prefers-color-scheme: dark) {
+[data-theme="dark"] {
     .MdrParagraph {
         &.Default {
             color: var(--color-0);
