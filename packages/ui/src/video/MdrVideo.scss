@@ -1,0 +1,51 @@
+.MdrVideo {
+    display: block;
+    transition: all 0.2s ease;
+
+    > div {
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    video {
+        background-color: #000;
+    }
+
+    &.aspect-16-9 {
+        > div {
+            aspect-ratio: 16 / 9;
+        }
+    }
+
+    &.aspect-4-3 {
+        > div {
+            aspect-ratio: 4 / 3;
+        }
+    }
+
+    &.aspect-1-1 {
+        > div {
+            aspect-ratio: 1 / 1;
+        }
+    }
+
+    &.aspect-21-9 {
+        > div {
+            aspect-ratio: 21 / 9;
+        }
+    }
+
+    &:hover > div {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .MdrVideo > div {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .MdrVideo:hover > div {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+}

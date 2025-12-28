@@ -1,0 +1,75 @@
+.MdrEmbed {
+    display: block;
+    transition: all 0.2s ease;
+
+    > div {
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background-color: var(--mdr-color-neutral-50);
+    }
+
+    iframe {
+        background-color: #fff;
+    }
+
+    &.aspect-16-9 {
+        > div {
+            aspect-ratio: 16 / 9;
+        }
+    }
+
+    &.aspect-4-3 {
+        > div {
+            aspect-ratio: 4 / 3;
+        }
+    }
+
+    &.aspect-1-1 {
+        > div {
+            aspect-ratio: 1 / 1;
+        }
+    }
+
+    &.aspect-21-9 {
+        > div {
+            aspect-ratio: 21 / 9;
+        }
+    }
+
+    &.YouTube,
+    &.Vimeo {
+        > div {
+            background-color: #000;
+        }
+    }
+
+    &.Twitter,
+    &.Instagram,
+    &.Facebook {
+        > div {
+            background-color: #fff;
+        }
+    }
+
+    &:hover > div {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .MdrEmbed > div {
+        background-color: var(--mdr-color-neutral-800);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .MdrEmbed:hover > div {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .MdrEmbed.YouTube,
+    .MdrEmbed.Vimeo {
+        > div {
+            background-color: #000;
+        }
+    }
+}

@@ -1,0 +1,110 @@
+.MdrCard {
+    box-sizing: border-box;
+    background-color: var(--color-0);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    color: var(--color-10);
+
+    &.PaddingNone {
+        padding: 0;
+    }
+
+    &.PaddingSmall {
+        padding: 12px;
+    }
+
+    &.PaddingMedium {
+        padding: 20px;
+    }
+
+    &.PaddingLarge {
+        padding: 28px;
+    }
+
+    &.Small {
+        min-height: 100px;
+    }
+
+    &.Medium {
+        min-height: 200px;
+    }
+
+    &.Large {
+        min-height: 300px;
+    }
+
+    &.Default {
+        border: 1px solid var(--color-6);
+    }
+
+    &.Bordered {
+        border: 2px solid var(--color-6);
+    }
+
+    &.Elevated {
+        border: 1px solid var(--color-6);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    &.Flat {
+        border: none;
+        background-color: var(--color-2);
+    }
+
+    &.Hoverable {
+        &:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+    }
+
+    &.Clickable {
+        cursor: pointer;
+
+        &:hover {
+            border-color: var(--color-9);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        &:active {
+            transform: scale(0.98);
+        }
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .MdrCard {
+        background-color: var(--color-10);
+        color: var(--color-0);
+
+        &.Default {
+            border-color: var(--color-5);
+        }
+
+        &.Bordered {
+            border-color: var(--color-5);
+        }
+
+        &.Elevated {
+            border-color: var(--color-5);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        &.Flat {
+            background-color: var(--color-8);
+        }
+
+        &.Hoverable {
+            &:hover {
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+            }
+        }
+
+        &.Clickable {
+            &:hover {
+                border-color: var(--color-1);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            }
+        }
+    }
+}

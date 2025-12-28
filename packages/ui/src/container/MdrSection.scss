@@ -1,0 +1,101 @@
+.MdrSection {
+    box-sizing: border-box;
+    width: 100%;
+
+    &.FullWidth {
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+        margin-right: calc(-50vw + 50%);
+    }
+
+    &.PaddingNone {
+        padding: 0;
+    }
+
+    &.PaddingSmall {
+        padding: 16px;
+    }
+
+    &.PaddingMedium {
+        padding: 32px;
+    }
+
+    &.PaddingLarge {
+        padding: 64px;
+    }
+
+    &.Small {
+        min-height: 200px;
+    }
+
+    &.Medium {
+        min-height: 400px;
+    }
+
+    &.Large {
+        min-height: 600px;
+    }
+
+    &.Left {
+        text-align: left;
+    }
+
+    &.Center {
+        text-align: center;
+    }
+
+    &.Right {
+        text-align: right;
+    }
+
+    &.Default {
+        background-color: var(--color-0);
+    }
+
+    &.Light {
+        background-color: var(--color-2);
+    }
+
+    &.Dark {
+        background-color: var(--color-10);
+        color: var(--color-0);
+    }
+
+    &.Primary {
+        background-color: var(--color-9);
+        color: var(--color-0);
+    }
+
+    &.Secondary {
+        background-color: var(--color-8);
+        color: var(--color-0);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .MdrSection {
+        &.Default {
+            background-color: var(--color-10);
+            color: var(--color-0);
+        }
+
+        &.Light {
+            background-color: var(--color-8);
+        }
+
+        &.Dark {
+            background-color: var(--color-0);
+            color: var(--color-10);
+        }
+
+        &.Primary {
+            background-color: var(--color-1);
+            color: var(--color-10);
+        }
+
+        &.Secondary {
+            background-color: var(--color-3);
+            color: var(--color-10);
+        }
+    }
+}

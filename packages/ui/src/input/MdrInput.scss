@@ -1,0 +1,189 @@
+.MdrInput {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+
+    input {
+        width: 100%;
+        border: 1px solid;
+        border-radius: 6px;
+        padding: 0 12px;
+        font-size: 16px;
+        line-height: 1.5;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        outline: none;
+        background-color: var(--color-0);
+        color: var(--color-10);
+        border-color: var(--color-6);
+
+        &::placeholder {
+            color: var(--color-6);
+        }
+
+        &:focus {
+            border-color: var(--color-9);
+            box-shadow: 0 0 0 3px rgba(var(--color-9-rgb), 0.1);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: var(--color-2);
+        }
+
+        &:read-only {
+            background-color: var(--color-2);
+            cursor: default;
+        }
+    }
+
+    &.Small input {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+
+    &.Medium input {
+        padding: 10px 14px;
+        font-size: 16px;
+    }
+
+    &.Large input {
+        padding: 14px 18px;
+        font-size: 18px;
+    }
+
+    &.Error input {
+        border-color: var(--color-danger);
+
+        &:focus {
+            border-color: var(--color-danger);
+            box-shadow: 0 0 0 3px rgba(var(--color-danger-rgb), 0.1);
+        }
+    }
+
+    &.Warning input {
+        border-color: var(--color-warning);
+
+        &:focus {
+            border-color: var(--color-warning);
+            box-shadow: 0 0 0 3px rgba(var(--color-warning-rgb), 0.1);
+        }
+    }
+
+    &.Success input {
+        border-color: var(--color-success, #10b981);
+
+        &:focus {
+            border-color: var(--color-success, #10b981);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+    }
+
+    &.WithIcon {
+        input {
+            padding-left: 40px;
+        }
+
+        &.Small input {
+            padding-left: 36px;
+        }
+
+        &.Large input {
+            padding-left: 44px;
+        }
+
+        &.WithIcon input {
+            padding-right: 40px;
+        }
+
+        &.Small.WithIcon input {
+            padding-right: 36px;
+        }
+
+        &.Large.WithIcon input {
+            padding-right: 44px;
+        }
+    }
+
+    .MdrInputIcon {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-6);
+        pointer-events: none;
+
+        &.Left {
+            left: 12px;
+        }
+
+        &.Right {
+            right: 12px;
+        }
+    }
+
+    &.Small .MdrInputIcon.Left {
+        left: 10px;
+    }
+
+    &.Small .MdrInputIcon.Right {
+        right: 10px;
+    }
+
+    &.Large .MdrInputIcon.Left {
+        left: 14px;
+    }
+
+    &.Large .MdrInputIcon.Right {
+        right: 14px;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .MdrInput input {
+        background-color: var(--color-10);
+        color: var(--color-0);
+        border-color: var(--color-5);
+
+        &::placeholder {
+            color: var(--color-5);
+        }
+
+        &:focus {
+            border-color: var(--color-1);
+            box-shadow: 0 0 0 3px rgba(var(--color-1-rgb), 0.1);
+        }
+
+        &:disabled {
+            background-color: var(--color-8);
+        }
+
+        &:read-only {
+            background-color: var(--color-8);
+        }
+    }
+
+    .MdrInput.Error input {
+        &:focus {
+            box-shadow: 0 0 0 3px rgba(var(--color-danger-rgb), 0.2);
+        }
+    }
+
+    .MdrInput.Warning input {
+        &:focus {
+            box-shadow: 0 0 0 3px rgba(var(--color-warning-rgb), 0.2);
+        }
+    }
+
+    .MdrInput.Success input {
+        &:focus {
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+    }
+
+    .MdrInput .MdrInputIcon {
+        color: var(--color-5);
+    }
+}

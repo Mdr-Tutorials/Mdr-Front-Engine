@@ -1,0 +1,110 @@
+.MdrText {
+    line-height: 1.5;
+    word-wrap: break-word;
+
+    &.Truncate {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &.Left {
+        text-align: left;
+    }
+
+    &.Center {
+        text-align: center;
+    }
+
+    &.Right {
+        text-align: right;
+    }
+
+    &.Tiny {
+        font-size: 12px;
+    }
+
+    &.Small {
+        font-size: 14px;
+    }
+
+    &.Medium {
+        font-size: 16px;
+    }
+
+    &.Large {
+        font-size: 18px;
+    }
+
+    &.Big {
+        font-size: 20px;
+    }
+
+    &.Light {
+        font-weight: 300;
+    }
+
+    &.Normal {
+        font-weight: 400;
+    }
+
+    &.Medium {
+        font-weight: 500;
+    }
+
+    &.SemiBold {
+        font-weight: 600;
+    }
+
+    &.Bold {
+        font-weight: 700;
+    }
+
+    &.Default {
+        color: var(--color-10);
+    }
+
+    &.Muted {
+        color: var(--color-6);
+    }
+
+    &.Primary {
+        color: var(--color-9);
+    }
+
+    &.Secondary {
+        color: var(--color-8);
+    }
+
+    &.Danger {
+        color: var(--color-danger);
+    }
+
+    &.Warning {
+        color: var(--color-warning);
+    }
+
+    &.Success {
+        color: var(--color-success, #10b981);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .MdrText {
+        &.Default {
+            color: var(--color-0);
+        }
+
+        &.Muted {
+            color: var(--color-5);
+        }
+
+        &.Primary {
+            color: var(--color-1);
+        }
+
+        &.Secondary {
+            color: var(--color-3);
+        }
+    }
+}
