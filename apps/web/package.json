@@ -16,6 +16,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@mdr/shared": "workspace:*",
     "@mdr/ui": "workspace:*",
+    "@mdr/themes": "workspace:*",
     "@monaco-editor/react": "^4.7.0",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-popover": "^1.1.15",

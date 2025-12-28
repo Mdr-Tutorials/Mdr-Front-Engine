@@ -9,6 +9,7 @@ export default defineConfig({
       '@': resolve(__dirname, './src'),
       '@mdr/shared': resolve(__dirname, '../../packages/shared/src'),
       '@mdr/ui': resolve(__dirname, '../../packages/ui/src'),
+      '@mdr/themes': resolve(__dirname, '../../packages/themes/src'),
     },
   },
   server: {
