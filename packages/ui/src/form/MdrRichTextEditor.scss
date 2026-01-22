@@ -1,0 +1,73 @@
+@import './MdrField.scss';
+
+.MdrRichTextEditor {
+    width: 100%;
+}
+
+.MdrRichTextEditorToolbar {
+    display: flex;
+    gap: var(--spacing-xs);
+
+    button {
+        border: 1px solid var(--color-3);
+        border-radius: var(--radius-sm);
+        padding: 4px 8px;
+        background-color: var(--color-0);
+        color: var(--color-8);
+        cursor: pointer;
+        font-size: 12px;
+
+        &:hover {
+            background-color: var(--color-1);
+        }
+    }
+}
+
+.MdrRichTextEditorContent {
+    border: 1px solid var(--color-6);
+    border-radius: var(--radius-md);
+    min-height: 160px;
+    padding: var(--spacing-md);
+    font-size: 15px;
+    background-color: var(--color-0);
+    color: var(--color-10);
+    outline: none;
+
+    &:focus {
+        border-color: var(--color-9);
+        box-shadow: 0 0 0 3px rgba(var(--color-9-rgb, 0, 0, 0), 0.08);
+    }
+
+    &:empty:before {
+        content: attr(data-placeholder);
+        color: var(--color-6);
+    }
+}
+
+.MdrRichTextEditor.Disabled .MdrRichTextEditorContent,
+.MdrRichTextEditor.ReadOnly .MdrRichTextEditorContent {
+    background-color: var(--color-2);
+    cursor: not-allowed;
+}
+
+[data-theme="dark"] {
+    .MdrRichTextEditorToolbar button {
+        background-color: var(--color-10);
+        color: var(--color-2);
+        border-color: var(--color-5);
+
+        &:hover {
+            background-color: var(--color-9);
+        }
+    }
+
+    .MdrRichTextEditorContent {
+        background-color: var(--color-10);
+        color: var(--color-0);
+        border-color: var(--color-5);
+
+        &:empty:before {
+            color: var(--color-5);
+        }
+    }
+}

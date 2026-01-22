@@ -1,0 +1,36 @@
+.MdrCheckList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.MdrCheckListItem {
+    padding: var(--spacing-xs) 0;
+}
+
+.MdrCheckListLabel {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--color-8);
+    cursor: pointer;
+
+    input {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+.MdrCheckListLabel.Disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+[data-theme="dark"] {
+    .MdrCheckListLabel {
+        color: var(--color-2);
+    }
+}

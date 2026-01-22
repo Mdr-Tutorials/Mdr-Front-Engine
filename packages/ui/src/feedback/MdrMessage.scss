@@ -1,0 +1,47 @@
+.MdrMessage {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    background-color: var(--color-1);
+    color: var(--color-8);
+}
+
+.MdrMessage.Info {
+    background-color: var(--color-1);
+}
+
+.MdrMessage.Success {
+    background-color: rgba(var(--color-success-rgb, 0, 128, 0), 0.15);
+    color: var(--color-success);
+}
+
+.MdrMessage.Warning {
+    background-color: rgba(var(--color-warning-rgb, 255, 176, 7), 0.2);
+    color: var(--color-warning);
+}
+
+.MdrMessage.Danger {
+    background-color: rgba(var(--color-danger-rgb, 255, 98, 101), 0.2);
+    color: var(--color-danger);
+}
+
+.MdrMessageClose {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    color: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+[data-theme="dark"] {
+    .MdrMessage {
+        background-color: var(--color-9);
+        color: var(--color-2);
+    }
+}

@@ -1,0 +1,48 @@
+.MdrSpinner {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--color-6);
+}
+
+.MdrSpinnerCircle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 3px solid var(--color-3);
+    border-top-color: var(--color-9);
+    animation: mdr-spin 0.8s linear infinite;
+}
+
+.MdrSpinnerLabel {
+    font-size: 12px;
+}
+
+.MdrSpinner.Small .MdrSpinnerCircle {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+}
+
+.MdrSpinner.Large .MdrSpinnerCircle {
+    width: 32px;
+    height: 32px;
+    border-width: 4px;
+}
+
+@keyframes mdr-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+[data-theme="dark"] {
+    .MdrSpinner {
+        color: var(--color-5);
+    }
+
+    .MdrSpinnerCircle {
+        border-color: var(--color-7);
+        border-top-color: var(--color-2);
+    }
+}

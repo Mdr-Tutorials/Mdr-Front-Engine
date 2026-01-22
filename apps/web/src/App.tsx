@@ -1,36 +1,37 @@
-import { BrowserRouter, Route, Routes } from 'react-router'
 import './App.scss'
 import Home from './home/Home'
 import Editor from './editor/Editor'
 import EditorHome from './editor/EditorHome'
+import BlueprintEditor from './editor/features/design/BlueprintEditor'
 
-function App() {
-
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route index element={<Home />} />
-        <Route path="editor" element={<Editor />} >
-          <Route index element={<EditorHome />} />
-          <Route path="project/:projectId" element={<Editor />} >
-            <Route index element={<EditorHome />} />
-            <Route path="blueprint" element={<div>Blueprint Editor</div>} />
-            <Route path="nodegraph" element={<div>Node Graph Editor</div>} />
-            <Route path="component" element={<div>Component Editor</div>} />
-            <Route path="animation" element={<div>Animation Editor</div>} />
-            <Route path="test" element={<div>Testing</div>} />
-            <Route path="export" element={<div>Export Settings</div>} />
-            <Route path="deployment" element={<div>Deployment Settings</div>} />
-          </Route>
-          <Route path="component" element={<div>Component Editor</div>} /> {/* Standalone components */}
-          <Route path="blueprint" element={<div>Blueprint Editor</div>} /> {/* Standalone blueprints */}
-          <Route path="settings" element={<div>Editor Settings</div>} />
-        </Route>
-        <Route path="community" element={<div>Community Page</div>} />
-        <Route path="about" element={<div>About Page</div>} />
-      </Routes>
-    </BrowserRouter>
-  )
-}
-
-export default App
+export const routes = [
+  {
+    path: '/',
+    element: <Home />,
+  },
+  {
+    path: 'editor',
+    element: <Editor />,
+    children: [
+      { index: true, element: <EditorHome /> },
+      {
+        path: 'project/:projectId',
+        children: [
+          { index: true, element: <EditorHome /> },
+          { path: 'blueprint', element: <BlueprintEditor /> },
+          { path: 'nodegraph', element: <div>Node Graph Editor</div> },
+          { path: 'component', element: <div>Component Editor</div> },
+          { path: 'animation', element: <div>Animation Editor</div> },
+          { path: 'test', element: <div>Testing</div> },
+          { path: 'export', element: <div>Export Settings</div> },
+          { path: 'deployment', element: <div>Deployment Settings</div> },
+        ],
+      },
+      { path: 'component', element: <div>Component Editor</div> },
+      { path: 'blueprint', element: <BlueprintEditor /> },
+      { path: 'settings', element: <div>Editor Settings</div> },
+    ],
+  },
+  { path: 'community', element: <div>Community Page</div> },
+  { path: 'about', element: <div>About Page</div> },
+]

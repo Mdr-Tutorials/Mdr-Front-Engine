@@ -3,19 +3,112 @@
     flex-direction: column;
     justify-content: space-between;
     background-color: var(--color-9);
-    padding: 20px;
+    padding: 20px 14px;
     min-height: 100vh;
     max-height: 100vh;
+    width: 72px;
+    align-items: center;
 }
 
 .EditorBar .EditorBarTop {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    align-items: center;
+}
+
+.EditorBarExitButton {
+    border: none;
+    background: transparent;
+    color: var(--color-1);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 10px;
+    transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.EditorBarExitButton:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-3);
+}
+
+.EditorBar .EditorBarCenter {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+    flex: 1;
+    justify-content: center;
+}
+
+.EditorBar .EditorBarBottom {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.EditorBarExitOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 8, 8, 0.5);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.EditorBarExitModal {
+    width: min(420px, 90vw);
+    background: var(--color-0);
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
+    padding: 18px 20px 20px;
+    color: var(--color-10);
+}
+
+.EditorBarExitTitle h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.EditorBarExitTitle p {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: var(--color-6);
+}
+
+.EditorBarExitActions {
+    margin-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
 }
 
 @media (prefers-color-scheme: dark) {
     .EditorBar {
         background-color: var(--color-2);
+    }
+
+    .EditorBarExitButton {
+        color: var(--color-0);
+    }
+
+    .EditorBarExitButton:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--color-3);
+    }
+
+    .EditorBarExitModal {
+        background: var(--color-10);
+        border-color: rgba(255, 255, 255, 0.08);
+        color: var(--color-0);
+    }
+
+    .EditorBarExitTitle p {
+        color: var(--color-4);
     }
 }

@@ -1,0 +1,40 @@
+.MdrSkeleton {
+    background: linear-gradient(90deg, var(--color-2) 25%, var(--color-3) 50%, var(--color-2) 75%);
+    background-size: 200% 100%;
+    animation: mdr-skeleton 1.4s ease infinite;
+    border-radius: var(--radius-sm);
+    width: 100%;
+    height: 12px;
+}
+
+.MdrSkeleton.Rect {
+    height: 120px;
+}
+
+.MdrSkeleton.Circle {
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+}
+
+.MdrSkeletonGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+@keyframes mdr-skeleton {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+[data-theme="dark"] {
+    .MdrSkeleton {
+        background: linear-gradient(90deg, var(--color-8) 25%, var(--color-7) 50%, var(--color-8) 75%);
+        background-size: 200% 100%;
+    }
+}

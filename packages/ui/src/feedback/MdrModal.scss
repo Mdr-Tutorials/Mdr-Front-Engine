@@ -1,0 +1,80 @@
+.MdrModalOverlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.MdrModal {
+    background-color: var(--color-0);
+    border-radius: var(--radius-lg);
+    width: 520px;
+    max-width: calc(100% - 32px);
+    box-shadow: var(--shadow-lg);
+    color: var(--color-9);
+}
+
+.MdrModalHeader {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--color-2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h3 {
+        margin: 0;
+        font-size: 18px;
+    }
+}
+
+.MdrModalBody {
+    padding: var(--spacing-md);
+    font-size: 14px;
+    color: var(--color-7);
+}
+
+.MdrModalFooter {
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--color-2);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+}
+
+.MdrModalClose {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 20px;
+    color: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.MdrModal.Small {
+    width: 360px;
+}
+
+.MdrModal.Large {
+    width: 720px;
+}
+
+[data-theme="dark"] {
+    .MdrModal {
+        background-color: var(--color-10);
+        color: var(--color-0);
+    }
+
+    .MdrModalHeader,
+    .MdrModalFooter {
+        border-color: var(--color-8);
+    }
+
+    .MdrModalBody {
+        color: var(--color-5);
+    }
+}

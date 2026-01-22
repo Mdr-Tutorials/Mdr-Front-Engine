@@ -1,0 +1,75 @@
+.MdrDrawerOverlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+}
+
+.MdrDrawer {
+    position: absolute;
+    background-color: var(--color-0);
+    color: var(--color-9);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+}
+
+.MdrDrawer.Right {
+    top: 0;
+    right: 0;
+    height: 100%;
+}
+
+.MdrDrawer.Left {
+    top: 0;
+    left: 0;
+    height: 100%;
+}
+
+.MdrDrawer.Top {
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+.MdrDrawer.Bottom {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+
+.MdrDrawerHeader {
+    padding: var(--spacing-md);
+    font-weight: 600;
+    border-bottom: 1px solid var(--color-2);
+}
+
+.MdrDrawerBody {
+    padding: var(--spacing-md);
+    flex: 1;
+    color: var(--color-7);
+}
+
+.MdrDrawerFooter {
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--color-2);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+}
+
+[data-theme="dark"] {
+    .MdrDrawer {
+        background-color: var(--color-10);
+        color: var(--color-0);
+    }
+
+    .MdrDrawerHeader,
+    .MdrDrawerFooter {
+        border-color: var(--color-8);
+    }
+
+    .MdrDrawerBody {
+        color: var(--color-5);
+    }
+}

@@ -1,0 +1,55 @@
+.MdrField {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    width: 100%;
+}
+
+.MdrFieldHeader {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.MdrFieldLabel {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-8);
+}
+
+.MdrFieldRequired {
+    color: var(--color-danger);
+}
+
+.MdrFieldDescription {
+    font-size: 12px;
+    color: var(--color-6);
+}
+
+.MdrFieldMessage {
+    font-size: 12px;
+    color: var(--color-6);
+}
+
+.MdrFieldMessage.Error {
+    color: var(--color-danger);
+}
+
+.MdrFieldMessage.Warning {
+    color: var(--color-warning);
+}
+
+.MdrFieldMessage.Success {
+    color: var(--color-success);
+}
+
+[data-theme="dark"] {
+    .MdrFieldLabel {
+        color: var(--color-2);
+    }
+
+    .MdrFieldDescription,
+    .MdrFieldMessage {
+        color: var(--color-5);
+    }
+}

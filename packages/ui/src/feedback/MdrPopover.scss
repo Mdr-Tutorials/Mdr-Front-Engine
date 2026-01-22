@@ -1,0 +1,44 @@
+.MdrPopover {
+    position: relative;
+    display: inline-flex;
+}
+
+.MdrPopoverPanel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 6px;
+    background-color: var(--color-0);
+    border: 1px solid var(--color-3);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm);
+    min-width: 160px;
+    box-shadow: var(--shadow-md);
+    z-index: 20;
+}
+
+.MdrPopoverTitle {
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--color-8);
+}
+
+.MdrPopoverContent {
+    font-size: 13px;
+    color: var(--color-6);
+}
+
+[data-theme="dark"] {
+    .MdrPopoverPanel {
+        background-color: var(--color-10);
+        border-color: var(--color-7);
+    }
+
+    .MdrPopoverTitle {
+        color: var(--color-2);
+    }
+
+    .MdrPopoverContent {
+        color: var(--color-5);
+    }
+}

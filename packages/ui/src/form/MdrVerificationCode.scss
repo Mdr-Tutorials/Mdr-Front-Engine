@@ -1,0 +1,79 @@
+@import './MdrField.scss';
+
+.MdrVerificationCode {
+    width: 100%;
+}
+
+.MdrVerificationCodeInputs {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.MdrVerificationCodeItem {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.MdrVerificationCodeInput {
+    width: 44px;
+    height: 44px;
+    text-align: center;
+    border: 1px solid var(--color-6);
+    border-radius: var(--radius-md);
+    font-size: 18px;
+    background-color: var(--color-0);
+    color: var(--color-10);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+
+    &:focus {
+        outline: none;
+        border-color: var(--color-9);
+        box-shadow: 0 0 0 3px rgba(var(--color-9-rgb, 0, 0, 0), 0.08);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: var(--color-2);
+    }
+}
+
+.MdrVerificationCodeSeparator {
+    color: var(--color-5);
+    font-size: 14px;
+}
+
+.MdrVerificationCode.Small .MdrVerificationCodeInput {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+}
+
+.MdrVerificationCode.Large .MdrVerificationCodeInput {
+    width: 52px;
+    height: 52px;
+    font-size: 20px;
+}
+
+.MdrVerificationCode.Error .MdrVerificationCodeInput {
+    border-color: var(--color-danger);
+}
+
+.MdrVerificationCode.Warning .MdrVerificationCodeInput {
+    border-color: var(--color-warning);
+}
+
+.MdrVerificationCode.Success .MdrVerificationCodeInput {
+    border-color: var(--color-success);
+}
+
+[data-theme="dark"] {
+    .MdrVerificationCodeInput {
+        background-color: var(--color-10);
+        color: var(--color-0);
+        border-color: var(--color-5);
+    }
+}

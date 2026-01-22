@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from "react"
 import { Plus } from "lucide-react"
 import { MdrButton } from "@mdr/ui"
-import EditorBar from "./EditorBar/EditorBar"
 import "./EditorHome.scss"
 import { TIPS } from "./tips"
+import NewProjectModal from "./features/newfile/NewProjectModal"
+import NewComponentModal from "./features/newfile/NewComponentModal"
+import NewNodeGraphModal from "./features/newfile/NewNodeGraphModal"
 
 function EditorTipsRandom() {
     const tipsCount = TIPS.length;
@@ -67,14 +69,12 @@ function EditorTipsRandom() {
 
 
 function EditorHome() {
-    const handleNewProject = useCallback(() => {
-        console.info("Start new project flow")
-    }, [])
+    const [isProjectModalOpen, setProjectModalOpen] = useState(false)
+    const [isComponentModalOpen, setComponentModalOpen] = useState(false)
+    const [isNodeGraphModalOpen, setNodeGraphModalOpen] = useState(false)
 
     return (
         <div className="EditorHome">
-            <EditorBar state={0} />
-
             <section className="EditorHomeMainCentered">
                 <header className="EditorHomeHeaderCentered">
                     <h1 className="EditorHomeTitle">欢迎来到 MdrFrontEngine</h1>
@@ -87,7 +87,7 @@ function EditorHome() {
                         size="Big"
                         icon={<Plus size={165} />}   // 巨大图标
                         className="EditorHomeNewProjectHugeButton"
-                        onClick={handleNewProject}
+                        onClick={() => setProjectModalOpen(true)}
                     />
                     <MdrButton
                         text="新建独立组件"
@@ -95,7 +95,7 @@ function EditorHome() {
                         size="Big"
                         icon={<Plus size={165} />}   // 巨大图标
                         className="EditorHomeNewProjectHugeButton"
-                        onClick={handleNewProject}
+                        onClick={() => setComponentModalOpen(true)}
                     />
                     <MdrButton
                         text="新建独立节点图"
@@ -103,7 +103,7 @@ function EditorHome() {
                         size="Big"
                         icon={<Plus size={165} />}   // 巨大图标
                         className="EditorHomeNewProjectHugeButton"
-                        onClick={handleNewProject}
+                        onClick={() => setNodeGraphModalOpen(true)}
                     />
                     <MdrButton
                         text="新建项目"
@@ -111,13 +111,15 @@ function EditorHome() {
                         size="Big"
                         icon={<Plus size={165} />}   // 巨大图标
                         className="EditorHomeNewProjectHugeButton"
-                        onClick={handleNewProject}
                     />
                 </div>
 
                 <EditorTipsRandom />
             </section>
 
+            <NewProjectModal open={isProjectModalOpen} onClose={() => setProjectModalOpen(false)} />
+            <NewComponentModal open={isComponentModalOpen} onClose={() => setComponentModalOpen(false)} />
+            <NewNodeGraphModal open={isNodeGraphModalOpen} onClose={() => setNodeGraphModalOpen(false)} />
         </div>
     )
 

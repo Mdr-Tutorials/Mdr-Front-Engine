@@ -1,10 +1,15 @@
 import { Outlet } from "react-router"
-import './Editor.scss';
+import EditorBar from "./EditorBar/EditorBar"
+import "./Editor.scss";
 
 function Editor() {
     return (
         <div className="Editor">
-            <Outlet /></div>
+            <EditorBar />
+            <div className="EditorContent">
+                <Outlet />
+            </div>
+        </div>
     )
 }
 

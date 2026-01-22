@@ -1,0 +1,40 @@
+.MdrPagination {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.MdrPagination button {
+    border: 1px solid var(--color-3);
+    background-color: var(--color-0);
+    color: var(--color-8);
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 13px;
+
+    &.Active {
+        background-color: var(--color-9);
+        color: var(--color-0);
+        border-color: var(--color-9);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+[data-theme="dark"] {
+    .MdrPagination button {
+        background-color: var(--color-10);
+        color: var(--color-2);
+        border-color: var(--color-7);
+
+        &.Active {
+            background-color: var(--color-2);
+            color: var(--color-10);
+            border-color: var(--color-2);
+        }
+    }
+}

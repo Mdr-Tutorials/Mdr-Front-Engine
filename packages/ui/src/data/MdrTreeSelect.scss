@@ -1,0 +1,39 @@
+@import '../form/MdrField.scss';
+
+.MdrTreeSelect {
+    width: 100%;
+}
+
+.MdrTreeSelectControl {
+    width: 100%;
+    border: 1px solid var(--color-6);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 15px;
+    background-color: var(--color-0);
+    color: var(--color-10);
+
+    &:focus {
+        outline: none;
+        border-color: var(--color-9);
+        box-shadow: 0 0 0 3px rgba(var(--color-9-rgb, 0, 0, 0), 0.08);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: var(--color-2);
+    }
+}
+
+.MdrTreeSelect.Disabled {
+    opacity: 0.6;
+}
+
+[data-theme="dark"] {
+    .MdrTreeSelectControl {
+        background-color: var(--color-10);
+        color: var(--color-0);
+        border-color: var(--color-5);
+    }
+}
