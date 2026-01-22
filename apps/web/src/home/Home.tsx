@@ -1,8 +1,31 @@
 import { IconMdr } from '../components/icons/IconMdr';
 import { MdrButtonLink, MdrNav } from '@mdr/ui';
 import './Home.scss'
+import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
+import { testDoc } from '@/mock/pagaData';
+import { ExportModal } from '@/editor/features/export/ExportModal';
+import { Download, Footprints } from 'lucide-react';
+import { useEditorStore } from '@/editor/store/useEditorStore';
+import { generateReactCode } from '@/mir/generator/mirToReact';
 
 function Home() {
+    const globalState = {
+        buttonText: "张三 (来自 Logic State)",
+    };
+
+    const globalParams = {
+        themeColor: "#ff0000"
+    };
+    const { setGeneratedCode, setExportModalOpen } = useEditorStore();
+
+    const handleQuickExport = () => {
+        // 1. 生成代码（默认生成 React，弹窗内可以再切换）
+        const code = generateReactCode(testDoc);
+        // 2. 存入 Store
+        setGeneratedCode(code);
+        // 3. 打开弹窗
+        setExportModalOpen(true);
+    };
     return (
         <div className="home">
             <MdrNav className='nav'>
@@ -27,7 +50,36 @@ function Home() {
                     <MdrButtonLink text="进入编辑器" size='Big' category='Primary' to={"/editor"} />
                     <MdrButtonLink text="查看文档" size='Big' category='Secondary' to={"http://localhost:5174"} />
                 </div>
+
+                <section className="divider">
+                    <h2>测试 MIR 渲染器</h2>
+
+                    <MIRRenderer
+                        node={testDoc.ui.root}
+                        mirDoc={testDoc}
+                    />
+                    <button
+                        onClick={handleQuickExport}
+                        className="export-button"
+                    >
+                        <Download size={16} />
+                        <span>导出组件代码</span>
+                    </button>
+                </section>
             </div>
+
+            <ExportModal />
+
+            <footer className='footer'>
+                <div className="footer-left">
+                    <IconMdr size={16} color="black" />
+                    <span>MdrFrontEngine © 2026</span>
+                </div>
+                <div className="footer-right">
+                    <Footprints size={16} />
+                    <span>临时占位 footer</span>
+                </div>
+            </footer>
         </div>
     );
 

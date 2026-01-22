@@ -1,0 +1,94 @@
+// src/editor/features/export/ExportModal.scss
+
+.export-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999; // 确保在最前面
+}
+
+.export-modal-container {
+    background-color: #1e1e1e;
+    width: 85vw;
+    height: 80vh;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    border: 1px solid #333;
+    overflow: hidden;
+    color: #fff;
+}
+
+.export-modal-header {
+    padding: 16px 24px;
+    background-color: #252526;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h2 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #ccc;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: #888;
+        cursor: pointer;
+        font-size: 20px;
+
+        &:hover {
+            color: #fff;
+        }
+    }
+}
+
+.export-modal-tabs {
+    background-color: #2d2d2d;
+    display: flex;
+    padding: 0 10px;
+
+    .tab-item {
+        padding: 10px 20px;
+        background: none;
+        border: none;
+        color: #aaa;
+        cursor: pointer;
+        font-size: 13px;
+        border-bottom: 2px solid transparent;
+
+        &.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+            background-color: #1e1e1e;
+        }
+    }
+}
+
+.export-modal-content {
+    flex: 1;
+    padding: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.code-footer {
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #666;
+}
