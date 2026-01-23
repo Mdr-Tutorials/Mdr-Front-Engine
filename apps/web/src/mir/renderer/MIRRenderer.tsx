@@ -1,9 +1,8 @@
-import React, { useMemo } from 'react';
-import { type ComponentNode, type MIRDocument } from '@/core/types/engine.types'; // 假设你的类型定义在此
+﻿import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { type ComponentNode, type MIRDocument } from '@/core/types/engine.types';
 
 const VOID_ELEMENTS = ['input', 'img', 'br', 'hr', 'meta', 'link'];
 
-// --- 1. 物理组件映射 ---
 const ComponentMap: Record<string, React.FC<any>> = {
     container: ({ children, ...props }) => <div {...props}>{children}</div>,
     text: ({ text, children, ...props }) => <span {...props}>{text || children}</span>,
@@ -11,111 +10,213 @@ const ComponentMap: Record<string, React.FC<any>> = {
     input: (props) => <input {...props} />,
 };
 
-// --- 2. 增强型值解析引擎 ---
-const resolveValue = (
-    value: any,
-    context: { state: any; params: any }
-) => {
+type RenderState = Record<string, any>;
+type RenderParams = Record<string, any>;
+
+type ActionContext = {
+    state: RenderState;
+    setState: React.Dispatch<React.SetStateAction<RenderState>>;
+    params: RenderParams;
+    event?: React.SyntheticEvent;
+};
+
+type ActionHandlers = Record<string, (context: ActionContext) => void>;
+
+type RenderContext = {
+    state: RenderState;
+    params: RenderParams;
+    dispatchAction: (actionName?: string, event?: React.SyntheticEvent) => void;
+};
+
+const resolveValue = (value: any, state: RenderState, params: RenderParams) => {
     if (typeof value !== 'object' || value === null) return value;
 
-    // 处理 $state 引用
     if ('$state' in value) {
-        return context.state[value.$state];
+        return state[value.$state];
     }
 
-    // 处理 $param 引用 (即 logic.props)
     if ('$param' in value) {
-        return context.params[value.$param];
+        return params[value.$param];
     }
 
     return value;
 };
 
-// --- 3. 渲染器主组件 ---
+const buildInitialState = (logicState?: Record<string, { initial: any }>) => {
+    const result: RenderState = {};
+    if (!logicState) return result;
+    Object.entries(logicState).forEach(([key, value]) => {
+        result[key] = value.initial;
+    });
+    return result;
+};
+
+const pickIncrementTarget = (state: RenderState) => {
+    if (typeof state.count === 'number') return 'count';
+    const numericKey = Object.keys(state).find((key) => typeof state[key] === 'number');
+    return numericKey || null;
+};
+
+const toReactEventName = (trigger: string) => {
+    const normalized = trigger.toLowerCase();
+    if (normalized === 'click') return 'onClick';
+    if (normalized === 'change') return 'onChange';
+    if (normalized === 'input') return 'onInput';
+    if (normalized === 'submit') return 'onSubmit';
+    if (normalized === 'focus') return 'onFocus';
+    if (normalized === 'blur') return 'onBlur';
+    return `on${trigger.charAt(0).toUpperCase()}${trigger.slice(1)}`;
+};
+
+const mergeHandlers = (first: any, second: any) => {
+    if (typeof first === 'function' && typeof second === 'function') {
+        return (event: any) => {
+            first(event);
+            second(event);
+        };
+    }
+    return typeof second === 'function' ? second : first;
+};
+
 interface MIRRendererProps {
     node: ComponentNode;
-    mirDoc: MIRDocument;   // 传入整个文档以获取 logic.props 定义
-    overrides?: Record<string, any>; // 可选：从外部（如预览面板）手动修改的属性值
+    mirDoc: MIRDocument;
+    overrides?: Record<string, any>;
+    actions?: ActionHandlers;
 }
 
-export const MIRRenderer: React.FC<MIRRendererProps> = ({ node, mirDoc, overrides = {} }) => {
-
-    // 1. 计算当前生效的 Params (优先级：外部覆盖 > Schema默认值)
-    const effectiveParams = useMemo(() => {
-        const result: Record<string, any> = {};
-        const propsDef = mirDoc.logic?.props || {};
-
-        Object.keys(propsDef).forEach(key => {
-            // 优先级：overrides 传入值 > logic.props 的 default 值
-            result[key] = overrides[key] !== undefined
-                ? overrides[key]
-                : propsDef[key].default;
-        });
-        return result;
-    }, [mirDoc.logic?.props, overrides]);
-
-    // 2. 模拟组件内部状态 (这里可以接入 Zustand 或本地 useState)
-    const state = useMemo(() => {
-        const result: Record<string, any> = {};
-        Object.entries(mirDoc.logic?.state || {}).forEach(([k, v]) => {
-            result[k] = v.initial;
-        });
-        return result;
-    }, [mirDoc.logic?.state]);
-
-    const context = { state, params: effectiveParams };
-
-    // 3. 解析属性
+const MIRNode: React.FC<{ node: ComponentNode; context: RenderContext }> = ({ node, context }) => {
     const resolvedProps = useMemo(() => {
-        const p: any = {};
+        const p: Record<string, any> = {};
         if (node.props) {
             Object.entries(node.props).forEach(([key, val]) => {
-                p[key] = resolveValue(val, context);
+                p[key] = resolveValue(val, context.state, context.params);
             });
         }
         return p;
-    }, [node.props, context]);
+    }, [node.props, context.state, context.params]);
 
-    // 4. 解析样式
     const resolvedStyle = useMemo(() => {
-        const s: any = {};
+        const s: Record<string, any> = {};
         if (node.style) {
             Object.entries(node.style).forEach(([key, val]) => {
-                s[key] = resolveValue(val, context);
+                s[key] = resolveValue(val, context.state, context.params);
             });
         }
         return s;
-    }, [node.style, context]);
+    }, [node.style, context.state, context.params]);
 
-    // 5. 解析文本内容
-    const resolvedText = useMemo(() => resolveValue(node.text, context), [node.text, context]);
+    const resolvedText = useMemo(
+        () => resolveValue(node.text, context.state, context.params),
+        [node.text, context.state, context.params]
+    );
 
-    // 6. 渲染
-    const Component = ComponentMap[node.type] || (({ children }) => <div>{children}</div>);
+    const eventProps = useMemo(() => {
+        const handlers: Record<string, any> = {};
+        if (!node.events) return handlers;
+        Object.entries(node.events).forEach(([eventKey, eventDef]) => {
+            const trigger = eventDef.trigger || eventKey;
+            const reactEventName = toReactEventName(trigger);
+            if (!reactEventName) return;
+            const handler = (event: React.SyntheticEvent) => {
+                context.dispatchAction(eventDef.action, event);
+            };
+            handlers[reactEventName] = mergeHandlers(handlers[reactEventName], handler);
+        });
+        return handlers;
+    }, [node.events, context.dispatchAction]);
+
+    const mergedProps = useMemo(() => {
+        const combined = { ...resolvedProps } as Record<string, any>;
+        Object.entries(eventProps).forEach(([key, handler]) => {
+            combined[key] = mergeHandlers(combined[key], handler);
+        });
+        return combined;
+    }, [resolvedProps, eventProps]);
+
+    const Component = ComponentMap[node.type] || (({ children }: any) => <div>{children}</div>);
     const isVoidElement = VOID_ELEMENTS.includes(node.type.toLowerCase());
 
-    // 2. 如果是自闭合标签，不传递 children
     if (isVoidElement) {
         return (
             <Component
-                {...resolvedProps}
+                {...mergedProps}
                 style={resolvedStyle}
-                // 注意：input 的文字应该通过 value 属性传递，而不是作为 children
                 {...(node.type === 'input' ? { defaultValue: resolvedText } : {})}
             />
         );
     }
+
     return (
-        <Component {...resolvedProps} style={resolvedStyle}>
+        <Component {...mergedProps} style={resolvedStyle}>
             {resolvedText}
-            {node.children?.map(child => (
-                <MIRRenderer
-                    key={child.id}
-                    node={child}
-                    mirDoc={mirDoc}
-                    overrides={overrides}
-                />
+            {node.children?.map((child) => (
+                <MIRNode key={child.id} node={child} context={context} />
             ))}
         </Component>
     );
+};
+
+export const MIRRenderer: React.FC<MIRRendererProps> = ({
+    node,
+    mirDoc,
+    overrides = {},
+    actions = {}
+}) => {
+    const effectiveParams = useMemo(() => {
+        const result: RenderParams = {};
+        const propsDef = mirDoc.logic?.props || {};
+
+        Object.keys(propsDef).forEach((key) => {
+            result[key] = overrides[key] !== undefined ? overrides[key] : propsDef[key].default;
+        });
+        Object.keys(overrides).forEach((key) => {
+            if (!(key in result)) {
+                result[key] = overrides[key];
+            }
+        });
+        return result;
+    }, [mirDoc.logic?.props, overrides]);
+
+    const initialState = useMemo(() => buildInitialState(mirDoc.logic?.state), [mirDoc.logic?.state]);
+    const [state, setState] = useState<RenderState>(initialState);
+
+    useEffect(() => {
+        setState(initialState);
+    }, [initialState]);
+
+    const dispatchAction = useCallback(
+        (actionName?: string, event?: React.SyntheticEvent) => {
+            if (!actionName) return;
+
+            const customAction = actions[actionName];
+            if (typeof customAction === 'function') {
+                customAction({ state, setState, params: effectiveParams, event });
+                return;
+            }
+
+            const paramAction = effectiveParams[actionName];
+            if (typeof paramAction === 'function') {
+                paramAction(event);
+                return;
+            }
+
+            if (actionName === 'increment') {
+                setState((prev) => {
+                    const targetKey = pickIncrementTarget(prev);
+                    if (!targetKey) return prev;
+                    const nextValue = (Number(prev[targetKey]) || 0) + 1;
+                    return { ...prev, [targetKey]: nextValue };
+                });
+            }
+        },
+        [actions, effectiveParams, state]
+    );
+
+    const context = useMemo(
+        () => ({ state, params: effectiveParams, dispatchAction }),
+        [state, effectiveParams, dispatchAction]
+    );
+
+    return <MIRNode node={node} context={context} />;
 };

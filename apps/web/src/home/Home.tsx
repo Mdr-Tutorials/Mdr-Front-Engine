@@ -1,5 +1,6 @@
-import { IconMdr } from '../components/icons/IconMdr';
+﻿import { IconMdr } from '../components/icons/IconMdr';
 import { MdrButtonLink, MdrNav } from '@mdr/ui';
+import { useState } from 'react';
 import './Home.scss'
 import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
 import { testDoc } from '@/mock/pagaData';
@@ -9,14 +10,9 @@ import { useEditorStore } from '@/editor/store/useEditorStore';
 import { generateReactCode } from '@/mir/generator/mirToReact';
 
 function Home() {
-    const globalState = {
-        buttonText: "张三 (来自 Logic State)",
-    };
-
-    const globalParams = {
-        themeColor: "#ff0000"
-    };
+    const [count, setCount] = useState(0);
     const { setGeneratedCode, setExportModalOpen } = useEditorStore();
+    const handleIncrement = () => setCount((prev) => prev + 1);
 
     const handleQuickExport = () => {
         // 1. 生成代码（默认生成 React，弹窗内可以再切换）
@@ -26,6 +22,7 @@ function Home() {
         // 3. 打开弹窗
         setExportModalOpen(true);
     };
+
     return (
         <div className="home">
             <MdrNav className='nav'>
@@ -33,17 +30,21 @@ function Home() {
                     <IconMdr size={30} color="black" />
                     <MdrNav.Heading heading="MdrFrontEngine" />
                 </MdrNav.Left>
-                <MdrNav.Right><p>社区</p><p>教程</p><p>文档</p></MdrNav.Right>
+                <MdrNav.Right>
+                    <p>社区</p>
+                    <p>教程</p>
+                    <p>文档</p>
+                </MdrNav.Right>
             </MdrNav>
             <div className="content">
                 <div className="titles">
                     <h1 className="">
-                        不仅是<span>前端可视化开发平台</span>
+                        不仅是 <span>前端可视化开发平台</span>
                     </h1>
                     <h1 className="">
                         还是 <span>UI/UX 设计语言</span>
                     </h1>
-                    <h1>更是<span>从设计到部署的全流程解决方案</span></h1>
+                    <h1>更是 <span>从设计到部署的全流程解决方案</span></h1>
                 </div>
                 <h2>- 结合蓝图、节点图和代码；打通设计、开发、测试、构建和部署；跨领域开发前端、快速开发 MVP 和学习前端的优质选择。</h2>
                 <div className="button-bar">
@@ -57,6 +58,10 @@ function Home() {
                     <MIRRenderer
                         node={testDoc.ui.root}
                         mirDoc={testDoc}
+                        overrides={{
+                            count,
+                            onAction: handleIncrement
+                        }}
                     />
                     <button
                         onClick={handleQuickExport}
@@ -82,6 +87,6 @@ function Home() {
             </footer>
         </div>
     );
-
 }
-export default Home
+
+export default Home;

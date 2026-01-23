@@ -1,4 +1,4 @@
-import { type MIRDocument } from "../core/types/engine.types";
+﻿import { type MIRDocument } from "../core/types/engine.types";
 
 export const testDoc: MIRDocument = {
     version: "1.0",
@@ -26,7 +26,8 @@ export const testDoc: MIRDocument = {
                         display: "block",
                         marginBottom: "20px"
                     }
-                }, {
+                },
+                {
                     id: "countDisplay",
                     type: "div",
                     children: [
@@ -39,18 +40,19 @@ export const testDoc: MIRDocument = {
                         {
                             id: "countValue",
                             type: "text",
-                            text: { "$state": "count" }, // 测试状态绑定
-                        }],
+                            text: { "$param": "count" }
+                        }
+                    ]
                 },
                 {
                     id: "btn",
                     type: "button",
-                    text: { "$param": "buttonText" }, // 测试状态绑定
+                    text: { "$param": "buttonText" },
                     props: { className: "my-button" },
                     events: {
-                        "click": {
-                            "trigger": "click",
-                            "action": "increment", // 自定义动作名
+                        click: {
+                            trigger: "click",
+                            action: "onAction"
                         }
                     },
                     style: {
@@ -63,7 +65,7 @@ export const testDoc: MIRDocument = {
                     type: "input",
                     props: {
                         placeholder: "搜索项目...",
-                        maxLength: 20,
+                        maxLength: 20
                     }
                 }
             ]
@@ -72,10 +74,8 @@ export const testDoc: MIRDocument = {
     logic: {
         props: {
             buttonText: { type: "string", default: "Click Me" },
+            count: { type: "number", default: 0 },
             onAction: { type: "() => void" }
-        },
-        state: {
-            count: { initial: 0 }
         }
     }
 };
