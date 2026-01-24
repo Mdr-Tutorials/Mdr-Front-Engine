@@ -154,8 +154,13 @@
 .BlueprintEditorComponentList {
   padding: 10px 12px 12px;
   display: grid;
-  gap: 12px;
+  gap: 16px;
   overflow: auto;
+}
+
+.ComponentGroup {
+  display: grid;
+  gap: 10px;
 }
 
 .ComponentGroupHeader {
@@ -186,17 +191,206 @@
 }
 
 .ComponentGroupItems {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  grid-auto-flow: dense;
+}
+
+.ComponentPreview {
+  display: grid;
   gap: 6px;
 }
 
-.ComponentChip {
-  font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 999px;
+.ComponentPreview.Wide {
+  grid-column: 1 / -1;
+}
+
+.ComponentPreview.Wide .ComponentPreviewCard {
+  width: 100%;
+}
+
+.ComponentPreview.Expanded {
+  grid-column: 1 / -1;
+}
+
+.ComponentPreviewCard {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  padding: 6px 6px 18px;
+  min-height: 94px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.ComponentPreviewCard.HasVariants {
+  cursor: pointer;
+}
+
+.ComponentPreviewCard.HasVariants:hover {
+  border-color: rgba(0, 0, 0, 0.08);
   background: var(--color-1);
-  color: var(--color-8);
+}
+
+.ComponentPreviewSurface {
+  height: 60px;
+  min-width: 80px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.ComponentPreviewSurface.Wide {
+  width: 100%;
+}
+
+.ComponentPreviewSurface.Small {
+  height: 48px;
+}
+
+.ComponentPreviewInner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.ComponentPreviewExpand {
+  position: absolute;
+  right: 8px;
+  bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--color-7);
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.ComponentPreviewExpand svg {
+  transition: transform var(--transition-fast);
+}
+
+.ComponentPreviewExpand.Open svg {
+  transform: rotate(180deg);
+}
+
+.ComponentPreviewLabel {
+  font-size: 10px;
+  color: var(--color-7);
+  text-align: center;
+}
+
+.ComponentPreviewMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.ComponentPreviewSizes {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.ComponentPreviewSize {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: transparent;
+  color: var(--color-7);
+  font-size: 9px;
+  padding: 0 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  line-height: 14px;
+}
+
+.ComponentPreviewSize.Active {
+  border-color: rgba(0, 0, 0, 0.18);
+  background: var(--color-1);
+  color: var(--color-9);
+}
+
+.ComponentPreviewStatus {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.ComponentPreviewStatusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ComponentPreviewStatusDot.Active {
+  background: rgba(0, 0, 0, 0.6);
+  border-color: rgba(0, 0, 0, 0.6);
+}
+
+.ComponentPreviewVariants {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: var(--color-1);
+}
+
+.ComponentPreviewVariants.Wide {
+  grid-template-columns: 1fr;
+}
+
+.ComponentVariantCard {
+  display: grid;
+  gap: 4px;
+  text-align: center;
+}
+
+.ComponentVariantCard.Wide {
+  grid-column: 1 / -1;
+}
+
+.ComponentVariantLabel {
+  font-size: 9px;
+  color: var(--color-6);
+}
+
+.ComponentPreviewSurface .MdrModalOverlay,
+.ComponentPreviewSurface .MdrDrawerOverlay {
+  position: absolute;
+  inset: 4px;
+  z-index: 0;
+  border-radius: 6px;
+}
+
+.ComponentPreviewSurface .MdrModal {
+  width: 140px;
+  max-width: 100%;
+}
+
+.ComponentPreviewSurface .MdrDrawer {
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .BlueprintEditorCanvas {
@@ -415,12 +609,56 @@
     border-bottom-color: rgba(255, 255, 255, 0.08);
   }
 
-  .ComponentChip {
-    background: var(--color-9);
+  .ComponentGroupIcon {
+    color: var(--color-4);
+  }
+
+  .ComponentPreviewCard.HasVariants:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .ComponentPreviewSurface {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .ComponentPreviewExpand {
+    border-color: rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.08);
     color: var(--color-3);
   }
 
-  .ComponentGroupIcon {
+  .ComponentPreviewLabel {
+    color: var(--color-4);
+  }
+
+  .ComponentPreviewSize {
+    border-color: rgba(255, 255, 255, 0.18);
+    color: var(--color-4);
+  }
+
+  .ComponentPreviewSize.Active {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--color-0);
+  }
+
+  .ComponentPreviewStatusDot {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .ComponentPreviewStatusDot.Active {
+    background: rgba(255, 255, 255, 0.65);
+    border-color: rgba(255, 255, 255, 0.65);
+  }
+
+  .ComponentPreviewVariants {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .ComponentVariantLabel {
     color: var(--color-4);
   }
 
