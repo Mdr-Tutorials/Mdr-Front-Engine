@@ -1,3 +1,4 @@
+﻿import { useTranslation } from "react-i18next"
 import { MdrInput, MdrPopover } from "@mdr/ui"
 import { ChevronDown } from "lucide-react"
 import { VIEWPORT_DEVICE_PRESETS, VIEWPORT_QUICK_PRESETS } from "./BlueprintEditor.data"
@@ -15,10 +16,12 @@ export function BlueprintEditorViewportBar({
   onViewportWidthChange,
   onViewportHeightChange,
 }: BlueprintEditorViewportBarProps) {
+  const { t } = useTranslation('blueprint')
+
   return (
     <section className="BlueprintEditorViewportBar">
       <div className="ViewportControls">
-        <div className="ViewportLabel">视口</div>
+        <div className="ViewportLabel">{t('viewport.label')}</div>
         <div className="ViewportInputs">
           <MdrInput size="Small" value={viewportWidth} onChange={onViewportWidthChange} />
           <span>×</span>
@@ -26,7 +29,9 @@ export function BlueprintEditorViewportBar({
         </div>
       </div>
       <div className="ViewportQuickPresets">
-        {VIEWPORT_QUICK_PRESETS.map((preset) => (
+        {VIEWPORT_QUICK_PRESETS.map((preset) => {
+          const presetLabel = t(preset.labelKey, { defaultValue: `${preset.width}×${preset.height}` })
+          return (
           <button
             key={preset.id}
             className="ViewportQuickPreset"
@@ -35,9 +40,10 @@ export function BlueprintEditorViewportBar({
               onViewportHeightChange(preset.height)
             }}
           >
-            {preset.label}
+            {presetLabel}
           </button>
-        ))}
+          )
+        })}
       </div>
       <MdrPopover
         className="ViewportDevicePopover"
@@ -45,6 +51,9 @@ export function BlueprintEditorViewportBar({
           <div className="ViewportDeviceList">
             {VIEWPORT_DEVICE_PRESETS.map((preset) => {
               const Icon = preset.icon
+              const deviceName = t(preset.nameKey, { defaultValue: preset.id })
+              const deviceKind = t(preset.kindKey, { defaultValue: preset.kind })
+              const sizeLabel = t('viewport.size', { width: preset.width, height: preset.height })
               return (
                 <button
                   key={preset.id}
@@ -53,17 +62,17 @@ export function BlueprintEditorViewportBar({
                     onViewportWidthChange(preset.width)
                     onViewportHeightChange(preset.height)
                   }}
-                  aria-label={`${preset.name} ${preset.width}×${preset.height}`}
+                  aria-label={`${deviceName} ${sizeLabel}`}
                 >
                   <span className={`ViewportPresetIcon ${preset.kind}`}>
                     <Icon size={18} />
                   </span>
                   <span className="ViewportPresetMeta">
-                    <span className="ViewportPresetName">{preset.name}</span>
-                    <span className="ViewportPresetType">{preset.kindLabel}</span>
+                    <span className="ViewportPresetName">{deviceName}</span>
+                    <span className="ViewportPresetType">{deviceKind}</span>
                   </span>
                   <span className="ViewportPresetSize">
-                    {preset.width}×{preset.height}
+                    {sizeLabel}
                   </span>
                 </button>
               )
@@ -72,7 +81,7 @@ export function BlueprintEditorViewportBar({
         }
       >
         <button type="button" className="ViewportMoreButton">
-          更多设备
+          {t('viewport.moreDevices')}
           <ChevronDown size={12} />
         </button>
       </MdrPopover>

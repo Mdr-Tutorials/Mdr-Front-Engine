@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import type { TFunction } from "i18next"
 import {
   MdrAnchorNavigation,
   MdrAudio,
@@ -94,25 +95,25 @@ export const DEFAULT_ROUTES: RouteItem[] = [
 ]
 
 export const VIEWPORT_QUICK_PRESETS: QuickViewportPreset[] = [
-  { id: "quick-desktop", label: "1440×900", width: "1440", height: "900" },
-  { id: "quick-hd", label: "1280×720", width: "1280", height: "720" },
-  { id: "quick-ipad", label: "1024×768", width: "1024", height: "768" },
-  { id: "quick-iphone", label: "390×844", width: "390", height: "844" },
-  { id: "quick-se", label: "375×667", width: "375", height: "667" },
+  { id: "quick-desktop", labelKey: "viewport.quickPresets.desktop", width: "1440", height: "900" },
+  { id: "quick-hd", labelKey: "viewport.quickPresets.hd", width: "1280", height: "720" },
+  { id: "quick-ipad", labelKey: "viewport.quickPresets.ipad", width: "1024", height: "768" },
+  { id: "quick-iphone", labelKey: "viewport.quickPresets.iphone", width: "390", height: "844" },
+  { id: "quick-se", labelKey: "viewport.quickPresets.se", width: "375", height: "667" },
 ]
 
 export const VIEWPORT_DEVICE_PRESETS: ViewportPreset[] = [
-  { id: "desktop-fhd", name: "Desktop FHD", kind: "Desktop", kindLabel: "电脑", width: "1920", height: "1080", icon: Monitor },
-  { id: "desktop-hd", name: "Desktop HD", kind: "Desktop", kindLabel: "电脑", width: "1366", height: "768", icon: Monitor },
-  { id: "macbook-air-13", name: "MacBook Air 13\"", kind: "Laptop", kindLabel: "笔记本", width: "1440", height: "900", icon: Laptop },
-  { id: "macbook-pro-14", name: "MacBook Pro 14\"", kind: "Laptop", kindLabel: "笔记本", width: "1512", height: "982", icon: Laptop },
-  { id: "ipad-pro-11", name: "iPad Pro 11\"", kind: "Tablet", kindLabel: "平板", width: "834", height: "1194", icon: Tablet },
-  { id: "ipad-mini", name: "iPad mini", kind: "Tablet", kindLabel: "平板", width: "768", height: "1024", icon: Tablet },
-  { id: "pixel-8", name: "Pixel 8", kind: "Phone", kindLabel: "手机", width: "412", height: "915", icon: Smartphone },
-  { id: "iphone-15-pro", name: "iPhone 15 Pro", kind: "Phone", kindLabel: "手机", width: "393", height: "852", icon: Smartphone },
-  { id: "iphone-13", name: "iPhone 13/14", kind: "Phone", kindLabel: "手机", width: "390", height: "844", icon: Smartphone },
-  { id: "iphone-se", name: "iPhone SE", kind: "Phone", kindLabel: "手机", width: "375", height: "667", icon: Smartphone },
-  { id: "watch-41", name: "Apple Watch 41mm", kind: "Watch", kindLabel: "手表", width: "198", height: "242", icon: Watch },
+  { id: "desktop-fhd", nameKey: "devices.desktopFhd", kind: "Desktop", kindKey: "devices.kinds.desktop", width: "1920", height: "1080", icon: Monitor },
+  { id: "desktop-hd", nameKey: "devices.desktopHd", kind: "Desktop", kindKey: "devices.kinds.desktop", width: "1366", height: "768", icon: Monitor },
+  { id: "macbook-air-13", nameKey: "devices.macbookAir13", kind: "Laptop", kindKey: "devices.kinds.laptop", width: "1440", height: "900", icon: Laptop },
+  { id: "macbook-pro-14", nameKey: "devices.macbookPro14", kind: "Laptop", kindKey: "devices.kinds.laptop", width: "1512", height: "982", icon: Laptop },
+  { id: "ipad-pro-11", nameKey: "devices.ipadPro11", kind: "Tablet", kindKey: "devices.kinds.tablet", width: "834", height: "1194", icon: Tablet },
+  { id: "ipad-mini", nameKey: "devices.ipadMini", kind: "Tablet", kindKey: "devices.kinds.tablet", width: "768", height: "1024", icon: Tablet },
+  { id: "pixel-8", nameKey: "devices.pixel8", kind: "Phone", kindKey: "devices.kinds.phone", width: "412", height: "915", icon: Smartphone },
+  { id: "iphone-15-pro", nameKey: "devices.iphone15Pro", kind: "Phone", kindKey: "devices.kinds.phone", width: "393", height: "852", icon: Smartphone },
+  { id: "iphone-13", nameKey: "devices.iphone13", kind: "Phone", kindKey: "devices.kinds.phone", width: "390", height: "844", icon: Smartphone },
+  { id: "iphone-se", nameKey: "devices.iphoneSe", kind: "Phone", kindKey: "devices.kinds.phone", width: "375", height: "667", icon: Smartphone },
+  { id: "watch-41", nameKey: "devices.watch41", kind: "Watch", kindKey: "devices.kinds.watch", width: "198", height: "242", icon: Watch },
 ]
 
 export const DEFAULT_PREVIEW_SCALE = 0.72
@@ -162,8 +163,10 @@ const TEXT_SIZE_OPTIONS: ComponentPreviewOption[] = [
   { id: "L", label: "L", value: "Large" },
 ]
 
-const WIDE_GROUP_TITLES = new Set(["导航组件", "布局组件", "图表组件"])
+const WIDE_GROUP_IDS = new Set(["navigation", "layout", "chart"])
 const WIDE_COMPONENT_IDS = new Set(["date-range-picker", "steps", "slider", "search", "file-upload", "regex-input", "image-upload", "date-picker", "verification-code", "rich-text-editor", "range"])
+
+const toKey = (value: string) => value.charAt(0).toLowerCase() + value.slice(1)
 
 const createPlaceholderSvg = (label: string, width = 160, height = 120) => {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="100%" height="100%" fill="#eef1f6"/><text x="50%" y="50%" font-family="Arial, sans-serif" font-size="18" fill="#7b8794" dominant-baseline="middle" text-anchor="middle">${label}</text></svg>`
@@ -202,7 +205,7 @@ export const getPreviewScale = (baseScale: number | undefined, isWide: boolean) 
 }
 
 export const isWideComponent = (group: ComponentGroup, item: ComponentPreviewItem) =>
-  WIDE_GROUP_TITLES.has(group.title) || WIDE_COMPONENT_IDS.has(item.id)
+  WIDE_GROUP_IDS.has(group.id) || WIDE_COMPONENT_IDS.has(item.id)
 
 const PLACEHOLDER_IMAGE = createPlaceholderSvg("IMG")
 const PLACEHOLDER_AVATAR = createPlaceholderSvg("AV", 80, 80)

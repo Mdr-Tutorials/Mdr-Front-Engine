@@ -1,4 +1,4 @@
-import i18next, { type i18n, type InitOptions } from "i18next"
+import i18next, { type i18n, type InitOptions, type Module } from "i18next"
 import en from "./resources/en.json"
 import zhCN from "./resources/zh-CN.json"
 
@@ -19,22 +19,25 @@ export type CreateI18nOptions = Omit<
 > & {
   lng?: SupportedLanguage
   fallbackLng?: SupportedLanguage
+  namespaces?: string[]
+  plugins?: Module[]
 }
 
 export const supportedLngs: SupportedLanguage[] = ["en", "zh-CN"]
 
-export const createI18nInstance = async (
-  options: CreateI18nOptions = {},
-): Promise<i18n> => {
+export const createI18nInstance = async (options: CreateI18nOptions = {}): Promise<i18n> => {
   const instance = i18next.createInstance()
+  const { namespaces, plugins, ...initOptions } = options
+  const resolvedNamespaces = [defaultNS, ...(namespaces ?? [])]
+  plugins?.forEach((plugin) => instance.use(plugin))
   await instance.init({
     resources,
     defaultNS,
-    ns: [defaultNS],
+    ns: resolvedNamespaces,
     lng: options.lng ?? "en",
     fallbackLng: options.fallbackLng ?? "en",
     interpolation: { escapeValue: false },
-    ...options,
+    ...initOptions,
   })
   return instance
 }

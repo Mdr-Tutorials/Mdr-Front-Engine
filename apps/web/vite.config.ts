@@ -19,6 +19,7 @@ export default defineConfig({
     'global': 'globalThis',
   },
   resolve: {
+    dedupe: ['react', 'react-dom', 'react-router'],
     alias: {
       '@': resolve(__dirname, './src'),
       '@mdr/shared': resolve(__dirname, '../../packages/shared/src'),

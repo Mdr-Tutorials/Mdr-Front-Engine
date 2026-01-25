@@ -1,5 +1,6 @@
-import { useState } from "react"
+﻿import { useState } from "react"
 import { useNavigate } from "react-router"
+import { useTranslation } from "react-i18next"
 import { MdrButton, MdrInput, MdrTextarea } from "@mdr/ui"
 import "./NewComponentModal.scss"
 
@@ -16,6 +17,7 @@ const createProjectId = () => {
 }
 
 function NewComponentModal({ open, onClose }: NewComponentModalProps) {
+    const { t } = useTranslation('editor')
     const navigate = useNavigate()
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
@@ -34,28 +36,28 @@ function NewComponentModal({ open, onClose }: NewComponentModalProps) {
             <div className="NewComponentModalContainer" onClick={(event) => event.stopPropagation()}>
                 <header className="NewComponentModalHeader">
                     <div>
-                        <h2>新建独立组件</h2>
-                        <p>创建一个可复用组件并进入组件编辑器</p>
+                        <h2>{t('modals.newComponent.title')}</h2>
+                        <p>{t('modals.newComponent.subtitle')}</p>
                     </div>
-                    <button className="NewComponentModalClose" onClick={onClose} aria-label="Close">
+                    <button className="NewComponentModalClose" onClick={onClose} aria-label={t('modals.close')}>
                         ✕
                     </button>
                 </header>
 
                 <div className="NewComponentModalBody">
                     <div className="NewComponentModalField">
-                        <label>组件名称</label>
-                        <MdrInput placeholder="例如：PrimaryButton" value={name} onChange={setName} />
+                        <label>{t('modals.newComponent.nameLabel')}</label>
+                        <MdrInput placeholder={t('modals.newComponent.namePlaceholder')} value={name} onChange={setName} />
                     </div>
                     <div className="NewComponentModalField">
-                        <label>描述</label>
-                        <MdrTextarea placeholder="可选，描述该组件用途" value={description} onChange={setDescription} />
+                        <label>{t('modals.newComponent.descriptionLabel')}</label>
+                        <MdrTextarea placeholder={t('modals.newComponent.descriptionPlaceholder')} value={description} onChange={setDescription} />
                     </div>
                 </div>
 
                 <footer className="NewComponentModalFooter">
-                    <MdrButton text="取消" category="Ghost" onClick={onClose} />
-                    <MdrButton text="创建组件" category="Primary" onClick={handleCreate} />
+                    <MdrButton text={t('modals.actions.cancel')} category="Ghost" onClick={onClose} />
+                    <MdrButton text={t('modals.newComponent.create')} category="Primary" onClick={handleCreate} />
                 </footer>
             </div>
         </div>

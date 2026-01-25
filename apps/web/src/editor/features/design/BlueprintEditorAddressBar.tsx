@@ -1,5 +1,6 @@
-import { MdrButton, MdrInput } from "@mdr/ui"
+﻿import { MdrButton, MdrInput } from "@mdr/ui"
 import { Link2, Plus } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import type { RouteItem } from "./BlueprintEditor.types"
 
 type BlueprintEditorAddressBarProps = {
@@ -19,15 +20,17 @@ export function BlueprintEditorAddressBar({
   onNewPathChange,
   onAddRoute,
 }: BlueprintEditorAddressBarProps) {
+  const { t } = useTranslation('blueprint')
+
   return (
     <section className="BlueprintEditorAddressBar">
       <div className="AddressInlineGroup">
         <span className="AddressLabelInline">
           <Link2 size={14} />
-          当前
+          {t('address.current')}
         </span>
         <MdrInput
-          placeholder="/page/:id?tab=:tab"
+          placeholder={t('address.currentPlaceholder')}
           value={currentPath}
           size="Small"
           className="AddressInput AddressCurrentInput"
@@ -37,24 +40,24 @@ export function BlueprintEditorAddressBar({
       <div className="AddressInlineGroup">
         <span className="AddressLabelInline">
           <Plus size={14} />
-          新建
+          {t('address.new')}
         </span>
         <MdrInput
-          placeholder="/new-route/:slug"
+          placeholder={t('address.newPlaceholder')}
           value={newPath}
           size="Small"
           className="AddressInput AddressNewInput"
           onChange={onNewPathChange}
         />
         <MdrButton
-          text="添加"
+          text={t('address.add')}
           size="Tiny"
           category="Ghost"
           onClick={onAddRoute}
         />
       </div>
       <div className="AddressInlineGroup AddressSelect">
-        <span className="AddressLabelInline">地址列表</span>
+        <span className="AddressLabelInline">{t('address.list')}</span>
         <select
           className="AddressSelectControl"
           value={currentPath}

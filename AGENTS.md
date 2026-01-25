@@ -10,6 +10,7 @@
 ## Agent 架构图
 
 ```
+
 ┌─────────────────────────────────────────────────────────────────┐
 │                        项目协调层                                 │
 │                   (Project Coordinator)                          │
@@ -28,6 +29,7 @@
 │ UI   │  │ MIR│  │Node│  │ Test │
 │Agent │  │Gen │  │Graph│  │Agent │
 └──────┘  └────┘  └────┘  └──────┘
+
 ```
 
 ---
@@ -88,6 +90,7 @@ Coordinator:
 ## 2. Architecture Agent (架构 Agent)
 
 ### 职责
+
 - 系统架构设计与演进
 - 技术选型与评估
 - 性能优化建议
@@ -138,6 +141,7 @@ apps/web/src/editor/features/design/
 ## 3. Task Agent (任务执行 Agent)
 
 ### 职责
+
 - 接收并执行具体编码任务
 - 生成符合规范的代码
 - 编写单元测试
@@ -173,6 +177,7 @@ graph LR
 ## 4. UI Agent (界面开发 Agent)
 
 ### 职责
+
 - React 组件开发
 - @mdr/ui 组件库使用
 - 样式实现 (SCSS)
@@ -238,6 +243,7 @@ CSS 类名:
 ## 5. MIR Generator Agent (MIR 生成 Agent)
 
 ### 职责
+
 - MIR 文档生成与解析
 - AST ↔ MIR 转换
 - 代码生成 (React/Vue/HTML)
@@ -297,6 +303,7 @@ MIR Agent:
 ## 6. Node Graph Agent (节点图 Agent)
 
 ### 职责
+
 - 节点图编辑器开发
 - 自定义节点类型
 - 数据流执行引擎
@@ -346,6 +353,7 @@ export class HttpRequestNode implements MdrNode {
 ## 7. Test Agent (测试 Agent)
 
 ### 职责
+
 - 编写单元测试 (Vitest)
 - 编写 E2E 测试 (Playwright)
 - 测试覆盖率分析
@@ -536,20 +544,27 @@ test('拖拽组件到画布', async ({ page }) => {
 ## 最佳实践
 
 ### 1. 保持原子性
+
 每个 Agent 的任务应该是独立、可测试的单元
 
 ### 2. 文档先行
+
 在编码前先编写接口文档和类型定义
 
 ### 3. 增量交付
+
 优先完成 MVP 功能，再迭代优化
 
 ### 4. 频繁集成
+
 每完成一个小功能就提交，避免大批量合并冲突
 
 ### 5. 自动化优先
+
 - 使用 GitHub Actions 自动运行测试
 - Pre-commit hook 检查代码规范
+
+读取文件时请务必添加 `-Encoding utf8` 参数。例如使用 `Get-Content -Encoding utf8 AGENTS.md`。
 
 ---
 
@@ -587,4 +602,5 @@ pnpm test:integration
 **维护者**: MdrFrontEngine Core Team  
 **最后更新**: 2025-01-22  
 **版本**: v1.0
+
 ```

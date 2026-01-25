@@ -43,9 +43,9 @@ export type ComponentGroup = {
 
 export type ViewportPreset = {
   id: string
-  name: string
+  nameKey: string
   kind: "Phone" | "Tablet" | "Laptop" | "Desktop" | "Watch"
-  kindLabel: string
+  kindKey: string
   width: string
   height: string
   icon: LucideIcon
@@ -53,7 +53,7 @@ export type ViewportPreset = {
 
 export type QuickViewportPreset = {
   id: string
-  label: string
+  labelKey: string
   width: string
   height: string
 }

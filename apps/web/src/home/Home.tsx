@@ -1,18 +1,24 @@
-﻿import { IconMdr } from '../components/icons/IconMdr';
+﻿import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Download, Footprints, Github, Languages } from 'lucide-react';
 import { MdrButtonLink, MdrNav } from '@mdr/ui';
-import { useState } from 'react';
-import './Home.scss'
-import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
-import { testDoc } from '@/mock/pagaData';
+import { IconMdr } from '../components/icons/IconMdr';
 import { ExportModal } from '@/editor/features/export/ExportModal';
-import { Download, Footprints } from 'lucide-react';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import { generateReactCode } from '@/mir/generator/mirToReact';
+import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
+import { testDoc } from '@/mock/pagaData';
+import './Home.scss'
 
 function Home() {
+    const { t, i18n } = useTranslation('home');
     const [count, setCount] = useState(0);
     const { setGeneratedCode, setExportModalOpen } = useEditorStore();
     const handleIncrement = () => setCount((prev) => prev + 1);
+    const toggleLanguage = () => {
+        const nextLanguage = i18n.language?.startsWith('zh') ? 'en' : 'zh-CN';
+        i18n.changeLanguage(nextLanguage);
+    };
 
     const handleQuickExport = () => {
         // 1. 生成代码（默认生成 React，弹窗内可以再切换）
@@ -28,32 +34,51 @@ function Home() {
             <MdrNav className='nav'>
                 <MdrNav.Left>
                     <IconMdr size={30} color="black" />
-                    <MdrNav.Heading heading="MdrFrontEngine" />
+                    <MdrNav.Heading heading={t('brand.name')} />
                 </MdrNav.Left>
                 <MdrNav.Right>
-                    <p>社区</p>
-                    <p>教程</p>
-                    <p>文档</p>
+                    <p>{t('nav.community')}</p>
+                    <p>{t('nav.tutorials')}</p>
+                    <p>{t('nav.docs')}</p>
+                    <a
+                        className="HomeNavIcon"
+                        href="https://github.com/Mdr-Tutorials/Mdr-Front-Engine"
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={t('nav.github')}
+                        title={t('nav.github')}
+                    >
+                        <Github size={18} />
+                    </a>
+                    <button
+                        type="button"
+                        className="HomeNavIcon"
+                        onClick={toggleLanguage}
+                        aria-label={t('nav.languageSwitch')}
+                        title={t('nav.languageSwitch')}
+                    >
+                        <Languages size={18} />
+                    </button>
                 </MdrNav.Right>
             </MdrNav>
             <div className="content">
                 <div className="titles">
                     <h1 className="">
-                        不仅是 <span>前端可视化开发平台</span>
+                        {t('hero.line1.before')} <span>{t('hero.line1.highlight')}</span>
                     </h1>
                     <h1 className="">
-                        还是 <span>UI/UX 设计语言</span>
+                        {t('hero.line2.before')} <span>{t('hero.line2.highlight')}</span>
                     </h1>
-                    <h1>更是 <span>从设计到部署的全流程解决方案</span></h1>
+                    <h1>{t('hero.line3.before')} <span>{t('hero.line3.highlight')}</span></h1>
                 </div>
-                <h2>- 结合蓝图、节点图和代码；打通设计、开发、测试、构建和部署；跨领域开发前端、快速开发 MVP 和学习前端的优质选择。</h2>
+                <h2>{t('hero.subtitle')}</h2>
                 <div className="button-bar">
-                    <MdrButtonLink text="进入编辑器" size='Big' category='Primary' to={"/editor"} />
-                    <MdrButtonLink text="查看文档" size='Big' category='Secondary' to={"http://localhost:5174"} />
+                    <MdrButtonLink text={t('actions.enterEditor')} size='Big' category='Primary' to={"/editor"} />
+                    <MdrButtonLink text={t('actions.viewDocs')} size='Big' category='Secondary' to={"http://localhost:5174"} />
                 </div>
 
                 <section className="divider">
-                    <h2>测试 MIR 渲染器</h2>
+                    <h2>{t('mirTest.title')}</h2>
 
                     <MIRRenderer
                         node={testDoc.ui.root}
@@ -68,7 +93,7 @@ function Home() {
                         className="export-button"
                     >
                         <Download size={16} />
-                        <span>导出组件代码</span>
+                        <span>{t('mirTest.exportButton')}</span>
                     </button>
                 </section>
             </div>
@@ -78,11 +103,11 @@ function Home() {
             <footer className='footer'>
                 <div className="footer-left">
                     <IconMdr size={16} color="black" />
-                    <span>MdrFrontEngine © 2026</span>
+                    <span>{t('footer.copy')}</span>
                 </div>
                 <div className="footer-right">
                     <Footprints size={16} />
-                    <span>临时占位 footer</span>
+                    <span>{t('footer.placeholder')}</span>
                 </div>
             </footer>
         </div>

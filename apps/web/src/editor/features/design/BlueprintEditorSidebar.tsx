@@ -1,9 +1,10 @@
 import type { KeyboardEvent, ReactNode } from "react"
+import { useTranslation } from "react-i18next"
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
 import {
   COMPACT_PREVIEW_SCALE,
-  COMPONENT_GROUPS,
   DEFAULT_PREVIEW_SCALE,
+  COMPONENT_GROUPS,
   getDefaultSizeId,
   getDefaultStatusIndex,
   getPreviewScale,
@@ -56,14 +57,15 @@ export function BlueprintEditorSidebar({
   onStatusCycleStart,
   onStatusCycleStop,
 }: BlueprintEditorSidebarProps) {
+  const { t } = useTranslation('blueprint')
   return (
     <aside className={`BlueprintEditorSidebar ${isCollapsed ? "Collapsed" : ""}`}>
       <div className="BlueprintEditorSidebarHeader">
-        <span>组件库</span>
+        <span>{t('sidebar.title')}</span>
         <button
           className="BlueprintEditorCollapse"
           onClick={onToggleCollapse}
-          aria-label="Toggle component library"
+          aria-label={t('sidebar.toggleLibrary')}
         >
           {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
         </button>
@@ -72,11 +74,12 @@ export function BlueprintEditorSidebar({
         <div className="BlueprintEditorComponentList">
           {COMPONENT_GROUPS.map((group) => {
             const isGroupCollapsed = collapsedGroups[group.id]
+            const groupTitle = t(`componentLibrary.groups.${group.id}.title`, { defaultValue: group.title })
             return (
               <div key={group.id} className="ComponentGroup">
                 <button className="ComponentGroupHeader" onClick={() => onToggleGroup(group.id)}>
                   <span className="ComponentGroupTitle">
-                    {group.title} ({group.items.length})
+                    {groupTitle} ({group.items.length})
                   </span>
                   <ChevronDown
                     size={14}
@@ -90,6 +93,7 @@ export function BlueprintEditorSidebar({
                       const hasVariants = variants.length > 0
                       const isExpanded = expandedPreviews[item.id]
                       const isWide = isWideComponent(group, item)
+                      const itemName = t(`componentLibrary.items.${item.id}.name`, { defaultValue: item.name })
                       const sizeOptions = item.sizeOptions
                       const statusOptions = item.statusOptions
                       const selectedSizeId = sizeOptions
@@ -141,13 +145,13 @@ export function BlueprintEditorSidebar({
                                   event.stopPropagation()
                                   onTogglePreview(item.id)
                                 }}
-                                aria-label={isExpanded ? "Collapse variants" : "Expand variants"}
+                                aria-label={isExpanded ? t('sidebar.collapseVariants') : t('sidebar.expandVariants')}
                               >
                                 <ChevronDown size={12} />
                                 <span>+{variants.length}</span>
                               </button>
                             )}
-                            <span className="ComponentPreviewLabel">{item.name}</span>
+                            <span className="ComponentPreviewLabel">{itemName}</span>
                             {showControls && (
                               <div className="ComponentPreviewMeta">
                                 {sizeOptions && (

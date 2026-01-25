@@ -1,5 +1,6 @@
-import { useState } from "react"
+﻿import { useState } from "react"
 import { useNavigate } from "react-router"
+import { useTranslation } from "react-i18next"
 import { MdrButton, MdrInput, MdrTextarea } from "@mdr/ui"
 import "./NewProjectModal.scss"
 
@@ -16,6 +17,7 @@ const createProjectId = () => {
 }
 
 function NewProjectModal({ open, onClose }: NewProjectModalProps) {
+    const { t } = useTranslation('editor')
     const navigate = useNavigate()
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
@@ -34,28 +36,26 @@ function NewProjectModal({ open, onClose }: NewProjectModalProps) {
             <div className="NewProjectModalContainer" onClick={(event) => event.stopPropagation()}>
                 <header className="NewProjectModalHeader">
                     <div>
-                        <h2>新建项目</h2>
-                        <p>创建一个包含蓝图与页面的完整项目</p>
+                        <h2>{t('modals.newProject.title')}</h2>
+                        <p>{t('modals.newProject.subtitle')}</p>
                     </div>
-                    <button className="NewProjectModalClose" onClick={onClose} aria-label="Close">
-                        ✕
-                    </button>
+                    <button className="NewProjectModalClose" onClick={onClose} aria-label={t('modals.close')}>✕</button>
                 </header>
 
                 <div className="NewProjectModalBody">
                     <div className="NewProjectModalField">
-                        <label>项目名称</label>
-                        <MdrInput placeholder="例如：Mdr Starter" value={name} onChange={setName} />
+                        <label>{t('modals.newProject.nameLabel')}</label>
+                        <MdrInput placeholder={t('modals.newProject.namePlaceholder')} value={name} onChange={setName} />
                     </div>
                     <div className="NewProjectModalField">
-                        <label>描述</label>
-                        <MdrTextarea placeholder="可选，描述该项目用途" value={description} onChange={setDescription} />
+                        <label>{t('modals.newProject.descriptionLabel')}</label>
+                        <MdrTextarea placeholder={t('modals.newProject.descriptionPlaceholder')} value={description} onChange={setDescription} />
                     </div>
                 </div>
 
                 <footer className="NewProjectModalFooter">
-                    <MdrButton text="取消" category="Ghost" onClick={onClose} />
-                    <MdrButton text="创建项目" category="Primary" onClick={handleCreate} />
+                    <MdrButton text={t('modals.actions.cancel')} category="Ghost" onClick={onClose} />
+                    <MdrButton text={t('modals.newProject.create')} category="Primary" onClick={handleCreate} />
                 </footer>
             </div>
         </div>

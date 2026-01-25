@@ -1,5 +1,6 @@
-// src/editor/features/export/ExportModal.tsx
+﻿// src/editor/features/export/ExportModal.tsx
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import { generateReactCode } from '@/mir/generator/mirToReact';
 import { CodeViewer } from './CodeViewer';
@@ -7,6 +8,7 @@ import './ExportModal.scss'; // 👈 必须引入这个文件！
 import { testDoc } from '@/mock/pagaData';
 
 export const ExportModal = () => {
+    const { t } = useTranslation('export');
     const { isExportModalOpen, setExportModalOpen } = useEditorStore();
     const [code, setCode] = useState('');
 
@@ -25,13 +27,13 @@ export const ExportModal = () => {
             <div className="export-modal-container">
 
                 <div className="export-modal-header">
-                    <h2>代码导出预览</h2>
-                    <button className="close-btn" onClick={() => setExportModalOpen(false)}>✕</button>
+                    <h2>{t('title')}</h2>
+                    <button className="close-btn" onClick={() => setExportModalOpen(false)} aria-label={t('close')}>✕</button>
                 </div>
 
                 <div className="export-modal-tabs">
-                    <button className="tab-item active">REACT (TSX)</button>
-                    <button className="tab-item">VUE (SFC)</button>
+                    <button className="tab-item active">{t('tabs.react')}</button>
+                    <button className="tab-item">{t('tabs.vue')}</button>
                 </div>
 
                 <div className="export-modal-content">
@@ -39,15 +41,15 @@ export const ExportModal = () => {
                     <CodeViewer code={code} lang="typescript" />
 
                     <div className="code-footer">
-                        <span>MdrFrontEngine Generator v1.0</span>
+                        <span>{t('footer.generator')}</span>
                         <button
                             onClick={() => {
                                 navigator.clipboard.writeText(code);
-                                alert('代码已复制');
+                                alert(t('copySuccess'));
                             }}
                             style={{ color: '#3b82f6', background: 'none', border: 'none', cursor: 'pointer' }}
                         >
-                            复制代码
+                            {t('copy')}
                         </button>
                     </div>
                 </div>

@@ -1,5 +1,6 @@
-import { useState } from "react"
+﻿import { useState } from "react"
 import { useNavigate } from "react-router"
+import { useTranslation } from "react-i18next"
 import { MdrButton, MdrInput, MdrTextarea } from "@mdr/ui"
 import "./NewNodeGraphModal.scss"
 
@@ -16,6 +17,7 @@ const createProjectId = () => {
 }
 
 function NewNodeGraphModal({ open, onClose }: NewNodeGraphModalProps) {
+    const { t } = useTranslation('editor')
     const navigate = useNavigate()
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
@@ -34,28 +36,28 @@ function NewNodeGraphModal({ open, onClose }: NewNodeGraphModalProps) {
             <div className="NewNodeGraphModalContainer" onClick={(event) => event.stopPropagation()}>
                 <header className="NewNodeGraphModalHeader">
                     <div>
-                        <h2>新建独立节点图</h2>
-                        <p>创建一个节点流程图并进入节点编辑器</p>
+                        <h2>{t('modals.newNodeGraph.title')}</h2>
+                        <p>{t('modals.newNodeGraph.subtitle')}</p>
                     </div>
-                    <button className="NewNodeGraphModalClose" onClick={onClose} aria-label="Close">
+                    <button className="NewNodeGraphModalClose" onClick={onClose} aria-label={t('modals.close')}>
                         ✕
                     </button>
                 </header>
 
                 <div className="NewNodeGraphModalBody">
                     <div className="NewNodeGraphModalField">
-                        <label>节点图名称</label>
-                        <MdrInput placeholder="例如：CheckoutGraph" value={name} onChange={setName} />
+                        <label>{t('modals.newNodeGraph.nameLabel')}</label>
+                        <MdrInput placeholder={t('modals.newNodeGraph.namePlaceholder')} value={name} onChange={setName} />
                     </div>
                     <div className="NewNodeGraphModalField">
-                        <label>描述</label>
-                        <MdrTextarea placeholder="可选，描述该节点图用途" value={description} onChange={setDescription} />
+                        <label>{t('modals.newNodeGraph.descriptionLabel')}</label>
+                        <MdrTextarea placeholder={t('modals.newNodeGraph.descriptionPlaceholder')} value={description} onChange={setDescription} />
                     </div>
                 </div>
 
                 <footer className="NewNodeGraphModalFooter">
-                    <MdrButton text="取消" category="Ghost" onClick={onClose} />
-                    <MdrButton text="创建节点图" category="Primary" onClick={handleCreate} />
+                    <MdrButton text={t('modals.actions.cancel')} category="Ghost" onClick={onClose} />
+                    <MdrButton text={t('modals.newNodeGraph.create')} category="Primary" onClick={handleCreate} />
                 </footer>
             </div>
         </div>

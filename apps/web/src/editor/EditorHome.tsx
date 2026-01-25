@@ -1,13 +1,15 @@
-import { useCallback, useEffect, useState } from "react"
+﻿import { useCallback, useEffect, useState } from "react"
 import { Plus } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { MdrButton } from "@mdr/ui"
 import "./EditorHome.scss"
-import { TIPS } from "./tips"
+import { TIPS, type TipId } from "./tips"
 import NewProjectModal from "./features/newfile/NewProjectModal"
 import NewComponentModal from "./features/newfile/NewComponentModal"
 import NewNodeGraphModal from "./features/newfile/NewNodeGraphModal"
 
 function EditorTipsRandom() {
+    const { t } = useTranslation('editor')
     const tipsCount = TIPS.length;
 
     // 每个 tip 的历史权重（score），决定“重现概率降低”
@@ -58,17 +60,18 @@ function EditorTipsRandom() {
     // ----------- 点击立刻切换 -----------
     const clickNext = () => pickNextTip();
 
-    const tip = TIPS[active];
+    const tipId = TIPS[active] as TipId;
 
     return (
         <div className="EditorHomeSmallTip" onClick={clickNext}>
-            <p>Tip: {tip.body}</p>
+            <p>{t('tips.prefix')} {t(`tips.items.${tipId}.body`)}</p>
         </div>
     );
 }
 
 
 function EditorHome() {
+    const { t } = useTranslation('editor')
     const [isProjectModalOpen, setProjectModalOpen] = useState(false)
     const [isComponentModalOpen, setComponentModalOpen] = useState(false)
     const [isNodeGraphModalOpen, setNodeGraphModalOpen] = useState(false)
@@ -77,12 +80,12 @@ function EditorHome() {
         <div className="EditorHome">
             <section className="EditorHomeMainCentered">
                 <header className="EditorHomeHeaderCentered">
-                    <h1 className="EditorHomeTitle">欢迎来到 MdrFrontEngine</h1>
+                    <h1 className="EditorHomeTitle">{t('home.welcomeTitle')}</h1>
                 </header>
 
                 <div className="EditorHomeBigAction">
                     <MdrButton
-                        text="新建项目"
+                        text={t('home.actions.newProject')}
                         iconPosition="Left"
                         size="Big"
                         icon={<Plus size={165} />}   // 巨大图标
@@ -90,7 +93,7 @@ function EditorHome() {
                         onClick={() => setProjectModalOpen(true)}
                     />
                     <MdrButton
-                        text="新建独立组件"
+                        text={t('home.actions.newComponent')}
                         iconPosition="Left"
                         size="Big"
                         icon={<Plus size={165} />}   // 巨大图标
@@ -98,7 +101,7 @@ function EditorHome() {
                         onClick={() => setComponentModalOpen(true)}
                     />
                     <MdrButton
-                        text="新建独立节点图"
+                        text={t('home.actions.newNodeGraph')}
                         iconPosition="Left"
                         size="Big"
                         icon={<Plus size={165} />}   // 巨大图标
@@ -106,7 +109,7 @@ function EditorHome() {
                         onClick={() => setNodeGraphModalOpen(true)}
                     />
                     <MdrButton
-                        text="新建项目"
+                        text={t('home.actions.newProject')}
                         iconPosition="Left"
                         size="Big"
                         icon={<Plus size={165} />}   // 巨大图标

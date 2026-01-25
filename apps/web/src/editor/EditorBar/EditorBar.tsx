@@ -1,23 +1,25 @@
-import "./EditorBar.scss";
+﻿import "./EditorBar.scss";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { MdrButton, MdrIcon, MdrIconLink } from "@mdr/ui";
 import { useNavigate, useParams } from "react-router";
 import { LogIn, LayoutGrid, GitBranch, Box, Sparkles, TestTube, FileCode, Rocket, Settings } from "lucide-react";
 
 function EditorBar() {
+    const { t } = useTranslation('editor');
     const { projectId } = useParams();
     const navigate = useNavigate();
     const [isExitOpen, setExitOpen] = useState(false);
     const basePath = projectId ? `/editor/project/${projectId}` : "/editor";
     const exitTarget = projectId ? "/editor" : "/";
-    const exitLabel = projectId ? "返回编辑器主页" : "返回主页";
+    const exitLabel = projectId ? t('bar.exitToEditor') : t('bar.exitToHome');
 
     return (
         <nav className="EditorBar">
             <section className="EditorBarTop">
                 <button
                     className="EditorBarExitButton"
-                    aria-label="Exit editor"
+                    aria-label={t('bar.exitAria')}
                     onClick={() => setExitOpen(true)}
                 >
                     <MdrIcon icon={<LogIn size={26} />} size={26} />
@@ -44,13 +46,13 @@ function EditorBar() {
                 <div className="EditorBarExitOverlay" onClick={() => setExitOpen(false)}>
                     <div className="EditorBarExitModal" onClick={(event) => event.stopPropagation()}>
                         <div className="EditorBarExitTitle">
-                            <h3>退出编辑器？</h3>
+                            <h3>{t('bar.exitTitle')}</h3>
                             <p>{exitLabel}</p>
                         </div>
                         <div className="EditorBarExitActions">
-                            <MdrButton text="取消" category="Ghost" size="Small" onClick={() => setExitOpen(false)} />
+                            <MdrButton text={t('bar.cancel')} category="Ghost" size="Small" onClick={() => setExitOpen(false)} />
                             <MdrButton
-                                text="退出"
+                                text={t('bar.exit')}
                                 category="Primary"
                                 size="Small"
                                 onClick={() => {

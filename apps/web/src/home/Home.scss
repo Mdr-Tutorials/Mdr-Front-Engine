@@ -7,6 +7,31 @@
     align-items: center;
     min-height: 100vh;
 
+    .nav {
+        .MdrNavRight {
+            gap: 8px;
+        }
+
+        .HomeNavIcon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 999px;
+            color: var(--color-7);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.2s ease, background-color 0.2s ease;
+
+            &:hover {
+                color: var(--color-10);
+                background-color: var(--color-1);
+            }
+        }
+    }
 
     .content {
         width: 85vw;
