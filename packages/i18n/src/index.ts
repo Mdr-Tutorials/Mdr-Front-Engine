@@ -45,6 +45,5 @@ export const createI18nInstance = async (options: CreateI18nOptions = {}): Promi
 declare module "i18next" {
   interface CustomTypeOptions {
     defaultNS: typeof defaultNS
-    resources: I18nResources["en"]
   }
 }

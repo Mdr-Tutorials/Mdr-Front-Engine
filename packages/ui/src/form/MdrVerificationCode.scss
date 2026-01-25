@@ -1,4 +1,4 @@
-@import './MdrField.scss';
+﻿@use './MdrField.scss';
 
 .MdrVerificationCode {
     width: 100%;
@@ -77,3 +77,4 @@
         border-color: var(--color-5);
     }
 }
+

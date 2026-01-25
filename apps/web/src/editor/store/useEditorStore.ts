@@ -1,20 +1,33 @@
-// src/stores/useEditorStore.ts
 import type { MIRDocument } from '@/core/types/engine.types';
 import { create } from 'zustand';
 
-// 1. 定义 Store 的接口
+export type BlueprintState = {
+    viewportWidth: string;
+    viewportHeight: string;
+    zoom: number;
+    pan: { x: number; y: number };
+    selectedId?: string;
+};
+
+export const DEFAULT_BLUEPRINT_STATE: BlueprintState = {
+    viewportWidth: '1440',
+    viewportHeight: '900',
+    zoom: 100,
+    pan: { x: 80, y: 60 },
+    selectedId: undefined,
+};
+
 interface EditorStore {
     mirDoc: MIRDocument
     generatedCode: string;
     isExportModalOpen: boolean;
+    blueprintStateByProject: Record<string, BlueprintState>;
 
-    // 方法
     setGeneratedCode: (code: string) => void;
     setExportModalOpen: (open: boolean) => void;
-    // ... 其他方法
+    setBlueprintState: (projectId: string, partial: Partial<BlueprintState>) => void;
 }
 
-// 2. 将接口传递给 create<T>()
 export const useEditorStore = create<EditorStore>()((set) => ({
     mirDoc: {
         version: "1.0",
@@ -27,7 +40,19 @@ export const useEditorStore = create<EditorStore>()((set) => ({
     },
     generatedCode: '',
     isExportModalOpen: false,
+    blueprintStateByProject: {},
 
     setGeneratedCode: (code) => set({ generatedCode: code }),
     setExportModalOpen: (open) => set({ isExportModalOpen: open }),
+    setBlueprintState: (projectId, partial) =>
+        set((state) => {
+            const previous = state.blueprintStateByProject[projectId] ?? DEFAULT_BLUEPRINT_STATE;
+            const nextPan = partial.pan ? { ...previous.pan, ...partial.pan } : previous.pan;
+            return {
+                blueprintStateByProject: {
+                    ...state.blueprintStateByProject,
+                    [projectId]: { ...previous, ...partial, pan: nextPan },
+                },
+            };
+        }),
 }));

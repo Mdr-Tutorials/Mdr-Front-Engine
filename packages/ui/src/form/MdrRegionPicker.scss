@@ -1,4 +1,4 @@
-@import './MdrField.scss';
+﻿@use './MdrField.scss';
 
 .MdrRegionPicker {
     width: 100%;
@@ -68,3 +68,4 @@
         grid-template-columns: 1fr;
     }
 }
+

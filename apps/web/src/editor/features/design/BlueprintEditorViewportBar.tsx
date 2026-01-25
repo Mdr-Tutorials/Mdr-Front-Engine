@@ -1,13 +1,16 @@
 ﻿import { useTranslation } from "react-i18next"
-import { MdrInput, MdrPopover } from "@mdr/ui"
+import { MdrInput, MdrPopover, MdrSlider } from "@mdr/ui"
 import { ChevronDown } from "lucide-react"
-import { VIEWPORT_DEVICE_PRESETS, VIEWPORT_QUICK_PRESETS } from "./BlueprintEditor.data"
+import { VIEWPORT_DEVICE_PRESETS, VIEWPORT_QUICK_PRESETS, VIEWPORT_ZOOM_RANGE } from "./BlueprintEditor.data"
 
 type BlueprintEditorViewportBarProps = {
   viewportWidth: string
   viewportHeight: string
   onViewportWidthChange: (value: string) => void
   onViewportHeightChange: (value: string) => void
+  zoom: number
+  zoomStep: number
+  onZoomChange: (value: number) => void
 }
 
 export function BlueprintEditorViewportBar({
@@ -15,6 +18,9 @@ export function BlueprintEditorViewportBar({
   viewportHeight,
   onViewportWidthChange,
   onViewportHeightChange,
+  zoom,
+  zoomStep,
+  onZoomChange,
 }: BlueprintEditorViewportBarProps) {
   const { t } = useTranslation('blueprint')
 
@@ -27,6 +33,20 @@ export function BlueprintEditorViewportBar({
           <span>×</span>
           <MdrInput size="Small" value={viewportHeight} onChange={onViewportHeightChange} />
         </div>
+      </div>
+      <div className="ViewportZoom">
+        <span className="ViewportZoomLabel">{t('viewport.zoom')}</span>
+        <MdrSlider
+          className="ViewportZoomControl"
+          min={VIEWPORT_ZOOM_RANGE.min}
+          max={VIEWPORT_ZOOM_RANGE.max}
+          step={zoomStep}
+          value={zoom}
+          showValue={false}
+          size="Small"
+          onChange={onZoomChange}
+        />
+        <span className="ViewportZoomValue">{zoom}%</span>
       </div>
       <div className="ViewportQuickPresets">
         {VIEWPORT_QUICK_PRESETS.map((preset) => {

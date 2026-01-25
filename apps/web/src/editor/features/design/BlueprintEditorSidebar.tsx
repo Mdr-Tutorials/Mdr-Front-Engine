@@ -147,8 +147,7 @@ export function BlueprintEditorSidebar({
                                 }}
                                 aria-label={isExpanded ? t('sidebar.collapseVariants') : t('sidebar.expandVariants')}
                               >
-                                <ChevronDown size={12} />
-                                <span>+{variants.length}</span>
+                                <span>{variants.length}</span>
                               </button>
                             )}
                             <span className="ComponentPreviewLabel">{itemName}</span>

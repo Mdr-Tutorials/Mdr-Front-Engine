@@ -1,4 +1,4 @@
-@import './MdrField.scss';
+﻿@use './MdrField.scss';
 
 .MdrColorPicker {
     width: 100%;
@@ -57,3 +57,4 @@
         border-color: var(--color-5);
     }
 }
+

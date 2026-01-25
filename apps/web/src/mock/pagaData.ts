@@ -1,81 +1,90 @@
-﻿import { type MIRDocument } from "../core/types/engine.types";
+﻿import { type MIRDocument } from '@/core/types/engine.types';
 
 export const testDoc: MIRDocument = {
     version: "1.0",
     ui: {
         root: {
             id: "root",
-            type: "container",
-            style: {
+            type: "MdrDiv",
+            props: {
+                display: "Flex",
+                flexDirection: "Column",
+                alignItems: "Center",
+                gap: "20px",
                 padding: "40px",
-                background: "#e4ffb4",
-                border: "1px solid #ccc",
-                minHeight: "50vh",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "20px"
+                backgroundColor: "#e4ffb4",
+                border: "1px solid #ccc"
+            },
+            style: {
+                minHeight: "50vh"
             },
             children: [
                 {
                     id: "h1",
-                    type: "text",
+                    type: "MdrText",
                     text: "MDR 渲染引擎测试",
+                    props: {
+                        size: "Big",
+                        weight: "Bold"
+                    },
                     style: {
-                        fontSize: "32px",
                         display: "block",
                         marginBottom: "20px"
                     }
                 },
                 {
                     id: "countDisplay",
-                    type: "div",
+                    type: "MdrDiv",
+                    props: {
+                        display: "Flex",
+                        alignItems: "Center",
+                        gap: "8px"
+                    },
                     children: [
                         {
                             id: "p",
-                            type: "text",
+                            type: "MdrText",
                             text: "当前计数：",
-                            style: { fontSize: "20px" }
+                            props: { size: "Large" }
                         },
                         {
                             id: "countValue",
-                            type: "text",
-                            text: { "$param": "count" }
+                            type: "MdrText",
+                            text: { "$state": "count" },
+                            props: { size: "Large", weight: "Bold" }
                         }
                     ]
                 },
                 {
                     id: "btn",
-                    type: "button",
+                    type: "MdrButton",
                     text: { "$param": "buttonText" },
-                    props: { className: "my-button" },
+                    props: { size: "Medium", category: "Primary" },
                     events: {
                         click: {
                             trigger: "click",
-                            action: "onAction"
+                            action: "increment"
                         }
-                    },
-                    style: {
-                        padding: "10px 20px",
-                        cursor: "pointer"
                     }
                 },
                 {
                     id: "input_1",
-                    type: "input",
+                    type: "MdrInput",
                     props: {
                         placeholder: "搜索项目...",
-                        maxLength: 20
+                        maxLength: 20,
+                        size: "Medium"
                     }
                 }
             ]
         }
     },
     logic: {
+        state: {
+            count: { initial: 0 }
+        },
         props: {
-            buttonText: { type: "string", default: "Click Me" },
-            count: { type: "number", default: 0 },
-            onAction: { type: "() => void" }
+            buttonText: { type: "string", default: "Click Me" }
         }
     }
 };

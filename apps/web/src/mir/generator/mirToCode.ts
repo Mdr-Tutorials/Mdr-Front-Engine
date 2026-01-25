@@ -128,11 +128,6 @@ export const convertMirToCode = (mirDoc: any, target: 'react' | 'vue') => {
         component: mitosisJson
     };
 
-    const options = {
-        // 强制不使用特殊的转换插件，减少对 Babel 路径处理的依赖
-        preProcess: false,
-    };
-
     if (target === 'vue') {
         return componentToVue()(transpilerArgs);
     }

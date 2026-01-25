@@ -1,5 +1,4 @@
 import type { ReactNode } from "react"
-import type { TFunction } from "i18next"
 import {
   MdrAnchorNavigation,
   MdrAudio,
@@ -116,6 +115,13 @@ export const VIEWPORT_DEVICE_PRESETS: ViewportPreset[] = [
   { id: "watch-41", nameKey: "devices.watch41", kind: "Watch", kindKey: "devices.kinds.watch", width: "198", height: "242", icon: Watch },
 ]
 
+export const VIEWPORT_ZOOM_RANGE = {
+  min: 50,
+  max: 160,
+  step: 5,
+  default: 100,
+}
+
 export const DEFAULT_PREVIEW_SCALE = 0.72
 export const COMPACT_PREVIEW_SCALE = 0.6
 const WIDE_PREVIEW_SCALE_BOOST = 1.18
@@ -165,9 +171,6 @@ const TEXT_SIZE_OPTIONS: ComponentPreviewOption[] = [
 
 const WIDE_GROUP_IDS = new Set(["navigation", "layout", "chart"])
 const WIDE_COMPONENT_IDS = new Set(["date-range-picker", "steps", "slider", "search", "file-upload", "regex-input", "image-upload", "date-picker", "verification-code", "rich-text-editor", "range"])
-
-const toKey = (value: string) => value.charAt(0).toLowerCase() + value.slice(1)
-
 const createPlaceholderSvg = (label: string, width = 160, height = 120) => {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="100%" height="100%" fill="#eef1f6"/><text x="50%" y="50%" font-family="Arial, sans-serif" font-size="18" fill="#7b8794" dominant-baseline="middle" text-anchor="middle">${label}</text></svg>`
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`

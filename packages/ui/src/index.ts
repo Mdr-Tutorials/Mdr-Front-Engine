@@ -33,6 +33,8 @@ export { default as MdrRating } from './form/MdrRating';
 export { default as MdrColorPicker } from './form/MdrColorPicker';
 export { default as MdrSlider } from './form/MdrSlider';
 export { default as MdrRange } from './form/MdrRange';
+export { default as MdrSelect } from './form/MdrSelect';
+export { default as MdrRadioGroup } from './form/MdrRadioGroup';
 
 export { default as MdrDiv } from './container/MdrDiv';
 export { default as MdrSection } from './container/MdrSection';

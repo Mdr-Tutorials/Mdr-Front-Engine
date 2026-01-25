@@ -432,6 +432,14 @@
   position: relative;
   flex: 1;
   min-height: 0;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+}
+
+.BlueprintEditorCanvasSurface.IsPanning {
+  cursor: grabbing;
+  user-select: none;
 }
 
 .BlueprintEditorCanvasGrid {
@@ -440,6 +448,42 @@
   background-image: radial-gradient(rgba(0, 0, 0, 0.12) 1px, transparent 1px);
   background-size: 20px 20px;
   opacity: 0.3;
+  pointer-events: none;
+}
+
+.BlueprintEditorCanvasPanLayer {
+  position: absolute;
+  inset: 0;
+  transform-origin: top left;
+}
+
+.BlueprintEditorCanvasZoomLayer {
+  transform-origin: top left;
+  width: 100%;
+  height: 100%;
+}
+
+.BlueprintEditorCanvasArtboard {
+  position: relative;
+  background: var(--color-0);
+  border-radius: 22px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 22px 45px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.BlueprintEditorCanvasArtboard [data-mir-selected="true"] {
+  outline: 2px solid var(--color-primary, var(--color-9));
+  outline-offset: 2px;
+}
+
+.BlueprintEditorCanvas.HideSelectionDiagnostics .BlueprintEditorCanvasArtboard [data-mir-selected="true"] {
+  outline: none;
+}
+
+.BlueprintEditorCanvasArtboard [data-mir-missing="true"] {
+  outline: 1px dashed rgba(240, 82, 82, 0.9);
+  outline-offset: 2px;
 }
 
 .BlueprintEditorCanvasPlaceholder {
@@ -505,6 +549,43 @@
 
 .ViewportInputs span {
   color: var(--color-6);
+}
+
+.ViewportZoom {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.ViewportZoomLabel {
+  font-weight: 600;
+  color: var(--color-8);
+}
+
+.ViewportZoomControl {
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  gap: 6px;
+}
+
+.ViewportZoomControl.MdrField {
+  flex-direction: row;
+  width: auto;
+  gap: 6px;
+}
+
+.ViewportZoomControl .MdrSliderInput {
+  width: 120px;
+}
+
+.ViewportZoomValue {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-7);
+  min-width: 36px;
+  text-align: right;
 }
 
 .ViewportQuickPresets {
@@ -865,6 +946,16 @@
     background-image: radial-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px);
   }
 
+  .BlueprintEditorCanvasArtboard {
+    background: var(--color-10);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 24px 46px rgba(0, 0, 0, 0.45);
+  }
+
+  .BlueprintEditorCanvasArtboard [data-mir-selected="true"] {
+    outline-color: var(--color-primary, var(--color-1));
+  }
+
   .BlueprintEditorCanvasPlaceholder h3 {
     color: var(--color-0);
   }
@@ -877,6 +968,18 @@
 
   .ViewportLabel {
     color: var(--color-2);
+  }
+
+  .ViewportZoomLabel {
+    color: var(--color-2);
+  }
+
+  .ViewportZoomControl .MdrSliderInput {
+    accent-color: var(--color-2);
+  }
+
+  .ViewportZoomValue {
+    color: var(--color-4);
   }
 
   .ViewportPreset {

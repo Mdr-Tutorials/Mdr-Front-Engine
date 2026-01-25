@@ -1,4 +1,4 @@
-@import '../form/MdrField.scss';
+﻿@use '../form/MdrField.scss';
 
 .MdrTreeSelect {
     width: 100%;
@@ -37,3 +37,4 @@
         border-color: var(--color-5);
     }
 }
+

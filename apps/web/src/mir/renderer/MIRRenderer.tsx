@@ -1,14 +1,8 @@
 ﻿import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { type ComponentNode, type MIRDocument } from '@/core/types/engine.types';
+import { createDefaultComponentRegistry, type AdapterContext, type ComponentRegistry } from './registry';
 
-const VOID_ELEMENTS = ['input', 'img', 'br', 'hr', 'meta', 'link'];
-
-const ComponentMap: Record<string, React.FC<any>> = {
-    container: ({ children, ...props }) => <div {...props}>{children}</div>,
-    text: ({ text, children, ...props }) => <span {...props}>{text || children}</span>,
-    button: ({ text, children, ...props }) => <button {...props}>{text || children}</button>,
-    input: (props) => <input {...props} />,
-};
+const VOID_ELEMENTS = new Set(['input', 'img', 'br', 'hr', 'meta', 'link']);
 
 type RenderState = Record<string, any>;
 type RenderParams = Record<string, any>;
@@ -18,6 +12,7 @@ type ActionContext = {
     setState: React.Dispatch<React.SetStateAction<RenderState>>;
     params: RenderParams;
     event?: React.SyntheticEvent;
+    payload?: unknown;
 };
 
 type ActionHandlers = Record<string, (context: ActionContext) => void>;
@@ -25,7 +20,10 @@ type ActionHandlers = Record<string, (context: ActionContext) => void>;
 type RenderContext = {
     state: RenderState;
     params: RenderParams;
-    dispatchAction: (actionName?: string, event?: React.SyntheticEvent) => void;
+    dispatchAction: (actionName?: string, payload?: unknown) => void;
+    onNodeSelect?: (nodeId: string, event: React.SyntheticEvent) => void;
+    selectedId?: string;
+    renderMode: 'strict' | 'tolerant';
 };
 
 const resolveValue = (value: any, state: RenderState, params: RenderParams) => {
@@ -58,14 +56,17 @@ const pickIncrementTarget = (state: RenderState) => {
 };
 
 const toReactEventName = (trigger: string) => {
-    const normalized = trigger.toLowerCase();
-    if (normalized === 'click') return 'onClick';
-    if (normalized === 'change') return 'onChange';
-    if (normalized === 'input') return 'onInput';
-    if (normalized === 'submit') return 'onSubmit';
-    if (normalized === 'focus') return 'onFocus';
-    if (normalized === 'blur') return 'onBlur';
-    return `on${trigger.charAt(0).toUpperCase()}${trigger.slice(1)}`;
+    const normalized = trigger?.trim();
+    if (!normalized) return undefined;
+    if (/^on[A-Z]/.test(normalized)) return normalized;
+    const lower = normalized.toLowerCase();
+    if (lower === 'click') return 'onClick';
+    if (lower === 'change') return 'onChange';
+    if (lower === 'input') return 'onInput';
+    if (lower === 'submit') return 'onSubmit';
+    if (lower === 'focus') return 'onFocus';
+    if (lower === 'blur') return 'onBlur';
+    return `on${normalized.charAt(0).toUpperCase()}${normalized.slice(1)}`;
 };
 
 const mergeHandlers = (first: any, second: any) => {
@@ -78,14 +79,27 @@ const mergeHandlers = (first: any, second: any) => {
     return typeof second === 'function' ? second : first;
 };
 
+const isSyntheticEvent = (value: unknown): value is React.SyntheticEvent => {
+    return typeof value === 'object' && value !== null && 'nativeEvent' in value;
+};
+
 interface MIRRendererProps {
     node: ComponentNode;
     mirDoc: MIRDocument;
     overrides?: Record<string, any>;
     actions?: ActionHandlers;
+    selectedId?: string;
+    onNodeSelect?: (nodeId: string, event: React.SyntheticEvent) => void;
+    registry?: ComponentRegistry;
+    renderMode?: 'strict' | 'tolerant';
+    allowExternalProps?: boolean;
 }
 
-const MIRNode: React.FC<{ node: ComponentNode; context: RenderContext }> = ({ node, context }) => {
+const MIRNode: React.FC<{ node: ComponentNode; context: RenderContext; registry: ComponentRegistry }> = ({
+    node,
+    context,
+    registry,
+}) => {
     const resolvedProps = useMemo(() => {
         const p: Record<string, any> = {};
         if (node.props) {
@@ -111,6 +125,18 @@ const MIRNode: React.FC<{ node: ComponentNode; context: RenderContext }> = ({ no
         [node.text, context.state, context.params]
     );
 
+    const resolvedComponent = useMemo(() => registry.resolve(node.type), [registry, node.type]);
+
+    const adapterResult = useMemo(() => {
+        const adapterContext: AdapterContext = {
+            node,
+            resolvedProps,
+            resolvedStyle,
+            resolvedText,
+        };
+        return resolvedComponent.adapter.mapProps?.(adapterContext) ?? { props: resolvedProps };
+    }, [node, resolvedComponent, resolvedProps, resolvedStyle, resolvedText]);
+
     const eventProps = useMemo(() => {
         const handlers: Record<string, any> = {};
         if (!node.events) return handlers;
@@ -118,8 +144,8 @@ const MIRNode: React.FC<{ node: ComponentNode; context: RenderContext }> = ({ no
             const trigger = eventDef.trigger || eventKey;
             const reactEventName = toReactEventName(trigger);
             if (!reactEventName) return;
-            const handler = (event: React.SyntheticEvent) => {
-                context.dispatchAction(eventDef.action, event);
+            const handler = (payload: unknown) => {
+                context.dispatchAction(eventDef.action, payload);
             };
             handlers[reactEventName] = mergeHandlers(handlers[reactEventName], handler);
         });
@@ -127,31 +153,72 @@ const MIRNode: React.FC<{ node: ComponentNode; context: RenderContext }> = ({ no
     }, [node.events, context.dispatchAction]);
 
     const mergedProps = useMemo(() => {
-        const combined = { ...resolvedProps } as Record<string, any>;
+        const combined = { ...(adapterResult.props ?? resolvedProps) } as Record<string, any>;
         Object.entries(eventProps).forEach(([key, handler]) => {
             combined[key] = mergeHandlers(combined[key], handler);
         });
         return combined;
-    }, [resolvedProps, eventProps]);
+    }, [adapterResult.props, resolvedProps, eventProps]);
 
-    const Component = ComponentMap[node.type] || (({ children }: any) => <div>{children}</div>);
-    const isVoidElement = VOID_ELEMENTS.includes(node.type.toLowerCase());
+    const selectionHandler = context.onNodeSelect
+        ? (event: React.SyntheticEvent) => {
+            event.stopPropagation();
+            context.onNodeSelect?.(node.id, event);
+        }
+        : undefined;
 
-    if (isVoidElement) {
-        return (
-            <Component
-                {...mergedProps}
-                style={resolvedStyle}
-                {...(node.type === 'input' ? { defaultValue: resolvedText } : {})}
-            />
-        );
+    const selectionData = context.onNodeSelect
+        ? {
+            'data-mir-id': node.id,
+            ...(context.selectedId === node.id ? { 'data-mir-selected': 'true' } : {}),
+        }
+        : {};
+
+    const selectionClick = context.onNodeSelect
+        ? {
+            onClick: mergeHandlers(mergedProps.onClick, selectionHandler),
+        }
+        : {};
+
+    let finalProps: Record<string, any> = { ...mergedProps, ...selectionClick };
+
+    if (resolvedComponent.missing && context.renderMode === 'strict') {
+        finalProps = {
+            ...finalProps,
+            'data-mir-missing': 'true',
+            'data-mir-type': node.type,
+        };
+    }
+
+    if (resolvedComponent.adapter.applySelection) {
+        finalProps = resolvedComponent.adapter.applySelection(finalProps, selectionData);
+    } else if (Object.keys(selectionData).length > 0) {
+        finalProps = { ...finalProps, ...selectionData };
+    }
+
+    const Component = resolvedComponent.component as React.ElementType;
+    const isVoid =
+        adapterResult.isVoid ??
+        resolvedComponent.adapter.isVoid ??
+        (resolvedComponent.adapter.kind === 'html' &&
+            typeof Component === 'string' &&
+            VOID_ELEMENTS.has(Component.toLowerCase()));
+
+    const supportsChildren =
+        (adapterResult.supportsChildren ?? resolvedComponent.adapter.supportsChildren ?? true) && !isVoid;
+
+    const { style: propStyle, ...restProps } = finalProps;
+    const mergedStyle = propStyle ? { ...(propStyle as Record<string, any>), ...resolvedStyle } : resolvedStyle;
+
+    if (!supportsChildren) {
+        return <Component {...restProps} style={mergedStyle} />;
     }
 
     return (
-        <Component {...mergedProps} style={resolvedStyle}>
-            {resolvedText}
+        <Component {...restProps} style={mergedStyle}>
+            {adapterResult.children}
             {node.children?.map((child) => (
-                <MIRNode key={child.id} node={child} context={context} />
+                <MIRNode key={child.id} node={child} context={context} registry={registry} />
             ))}
         </Component>
     );
@@ -161,22 +228,31 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
     node,
     mirDoc,
     overrides = {},
-    actions = {}
+    actions = {},
+    selectedId,
+    onNodeSelect,
+    registry: registryProp,
+    renderMode = 'tolerant',
+    allowExternalProps = true,
 }) => {
     const effectiveParams = useMemo(() => {
         const result: RenderParams = {};
         const propsDef = mirDoc.logic?.props || {};
 
         Object.keys(propsDef).forEach((key) => {
-            result[key] = overrides[key] !== undefined ? overrides[key] : propsDef[key].default;
+            result[key] = propsDef[key].default;
         });
-        Object.keys(overrides).forEach((key) => {
-            if (!(key in result)) {
-                result[key] = overrides[key];
-            }
-        });
+        if (allowExternalProps) {
+            Object.keys(overrides).forEach((key) => {
+                if (!(key in result)) {
+                    result[key] = overrides[key];
+                } else if (overrides[key] !== undefined) {
+                    result[key] = overrides[key];
+                }
+            });
+        }
         return result;
-    }, [mirDoc.logic?.props, overrides]);
+    }, [mirDoc.logic?.props, overrides, allowExternalProps]);
 
     const initialState = useMemo(() => buildInitialState(mirDoc.logic?.state), [mirDoc.logic?.state]);
     const [state, setState] = useState<RenderState>(initialState);
@@ -186,18 +262,20 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
     }, [initialState]);
 
     const dispatchAction = useCallback(
-        (actionName?: string, event?: React.SyntheticEvent) => {
+        (actionName?: string, payload?: unknown) => {
             if (!actionName) return;
+
+            const event = isSyntheticEvent(payload) ? payload : undefined;
 
             const customAction = actions[actionName];
             if (typeof customAction === 'function') {
-                customAction({ state, setState, params: effectiveParams, event });
+                customAction({ state, setState, params: effectiveParams, event, payload });
                 return;
             }
 
             const paramAction = effectiveParams[actionName];
             if (typeof paramAction === 'function') {
-                paramAction(event);
+                paramAction(event ?? payload);
                 return;
             }
 
@@ -213,10 +291,19 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
         [actions, effectiveParams, state]
     );
 
+    const registry = useMemo(() => registryProp ?? createDefaultComponentRegistry(), [registryProp]);
+
     const context = useMemo(
-        () => ({ state, params: effectiveParams, dispatchAction }),
-        [state, effectiveParams, dispatchAction]
+        () => ({
+            state,
+            params: effectiveParams,
+            dispatchAction,
+            selectedId,
+            onNodeSelect,
+            renderMode,
+        }),
+        [state, effectiveParams, dispatchAction, selectedId, onNodeSelect, renderMode]
     );
 
-    return <MIRNode node={node} context={context} />;
+    return <MIRNode node={node} context={context} registry={registry} />;
 };
