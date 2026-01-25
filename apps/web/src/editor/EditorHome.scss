@@ -87,17 +87,3 @@
     color: #999;
     margin-top: 12px;
 }
-
-@media (prefers-color-scheme: dark) {
-    .EditorHome {
-        color: var(--color-2);
-    }
-
-    .EditorHomeHeader h1 {
-        color: var(--color-0);
-    }
-
-    .EditorHomeSmallTip {
-        color: var(--color-4);
-    }
-}

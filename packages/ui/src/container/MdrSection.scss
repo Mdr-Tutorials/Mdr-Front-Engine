@@ -24,18 +24,6 @@
         padding: var(--spacing-xl);
     }
 
-    &.Small {
-        min-height: 200px;
-    }
-
-    &.Medium {
-        min-height: 400px;
-    }
-
-    &.Large {
-        min-height: 600px;
-    }
-
     &.Left {
         text-align: left;
     }
@@ -69,33 +57,5 @@
     &.Secondary {
         background-color: var(--color-8);
         color: var(--color-0);
-    }
-}
-
-[data-theme="dark"] {
-    .MdrSection {
-        &.Default {
-            background-color: var(--color-10);
-            color: var(--color-0);
-        }
-
-        &.Light {
-            background-color: var(--color-8);
-        }
-
-        &.Dark {
-            background-color: var(--color-0);
-            color: var(--color-10);
-        }
-
-        &.Primary {
-            background-color: var(--color-2);
-            color: var(--color-10);
-        }
-
-        &.Secondary {
-            background-color: var(--color-3);
-            color: var(--color-10);
-        }
     }
 }

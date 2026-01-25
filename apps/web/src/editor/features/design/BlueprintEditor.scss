@@ -88,11 +88,11 @@
 }
 
 .BlueprintEditorBody {
-  --sidebar-width: 260px;
-  --tree-width: 260px;
-  --inspector-width: 280px;
+  --sidebar-width: 400px;
+  --tree-width: 400px;
+  --inspector-width: 360px;
   --collapsed-panel-width: 36px;
-  --component-tree-height: 420px;
+  --component-tree-height: 450px;
   position: relative;
   display: flex;
   flex: 1;
@@ -348,13 +348,13 @@
 
 .BlueprintEditorTreeItem:hover {
   background: var(--color-1);
-  border-color: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.01);
   color: var(--color-9);
 }
 
 .BlueprintEditorTreeItem.Selected {
   background: var(--color-2);
-  border-color: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.02);
   color: var(--color-9);
 }
 
@@ -1217,40 +1217,28 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  .BlueprintEditor {
-    color: var(--color-0);
-  }
 
   .BlueprintEditorTop {
     background: rgba(10, 10, 10, 0.6);
     border-bottom-color: rgba(255, 255, 255, 0.08);
   }
 
-  .BlueprintEditorTitle span {
-    color: var(--color-4);
-  }
-
   .BlueprintEditorAddressBar {
     border-bottom-color: rgba(255, 255, 255, 0.08);
-    background: var(--color-10);
   }
 
   .AddressSelectControl {
     border-color: rgba(255, 255, 255, 0.12);
-    background: var(--color-10);
-    color: var(--color-3);
   }
 
   .BlueprintEditorDragOverlayInner {
     background: rgba(10, 10, 10, 0.92);
     border-color: rgba(255, 255, 255, 0.14);
-    color: var(--color-0);
   }
 
   .BlueprintEditorSidebar,
   .BlueprintEditorInspector,
   .BlueprintEditorComponentTree {
-    background: var(--color-10);
     border-color: rgba(255, 255, 255, 0.08);
   }
 
@@ -1265,16 +1253,10 @@
 
   .BlueprintEditorTreeHeaderIcon {
     background: rgba(255, 255, 255, 0.06);
-    color: var(--color-4);
-  }
-
-  .BlueprintEditorTreeAction {
-    color: var(--color-4);
   }
 
   .BlueprintEditorTreeAction:hover {
     background: rgba(255, 255, 255, 0.08);
-    color: var(--color-0);
   }
 
   .BlueprintEditorTreeAction.Danger {
@@ -1288,20 +1270,10 @@
 
   .BlueprintEditorTreeAction:disabled:hover {
     background: transparent;
-    color: var(--color-4);
-  }
-
-  .BlueprintEditorTreeAction.Danger:disabled {
-    color: var(--color-4);
   }
 
   .BlueprintEditorTreeHeaderCount {
     background: rgba(255, 255, 255, 0.08);
-    color: var(--color-4);
-  }
-
-  .BlueprintEditorTreeToggle {
-    color: var(--color-4);
   }
 
   .BlueprintEditorTreeToggle:hover {
@@ -1332,44 +1304,26 @@
 
   .BlueprintEditorTreeIcon {
     background: rgba(255, 255, 255, 0.06);
-    color: var(--color-4);
   }
 
   .BlueprintEditorTreeItem:hover .BlueprintEditorTreeIcon {
     background: rgba(255, 255, 255, 0.1);
-    color: var(--color-0);
   }
 
   .BlueprintEditorTreeItem.Selected .BlueprintEditorTreeIcon {
     background: rgba(255, 255, 255, 0.12);
-    color: var(--color-0);
-  }
-
-  .BlueprintEditorTreeId {
-    color: var(--color-5);
-  }
-
-  .BlueprintEditorTreeItem:hover .BlueprintEditorTreeId,
-  .BlueprintEditorTreeItem.Selected .BlueprintEditorTreeId {
-    color: var(--color-4);
   }
 
   .BlueprintEditorTreeCount {
     background: rgba(255, 255, 255, 0.08);
-    color: var(--color-4);
   }
 
   .BlueprintEditorTreeItem.Selected .BlueprintEditorTreeCount {
     background: rgba(255, 255, 255, 0.12);
-    color: var(--color-2);
   }
 
   .BlueprintEditorTreeBody.IsOver {
     background: rgba(255, 255, 255, 0.03);
-  }
-
-  .ComponentGroupIcon {
-    color: var(--color-4);
   }
 
   .ComponentPreviewCard.HasVariants:hover {
@@ -1385,22 +1339,15 @@
   .ComponentPreviewExpand {
     border-color: rgba(255, 255, 255, 0.16);
     background: rgba(255, 255, 255, 0.08);
-    color: var(--color-3);
-  }
-
-  .ComponentPreviewLabel {
-    color: var(--color-4);
   }
 
   .ComponentPreviewSize {
     border-color: rgba(255, 255, 255, 0.18);
-    color: var(--color-4);
   }
 
   .ComponentPreviewSize.Active {
     border-color: rgba(255, 255, 255, 0.3);
     background: rgba(255, 255, 255, 0.08);
-    color: var(--color-0);
   }
 
   .ComponentPreviewStatusDot {
@@ -1417,12 +1364,7 @@
     border-color: rgba(255, 255, 255, 0.12);
   }
 
-  .ComponentVariantLabel {
-    color: var(--color-4);
-  }
-
   .BlueprintEditorCanvas {
-    background: var(--color-9);
     border-color: rgba(255, 255, 255, 0.08);
   }
 
@@ -1435,103 +1377,51 @@
   }
 
   .BlueprintEditorCanvasArtboard {
-    background: var(--color-10);
     border-color: rgba(255, 255, 255, 0.1);
     box-shadow: 0 24px 46px rgba(0, 0, 0, 0.45);
   }
 
-  .BlueprintEditorCanvasArtboard [data-mir-selected="true"] {
-    outline-color: var(--color-primary, var(--color-1));
-  }
-
-  .BlueprintEditorCanvasPlaceholder h3 {
-    color: var(--color-0);
-  }
-
   .BlueprintEditorViewportBar {
-    background: var(--color-10);
     border-top-color: rgba(255, 255, 255, 0.08);
-    color: var(--color-4);
-  }
-
-  .ViewportLabel {
-    color: var(--color-2);
-  }
-
-  .ViewportZoomLabel {
-    color: var(--color-2);
-  }
-
-  .ViewportZoomControl .MdrSliderInput {
-    accent-color: var(--color-2);
-  }
-
-  .ViewportZoomValue {
-    color: var(--color-4);
   }
 
   .ViewportPreset {
     border-color: rgba(255, 255, 255, 0.12);
-    background: var(--color-10);
-    color: var(--color-4);
   }
 
   .ViewportPreset:hover {
     border-color: rgba(255, 255, 255, 0.28);
-    color: var(--color-0);
   }
 
   .ViewportQuickPreset {
     border-color: rgba(255, 255, 255, 0.12);
-    background: var(--color-10);
-    color: var(--color-4);
   }
 
   .ViewportQuickPreset:hover {
     border-color: rgba(255, 255, 255, 0.28);
-    color: var(--color-0);
   }
 
   .ViewportMoreButton {
     border-color: rgba(255, 255, 255, 0.12);
-    background: var(--color-10);
-    color: var(--color-4);
   }
 
   .ViewportMoreButton:hover {
     border-color: rgba(255, 255, 255, 0.28);
-    color: var(--color-0);
   }
 
   .ViewportPresetIcon {
     background: rgba(255, 255, 255, 0.08);
-    color: var(--color-2);
-  }
-
-  .ViewportPresetName {
-    color: var(--color-0);
-  }
-
-  .ViewportPresetType,
-  .ViewportPresetSize {
-    color: var(--color-4);
   }
 
   .BlueprintEditorSidebar.Collapsed .BlueprintEditorCollapse,
   .BlueprintEditorInspector.Collapsed .BlueprintEditorCollapse {
-    background: var(--color-9);
     border-color: rgba(255, 255, 255, 0.16);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.45);
   }
 
   .BlueprintEditorTreeExpand {
-    background: var(--color-9);
     border-color: rgba(255, 255, 255, 0.16);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.45);
     color: var(--color-4);
-  }
-
-  .InspectorSkeleton span {
-    background: var(--color-8);
   }
 }

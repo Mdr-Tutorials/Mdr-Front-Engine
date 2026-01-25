@@ -21,15 +21,21 @@ function NewProjectModal({ open, onClose }: NewProjectModalProps) {
     const navigate = useNavigate()
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
+    const [showErrors, setShowErrors] = useState(false)
 
     if (!open) return null
 
     const handleCreate = () => {
-        if (!name.trim()) return
+        if (!name.trim()) {
+            setShowErrors(true)
+            return
+        }
         const id = createProjectId()
         onClose()
         navigate(`/editor/project/${id}/blueprint`)
     }
+
+    const nameError = showErrors && !name.trim()
 
     return (
         <div className="NewProjectModalOverlay" onClick={onClose}>
@@ -44,11 +50,24 @@ function NewProjectModal({ open, onClose }: NewProjectModalProps) {
 
                 <div className="NewProjectModalBody">
                     <div className="NewProjectModalField">
-                        <label>{t('modals.newProject.nameLabel')}</label>
-                        <MdrInput placeholder={t('modals.newProject.namePlaceholder')} value={name} onChange={setName} />
+                        <label className="NewProjectModalLabel" htmlFor="new-project-name">
+                            <span>{t('modals.newProject.nameLabel')}</span>
+                            <span className="NewProjectModalRequired">{t('modals.newProject.required')}</span>
+                        </label>
+                        <MdrInput
+                            id="new-project-name"
+                            placeholder={t('modals.newProject.namePlaceholder')}
+                            value={name}
+                            onChange={setName}
+                            required
+                            state={nameError ? "Error" : "Default"}
+                        />
+                        {nameError && (
+                            <span className="NewProjectModalError">{t('modals.newProject.nameRequired')}</span>
+                        )}
                     </div>
                     <div className="NewProjectModalField">
-                        <label>{t('modals.newProject.descriptionLabel')}</label>
+                        <label className="NewProjectModalLabel">{t('modals.newProject.descriptionLabel')}</label>
                         <MdrTextarea placeholder={t('modals.newProject.descriptionPlaceholder')} value={description} onChange={setDescription} />
                     </div>
                 </div>

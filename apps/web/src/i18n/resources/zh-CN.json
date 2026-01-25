@@ -77,7 +77,9 @@
         "title": "新建项目",
         "subtitle": "开始一个新工作区。",
         "nameLabel": "项目名称",
+        "required": "必填",
         "namePlaceholder": "例如：营销网站",
+        "nameRequired": "项目名称为必填项。",
         "descriptionLabel": "描述",
         "descriptionPlaceholder": "你在构建什么？",
         "create": "创建"
@@ -86,7 +88,9 @@
         "title": "新建组件",
         "subtitle": "定义可复用的组件。",
         "nameLabel": "组件名称",
+        "required": "必填",
         "namePlaceholder": "例如：PricingCard",
+        "nameRequired": "组件名称为必填项。",
         "descriptionLabel": "描述",
         "descriptionPlaceholder": "这个组件做什么？",
         "create": "创建"
@@ -95,7 +99,9 @@
         "title": "新建节点图",
         "subtitle": "开始一个新的逻辑流程。",
         "nameLabel": "节点图名称",
+        "required": "必填",
         "namePlaceholder": "例如：用户引导",
+        "nameRequired": "节点图名称为必填项。",
         "descriptionLabel": "描述",
         "descriptionPlaceholder": "这个流程用于什么？",
         "create": "创建"

@@ -147,30 +147,3 @@
         }
     }
 }
-
-@media (prefers-color-scheme: dark) {
-
-    .home {
-        .nav {
-            .HomeProfileLink {
-                background: rgba(255, 255, 255, 0.08);
-            }
-        }
-
-        .content {
-            .titles {
-                color: var(--color-2);
-
-                h1 {
-                    span {
-                        color: var(--color-0);
-                    }
-                }
-            }
-
-            h2 {
-                color: var(--color-4);
-            }
-        }
-    }
-}

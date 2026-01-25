@@ -21,15 +21,21 @@ function NewComponentModal({ open, onClose }: NewComponentModalProps) {
     const navigate = useNavigate()
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
+    const [showErrors, setShowErrors] = useState(false)
 
     if (!open) return null
 
     const handleCreate = () => {
-        if (!name.trim()) return
+        if (!name.trim()) {
+            setShowErrors(true)
+            return
+        }
         const id = createProjectId()
         onClose()
         navigate(`/editor/project/${id}/component`)
     }
+
+    const nameError = showErrors && !name.trim()
 
     return (
         <div className="NewComponentModalOverlay" onClick={onClose}>
@@ -46,11 +52,24 @@ function NewComponentModal({ open, onClose }: NewComponentModalProps) {
 
                 <div className="NewComponentModalBody">
                     <div className="NewComponentModalField">
-                        <label>{t('modals.newComponent.nameLabel')}</label>
-                        <MdrInput placeholder={t('modals.newComponent.namePlaceholder')} value={name} onChange={setName} />
+                        <label className="NewComponentModalLabel" htmlFor="new-component-name">
+                            <span>{t('modals.newComponent.nameLabel')}</span>
+                            <span className="NewComponentModalRequired">{t('modals.newComponent.required')}</span>
+                        </label>
+                        <MdrInput
+                            id="new-component-name"
+                            placeholder={t('modals.newComponent.namePlaceholder')}
+                            value={name}
+                            onChange={setName}
+                            required
+                            state={nameError ? "Error" : "Default"}
+                        />
+                        {nameError && (
+                            <span className="NewComponentModalError">{t('modals.newComponent.nameRequired')}</span>
+                        )}
                     </div>
                     <div className="NewComponentModalField">
-                        <label>{t('modals.newComponent.descriptionLabel')}</label>
+                        <label className="NewComponentModalLabel">{t('modals.newComponent.descriptionLabel')}</label>
                         <MdrTextarea placeholder={t('modals.newComponent.descriptionPlaceholder')} value={description} onChange={setDescription} />
                     </div>
                 </div>

@@ -21,18 +21,6 @@
         padding: var(--spacing-lg);
     }
 
-    &.Small {
-        min-height: 100px;
-    }
-
-    &.Medium {
-        min-height: 200px;
-    }
-
-    &.Large {
-        min-height: 300px;
-    }
-
     &.Default {
         border: 1px solid var(--color-6);
     }
@@ -68,42 +56,6 @@
 
         &:active {
             transform: scale(0.98);
-        }
-    }
-}
-
-[data-theme="dark"] {
-    .MdrCard {
-        background-color: var(--color-10);
-        color: var(--color-0);
-
-        &.Default {
-            border-color: var(--color-5);
-        }
-
-        &.Bordered {
-            border-color: var(--color-5);
-        }
-
-        &.Elevated {
-            border-color: var(--color-5);
-            box-shadow: var(--shadow-lg);
-        }
-
-        &.Flat {
-            background-color: var(--color-8);
-        }
-
-        &.Hoverable {
-            &:hover {
-                box-shadow: var(--shadow-lg);
-            }
-        }
-
-        &.Clickable {
-            &:hover {
-                border-color: var(--color-1);
-            }
         }
     }
 }

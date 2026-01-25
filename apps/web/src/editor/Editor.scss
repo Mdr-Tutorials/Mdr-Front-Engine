@@ -11,10 +11,3 @@
     min-height: 100vh;
     overflow: auto;
 }
-
-@media (prefers-color-scheme: dark) {
-    .Editor {
-        background: linear-gradient(120deg, var(--color-10) 20%, var(--color-9) 100%);
-    }
-
-}

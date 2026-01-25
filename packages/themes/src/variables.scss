@@ -6,9 +6,14 @@
 
 body {
     font-family: Inter, 'HarmonyOS Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    // 设置默认背景和文字颜色，确保切换时有底色
+    background-color: var(--color-0);
+    color: var(--color-10);
+    transition: background-color 0.3s, color 0.3s;
 }
 
-$colors: (
+// 1. 定义两套颜色值映射（Primitive 层）
+$colors-light: (
     0: #FFFFFF,
     1: #F5F5F5,
     2: #EEEEEE,
@@ -31,6 +36,32 @@ $colors: (
     subwarning-hover: #e08e0027,
 );
 
+$colors-dark: (
+    // 这里的逻辑是将浅色的 0 (白) 映射到深色的 9/10 (黑/深灰)
+    0: #0D0D0D,
+    1: #1A1A1A,
+    2: #262626,
+    3: #333333,
+    4: #4D4D4D,
+    5: #808080,
+    6: #999999,
+    7: #CCCCCC,
+    8: #E0E0E0,
+    9: #F5F5F5,
+    10: #FFFFFF,
+    // 功能色在深色模式下通常需要微调亮度以符合对比度标准
+    success: #23ad41,
+    danger: #ff8080,
+    danger-hover: #ff6265,
+    subdanger: #441a1a,
+    subdanger-hover: #662222,
+    warning: #ffc107,
+    warning-hover: #ffb007,
+    subwarning: #332b00,
+    subwarning-hover: #4d4100,
+);
+
+// 其他不随主题变化的变量
 $spacing: (
     none: 0,
     xs: 4px,
@@ -38,17 +69,15 @@ $spacing: (
     md: 16px,
     lg: 24px,
     xl: 32px,
-    2xl: 48px,
+    2xl: 48px
 );
-
 $border-radius: (
     none: 0,
     sm: 4px,
     md: 8px,
     lg: 12px,
-    full: 9999px,
+    full: 9999px
 );
-
 $font-sizes: (
     xs: 12px,
     sm: 14px,
@@ -57,25 +86,27 @@ $font-sizes: (
     xl: 20px,
     2xl: 24px,
     3xl: 30px,
-    4xl: 36px,
+    4xl: 36px
 );
-
 $shadows: (
     sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05),
     md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1)
 );
-
 $transitions: (
     fast: 150ms ease,
-    normal: 300ms ease,
+    normal: 300ms ease
 );
 
+// 2. 默认变量注入（浅色模式）
 :root {
-    @each $key, $value in $colors {
+
+    // 注入颜色（浅色）
+    @each $key, $value in $colors-light {
         --color-#{$key}: #{$value};
     }
 
+    // 注入其他不变量
     @each $key, $value in $spacing {
         --spacing-#{$key}: #{$value};
     }
@@ -94,5 +125,27 @@ $transitions: (
 
     @each $key, $value in $transitions {
         --transition-#{$key}: #{$value};
+    }
+}
+
+// 3. 实现系统自动切换（可选，但推荐）
+@media (prefers-color-scheme: dark) {
+    :root {
+        @each $key, $value in $colors-dark {
+            --color-#{$key}: #{$value};
+        }
+    }
+}
+
+// 4. 实现手动强制切换（核心：利用 [data-theme]）
+[data-theme="light"] {
+    @each $key, $value in $colors-light {
+        --color-#{$key}: #{$value};
+    }
+}
+
+[data-theme="dark"] {
+    @each $key, $value in $colors-dark {
+        --color-#{$key}: #{$value};
     }
 }

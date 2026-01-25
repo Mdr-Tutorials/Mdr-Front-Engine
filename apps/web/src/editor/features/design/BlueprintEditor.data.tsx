@@ -170,7 +170,7 @@ const TEXT_SIZE_OPTIONS: ComponentPreviewOption[] = [
 ]
 
 const WIDE_GROUP_IDS = new Set(["navigation", "layout", "chart"])
-const WIDE_COMPONENT_IDS = new Set(["date-range-picker", "steps", "slider", "search", "file-upload", "regex-input", "image-upload", "date-picker", "verification-code", "rich-text-editor", "range"])
+const WIDE_COMPONENT_IDS = new Set(["date-range-picker", "steps", "slider", "password-strength", "search", "file-upload", "regex-input", "image-upload", "date-picker", "verification-code", "rich-text-editor", "range"])
 const createPlaceholderSvg = (label: string, width = 160, height = 120) => {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="100%" height="100%" fill="#eef1f6"/><text x="50%" y="50%" font-family="Arial, sans-serif" font-size="18" fill="#7b8794" dominant-baseline="middle" text-anchor="middle">${label}</text></svg>`
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
@@ -597,7 +597,7 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         variants: buildVariants(INPUT_SIZES, (size) => (
           <MdrSearch size={size} value="Query" />
         )),
-        scale: 0.45,
+        scale: 0.5,
       },
       {
         id: "date-picker",
@@ -626,7 +626,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         variants: buildVariants(INPUT_SIZES, (size) => (
           <MdrDateRangePicker size={size} startValue="2025-01-01" endValue="2025-01-07" />
         )),
-        scale: 0.5,
       },
       {
         id: "time-picker",
@@ -639,7 +638,7 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         variants: buildVariants(INPUT_SIZES, (size) => (
           <MdrTimePicker size={size} value="09:30" />
         )),
-        scale: 0.65,
+        scale: 0.85,
       },
       {
         id: "region-picker",
@@ -660,7 +659,7 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
             defaultValue={{ province: "east", city: "metro", district: "downtown" }}
           />
         )),
-        scale: 0.58,
+        scale: 0.8,
       },
       {
         id: "verification-code",
@@ -673,7 +672,7 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         variants: buildVariants(INPUT_SIZES, (size) => (
           <MdrVerificationCode size={size} defaultValue="123456" />
         )),
-        scale: 0.4,
+        scale: 0.6,
       },
       {
         id: "password-strength",

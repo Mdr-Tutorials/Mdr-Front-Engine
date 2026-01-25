@@ -21,15 +21,21 @@ function NewNodeGraphModal({ open, onClose }: NewNodeGraphModalProps) {
     const navigate = useNavigate()
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
+    const [showErrors, setShowErrors] = useState(false)
 
     if (!open) return null
 
     const handleCreate = () => {
-        if (!name.trim()) return
+        if (!name.trim()) {
+            setShowErrors(true)
+            return
+        }
         const id = createProjectId()
         onClose()
         navigate(`/editor/project/${id}/nodegraph`)
     }
+
+    const nameError = showErrors && !name.trim()
 
     return (
         <div className="NewNodeGraphModalOverlay" onClick={onClose}>
@@ -46,11 +52,24 @@ function NewNodeGraphModal({ open, onClose }: NewNodeGraphModalProps) {
 
                 <div className="NewNodeGraphModalBody">
                     <div className="NewNodeGraphModalField">
-                        <label>{t('modals.newNodeGraph.nameLabel')}</label>
-                        <MdrInput placeholder={t('modals.newNodeGraph.namePlaceholder')} value={name} onChange={setName} />
+                        <label className="NewNodeGraphModalLabel" htmlFor="new-nodegraph-name">
+                            <span>{t('modals.newNodeGraph.nameLabel')}</span>
+                            <span className="NewNodeGraphModalRequired">{t('modals.newNodeGraph.required')}</span>
+                        </label>
+                        <MdrInput
+                            id="new-nodegraph-name"
+                            placeholder={t('modals.newNodeGraph.namePlaceholder')}
+                            value={name}
+                            onChange={setName}
+                            required
+                            state={nameError ? "Error" : "Default"}
+                        />
+                        {nameError && (
+                            <span className="NewNodeGraphModalError">{t('modals.newNodeGraph.nameRequired')}</span>
+                        )}
                     </div>
                     <div className="NewNodeGraphModalField">
-                        <label>{t('modals.newNodeGraph.descriptionLabel')}</label>
+                        <label className="NewNodeGraphModalLabel">{t('modals.newNodeGraph.descriptionLabel')}</label>
                         <MdrTextarea placeholder={t('modals.newNodeGraph.descriptionPlaceholder')} value={description} onChange={setDescription} />
                     </div>
                 </div>
