@@ -1278,23 +1278,16 @@
 
   .BlueprintEditorTreeToggle:hover {
     background: rgba(255, 255, 255, 0.08);
-    color: var(--color-0);
-  }
-
-  .BlueprintEditorTreeItem {
-    color: var(--color-3);
   }
 
   .BlueprintEditorTreeItem:hover {
     background: rgba(255, 255, 255, 0.04);
     border-color: rgba(255, 255, 255, 0.12);
-    color: var(--color-0);
   }
 
   .BlueprintEditorTreeItem.Selected {
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.16);
-    color: var(--color-0);
   }
 
   .BlueprintEditorTreeItem.IsOver {
@@ -1422,6 +1415,5 @@
   .BlueprintEditorTreeExpand {
     border-color: rgba(255, 255, 255, 0.16);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.45);
-    color: var(--color-4);
   }
 }

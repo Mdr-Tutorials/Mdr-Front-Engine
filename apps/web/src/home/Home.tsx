@@ -1,6 +1,6 @@
 ﻿import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Download, Footprints, Github, Languages } from 'lucide-react';
+import { Download, Footprints, Github, Languages, Moon, Sun } from 'lucide-react';
 import { MdrAvatar, MdrButtonLink, MdrLink, MdrNav } from '@mdr/ui';
 import { IconMdr } from '../components/icons/IconMdr';
 import { ExportModal } from '@/editor/features/export/ExportModal';
@@ -14,12 +14,26 @@ import './Home.scss'
 function Home() {
     const { t, i18n } = useTranslation('home');
     const [count, setCount] = useState(0);
+    const [themeMode, setThemeMode] = useState<'light' | 'dark'>(() => {
+        if (typeof document === 'undefined') return 'light';
+        const storedTheme = document.documentElement.getAttribute('data-theme');
+        if (storedTheme === 'light' || storedTheme === 'dark') return storedTheme;
+        if (typeof window !== 'undefined' && window.matchMedia) {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        return 'light';
+    });
     const { setGeneratedCode, setExportModalOpen } = useEditorStore();
     const user = useAuthStore((state) => state.user);
     const handleIncrement = () => setCount((prev) => prev + 1);
     const toggleLanguage = () => {
         const nextLanguage = i18n.language?.startsWith('zh') ? 'en' : 'zh-CN';
         i18n.changeLanguage(nextLanguage);
+    };
+    const toggleTheme = () => {
+        const nextTheme = themeMode === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', nextTheme);
+        setThemeMode(nextTheme);
     };
 
     const handleQuickExport = () => {
@@ -70,6 +84,15 @@ function Home() {
                         title={t('nav.languageSwitch')}
                     >
                         <Languages size={18} />
+                    </button>
+                    <button
+                        type="button"
+                        className="HomeNavIcon"
+                        onClick={toggleTheme}
+                        aria-label={themeMode === 'dark' ? '切换到浅色主题' : '切换到深色主题'}
+                        title={themeMode === 'dark' ? '切换到浅色主题' : '切换到深色主题'}
+                    >
+                        {themeMode === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
                     </button>
                     {user ? (
                         <MdrLink to="/profile" className="HomeProfileLink">

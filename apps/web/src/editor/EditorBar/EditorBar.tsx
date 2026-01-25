@@ -17,7 +17,7 @@ function EditorBar() {
     const exitLabel = projectId ? t('bar.exitToEditor') : t('bar.exitToHome');
 
     return (
-      <nav className="EditorBar">
+      <nav className="EditorBar" data-theme="dark">
         <section className="EditorBarTop">
           <button
             className="EditorBarExitButton"

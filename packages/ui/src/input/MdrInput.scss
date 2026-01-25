@@ -142,25 +142,10 @@
 
 [data-theme="dark"] {
     .MdrInput input {
-        background-color: var(--color-10);
-        color: var(--color-0);
-        border-color: var(--color-5);
-
-        &::placeholder {
-            color: var(--color-5);
-        }
 
         &:focus {
             border-color: var(--color-primary, var(--color-1));
             box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, var(--color-1-rgb)), 0.1);
-        }
-
-        &:disabled {
-            background-color: var(--color-8);
-        }
-
-        &:read-only {
-            background-color: var(--color-8);
         }
     }
 
@@ -182,9 +167,6 @@
         }
     }
 
-    .MdrInputIcon {
-        color: var(--color-5);
-    }
 }
 
 .MdrInput-wrapper {

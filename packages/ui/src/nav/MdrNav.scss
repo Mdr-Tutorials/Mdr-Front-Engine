@@ -107,39 +107,3 @@
     color: var(--color-9);
     margin: 0 1rem;
 }
-
-@media (prefers-color-scheme: dark) {
-    .MdrNav {
-        border-color: var(--color-7);
-        background-color: var(--color-10);
-        color: var(--color-1);
-
-        &.Solid {
-            background-color: transparent;
-        }
-
-        &.Transparent {
-            background-color: transparent;
-            border-color: transparent;
-        }
-
-        &.Blurred {
-            background-color: rgba(var(--color-10-rgb), 0.8);
-        }
-    }
-
-    .MdrNavHeading {
-        color: var(--color-1);
-    }
-
-    .MdrNavRight {
-        p {
-            color: var(--color-3);
-
-            &:hover {
-                color: var(--color-0);
-                background-color: var(--color-8);
-            }
-        }
-    }
-}

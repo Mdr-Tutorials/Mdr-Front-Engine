@@ -48,6 +48,30 @@
     align-items: center;
 }
 
+.EditorBar[data-theme="dark"] {
+    background-color: var(--color-2);
+
+    .EditorBarTop,
+    .EditorBarCenter,
+    .EditorBarBottom {
+        .MdrIcon {
+            color: var(--color-8);
+
+            &:hover {
+                color: var(--color-10);
+            }
+        }
+    }
+}
+
+.EditorBar[data-theme="dark"] .EditorBarExitButton:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.EditorBar[data-theme="dark"] .EditorBarExitModal {
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
 .EditorBarExitOverlay {
     position: fixed;
     inset: 0;
@@ -91,21 +115,26 @@
 @media (prefers-color-scheme: dark) {
     .EditorBar {
         background-color: var(--color-2);
-    }
 
-    .EditorBarExitButton {
-        color: var(--color-10);
+        .EditorBarTop,
+        .EditorBarCenter,
+        .EditorBarBottom {
+            .MdrIcon {
+                color: var(--color-8);
+
+                &:hover {
+                    color: var(--color-10);
+                }
+            }
+        }
     }
 
     .EditorBarExitButton:hover {
         background: rgba(255, 255, 255, 0.08);
-        color: var(--color-3);
     }
 
     .EditorBarExitModal {
-        background: var(--color-10);
         border-color: rgba(255, 255, 255, 0.08);
-        color: var(--color-0);
     }
 
 }

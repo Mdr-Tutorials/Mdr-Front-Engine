@@ -39,23 +39,3 @@
     align-items: center;
     justify-content: center;
 }
-
-[data-theme="dark"] {
-    .MdrCollapse {
-        background-color: var(--color-10);
-        border-color: var(--color-7);
-    }
-
-    .MdrCollapseItem+.MdrCollapseItem {
-        border-top-color: var(--color-7);
-    }
-
-    .MdrCollapseHeader {
-        color: var(--color-2);
-    }
-
-    .MdrCollapseContent {
-        color: var(--color-5);
-        border-top-color: var(--color-7);
-    }
-}

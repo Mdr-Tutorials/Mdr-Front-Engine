@@ -20,14 +20,3 @@
         color: var(--color-9);
     }
 }
-
-[data-theme="dark"] {
-    .MdrAnchorNavigation {
-        color: var(--color-5);
-    }
-
-    .MdrAnchorNavigationItem.Active {
-        background-color: var(--color-8);
-        color: var(--color-1);
-    }
-}

@@ -42,15 +42,3 @@
 .MdrSidebar.Collapsed {
     width: 72px;
 }
-
-[data-theme="dark"] {
-    .MdrSidebar {
-        background-color: var(--color-10);
-        color: var(--color-2);
-        border-right: 1px solid var(--color-8);
-    }
-
-    .MdrSidebarItem.Active {
-        background-color: var(--color-8);
-    }
-}

@@ -31,22 +31,3 @@
     padding: var(--spacing-md) 0;
     color: var(--color-8);
 }
-
-[data-theme="dark"] {
-    .MdrTabsHeader {
-        border-bottom-color: var(--color-7);
-    }
-
-    .MdrTabsTab {
-        color: var(--color-5);
-
-        &.Active {
-            color: var(--color-1);
-            border-bottom-color: var(--color-1);
-        }
-    }
-
-    .MdrTabsContent {
-        color: var(--color-2);
-    }
-}

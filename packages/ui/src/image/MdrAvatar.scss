@@ -115,14 +115,3 @@
         background-color: var(--color-warning);
     }
 }
-
-[data-theme="dark"] {
-    .MdrAvatar {
-        background-color: var(--color-7);
-        color: var(--color-3);
-
-        .MdrAvatar-status {
-            border-color: var(--color-10);
-        }
-    }
-}

@@ -123,41 +123,8 @@
 
 [data-theme="dark"] {
     .MdrSearch {
-        background-color: var(--color-10);
-        border-color: var(--color-5);
-
         &:focus-within {
-            border-color: var(--color-1);
             box-shadow: 0 0 0 3px rgba(var(--color-1-rgb), 0.1);
-        }
-
-        &.Disabled {
-            background-color: var(--color-8);
-        }
-
-        .MdrSearchIcon {
-            color: var(--color-5);
-        }
-
-        input {
-            color: var(--color-0);
-
-            &::placeholder {
-                color: var(--color-5);
-            }
-        }
-
-        .MdrSearchClear {
-            color: var(--color-5);
-
-            &:hover {
-                background-color: var(--color-8);
-                color: var(--color-0);
-            }
-
-            &:active {
-                background-color: var(--color-7);
-            }
         }
     }
 }

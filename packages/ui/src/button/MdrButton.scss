@@ -76,7 +76,7 @@
     &.Secondary {
         background-color: var(--color-0);
         color: var(--color-8);
-        border-color: var(--color-6);
+        border-color: var(--color-4);
 
         &:not(.Disabled):hover {
             @include button-hover(var(--color-2), var(--color-10));
@@ -109,8 +109,8 @@
 
     &.Ghost {
         background-color: transparent;
-        color: var(--color-10);
-        border-color: var(--color-10);
+        color: var(--color-8);
+        border-color: var(--color-8);
 
         &:not(.Disabled):hover {
             background-color: rgba(var(--color-10-rgb), 0.1);

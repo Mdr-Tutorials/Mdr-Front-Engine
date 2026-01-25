@@ -151,23 +151,3 @@
         }
     }
 }
-
-[data-theme="dark"] {
-    .MdrImageGallery {
-        .MdrImageGallery-item {
-            background-color: var(--color-7);
-
-            &:hover {
-                box-shadow: var(--shadow-lg);
-            }
-        }
-
-        .MdrImageGallery-caption {
-            color: var(--color-3);
-        }
-
-        &.List .MdrImageGallery-caption {
-            color: var(--color-2);
-        }
-    }
-}
