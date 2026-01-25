@@ -4,7 +4,7 @@
     "private": true,
     "description": "可视化前端开发平台 - 从设计到部署的全流程解决方案",
     "license": "MIT",
-    "packageManager": "pnpm@10.20.0",
+    "packageManager": "pnpm@10.28.1",
     "workspaces": [
         "apps/*",
         "packages/*"

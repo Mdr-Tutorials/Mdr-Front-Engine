@@ -90,26 +90,33 @@
 .BlueprintEditorBody {
   --sidebar-width: 260px;
   --inspector-width: 280px;
-  display: grid;
-  grid-template-columns: var(--sidebar-width) 1fr var(--inspector-width);
-  gap: 12px;
-  padding: 14px 20px 20px;
+  --collapsed-panel-width: 36px;
+  position: relative;
+  display: flex;
   flex: 1;
   min-height: 0;
+  padding: 14px 20px 20px;
 }
 
 .BlueprintEditorBody.SidebarCollapsed {
-  --sidebar-width: 56px;
+  --sidebar-width: var(--collapsed-panel-width);
 }
 
 .BlueprintEditorBody.InspectorCollapsed {
-  --inspector-width: 56px;
+  --inspector-width: var(--collapsed-panel-width);
 }
 
 .BlueprintEditorSidebar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  z-index: 3;
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 14px;
   background: var(--color-0);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -143,8 +150,22 @@
 }
 
 .BlueprintEditorSidebar.Collapsed {
-  width: 56px;
+  width: var(--sidebar-width);
+  height: 36px;
+  bottom: auto;
   padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.BlueprintEditorSidebar.Collapsed .BlueprintEditorSidebarHeader {
+  padding: 0;
+  border-bottom: none;
+  width: 100%;
+  justify-content: center;
 }
 
 .BlueprintEditorSidebar.Collapsed .BlueprintEditorSidebarHeader span {
@@ -397,6 +418,9 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  flex: 1;
+  width: 100%;
+  z-index: 1;
   border-radius: 18px;
   border: 1px solid rgba(0, 0, 0, 0.06);
   background: var(--color-1);
@@ -444,18 +468,23 @@
   max-width: 320px;
 }
 
-.BlueprintEditorCanvasFooter {
+.BlueprintEditorViewportBar {
   display: flex;
   align-items: center;
+  flex-wrap: nowrap;
   gap: 10px;
-  padding: 8px 12px;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 4px 14px;
   background: var(--color-0);
   font-size: 11px;
   color: var(--color-7);
-  overflow-x: auto;
-  white-space: nowrap;
-  min-height: 36px;
+  min-height: 30px;
+}
+
+.ViewportControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
 }
 
 .ViewportLabel {
@@ -470,21 +499,25 @@
 }
 
 .ViewportInputs .MdrInput {
-  width: 88px;
-  max-width: 88px;
+  width: 76px;
+  max-width: 76px;
 }
 
 .ViewportInputs span {
   color: var(--color-6);
 }
 
-.ViewportPresets {
+.ViewportQuickPresets {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
-.ViewportPreset {
+.ViewportQuickPreset {
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 999px;
   padding: 2px 8px;
@@ -492,18 +525,159 @@
   background: var(--color-0);
   color: var(--color-7);
   cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.ViewportQuickPreset:hover {
+  border-color: rgba(0, 0, 0, 0.2);
+  color: var(--color-9);
+}
+
+.ViewportDevicePopover {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+.ViewportMoreButton {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+  background: var(--color-0);
+  color: var(--color-7);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.ViewportMoreButton:hover {
+  border-color: rgba(0, 0, 0, 0.2);
+  color: var(--color-9);
+}
+
+.ViewportDevicePopover .MdrPopoverPanel {
+  top: auto;
+  right: 0;
+  left: auto;
+  bottom: 100%;
+  width: min(760px, 90vw);
+  max-height: min(60vh, 520px);
+  overflow: auto;
+  padding: 10px;
+  margin-top: 0;
+  margin-bottom: 6px;
+}
+
+.ViewportDeviceList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.ViewportPreset {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  padding: 6px 10px;
+  font-size: 12px;
+  background: var(--color-0);
+  color: var(--color-7);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 190px;
+  text-align: left;
   transition: all var(--transition-fast);
 }
 
 .ViewportPreset:hover {
   border-color: rgba(0, 0, 0, 0.2);
   color: var(--color-9);
+  background: var(--color-1);
+}
+
+.ViewportPreset:focus-visible {
+  outline: 2px solid rgba(0, 0, 0, 0.2);
+  outline-offset: 2px;
+}
+
+.ViewportPresetIcon {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-2);
+  color: var(--color-8);
+  flex: 0 0 auto;
+}
+
+.ViewportPresetIcon.Phone {
+  background: rgba(67, 114, 255, 0.14);
+  color: rgba(38, 78, 200, 1);
+}
+
+.ViewportPresetIcon.Tablet {
+  background: rgba(52, 184, 149, 0.14);
+  color: rgba(18, 120, 95, 1);
+}
+
+.ViewportPresetIcon.Laptop {
+  background: rgba(255, 182, 82, 0.2);
+  color: rgba(176, 96, 10, 1);
+}
+
+.ViewportPresetIcon.Desktop {
+  background: rgba(96, 125, 139, 0.18);
+  color: rgba(64, 88, 100, 1);
+}
+
+.ViewportPresetIcon.Watch {
+  background: rgba(220, 90, 90, 0.16);
+  color: rgba(170, 50, 50, 1);
+}
+
+.ViewportPresetMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ViewportPresetName {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-9);
+}
+
+.ViewportPresetType {
+  font-size: 10px;
+  color: var(--color-6);
+}
+
+.ViewportPresetSize {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--color-6);
+  font-variant-numeric: tabular-nums;
 }
 
 .BlueprintEditorInspector {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: var(--inspector-width);
+  z-index: 3;
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 14px;
   background: var(--color-0);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -521,12 +695,35 @@
 }
 
 .BlueprintEditorInspector.Collapsed {
-  width: 56px;
-  padding: 10px;
+  width: var(--inspector-width);
+  height: 36px;
+  bottom: auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  align-items: center;
+  justify-content: center;
 }
 
 .BlueprintEditorInspector.Collapsed .InspectorHeader span {
   display: none;
+}
+
+.BlueprintEditorInspector.Collapsed .InspectorHeader {
+  padding: 0;
+  width: 100%;
+  justify-content: center;
+}
+
+.BlueprintEditorSidebar.Collapsed .BlueprintEditorCollapse,
+.BlueprintEditorInspector.Collapsed .BlueprintEditorCollapse {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--color-0);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.14);
 }
 
 .InspectorPlaceholder p {
@@ -561,12 +758,9 @@
 
 @media (max-width: 1100px) {
   .BlueprintEditorBody {
-    grid-template-columns: 1fr;
-  }
-
-  .BlueprintEditorSidebar,
-  .BlueprintEditorInspector {
-    order: 1;
+    --sidebar-width: 220px;
+    --inspector-width: 240px;
+    padding: 12px 16px 16px;
   }
 
   .BlueprintEditorCanvas {
@@ -675,7 +869,7 @@
     color: var(--color-0);
   }
 
-  .BlueprintEditorCanvasFooter {
+  .BlueprintEditorViewportBar {
     background: var(--color-10);
     border-top-color: rgba(255, 255, 255, 0.08);
     color: var(--color-4);
@@ -694,6 +888,49 @@
   .ViewportPreset:hover {
     border-color: rgba(255, 255, 255, 0.28);
     color: var(--color-0);
+  }
+
+  .ViewportQuickPreset {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: var(--color-10);
+    color: var(--color-4);
+  }
+
+  .ViewportQuickPreset:hover {
+    border-color: rgba(255, 255, 255, 0.28);
+    color: var(--color-0);
+  }
+
+  .ViewportMoreButton {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: var(--color-10);
+    color: var(--color-4);
+  }
+
+  .ViewportMoreButton:hover {
+    border-color: rgba(255, 255, 255, 0.28);
+    color: var(--color-0);
+  }
+
+  .ViewportPresetIcon {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--color-2);
+  }
+
+  .ViewportPresetName {
+    color: var(--color-0);
+  }
+
+  .ViewportPresetType,
+  .ViewportPresetSize {
+    color: var(--color-4);
+  }
+
+  .BlueprintEditorSidebar.Collapsed .BlueprintEditorCollapse,
+  .BlueprintEditorInspector.Collapsed .BlueprintEditorCollapse {
+    background: var(--color-9);
+    border-color: rgba(255, 255, 255, 0.16);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.45);
   }
 
   .InspectorSkeleton span {

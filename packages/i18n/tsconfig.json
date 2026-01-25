@@ -1,0 +1,22 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "baseUrl": ".",
+        "composite": true,
+        "declaration": true,
+        "declarationMap": true,
+        "emitDeclarationOnly": true,
+        "outDir": "./dist",
+        "noEmit": false,
+        "resolveJsonModule": true,
+        "allowSyntheticDefaultImports": true
+    },
+    "include": [
+        "src/**/*",
+        "scripts/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

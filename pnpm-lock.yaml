@@ -266,6 +266,16 @@ importers:
         specifier: ^1.6.1
         version: 1.6.1(@types/node@20.19.24)(jsdom@27.1.0)(lightningcss@1.30.2)(sass@1.97.1)
 
+  packages/i18n:
+    dependencies:
+      i18next:
+        specifier: ^23.11.5
+        version: 23.16.8
+    devDependencies:
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+
   packages/mir-compiler:
     devDependencies:
       '@types/node':
@@ -3874,6 +3884,9 @@ packages:
     resolution: {integrity: sha512-5gs5ytaNjBrh5Ow3zrvdUUY+0VxIuWVL4i9irt6friV+BqdCfmV11CQTWMiBYWHbXhco+J1kHfTOUkePhCDvMA==}
     engines: {node: '>=18'}
     hasBin: true
+
+  i18next@23.16.8:
+    resolution: {integrity: sha512-06r/TitrM88Mg5FdUXAKL96dJMzgqLE5dv3ryBAra4KCwD9mJ4ndOTS95ZuymIGoE+2hzfdaMak2X11/es7ZWg==}
 
   iconv-lite@0.6.3:
     resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
@@ -9837,6 +9850,10 @@ snapshots:
   human-signals@5.0.0: {}
 
   husky@9.1.7: {}
+
+  i18next@23.16.8:
+    dependencies:
+      '@babel/runtime': 7.28.4
 
   iconv-lite@0.6.3:
     dependencies:

@@ -1,0 +1,14 @@
+{
+    "common": {
+        "appName": "Mdr Front Engine",
+        "actions": {
+            "save": "Save",
+            "cancel": "Cancel",
+            "confirm": "Confirm"
+        },
+        "status": {
+            "loading": "Loading...",
+            "empty": "No data"
+        }
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "common": {
+        "appName": "Mdr 前端引擎",
+        "actions": {
+            "save": "保存",
+            "cancel": "取消",
+            "confirm": "确定"
+        },
+        "status": {
+            "loading": "加载中...",
+            "empty": "暂无数据"
+        }
+    }
+}
