@@ -19,6 +19,8 @@ export const DEFAULT_BLUEPRINT_STATE: BlueprintState = {
 
 interface EditorStore {
     mirDoc: MIRDocument
+    setMirDoc: (doc: MIRDocument) => void
+    updateMirDoc: (updater: (doc: MIRDocument) => MIRDocument) => void
     generatedCode: string;
     isExportModalOpen: boolean;
     blueprintStateByProject: Record<string, BlueprintState>;
@@ -38,6 +40,8 @@ export const useEditorStore = create<EditorStore>()((set) => ({
             }
         }
     },
+    setMirDoc: (doc) => set({ mirDoc: doc }),
+    updateMirDoc: (updater) => set((state) => ({ mirDoc: updater(state.mirDoc) })),
     generatedCode: '',
     isExportModalOpen: false,
     blueprintStateByProject: {},

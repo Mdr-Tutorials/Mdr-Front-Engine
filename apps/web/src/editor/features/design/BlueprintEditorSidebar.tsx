@@ -1,6 +1,7 @@
 import type { KeyboardEvent, ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
+import { useDraggable } from "@dnd-kit/core"
 import {
   COMPACT_PREVIEW_SCALE,
   DEFAULT_PREVIEW_SCALE,
@@ -41,6 +42,55 @@ const PreviewWrapper = ({ scale = DEFAULT_PREVIEW_SCALE, className = "", wide = 
     </div>
   </div>
 )
+
+type DraggablePreviewCardProps = {
+  itemId: string
+  className: string
+  role?: string
+  tabIndex?: number
+  ariaExpanded?: boolean
+  onClick?: () => void
+  onKeyDown?: (event: KeyboardEvent<HTMLDivElement>) => void
+  onMouseEnter?: () => void
+  onMouseLeave?: () => void
+  children: ReactNode
+}
+
+const DraggablePreviewCard = ({
+  itemId,
+  className,
+  role,
+  tabIndex,
+  ariaExpanded,
+  onClick,
+  onKeyDown,
+  onMouseEnter,
+  onMouseLeave,
+  children,
+}: DraggablePreviewCardProps) => {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: `palette:${itemId}`,
+    data: { kind: "palette-item", itemId },
+  })
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`${className} ${isDragging ? "IsDragging" : ""}`.trim()}
+      role={role}
+      tabIndex={tabIndex}
+      aria-expanded={ariaExpanded}
+      onClick={onClick}
+      onKeyDown={onKeyDown}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      {...attributes}
+      {...listeners}
+    >
+      {children}
+    </div>
+  )
+}
 
 export function BlueprintEditorSidebar({
   isCollapsed,
@@ -116,11 +166,12 @@ export function BlueprintEditorSidebar({
                           key={item.id}
                           className={`ComponentPreview ${isExpanded ? "Expanded" : ""} ${isWide ? "Wide" : ""}`}
                         >
-                          <div
+                          <DraggablePreviewCard
+                            itemId={item.id}
                             className={`ComponentPreviewCard ${hasVariants ? "HasVariants" : ""}`}
                             role={hasVariants ? "button" : undefined}
                             tabIndex={hasVariants ? 0 : -1}
-                            aria-expanded={hasVariants ? isExpanded : undefined}
+                            ariaExpanded={hasVariants ? isExpanded : undefined}
                             onClick={() => hasVariants && onTogglePreview(item.id)}
                             onKeyDown={(event) => onPreviewKeyDown(event, item.id, hasVariants)}
                             onMouseEnter={() => {
@@ -145,6 +196,7 @@ export function BlueprintEditorSidebar({
                                   event.stopPropagation()
                                   onTogglePreview(item.id)
                                 }}
+                                onPointerDown={(event) => event.stopPropagation()}
                                 aria-label={isExpanded ? t('sidebar.collapseVariants') : t('sidebar.expandVariants')}
                               >
                                 <span>{variants.length}</span>
@@ -164,6 +216,7 @@ export function BlueprintEditorSidebar({
                                           event.stopPropagation()
                                           onSizeSelect(item.id, option.id)
                                         }}
+                                        onPointerDown={(event) => event.stopPropagation()}
                                       >
                                         {option.label}
                                       </button>
@@ -184,13 +237,14 @@ export function BlueprintEditorSidebar({
                                           onStatusCycleStop(item.id)
                                           onStatusSelect(item.id, index)
                                         }}
+                                        onPointerDown={(event) => event.stopPropagation()}
                                       />
                                     ))}
                                   </div>
                                 )}
                               </div>
                             )}
-                          </div>
+                          </DraggablePreviewCard>
                           {hasVariants && isExpanded && (
                             <div className={`ComponentPreviewVariants ${isWide ? "Wide" : ""}`}>
                               {variants.map((variant) => {

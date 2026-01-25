@@ -1,5 +1,5 @@
 import type React from 'react';
-import { MdrButton, MdrDiv, MdrInput, MdrText } from '@mdr/ui';
+import { MdrButton, MdrButtonLink, MdrCard, MdrDiv, MdrHeading, MdrInput, MdrLink, MdrPanel, MdrParagraph, MdrSection, MdrText, MdrTextarea } from '@mdr/ui';
 import type { ComponentNode } from '@/core/types/engine.types';
 
 export type ComponentKind = 'html' | 'mdr' | 'custom';
@@ -128,6 +128,19 @@ export const mdrButtonAdapter: ComponentAdapter = {
     },
 };
 
+export const mdrTextPropAdapter: ComponentAdapter = {
+    kind: 'mdr',
+    supportsChildren: true,
+    applySelection: applyMdrSelection,
+    mapProps: ({ resolvedProps, resolvedText }) => {
+        const props = { ...resolvedProps };
+        if (resolvedText !== undefined && props.text === undefined) {
+            props.text = String(resolvedText);
+        }
+        return { props };
+    },
+};
+
 export const mdrInputAdapter: ComponentAdapter = {
     kind: 'mdr',
     supportsChildren: false,
@@ -154,8 +167,16 @@ const registerNativeComponents = (registry: ComponentRegistry) => {
 const registerMdrComponents = (registry: ComponentRegistry) => {
     registry.register('MdrDiv', MdrDiv, mdrAdapter);
     registry.register('MdrText', MdrText, mdrTextAdapter);
+    registry.register('MdrHeading', MdrHeading, mdrTextAdapter);
+    registry.register('MdrParagraph', MdrParagraph, mdrTextAdapter);
     registry.register('MdrButton', MdrButton, mdrButtonAdapter);
+    registry.register('MdrButtonLink', MdrButtonLink, mdrButtonAdapter);
     registry.register('MdrInput', MdrInput, mdrInputAdapter);
+    registry.register('MdrTextarea', MdrTextarea, mdrInputAdapter);
+    registry.register('MdrLink', MdrLink, mdrTextPropAdapter);
+    registry.register('MdrSection', MdrSection, mdrAdapter);
+    registry.register('MdrCard', MdrCard, mdrAdapter);
+    registry.register('MdrPanel', MdrPanel, mdrAdapter);
 };
 
 export const createComponentRegistry = (): ComponentRegistry => {

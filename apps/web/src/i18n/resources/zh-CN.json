@@ -544,6 +544,13 @@
       "collapseVariants": "收起变体",
       "expandVariants": "展开变体"
     },
+    "tree": {
+      "title": "组件树",
+      "collapse": "收起组件树",
+      "expand": "展开组件树",
+      "deleteSelected": "删除选中组件",
+      "empty": "暂无组件"
+    },
     "viewport": {
       "label": "视口",
       "zoom": "缩放",

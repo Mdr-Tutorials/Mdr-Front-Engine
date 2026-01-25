@@ -446,6 +446,50 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         ),
       },
       {
+        id: "flex",
+        name: "Flex",
+        preview: (
+          <MdrDiv display="Flex" gap="6px" padding="6px" backgroundColor="var(--color-1)" borderRadius="6px">
+            <MdrDiv width="18px" height="18px" backgroundColor="var(--color-3)" borderRadius="4px">
+              {null}
+            </MdrDiv>
+            <MdrDiv width="18px" height="18px" backgroundColor="var(--color-4)" borderRadius="4px">
+              {null}
+            </MdrDiv>
+            <MdrDiv width="18px" height="18px" backgroundColor="var(--color-5)" borderRadius="4px">
+              {null}
+            </MdrDiv>
+          </MdrDiv>
+        ),
+      },
+      {
+        id: "grid",
+        name: "Grid",
+        preview: (
+          <MdrDiv
+            display="Grid"
+            gap="6px"
+            padding="6px"
+            backgroundColor="var(--color-1)"
+            borderRadius="6px"
+            style={{ gridTemplateColumns: "repeat(2, 1fr)" }}
+          >
+            <MdrDiv height="16px" backgroundColor="var(--color-3)" borderRadius="4px">
+              {null}
+            </MdrDiv>
+            <MdrDiv height="16px" backgroundColor="var(--color-4)" borderRadius="4px">
+              {null}
+            </MdrDiv>
+            <MdrDiv height="16px" backgroundColor="var(--color-5)" borderRadius="4px">
+              {null}
+            </MdrDiv>
+            <MdrDiv height="16px" backgroundColor="var(--color-6)" borderRadius="4px">
+              {null}
+            </MdrDiv>
+          </MdrDiv>
+        ),
+      },
+      {
         id: "section",
         name: "Section",
         preview: (

@@ -57,3 +57,10 @@ export type QuickViewportPreset = {
   width: string
   height: string
 }
+
+export type DropPosition = "before" | "after" | "inside"
+
+export type DropIndicator = {
+  targetId: string
+  position: DropPosition
+}

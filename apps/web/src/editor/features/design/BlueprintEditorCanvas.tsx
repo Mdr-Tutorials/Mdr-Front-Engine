@@ -1,10 +1,11 @@
-import { type PointerEvent, useEffect, useMemo, useRef, useState } from "react"
+import { type KeyboardEvent, type PointerEvent, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { useDroppable } from "@dnd-kit/core"
 import { useEditorStore } from "@/editor/store/useEditorStore"
 import { useSettingsStore } from "@/editor/store/useSettingsStore"
 import { MIRRenderer } from "@/mir/renderer/MIRRenderer"
 import { createOrderedComponentRegistry, parseResolverOrder } from "@/mir/renderer/registry"
-import { testDoc } from "@/mock/pagaData"
+import { VIEWPORT_ZOOM_RANGE } from "./BlueprintEditor.data"
 
 type BlueprintEditorCanvasProps = {
   viewportWidth: string
@@ -13,6 +14,7 @@ type BlueprintEditorCanvasProps = {
   pan: { x: number; y: number }
   selectedId?: string
   onPanChange: (pan: { x: number; y: number }) => void
+  onZoomChange: (value: number) => void
   onSelectNode: (nodeId: string) => void
 }
 
@@ -26,6 +28,8 @@ type PanState = {
 }
 
 const DRAG_THRESHOLD = 3
+const WHEEL_LINE_HEIGHT = 16
+const WHEEL_PAGE_SIZE = 800
 const getTimestamp = () =>
   typeof performance !== "undefined" && typeof performance.now === "function"
     ? performance.now()
@@ -42,6 +46,18 @@ const isInteractiveTarget = (target: HTMLElement | null) => {
   return Boolean(target.closest("button, input, textarea, select, option, a, label, [contenteditable=\"true\"]"))
 }
 
+const normalizeWheelDelta = (event: WheelEvent) => {
+  if (event.deltaMode === 1) {
+    return { x: event.deltaX * WHEEL_LINE_HEIGHT, y: event.deltaY * WHEEL_LINE_HEIGHT }
+  }
+  if (event.deltaMode === 2) {
+    const pageWidth = typeof window === "undefined" ? WHEEL_PAGE_SIZE : window.innerWidth
+    const pageHeight = typeof window === "undefined" ? WHEEL_PAGE_SIZE : window.innerHeight
+    return { x: event.deltaX * pageWidth, y: event.deltaY * pageHeight }
+  }
+  return { x: event.deltaX, y: event.deltaY }
+}
+
 export function BlueprintEditorCanvas({
   viewportWidth,
   viewportHeight,
@@ -49,17 +65,20 @@ export function BlueprintEditorCanvas({
   pan,
   selectedId,
   onPanChange,
+  onZoomChange,
   onSelectNode,
 }: BlueprintEditorCanvasProps) {
   const { t } = useTranslation('blueprint')
   const assist = useSettingsStore((state) => state.global.assist)
   const panInertia = useSettingsStore((state) => state.global.panInertia)
+  const zoomStep = useSettingsStore((state) => state.global.zoomStep)
   const renderMode = useSettingsStore((state) => state.global.renderMode)
   const allowExternalProps = useSettingsStore((state) => state.global.allowExternalProps)
   const resolverOrder = useSettingsStore((state) => state.global.resolverOrder)
   const diagnostics = useSettingsStore((state) => state.global.diagnostics)
   const [isPanning, setIsPanning] = useState(false)
   const mirDoc = useEditorStore((state) => state.mirDoc)
+  const surfaceRef = useRef<HTMLDivElement | null>(null)
   const panState = useRef<PanState>({
     pointerId: null,
     startX: 0,
@@ -69,6 +88,10 @@ export function BlueprintEditorCanvas({
     moved: false,
   })
   const panRef = useRef(pan)
+  const zoomRef = useRef(zoom)
+  const zoomStepRef = useRef(zoomStep)
+  const onPanChangeRef = useRef(onPanChange)
+  const onZoomChangeRef = useRef(onZoomChange)
   const velocityRef = useRef({ x: 0, y: 0 })
   const lastMoveRef = useRef({ x: 0, y: 0, time: 0 })
   const inertiaFrameRef = useRef<number | null>(null)
@@ -82,10 +105,30 @@ export function BlueprintEditorCanvas({
     () => createOrderedComponentRegistry(parseResolverOrder(resolverOrder)),
     [resolverOrder]
   )
+  const { setNodeRef: setCanvasDropRef, isOver: isCanvasOver } = useDroppable({
+    id: "canvas-drop",
+    data: { kind: "canvas" },
+  })
 
   useEffect(() => {
     panRef.current = pan
   }, [pan])
+
+  useEffect(() => {
+    zoomRef.current = zoom
+  }, [zoom])
+
+  useEffect(() => {
+    zoomStepRef.current = zoomStep
+  }, [zoomStep])
+
+  useEffect(() => {
+    onPanChangeRef.current = onPanChange
+  }, [onPanChange])
+
+  useEffect(() => {
+    onZoomChangeRef.current = onZoomChange
+  }, [onZoomChange])
 
   useEffect(() => {
     return () => {
@@ -96,22 +139,66 @@ export function BlueprintEditorCanvas({
     }
   }, [])
 
-  const stopInertia = () => {
+  const stopInertia = useCallback(() => {
     if (typeof window === "undefined") return
     if (inertiaFrameRef.current) {
       window.cancelAnimationFrame(inertiaFrameRef.current)
       inertiaFrameRef.current = null
     }
-  }
+  }, [])
 
-  const applyPan = (nextPan: { x: number; y: number }) => {
+  const applyPan = useCallback((nextPan: { x: number; y: number }) => {
     panRef.current = nextPan
-    onPanChange(nextPan)
-  }
+    onPanChangeRef.current(nextPan)
+  }, [])
+
+  const applyZoom = useCallback((nextZoom: number) => {
+    const clamped = Math.min(VIEWPORT_ZOOM_RANGE.max, Math.max(VIEWPORT_ZOOM_RANGE.min, nextZoom))
+    zoomRef.current = clamped
+    onZoomChangeRef.current(clamped)
+  }, [])
+
+  useEffect(() => {
+    const surface = surfaceRef.current
+    if (!surface) return
+    const handleWheel = (event: WheelEvent) => {
+      const target = event.target instanceof HTMLElement ? event.target : null
+      if (isInteractiveTarget(target)) return
+      const { x, y } = normalizeWheelDelta(event)
+      const shouldZoom = event.ctrlKey || event.metaKey
+      stopInertia()
+      if (shouldZoom) {
+        const zoomAxis = y !== 0 ? y : x
+        if (zoomAxis === 0) return
+        event.preventDefault()
+        const direction = zoomAxis > 0 ? -1 : 1
+        applyZoom(zoomRef.current + direction * zoomStepRef.current)
+        return
+      }
+      const panX = event.shiftKey ? -y : -x
+      const panY = event.shiftKey ? 0 : -y
+      if (panX === 0 && panY === 0) return
+      event.preventDefault()
+      applyPan({ x: panRef.current.x + panX, y: panRef.current.y + panY })
+    }
+    surface.addEventListener("wheel", handleWheel, { passive: false })
+    return () => {
+      surface.removeEventListener("wheel", handleWheel)
+    }
+  }, [applyPan, applyZoom, stopInertia])
+
+  const setSurfaceNodeRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      surfaceRef.current = node
+      setCanvasDropRef(node)
+    },
+    [setCanvasDropRef],
+  )
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (event.button !== 0) return
     if (isInteractiveTarget(event.target as HTMLElement)) return
+    event.currentTarget.focus()
     stopInertia()
     panState.current = {
       pointerId: event.pointerId,
@@ -123,7 +210,7 @@ export function BlueprintEditorCanvas({
     }
     velocityRef.current = { x: 0, y: 0 }
     lastMoveRef.current = { x: event.clientX, y: event.clientY, time: getTimestamp() }
-    ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
+      ; (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
   }
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
@@ -194,23 +281,45 @@ export function BlueprintEditorCanvas({
     }
   }
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (!(event.ctrlKey || event.metaKey)) return
+    if (isInteractiveTarget(event.target as HTMLElement)) return
+    const isZoomIn =
+      event.key === "+" ||
+      event.key === "=" ||
+      event.code === "Equal" ||
+      event.code === "NumpadAdd"
+    const isZoomOut =
+      event.key === "-" ||
+      event.key === "_" ||
+      event.code === "Minus" ||
+      event.code === "NumpadSubtract"
+    if (!isZoomIn && !isZoomOut) return
+    event.preventDefault()
+    stopInertia()
+    const delta = (isZoomIn ? 1 : -1) * zoomStepRef.current
+    applyZoom(zoomRef.current + delta)
+  }
+
   const handleNodeSelect = (nodeId: string) => {
     if (suppressSelectRef.current) return
     onSelectNode(nodeId)
   }
 
-  const resolvedDoc = mirDoc?.ui?.root?.children?.length ? mirDoc : testDoc
-  const hasRoot = Boolean(resolvedDoc?.ui?.root)
+  const hasChildren = Boolean(mirDoc?.ui?.root?.children?.length)
 
   return (
     <section className={`BlueprintEditorCanvas ${showSelectionDiagnostics ? "" : "HideSelectionDiagnostics"}`}>
       <div
-        className={`BlueprintEditorCanvasSurface ${isPanning ? "IsPanning" : ""}`}
+        className={`BlueprintEditorCanvasSurface ${isPanning ? "IsPanning" : ""} ${isCanvasOver ? "IsOver" : ""}`}
+        ref={setSurfaceNodeRef}
+        tabIndex={0}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={endPan}
         onPointerCancel={endPan}
         onPointerLeave={endPan}
+        onKeyDown={handleKeyDown}
       >
         {showGrid && <div className="BlueprintEditorCanvasGrid" />}
         <div
@@ -225,10 +334,10 @@ export function BlueprintEditorCanvas({
               className="BlueprintEditorCanvasArtboard"
               style={{ width: canvasWidth, height: canvasHeight }}
             >
-              {hasRoot ? (
+              {hasChildren ? (
                 <MIRRenderer
-                  node={resolvedDoc.ui.root}
-                  mirDoc={resolvedDoc}
+                  node={mirDoc.ui.root}
+                  mirDoc={mirDoc}
                   selectedId={selectedId}
                   onNodeSelect={handleNodeSelect}
                   registry={registry}

@@ -544,6 +544,13 @@
       "collapseVariants": "Collapse variants",
       "expandVariants": "Expand variants"
     },
+    "tree": {
+      "title": "Component Tree",
+      "collapse": "Collapse component tree",
+      "expand": "Expand component tree",
+      "deleteSelected": "Delete selected component",
+      "empty": "No components yet."
+    },
     "viewport": {
       "label": "Viewport",
       "zoom": "Zoom",
