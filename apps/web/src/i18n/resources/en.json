@@ -19,6 +19,7 @@
       "community": "Community",
       "tutorials": "Tutorials",
       "docs": "Docs",
+      "signIn": "Sign in",
       "github": "GitHub",
       "languageSwitch": "Switch language"
     },
@@ -601,6 +602,91 @@
         "phone": "Phone",
         "watch": "Watch"
       }
+    }
+  },
+  "auth": {
+    "title": "Account access",
+    "subtitle": "Sign in to manage your workspace settings and assets.",
+    "tabs": {
+      "login": "Sign in",
+      "register": "Create account"
+    },
+    "fields": {
+      "name": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "description": "Description"
+    },
+    "placeholders": {
+      "name": "e.g. Alex Rivera",
+      "email": "name@company.com",
+      "password": "At least 8 characters",
+      "description": "Tell us about your role or focus"
+    },
+    "hints": {
+      "password": "Use 8+ characters with a mix of letters and numbers."
+    },
+    "actions": {
+      "login": "Sign in",
+      "register": "Create account"
+    },
+    "panel": {
+      "title": "Workspace access",
+      "subtitle": "Use your credentials to continue editing."
+    },
+    "highlights": {
+      "speedTitle": "Move fast",
+      "speedBody": "Save layouts, experiments, and exports in one place.",
+      "workspaceTitle": "Stay organized",
+      "workspaceBody": "Keep personal and team projects under one account."
+    },
+    "footer": {
+      "hint": "Need inspiration? Jump back to the landing page.",
+      "backHome": "Back to home"
+    }
+  },
+  "profile": {
+    "subtitle": "Manage your personal details.",
+    "sections": {
+      "identity": "Identity",
+      "session": "Session"
+    },
+    "labels": {
+      "name": "Name",
+      "email": "Email",
+      "id": "User ID",
+      "created": "Created",
+      "description": "Description",
+      "token": "Token",
+      "expires": "Expires"
+    },
+    "actions": {
+      "refresh": "Refresh",
+      "logout": "Sign out",
+      "login": "Sign in",
+      "backHome": "Back home",
+      "copyId": "Copy ID",
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "edit": {
+      "title": "Edit profile"
+    },
+    "messages": {
+      "saved": "Profile saved.",
+      "copiedId": "User ID copied.",
+      "copiedEmail": "Email copied.",
+      "copyFailed": "Copy failed."
+    },
+    "empty": {
+      "title": "No active session",
+      "subtitle": "Sign in to view your personal profile.",
+      "panelTitle": "Account required",
+      "panelBody": "Sign in to see your account details and session status."
+    },
+    "description": {
+      "empty": "No description yet."
     }
   }
 }

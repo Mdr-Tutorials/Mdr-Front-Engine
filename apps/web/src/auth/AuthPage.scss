@@ -1,0 +1,139 @@
+.AuthPage {
+  min-height: 100vh;
+  padding: 32px 48px;
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(320px, 460px);
+  gap: 48px;
+  align-items: center;
+  background: var(--color-0);
+  color: var(--color-10);
+}
+
+.AuthPageHero {
+  display: grid;
+  gap: 14px;
+  max-width: 520px;
+}
+
+.AuthPageHero .MdrHeading {
+  margin: 0;
+}
+
+.AuthHeroHighlights {
+  display: grid;
+  gap: 12px;
+}
+
+.AuthHeroHighlights div {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.06);
+}
+
+.AuthHeroHighlights p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--color-6);
+}
+
+.AuthHeroLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-9);
+}
+
+.AuthPageCard {
+  width: 100%;
+}
+
+.AuthPanel.MdrPanel {
+  background: var(--color-0);
+  border-radius: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12);
+  display: grid;
+  gap: 14px;
+}
+
+.AuthForm {
+  display: grid;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.AuthField {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-7);
+}
+
+.AuthField em {
+  font-size: 11px;
+  color: var(--color-6);
+  font-style: normal;
+}
+
+.AuthFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--color-6);
+  margin-top: 4px;
+}
+
+@media (max-width: 960px) {
+  .AuthPage {
+    grid-template-columns: 1fr;
+    padding: 24px;
+  }
+
+  .AuthPageCard {
+    max-width: 520px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .AuthPage {
+    background: radial-gradient(circle at top left, rgba(110, 140, 255, 0.18), transparent 60%),
+      radial-gradient(circle at bottom right, rgba(84, 190, 142, 0.2), transparent 55%),
+      var(--color-10);
+    color: var(--color-0);
+  }
+
+  .AuthHeroHighlights div {
+    background: rgba(20, 20, 20, 0.65);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.45);
+  }
+
+  .AuthHeroLabel {
+    color: var(--color-0);
+  }
+
+  .AuthHeroHighlights p {
+    color: var(--color-4);
+  }
+
+  .AuthPanel.MdrPanel {
+    background: rgba(12, 12, 12, 0.85);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 24px 44px rgba(0, 0, 0, 0.55);
+  }
+
+  .AuthField {
+    color: var(--color-4);
+  }
+
+  .AuthField em {
+    color: var(--color-5);
+  }
+
+  .AuthFooter {
+    color: var(--color-5);
+  }
+}

@@ -1,10 +1,11 @@
 ﻿import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Download, Footprints, Github, Languages } from 'lucide-react';
-import { MdrButtonLink, MdrNav } from '@mdr/ui';
+import { MdrAvatar, MdrButtonLink, MdrLink, MdrNav } from '@mdr/ui';
 import { IconMdr } from '../components/icons/IconMdr';
 import { ExportModal } from '@/editor/features/export/ExportModal';
 import { useEditorStore } from '@/editor/store/useEditorStore';
+import { useAuthStore } from '@/auth/useAuthStore';
 import { generateReactCode } from '@/mir/generator/mirToReact';
 import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
 import { testDoc } from '@/mock/pagaData';
@@ -14,6 +15,7 @@ function Home() {
     const { t, i18n } = useTranslation('home');
     const [count, setCount] = useState(0);
     const { setGeneratedCode, setExportModalOpen } = useEditorStore();
+    const user = useAuthStore((state) => state.user);
     const handleIncrement = () => setCount((prev) => prev + 1);
     const toggleLanguage = () => {
         const nextLanguage = i18n.language?.startsWith('zh') ? 'en' : 'zh-CN';
@@ -28,6 +30,16 @@ function Home() {
         // 3. 打开弹窗
         setExportModalOpen(true);
     };
+
+    const initials =
+        user?.name
+            ?.split(' ')
+            .map((item) => item.charAt(0))
+            .join('')
+            .slice(0, 2)
+            .toUpperCase() ||
+        user?.email?.charAt(0).toUpperCase() ||
+        undefined;
 
     return (
         <div className="home">
@@ -59,6 +71,13 @@ function Home() {
                     >
                         <Languages size={18} />
                     </button>
+                    {user ? (
+                        <MdrLink to="/profile" className="HomeProfileLink">
+                            <MdrAvatar size="Small" initials={initials} />
+                        </MdrLink>
+                    ) : (
+                        <MdrButtonLink text={t('nav.signIn')} size="Small" category="Ghost" to="/auth" />
+                    )}
                 </MdrNav.Right>
             </MdrNav>
             <div className="content">

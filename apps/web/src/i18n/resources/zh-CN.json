@@ -19,6 +19,7 @@
       "community": "社区",
       "tutorials": "教程",
       "docs": "文档",
+      "signIn": "登录",
       "github": "GitHub",
       "languageSwitch": "切换语言"
     },
@@ -601,6 +602,91 @@
         "phone": "手机",
         "watch": "手表"
       }
+    }
+  },
+  "auth": {
+    "title": "账号访问",
+    "subtitle": "登录后管理你的工作区设置与资源。",
+    "tabs": {
+      "login": "登录",
+      "register": "注册"
+    },
+    "fields": {
+      "name": "姓名",
+      "email": "邮箱",
+      "password": "密码",
+      "description": "描述"
+    },
+    "placeholders": {
+      "name": "例如：陈晓",
+      "email": "name@company.com",
+      "password": "至少 8 位字符",
+      "description": "介绍你的职责或方向"
+    },
+    "hints": {
+      "password": "建议至少 8 位，包含字母与数字。"
+    },
+    "actions": {
+      "login": "登录",
+      "register": "注册"
+    },
+    "panel": {
+      "title": "工作区登录",
+      "subtitle": "使用账号继续编辑。"
+    },
+    "highlights": {
+      "speedTitle": "高效协作",
+      "speedBody": "集中管理页面、实验与导出。",
+      "workspaceTitle": "有序管理",
+      "workspaceBody": "将个人与团队项目统一在同一账号下。"
+    },
+    "footer": {
+      "hint": "需要灵感？返回首页浏览。",
+      "backHome": "返回首页"
+    }
+  },
+  "profile": {
+    "subtitle": "管理你的个人信息。",
+    "sections": {
+      "identity": "身份信息",
+      "session": "会话"
+    },
+    "labels": {
+      "name": "姓名",
+      "email": "邮箱",
+      "id": "用户 ID",
+      "created": "创建时间",
+      "description": "描述",
+      "token": "Token",
+      "expires": "过期时间"
+    },
+    "actions": {
+      "refresh": "刷新",
+      "logout": "退出登录",
+      "login": "去登录",
+      "backHome": "返回首页",
+      "copyId": "复制 ID",
+      "edit": "编辑",
+      "save": "保存",
+      "cancel": "取消"
+    },
+    "edit": {
+      "title": "编辑个人信息"
+    },
+    "messages": {
+      "saved": "已保存。",
+      "copiedId": "已复制用户 ID。",
+      "copiedEmail": "已复制邮箱。",
+      "copyFailed": "复制失败。"
+    },
+    "empty": {
+      "title": "未登录",
+      "subtitle": "登录后查看个人信息。",
+      "panelTitle": "需要登录",
+      "panelBody": "登录后可查看账号信息与会话状态。"
+    },
+    "description": {
+      "empty": "暂未填写描述。"
     }
   }
 }

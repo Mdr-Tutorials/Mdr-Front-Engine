@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { MdrButton, MdrIcon, MdrIconLink } from "@mdr/ui";
 import { useNavigate, useParams } from "react-router";
 import { useSettingsStore } from "@/editor/store/useSettingsStore";
-import { LogIn, LayoutGrid, GitBranch, Box, Sparkles, TestTube, FileCode, Rocket, Settings } from "lucide-react";
+import { LogIn, LayoutGrid, GitBranch, Box, Sparkles, TestTube, FileCode, Rocket, Settings, User } from "lucide-react";
 
 function EditorBar() {
     const { t } = useTranslation('editor');
@@ -75,6 +75,11 @@ function EditorBar() {
           )}
         </section>
         <section className="EditorBarBottom">
+          <MdrIconLink
+            icon={<User size={22} />}
+            size={22}
+            to="/profile"
+          />
           <MdrIconLink
             icon={<Settings size={22} />}
             size={22}

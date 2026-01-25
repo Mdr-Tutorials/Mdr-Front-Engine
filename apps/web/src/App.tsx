@@ -6,11 +6,21 @@ import EditorHome from './editor/EditorHome'
 import BlueprintEditor from './editor/features/design/BlueprintEditor'
 import { EditorSettingsPage } from './editor/features/settings/EditorSettingsPage'
 import { ProjectSettingsPage } from './editor/features/settings/ProjectSettingsPage'
+import { AuthPage } from './auth/AuthPage'
+import { ProfilePage } from './auth/ProfilePage'
 
 export const createRoutes = (t: TFunction) => [
   {
     path: '/',
     element: <Home />,
+  },
+  {
+    path: 'auth',
+    element: <AuthPage />,
+  },
+  {
+    path: 'profile',
+    element: <ProfilePage />,
   },
   {
     path: 'editor',

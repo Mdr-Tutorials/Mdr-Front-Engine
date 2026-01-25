@@ -173,7 +173,7 @@ export const createComponentRegistry = (): ComponentRegistry => {
             return { ...entry, type };
         }
         if (type && type.toLowerCase() === type) {
-            return { type, component: type, adapter: htmlAdapter };
+            return { type, component: type as React.ElementType, adapter: htmlAdapter };
         }
         return { type, component: 'div', adapter: htmlAdapter, missing: true };
     };
@@ -238,11 +238,11 @@ export const createOrderedComponentRegistry = (
                 return { ...entry, type };
             }
             if (group === 'native' && type && type.toLowerCase() === type) {
-                return { type, component: type, adapter: htmlAdapter };
+                return { type, component: type as React.ElementType, adapter: htmlAdapter };
             }
         }
         if (type && type.toLowerCase() === type) {
-            return { type, component: type, adapter: htmlAdapter };
+            return { type, component: type as React.ElementType, adapter: htmlAdapter };
         }
         return { type, component: 'div', adapter: htmlAdapter, missing: true };
     };
