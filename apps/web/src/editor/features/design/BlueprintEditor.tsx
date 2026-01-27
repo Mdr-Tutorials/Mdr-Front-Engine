@@ -21,49 +21,67 @@ const createRouteId = () => {
   return `route-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
 }
 
-const createNodeId = (prefix: string) => {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-    return `${prefix}-${crypto.randomUUID()}`
-  }
-  return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
+const collectTypeCounts = (node: ComponentNode, counts: Record<string, number>) => {
+  counts[node.type] = (counts[node.type] ?? 0) + 1
+  node.children?.forEach((child) => collectTypeCounts(child, counts))
 }
 
-const createNodeFromPaletteItem = (itemId: string): ComponentNode => {
-  const id = createNodeId(itemId)
+const createNodeIdFactory = (doc: MIRDocument) => {
+  const counts: Record<string, number> = {}
+  collectTypeCounts(doc.ui.root, counts)
+  return (type: string) => {
+    const next = (counts[type] ?? 0) + 1
+    counts[type] = next
+    return `${type}-${next}`
+  }
+}
+
+const createNodeFromPaletteItem = (itemId: string, createId: (type: string) => string): ComponentNode => {
+  const typeFromPalette = (value: string) =>
+    `Mdr${value
+      .split(/[-_]/)
+      .filter(Boolean)
+      .map((segment) => `${segment.charAt(0).toUpperCase()}${segment.slice(1)}`)
+      .join("")}`
   const labelText = (text: string, size: "Tiny" | "Small" | "Medium" | "Large" | "Big" = "Tiny"): ComponentNode => ({
-    id: createNodeId("text"),
+    id: createId("MdrText"),
     type: "MdrText",
     text,
     props: { size, weight: size === "Tiny" ? "SemiBold" : "Bold" },
   })
 
   if (itemId === "text") {
-    return { id, type: "MdrText", text: "Text", props: { size: "Medium" } }
+    return { id: createId("MdrText"), type: "MdrText", text: "Text", props: { size: "Medium" } }
   }
   if (itemId === "heading") {
-    return { id, type: "MdrHeading", text: "Heading", props: { level: 2, weight: "Bold" } }
+    return { id: createId("MdrHeading"), type: "MdrHeading", text: "Heading", props: { level: 2, weight: "Bold" } }
   }
   if (itemId === "paragraph") {
-    return { id, type: "MdrParagraph", text: "Paragraph", props: { size: "Medium" } }
+    return { id: createId("MdrParagraph"), type: "MdrParagraph", text: "Paragraph", props: { size: "Medium" } }
   }
   if (itemId === "button") {
-    return { id, type: "MdrButton", text: "Button", props: { size: "Medium", category: "Primary" } }
+    return { id: createId("MdrButton"), type: "MdrButton", text: "Button", props: { size: "Medium", category: "Primary" } }
   }
   if (itemId === "button-link") {
-    return { id, type: "MdrButtonLink", text: "Link", props: { to: "/blueprint", size: "Medium", category: "Secondary" } }
+    return {
+      id: createId("MdrButtonLink"),
+      type: "MdrButtonLink",
+      text: "Link",
+      props: { to: "/blueprint", size: "Medium", category: "Secondary" },
+    }
   }
   if (itemId === "link") {
-    return { id, type: "MdrLink", text: "Link", props: { to: "/blueprint" } }
+    return { id: createId("MdrLink"), type: "MdrLink", text: "Link", props: { to: "/blueprint" } }
   }
   if (itemId === "input") {
-    return { id, type: "MdrInput", props: { placeholder: "Input", size: "Medium" } }
+    return { id: createId("MdrInput"), type: "MdrInput", props: { placeholder: "Input", size: "Medium" } }
   }
   if (itemId === "textarea") {
-    return { id, type: "MdrTextarea", props: { placeholder: "Textarea", rows: 3, size: "Medium" } }
+    return { id: createId("MdrTextarea"), type: "MdrTextarea", props: { placeholder: "Textarea", rows: 3, size: "Medium" } }
   }
   if (itemId === "div") {
     return {
-      id,
+      id: createId("MdrDiv"),
       type: "MdrDiv",
       props: {
         padding: "14px",
@@ -76,7 +94,7 @@ const createNodeFromPaletteItem = (itemId: string): ComponentNode => {
   }
   if (itemId === "flex") {
     return {
-      id,
+      id: createId("MdrDiv"),
       type: "MdrDiv",
       props: {
         display: "Flex",
@@ -88,14 +106,14 @@ const createNodeFromPaletteItem = (itemId: string): ComponentNode => {
       },
       children: [
         labelText("Flex", "Small"),
-        { id: createNodeId("box"), type: "MdrDiv", props: { width: 36, height: 18, borderRadius: 8, backgroundColor: "rgba(0,0,0,0.08)" } },
-        { id: createNodeId("box"), type: "MdrDiv", props: { width: 24, height: 18, borderRadius: 8, backgroundColor: "rgba(0,0,0,0.12)" } },
+        { id: createId("MdrDiv"), type: "MdrDiv", props: { width: 36, height: 18, borderRadius: 8, backgroundColor: "rgba(0,0,0,0.08)" } },
+        { id: createId("MdrDiv"), type: "MdrDiv", props: { width: 24, height: 18, borderRadius: 8, backgroundColor: "rgba(0,0,0,0.12)" } },
       ],
     }
   }
   if (itemId === "grid") {
     return {
-      id,
+      id: createId("MdrDiv"),
       type: "MdrDiv",
       props: {
         display: "Grid",
@@ -108,15 +126,15 @@ const createNodeFromPaletteItem = (itemId: string): ComponentNode => {
       style: { gridTemplateColumns: "repeat(2, minmax(0, 1fr))" },
       children: [
         labelText("Grid", "Small"),
-        { id: createNodeId("box"), type: "MdrDiv", props: { height: 18, borderRadius: 8, backgroundColor: "rgba(0,0,0,0.08)" } },
-        { id: createNodeId("box"), type: "MdrDiv", props: { height: 18, borderRadius: 8, backgroundColor: "rgba(0,0,0,0.12)" } },
-        { id: createNodeId("box"), type: "MdrDiv", props: { height: 18, borderRadius: 8, backgroundColor: "rgba(0,0,0,0.06)" } },
+        { id: createId("MdrDiv"), type: "MdrDiv", props: { height: 18, borderRadius: 8, backgroundColor: "rgba(0,0,0,0.08)" } },
+        { id: createId("MdrDiv"), type: "MdrDiv", props: { height: 18, borderRadius: 8, backgroundColor: "rgba(0,0,0,0.12)" } },
+        { id: createId("MdrDiv"), type: "MdrDiv", props: { height: 18, borderRadius: 8, backgroundColor: "rgba(0,0,0,0.06)" } },
       ],
     }
   }
   if (itemId === "section") {
     return {
-      id,
+      id: createId("MdrSection"),
       type: "MdrSection",
       props: { size: "Medium", padding: "Medium", backgroundColor: "Light" },
       children: [labelText("Section", "Small")],
@@ -124,7 +142,7 @@ const createNodeFromPaletteItem = (itemId: string): ComponentNode => {
   }
   if (itemId === "card") {
     return {
-      id,
+      id: createId("MdrCard"),
       type: "MdrCard",
       props: { size: "Medium", variant: "Bordered", padding: "Medium" },
       children: [labelText("Card", "Small")],
@@ -132,21 +150,17 @@ const createNodeFromPaletteItem = (itemId: string): ComponentNode => {
   }
   if (itemId === "panel") {
     return {
-      id,
+      id: createId("MdrPanel"),
       type: "MdrPanel",
       props: { size: "Medium", variant: "Default", padding: "Medium", title: "Panel" },
       children: [labelText("Panel content", "Small")],
     }
   }
 
-  const inferredType = `Mdr${itemId
-    .split(/[-_]/)
-    .filter(Boolean)
-    .map((segment) => `${segment.charAt(0).toUpperCase()}${segment.slice(1)}`)
-    .join("")}`
+  const inferredType = typeFromPalette(itemId)
 
   return {
-    id,
+    id: createId(inferredType),
     type: inferredType,
     props: {
       dataAttributes: { "data-palette-item": itemId },
@@ -226,6 +240,126 @@ const removeNodeById = (
   }
 }
 
+const removeNodeByIdWithNode = (
+  node: ComponentNode,
+  targetId: string,
+): { node: ComponentNode; removed: boolean; removedNode?: ComponentNode } => {
+  if (!node.children?.length) return { node, removed: false }
+  const idx = node.children.findIndex((item) => item.id === targetId)
+  if (idx >= 0) {
+    const removedNode = node.children[idx]
+    const nextChildren = [...node.children.slice(0, idx), ...node.children.slice(idx + 1)]
+    return {
+      node: { ...node, children: nextChildren.length > 0 ? nextChildren : undefined },
+      removed: true,
+      removedNode,
+    }
+  }
+  let removed = false
+  let removedNode: ComponentNode | undefined
+  const nextChildren = node.children.map((item) => {
+    const result = removeNodeByIdWithNode(item, targetId)
+    if (result.removed) {
+      removed = true
+      removedNode = result.removedNode
+    }
+    return result.node
+  })
+  if (!removed) return { node, removed: false }
+  return {
+    node: { ...node, children: nextChildren.length > 0 ? nextChildren : undefined },
+    removed: true,
+    removedNode,
+  }
+}
+
+const moveChildById = (
+  node: ComponentNode,
+  parentId: string,
+  childId: string,
+  direction: "up" | "down",
+): { node: ComponentNode; moved: boolean } => {
+  if (node.id === parentId) {
+    const children = node.children ?? []
+    const index = children.findIndex((item) => item.id === childId)
+    if (index === -1) return { node, moved: false }
+    const nextIndex = direction === "up" ? index - 1 : index + 1
+    if (nextIndex < 0 || nextIndex >= children.length) return { node, moved: false }
+    const nextChildren = [...children]
+    const [movedNode] = nextChildren.splice(index, 1)
+    nextChildren.splice(nextIndex, 0, movedNode)
+    return { node: { ...node, children: nextChildren }, moved: true }
+  }
+  if (!node.children?.length) return { node, moved: false }
+  let moved = false
+  const nextChildren = node.children.map((item) => {
+    const result = moveChildById(item, parentId, childId, direction)
+    if (result.moved) moved = true
+    return result.node
+  })
+  return moved ? { node: { ...node, children: nextChildren }, moved: true } : { node, moved: false }
+}
+
+const insertChildAtIndex = (
+  node: ComponentNode,
+  parentId: string,
+  child: ComponentNode,
+  index: number,
+): { node: ComponentNode; inserted: boolean } => {
+  if (node.id === parentId) {
+    const nextChildren = [...(node.children ?? [])]
+    const clampedIndex = Math.max(0, Math.min(index, nextChildren.length))
+    nextChildren.splice(clampedIndex, 0, child)
+    return { node: { ...node, children: nextChildren }, inserted: true }
+  }
+  if (!node.children?.length) return { node, inserted: false }
+  let inserted = false
+  const nextChildren = node.children.map((item) => {
+    const result = insertChildAtIndex(item, parentId, child, index)
+    if (result.inserted) inserted = true
+    return result.node
+  })
+  return inserted ? { node: { ...node, children: nextChildren }, inserted: true } : { node, inserted: false }
+}
+
+const arrayMove = <T,>(list: T[], fromIndex: number, toIndex: number) => {
+  const next = [...list]
+  const [item] = next.splice(fromIndex, 1)
+  next.splice(toIndex, 0, item)
+  return next
+}
+
+const reorderChildById = (
+  node: ComponentNode,
+  parentId: string,
+  activeId: string,
+  overId: string,
+): { node: ComponentNode; moved: boolean } => {
+  if (node.id === parentId) {
+    const children = node.children ?? []
+    const fromIndex = children.findIndex((item) => item.id === activeId)
+    const toIndex = children.findIndex((item) => item.id === overId)
+    if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) return { node, moved: false }
+    const nextChildren = arrayMove(children, fromIndex, toIndex)
+    return { node: { ...node, children: nextChildren }, moved: true }
+  }
+  if (!node.children?.length) return { node, moved: false }
+  let moved = false
+  const nextChildren = node.children.map((item) => {
+    const result = reorderChildById(item, parentId, activeId, overId)
+    if (result.moved) moved = true
+    return result.node
+  })
+  return moved ? { node: { ...node, children: nextChildren }, moved: true } : { node, moved: false }
+}
+
+const isAncestorOf = (root: ComponentNode, ancestorId: string, targetId: string) => {
+  if (ancestorId === targetId) return true
+  const ancestorNode = findNodeById(root, ancestorId)
+  if (!ancestorNode) return false
+  return Boolean(findNodeById(ancestorNode, targetId))
+}
+
 const findParentId = (node: ComponentNode, targetId: string, parentId: string | null = null): string | null => {
   if (node.id === targetId) return parentId
   const children = node.children ?? []
@@ -244,6 +378,20 @@ const findNodeById = (node: ComponentNode, nodeId: string): ComponentNode | null
     if (found) return found
   }
   return null
+}
+
+const cloneNodeWithNewIds = (
+  node: ComponentNode,
+  createId: (type: string) => string,
+): ComponentNode => {
+  const { children, ...rest } = node
+  const clonedRest =
+    typeof structuredClone === "function" ? structuredClone(rest) : JSON.parse(JSON.stringify(rest))
+  return {
+    ...clonedRest,
+    id: createId(node.type),
+    children: children?.map((child) => cloneNodeWithNewIds(child, createId)),
+  }
 }
 
 const supportsChildrenForNode = (node: ComponentNode) => {
@@ -438,6 +586,67 @@ function BlueprintEditor() {
     }
   }
 
+  const handleDeleteNode = (nodeId: string) => {
+    if (!nodeId) return
+    let nextSelectedId: string | undefined
+    let removed = false
+    updateMirDoc((doc) => {
+      if (nodeId === doc.ui.root.id) return doc
+      const parentId = findParentId(doc.ui.root, nodeId)
+      const removal = removeNodeById(doc.ui.root, nodeId)
+      removed = removal.removed
+      if (!removal.removed) return doc
+      if (selectedId === nodeId) {
+        nextSelectedId = parentId ?? undefined
+      }
+      return {
+        ...doc,
+        ui: { ...doc.ui, root: removal.node },
+      }
+    })
+    if (removed && selectedId === nodeId) {
+      setBlueprintState(blueprintKey, { selectedId: nextSelectedId })
+    }
+  }
+
+  const handleCopyNode = (nodeId: string) => {
+    if (!nodeId) return
+    let nextNodeId = ""
+    updateMirDoc((doc) => {
+      if (nodeId === doc.ui.root.id) return doc
+      const source = findNodeById(doc.ui.root, nodeId)
+      if (!source) return doc
+      const createId = createNodeIdFactory(doc)
+      const cloned = cloneNodeWithNewIds(source, createId)
+      nextNodeId = cloned.id
+      const insertedSibling = insertAfterById(doc.ui.root, nodeId, cloned)
+      if (insertedSibling.inserted) {
+        return { ...doc, ui: { ...doc.ui, root: insertedSibling.node } }
+      }
+      const insertedAtRoot = insertChildById(doc.ui.root, doc.ui.root.id, cloned)
+      return insertedAtRoot.inserted ? { ...doc, ui: { ...doc.ui, root: insertedAtRoot.node } } : doc
+    })
+    if (nextNodeId) {
+      handleNodeSelect(nextNodeId)
+    }
+  }
+
+  const handleMoveNode = (nodeId: string, direction: "up" | "down") => {
+    if (!nodeId) return
+    let moved = false
+    updateMirDoc((doc) => {
+      if (nodeId === doc.ui.root.id) return doc
+      const parentId = findParentId(doc.ui.root, nodeId)
+      if (!parentId) return doc
+      const result = moveChildById(doc.ui.root, parentId, nodeId, direction)
+      moved = result.moved
+      return result.moved ? { ...doc, ui: { ...doc.ui, root: result.node } } : doc
+    })
+    if (moved) {
+      handleNodeSelect(nodeId)
+    }
+  }
+
   useEffect(() => {
     return () => {
       if (typeof window === "undefined") return
@@ -462,18 +671,102 @@ function BlueprintEditor() {
     const over = event.over
     setActivePaletteItemId(null)
     if (!over) return
+    if (data?.kind === "tree-sort") {
+      const overData = over.data.current as any
+      const overId = typeof over.id === "string" ? over.id : null
+      const activeId = data.nodeId
+      const activeParentId = data.parentId
+      if (!activeId || !activeParentId) return
+      updateMirDoc((doc) => {
+        const root = doc.ui.root
+        if (activeId === root.id) return doc
+
+        let targetParentId: string | null = null
+        let targetIndex: number | null = null
+        const overTreeNodeId =
+          overData?.kind === "tree-node"
+            ? overData.nodeId
+            : overId?.startsWith("tree-node:")
+              ? overId.slice("tree-node:".length)
+              : null
+        const isOverRoot = overId === "tree-root" || overData?.kind === "tree-root"
+
+        if (overData?.kind === "tree-sort") {
+          const overNodeId = overData.nodeId
+          const overParentId = overData.parentId
+          if (!overNodeId || !overParentId) return doc
+          if (overNodeId === activeId) return doc
+          if (isAncestorOf(root, activeId, overParentId)) return doc
+          if (overParentId === activeParentId) {
+            const result = reorderChildById(root, activeParentId, activeId, overNodeId)
+            return result.moved ? { ...doc, ui: { ...doc.ui, root: result.node } } : doc
+          }
+          const targetParent = findNodeById(root, overParentId)
+          const siblings = targetParent?.children ?? []
+          const overIndex = siblings.findIndex((item) => item.id === overNodeId)
+          if (overIndex === -1) return doc
+          targetParentId = overParentId
+          targetIndex = overIndex
+        } else if (overTreeNodeId) {
+          if (overTreeNodeId === activeId) return doc
+          if (isAncestorOf(root, activeId, overTreeNodeId)) return doc
+          const overNode = findNodeById(root, overTreeNodeId)
+          if (!overNode) return doc
+          if (supportsChildrenForNode(overNode)) {
+            targetParentId = overTreeNodeId
+            targetIndex = overNode.children?.length ?? 0
+          } else {
+            const parentId = findParentId(root, overTreeNodeId)
+            if (!parentId) return doc
+            const parentNode = findNodeById(root, parentId)
+            const siblings = parentNode?.children ?? []
+            const overIndex = siblings.findIndex((item) => item.id === overTreeNodeId)
+            targetParentId = parentId
+            targetIndex = overIndex >= 0 ? overIndex + 1 : siblings.length
+          }
+        } else if (isOverRoot) {
+          targetParentId = root.id
+          targetIndex = root.children?.length ?? 0
+        }
+
+        if (!targetParentId || targetIndex === null) return doc
+        if (isAncestorOf(root, activeId, targetParentId)) return doc
+
+        let adjustedIndex = targetIndex
+        if (targetParentId === activeParentId) {
+          const parentNode = findNodeById(root, targetParentId)
+          const siblings = parentNode?.children ?? []
+          const fromIndex = siblings.findIndex((item) => item.id === activeId)
+          if (fromIndex === -1) return doc
+          if (fromIndex < targetIndex) adjustedIndex = targetIndex - 1
+          if (fromIndex === adjustedIndex) return doc
+        }
+
+        const removal = removeNodeByIdWithNode(root, activeId)
+        if (!removal.removed || !removal.removedNode) return doc
+        const insertion = insertChildAtIndex(removal.node, targetParentId, removal.removedNode, adjustedIndex)
+        return insertion.inserted ? { ...doc, ui: { ...doc.ui, root: insertion.node } } : doc
+      })
+      return
+    }
     if (data?.kind !== "palette-item") return
 
     const itemId = String(data.itemId)
-    const newNode = createNodeFromPaletteItem(itemId)
-
     const overData = over.data.current as any
     const dropKind = overData?.kind
     const dropNodeId = dropKind === "tree-node" ? String(overData.nodeId) : null
     const targetId = dropNodeId ?? (dropKind === "canvas" ? (selectedId ?? "root") : "root")
 
-    updateMirDoc((doc) => insertIntoMirDoc(doc, targetId, newNode))
-    handleNodeSelect(newNode.id)
+    let nextNodeId = ""
+    updateMirDoc((doc) => {
+      const createId = createNodeIdFactory(doc)
+      const newNode = createNodeFromPaletteItem(itemId, createId)
+      nextNodeId = newNode.id
+      return insertIntoMirDoc(doc, targetId, newNode)
+    })
+    if (nextNodeId) {
+      handleNodeSelect(nextNodeId)
+    }
   }
 
   return (
@@ -516,6 +809,9 @@ function BlueprintEditor() {
             onToggleCollapse={() => setTreeCollapsed((prev) => !prev)}
             onSelectNode={handleNodeSelect}
             onDeleteSelected={handleDeleteSelected}
+            onDeleteNode={handleDeleteNode}
+            onCopyNode={handleCopyNode}
+            onMoveNode={handleMoveNode}
           />
           <BlueprintEditorCanvas
             viewportWidth={viewportWidth}

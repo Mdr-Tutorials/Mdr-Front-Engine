@@ -2,6 +2,7 @@
 import { useNavigate } from "react-router"
 import { useTranslation } from "react-i18next"
 import { MdrButton, MdrInput, MdrTextarea } from "@mdr/ui"
+import { useEditorStore } from "@/editor/store/useEditorStore"
 import "./NewProjectModal.scss"
 
 interface NewProjectModalProps {
@@ -19,6 +20,7 @@ const createProjectId = () => {
 function NewProjectModal({ open, onClose }: NewProjectModalProps) {
     const { t } = useTranslation('editor')
     const navigate = useNavigate()
+    const setProject = useEditorStore((state) => state.setProject)
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
     const [showErrors, setShowErrors] = useState(false)
@@ -31,6 +33,7 @@ function NewProjectModal({ open, onClose }: NewProjectModalProps) {
             return
         }
         const id = createProjectId()
+        setProject({ id, name: name.trim(), description: description.trim() })
         onClose()
         navigate(`/editor/project/${id}/blueprint`)
     }

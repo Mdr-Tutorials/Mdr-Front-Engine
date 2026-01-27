@@ -1,6 +1,6 @@
 export const createGlobalDefaults = () => ({
     language: 'zh-CN',
-    theme: 'system',
+    theme: 'home',
     density: 'comfortable',
     fontScale: 100,
     autosaveInterval: 20,

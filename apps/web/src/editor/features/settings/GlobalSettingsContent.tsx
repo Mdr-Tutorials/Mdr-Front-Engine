@@ -1,4 +1,5 @@
 ﻿import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     MdrCheckList,
     MdrInput,
@@ -27,6 +28,7 @@ export const GlobalSettingsContent = ({
     overrides = {},
     onToggleOverride,
 }: GlobalSettingsContentProps) => {
+    const { t } = useTranslation('editor');
     const globalValues = useSettingsStore((state) => state.global);
     const setGlobalValue = useSettingsStore((state) => state.setGlobalValue);
     const [projectValues, setProjectValues] = useState(createProjectDefaults);
@@ -63,10 +65,14 @@ export const GlobalSettingsContent = ({
                     aria-pressed={enabled}
                     onClick={() => onToggleOverride?.(key)}
                 >
-                    {enabled ? 'Project override' : 'Use global'}
+                    {enabled ? t('settings.overrides.toggle.on') : t('settings.overrides.toggle.off')}
                 </button>
-                <span className="SettingsRowMetaLabel">Global: {globalValue}</span>
-                <span className="SettingsRowMetaLabel">Effective: {effectiveValue}</span>
+                <span className="SettingsRowMetaLabel">
+                    {t('settings.overrides.labels.global', { value: globalValue })}
+                </span>
+                <span className="SettingsRowMetaLabel">
+                    {t('settings.overrides.labels.effective', { value: effectiveValue })}
+                </span>
             </>
         );
     };
@@ -74,18 +80,18 @@ export const GlobalSettingsContent = ({
     return (
         <div className="SettingsSectionGroup">
             <SettingsPanel
-                title="Appearance & Language"
-                description="Defaults that shape the editor look and feel for every workspace."
+                title={t('settings.global.panels.appearance.title')}
+                description={t('settings.global.panels.appearance.description')}
             >
                 <SettingsRow
-                    label="Interface language"
-                    description="Primary locale for menus, panels, and tooltips."
+                    label={t('settings.global.rows.language.label')}
+                    description={t('settings.global.rows.language.description')}
                     meta={renderMeta('language')}
                     control={
                         <MdrSelect size="Small"
                             options={[
-                                { label: 'English', value: 'en' },
-                                { label: '简体中文', value: 'zh-CN' },
+                                { label: t('settings.global.rows.language.options.en'), value: 'en' },
+                                { label: t('settings.global.rows.language.options.zhCN'), value: 'zh-CN' },
                             ]}
                             value={String(resolveValue('language'))}
                             onChange={(value) => updateValue('language', value)}
@@ -94,15 +100,15 @@ export const GlobalSettingsContent = ({
                     }
                 />
                 <SettingsRow
-                    label="Theme preference"
-                    description="Pick the default color mode for the editor."
+                    label={t('settings.global.rows.theme.label')}
+                    description={t('settings.global.rows.theme.description')}
                     meta={renderMeta('theme')}
                     control={
                         <MdrRadioGroup
                             options={[
-                                { label: 'Follow system', value: 'system' },
-                                { label: 'Light', value: 'light' },
-                                { label: 'Dark', value: 'dark' },
+                                { label: t('settings.global.rows.theme.options.home'), value: 'home' },
+                                { label: t('settings.global.rows.theme.options.light'), value: 'light' },
+                                { label: t('settings.global.rows.theme.options.dark'), value: 'dark' },
                             ].map((option) => ({
                                 ...option,
                                 disabled: !isOverrideEnabled('theme'),
@@ -113,14 +119,14 @@ export const GlobalSettingsContent = ({
                     }
                 />
                 <SettingsRow
-                    label="Density"
-                    description="Control spacing and compactness for the workspace."
+                    label={t('settings.global.rows.density.label')}
+                    description={t('settings.global.rows.density.description')}
                     meta={renderMeta('density')}
                     control={
                         <MdrRadioGroup
                             options={[
-                                { label: 'Comfortable', value: 'comfortable' },
-                                { label: 'Compact', value: 'compact' },
+                                { label: t('settings.global.rows.density.options.comfortable'), value: 'comfortable' },
+                                { label: t('settings.global.rows.density.options.compact'), value: 'compact' },
                             ].map((option) => ({
                                 ...option,
                                 disabled: !isOverrideEnabled('density'),
@@ -131,8 +137,8 @@ export const GlobalSettingsContent = ({
                     }
                 />
                 <SettingsRow
-                    label="Font scale"
-                    description="Scale typography across the editor UI."
+                    label={t('settings.global.rows.fontScale.label')}
+                    description={t('settings.global.rows.fontScale.description')}
                     meta={renderMeta('fontScale')}
                     control={
                         <MdrSlider
@@ -149,12 +155,12 @@ export const GlobalSettingsContent = ({
                 />
             </SettingsPanel>
             <SettingsPanel
-                title="Editor behavior"
-                description="How the editor saves, confirms, and manages your work."
+                title={t('settings.global.panels.behavior.title')}
+                description={t('settings.global.panels.behavior.description')}
             >
                 <SettingsRow
-                    label="Auto-save interval (sec)"
-                    description="Interval to persist changes automatically."
+                    label={t('settings.global.rows.autosaveInterval.label')}
+                    description={t('settings.global.rows.autosaveInterval.description')}
                     meta={renderMeta('autosaveInterval')}
                     control={
                         <MdrSlider
@@ -169,8 +175,8 @@ export const GlobalSettingsContent = ({
                     }
                 />
                 <SettingsRow
-                    label="Undo steps"
-                    description="Maximum steps stored in the undo stack."
+                    label={t('settings.global.rows.undoSteps.label')}
+                    description={t('settings.global.rows.undoSteps.description')}
                     meta={renderMeta('undoSteps')}
                     control={
                         <MdrInput
@@ -182,16 +188,16 @@ export const GlobalSettingsContent = ({
                     }
                 />
                 <SettingsRow
-                    label="Confirm prompts"
-                    description="When to show confirmation dialogs."
+                    label={t('settings.global.rows.confirmPrompts.label')}
+                    description={t('settings.global.rows.confirmPrompts.description')}
                     meta={renderMeta('confirmPrompts')}
                     control={
                         <MdrCheckList
                             items={withDisabled(
                                 [
-                                    { label: 'Delete', value: 'delete' },
-                                    { label: 'Reset', value: 'reset' },
-                                    { label: 'Leave', value: 'leave' },
+                                    { label: t('settings.global.rows.confirmPrompts.options.delete'), value: 'delete' },
+                                    { label: t('settings.global.rows.confirmPrompts.options.reset'), value: 'reset' },
+                                    { label: t('settings.global.rows.confirmPrompts.options.leave'), value: 'leave' },
                                 ],
                                 !isOverrideEnabled('confirmPrompts')
                             )}
@@ -201,15 +207,15 @@ export const GlobalSettingsContent = ({
                     }
                 />
                 <SettingsRow
-                    label="Default panel layout"
-                    description="Choose the baseline layout for editor panels."
+                    label={t('settings.global.rows.panelLayout.label')}
+                    description={t('settings.global.rows.panelLayout.description')}
                     meta={renderMeta('panelLayout')}
                     control={
                         <MdrSelect size="Small"
                             options={[
-                                { label: 'Balanced', value: 'balanced' },
-                                { label: 'Focus', value: 'focus' },
-                                { label: 'Wide', value: 'wide' },
+                                { label: t('settings.global.rows.panelLayout.options.balanced'), value: 'balanced' },
+                                { label: t('settings.global.rows.panelLayout.options.focus'), value: 'focus' },
+                                { label: t('settings.global.rows.panelLayout.options.wide'), value: 'wide' },
                             ]}
                             value={String(resolveValue('panelLayout'))}
                             onChange={(value) => updateValue('panelLayout', value)}
@@ -219,12 +225,12 @@ export const GlobalSettingsContent = ({
                 />
             </SettingsPanel>
             <SettingsPanel
-                title="Blueprint defaults"
-                description="Defaults applied when creating or opening a new blueprint."
+                title={t('settings.global.panels.blueprint.title')}
+                description={t('settings.global.panels.blueprint.description')}
             >
                 <SettingsRow
-                    label="Viewport size"
-                    description="Default artboard size for new pages."
+                    label={t('settings.global.rows.viewportSize.label')}
+                    description={t('settings.global.rows.viewportSize.description')}
                     meta={renderMeta('viewportWidth')}
                     control={
                         <div className="SettingsInputGroup">
@@ -245,8 +251,8 @@ export const GlobalSettingsContent = ({
                     }
                 />
                 <SettingsRow
-                    label="Zoom step"
-                    description="Zoom increment when scrolling or pressing shortcuts."
+                    label={t('settings.global.rows.zoomStep.label')}
+                    description={t('settings.global.rows.zoomStep.description')}
                     meta={renderMeta('zoomStep')}
                     control={
                         <MdrSlider
@@ -261,16 +267,16 @@ export const GlobalSettingsContent = ({
                     }
                 />
                 <SettingsRow
-                    label="Assist overlays"
-                    description="Grid, guides, and snapping defaults."
+                    label={t('settings.global.rows.assist.label')}
+                    description={t('settings.global.rows.assist.description')}
                     meta={renderMeta('assist')}
                     control={
                         <MdrCheckList
                             items={withDisabled(
                                 [
-                                    { label: 'Grid', value: 'grid' },
-                                    { label: 'Alignment', value: 'align' },
-                                    { label: 'Snap', value: 'snap' },
+                                    { label: t('settings.global.rows.assist.options.grid'), value: 'grid' },
+                                    { label: t('settings.global.rows.assist.options.alignment'), value: 'align' },
+                                    { label: t('settings.global.rows.assist.options.snap'), value: 'snap' },
                                 ],
                                 !isOverrideEnabled('assist')
                             )}
@@ -280,8 +286,8 @@ export const GlobalSettingsContent = ({
                     }
                 />
                 <SettingsRow
-                    label="Pan inertia"
-                    description="Momentum applied after dragging the canvas."
+                    label={t('settings.global.rows.panInertia.label')}
+                    description={t('settings.global.rows.panInertia.description')}
                     meta={renderMeta('panInertia')}
                     control={
                         <MdrSlider
@@ -297,19 +303,25 @@ export const GlobalSettingsContent = ({
                 />
             </SettingsPanel>
             <SettingsPanel
-                title="Components & rendering"
-                description="Control how MIR resolves and renders components."
+                title={t('settings.global.panels.components.title')}
+                description={t('settings.global.panels.components.description')}
             >
                 <SettingsRow
-                    label="Resolver order"
-                    description="Lookup priority when multiple registries exist."
+                    label={t('settings.global.rows.resolverOrder.label')}
+                    description={t('settings.global.rows.resolverOrder.description')}
                     meta={renderMeta('resolverOrder')}
                     control={
                         <MdrSelect size="Small"
                             options={[
-                                { label: 'Custom → MDR → Native', value: 'custom>mdr>native' },
-                                { label: 'MDR → Native', value: 'mdr>native' },
-                                { label: 'Native only', value: 'native' },
+                                {
+                                    label: t('settings.global.rows.resolverOrder.options.customMdrNative'),
+                                    value: 'custom>mdr>native',
+                                },
+                                {
+                                    label: t('settings.global.rows.resolverOrder.options.mdrNative'),
+                                    value: 'mdr>native',
+                                },
+                                { label: t('settings.global.rows.resolverOrder.options.nativeOnly'), value: 'native' },
                             ]}
                             value={String(resolveValue('resolverOrder'))}
                             onChange={(value) => updateValue('resolverOrder', value)}
@@ -318,8 +330,8 @@ export const GlobalSettingsContent = ({
                     }
                 />
                 <SettingsRow
-                    label="Custom namespaces"
-                    description="Allowed namespaces for project components."
+                    label={t('settings.global.rows.customNamespaces.label')}
+                    description={t('settings.global.rows.customNamespaces.description')}
                     meta={renderMeta('customNamespaces')}
                     control={
                         <MdrTextarea
@@ -332,14 +344,14 @@ export const GlobalSettingsContent = ({
                     }
                 />
                 <SettingsRow
-                    label="Render mode"
-                    description="Choose strict validation or tolerant rendering."
+                    label={t('settings.global.rows.renderMode.label')}
+                    description={t('settings.global.rows.renderMode.description')}
                     meta={renderMeta('renderMode')}
                     control={
                         <MdrRadioGroup
                             options={[
-                                { label: 'Strict', value: 'strict' },
-                                { label: 'Tolerant', value: 'tolerant' },
+                                { label: t('settings.global.rows.renderMode.options.strict'), value: 'strict' },
+                                { label: t('settings.global.rows.renderMode.options.tolerant'), value: 'tolerant' },
                             ].map((option) => ({
                                 ...option,
                                 disabled: !isOverrideEnabled('renderMode'),
@@ -350,14 +362,14 @@ export const GlobalSettingsContent = ({
                     }
                 />
                 <SettingsRow
-                    label="External props"
-                    description="Allow runtime props injection for previews."
+                    label={t('settings.global.rows.externalProps.label')}
+                    description={t('settings.global.rows.externalProps.description')}
                     meta={renderMeta('allowExternalProps')}
                     control={
                         <MdrRadioGroup
                             options={[
-                                { label: 'Allow', value: 'enabled' },
-                                { label: 'Disable', value: 'disabled' },
+                                { label: t('settings.global.rows.externalProps.options.allow'), value: 'enabled' },
+                                { label: t('settings.global.rows.externalProps.options.disable'), value: 'disabled' },
                             ].map((option) => ({
                                 ...option,
                                 disabled: !isOverrideEnabled('allowExternalProps'),
@@ -369,20 +381,20 @@ export const GlobalSettingsContent = ({
                 />
             </SettingsPanel>
             <SettingsPanel
-                title="Code generation"
-                description="Defaults for exported code and artifacts."
+                title={t('settings.global.panels.codegen.title')}
+                description={t('settings.global.panels.codegen.description')}
             >
                 <SettingsRow
-                    label="Default framework"
-                    description="Primary target for generated UI code."
+                    label={t('settings.global.rows.defaultFramework.label')}
+                    description={t('settings.global.rows.defaultFramework.description')}
                     meta={renderMeta('defaultFramework')}
                     control={
                         <MdrSelect
                             size="Small"
                             options={[
-                                { label: 'React', value: 'react' },
-                                { label: 'Vue', value: 'vue' },
-                                { label: 'HTML', value: 'html' },
+                                { label: t('settings.global.rows.defaultFramework.options.react'), value: 'react' },
+                                { label: t('settings.global.rows.defaultFramework.options.vue'), value: 'vue' },
+                                { label: t('settings.global.rows.defaultFramework.options.html'), value: 'html' },
                             ]}
                             value={String(resolveValue('defaultFramework'))}
                             onChange={(value) => updateValue('defaultFramework', value)}
@@ -391,14 +403,14 @@ export const GlobalSettingsContent = ({
                     }
                 />
                 <SettingsRow
-                    label="Formatting"
-                    description="Code style and formatting preferences."
+                    label={t('settings.global.rows.formatting.label')}
+                    description={t('settings.global.rows.formatting.description')}
                     meta={renderMeta('formatting')}
                     control={
                         <MdrRadioGroup
                             options={[
-                                { label: 'Prettier', value: 'prettier' },
-                                { label: 'None', value: 'none' },
+                                { label: t('settings.global.rows.formatting.options.prettier'), value: 'prettier' },
+                                { label: t('settings.global.rows.formatting.options.none'), value: 'none' },
                             ].map((option) => ({
                                 ...option,
                                 disabled: !isOverrideEnabled('formatting'),
@@ -409,8 +421,8 @@ export const GlobalSettingsContent = ({
                     }
                 />
                 <SettingsRow
-                    label="Output path"
-                    description="Where generated code is stored."
+                    label={t('settings.global.rows.outputPath.label')}
+                    description={t('settings.global.rows.outputPath.description')}
                     meta={renderMeta('outputPath')}
                     control={
                         <MdrInput
@@ -422,16 +434,16 @@ export const GlobalSettingsContent = ({
                     }
                 />
                 <SettingsRow
-                    label="Import style"
-                    description="How generated imports are organized."
+                    label={t('settings.global.rows.importStyle.label')}
+                    description={t('settings.global.rows.importStyle.description')}
                     meta={renderMeta('importStyle')}
                     control={
                         <MdrSelect
                             size="Small"
                             options={[
-                                { label: 'Auto', value: 'auto' },
-                                { label: 'Grouped', value: 'grouped' },
-                                { label: 'Single', value: 'single' },
+                                { label: t('settings.global.rows.importStyle.options.auto'), value: 'auto' },
+                                { label: t('settings.global.rows.importStyle.options.grouped'), value: 'grouped' },
+                                { label: t('settings.global.rows.importStyle.options.single'), value: 'single' },
                             ]}
                             value={String(resolveValue('importStyle'))}
                             onChange={(value) => updateValue('importStyle', value)}
@@ -440,14 +452,14 @@ export const GlobalSettingsContent = ({
                     }
                 />
                 <SettingsRow
-                    label="Metadata comments"
-                    description="Include MIR metadata annotations in output."
+                    label={t('settings.global.rows.metadata.label')}
+                    description={t('settings.global.rows.metadata.description')}
                     meta={renderMeta('metadata')}
                     control={
                         <MdrRadioGroup
                             options={[
-                                { label: 'Include metadata', value: 'enabled' },
-                                { label: 'Skip metadata', value: 'disabled' },
+                                { label: t('settings.global.rows.metadata.options.include'), value: 'enabled' },
+                                { label: t('settings.global.rows.metadata.options.skip'), value: 'disabled' },
                             ].map((option) => ({
                                 ...option,
                                 disabled: !isOverrideEnabled('metadata'),
@@ -459,19 +471,19 @@ export const GlobalSettingsContent = ({
                 />
             </SettingsPanel>
             <SettingsPanel
-                title="Shortcuts & diagnostics"
-                description="Productivity settings and debug overlays."
+                title={t('settings.global.panels.shortcuts.title')}
+                description={t('settings.global.panels.shortcuts.description')}
             >
                 <SettingsRow
-                    label="Shortcut preset"
-                    description="Default keyboard shortcut profile."
+                    label={t('settings.global.rows.shortcutPreset.label')}
+                    description={t('settings.global.rows.shortcutPreset.description')}
                     meta={renderMeta('shortcutPreset')}
                     control={
                         <MdrSelect size="Small"
                             options={[
-                                { label: 'Default', value: 'default' },
-                                { label: 'Vim-style', value: 'vim' },
-                                { label: 'VS Code', value: 'vscode' },
+                                { label: t('settings.global.rows.shortcutPreset.options.default'), value: 'default' },
+                                { label: t('settings.global.rows.shortcutPreset.options.vim'), value: 'vim' },
+                                { label: t('settings.global.rows.shortcutPreset.options.vscode'), value: 'vscode' },
                             ]}
                             value={String(resolveValue('shortcutPreset'))}
                             onChange={(value) => updateValue('shortcutPreset', value)}
@@ -480,16 +492,16 @@ export const GlobalSettingsContent = ({
                     }
                 />
                 <SettingsRow
-                    label="Diagnostics overlay"
-                    description="Show visual debugging cues on the canvas."
+                    label={t('settings.global.rows.diagnostics.label')}
+                    description={t('settings.global.rows.diagnostics.description')}
                     meta={renderMeta('diagnostics')}
                     control={
                         <MdrCheckList
                             items={withDisabled(
                                 [
-                                    { label: 'Selection bounds', value: 'selection' },
-                                    { label: 'Perf hints', value: 'performance' },
-                                    { label: 'Events log', value: 'events' },
+                                    { label: t('settings.global.rows.diagnostics.options.selectionBounds'), value: 'selection' },
+                                    { label: t('settings.global.rows.diagnostics.options.perfHints'), value: 'performance' },
+                                    { label: t('settings.global.rows.diagnostics.options.eventsLog'), value: 'events' },
                                 ],
                                 !isOverrideEnabled('diagnostics')
                             )}
@@ -499,15 +511,15 @@ export const GlobalSettingsContent = ({
                     }
                 />
                 <SettingsRow
-                    label="Log level"
-                    description="Controls verbosity for debug logs."
+                    label={t('settings.global.rows.logLevel.label')}
+                    description={t('settings.global.rows.logLevel.description')}
                     meta={renderMeta('logLevel')}
                     control={
                         <MdrSelect size="Small"
                             options={[
-                                { label: 'Error', value: 'error' },
-                                { label: 'Warn', value: 'warn' },
-                                { label: 'Info', value: 'info' },
+                                { label: t('settings.global.rows.logLevel.options.error'), value: 'error' },
+                                { label: t('settings.global.rows.logLevel.options.warn'), value: 'warn' },
+                                { label: t('settings.global.rows.logLevel.options.info'), value: 'info' },
                             ]}
                             value={String(resolveValue('logLevel'))}
                             onChange={(value) => updateValue('logLevel', value)}
@@ -516,14 +528,14 @@ export const GlobalSettingsContent = ({
                     }
                 />
                 <SettingsRow
-                    label="Telemetry"
-                    description="Share anonymous usage metrics."
+                    label={t('settings.global.rows.telemetry.label')}
+                    description={t('settings.global.rows.telemetry.description')}
                     meta={renderMeta('telemetry')}
                     control={
                         <MdrRadioGroup
                             options={[
-                                { label: 'Allow', value: 'on' },
-                                { label: 'Disable', value: 'off' },
+                                { label: t('settings.global.rows.telemetry.options.allow'), value: 'on' },
+                                { label: t('settings.global.rows.telemetry.options.disable'), value: 'off' },
                             ].map((option) => ({
                                 ...option,
                                 disabled: !isOverrideEnabled('telemetry'),

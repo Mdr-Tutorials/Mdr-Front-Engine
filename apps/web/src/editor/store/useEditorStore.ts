@@ -24,10 +24,12 @@ interface EditorStore {
     generatedCode: string;
     isExportModalOpen: boolean;
     blueprintStateByProject: Record<string, BlueprintState>;
+    projectsById: Record<string, { id: string; name: string; description?: string }>;
 
     setGeneratedCode: (code: string) => void;
     setExportModalOpen: (open: boolean) => void;
     setBlueprintState: (projectId: string, partial: Partial<BlueprintState>) => void;
+    setProject: (project: { id: string; name: string; description?: string }) => void;
 }
 
 export const useEditorStore = create<EditorStore>()((set) => ({
@@ -45,6 +47,7 @@ export const useEditorStore = create<EditorStore>()((set) => ({
     generatedCode: '',
     isExportModalOpen: false,
     blueprintStateByProject: {},
+    projectsById: {},
 
     setGeneratedCode: (code) => set({ generatedCode: code }),
     setExportModalOpen: (open) => set({ isExportModalOpen: open }),
@@ -59,4 +62,11 @@ export const useEditorStore = create<EditorStore>()((set) => ({
                 },
             };
         }),
+    setProject: (project) =>
+        set((state) => ({
+            projectsById: {
+                ...state.projectsById,
+                [project.id]: project,
+            },
+        })),
 }));

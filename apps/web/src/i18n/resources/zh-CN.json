@@ -60,6 +60,50 @@
         "newNodeGraph": "新建节点图"
       }
     },
+    "projectHome": {
+      "title": "{{name}}",
+      "subtitle": "此项目的概览与常用入口。",
+      "untitled": "未命名项目 {{id}}",
+      "fields": {
+        "id": "项目 ID",
+        "name": "项目名称"
+      },
+      "actions": {
+        "projectInfo": "项目信息",
+        "blueprint": {
+          "label": "蓝图",
+          "description": "设计界面与布局结构。"
+        },
+        "component": {
+          "label": "组件",
+          "description": "管理可复用组件。"
+        },
+        "nodegraph": {
+          "label": "节点图",
+          "description": "构建逻辑与数据流。"
+        },
+        "animation": {
+          "label": "动画",
+          "description": "打造动效与过渡。"
+        },
+        "testing": {
+          "label": "测试",
+          "description": "验证交互与流程。"
+        },
+        "export": {
+          "label": "导出",
+          "description": "生成并分享产物。"
+        },
+        "deployment": {
+          "label": "部署",
+          "description": "配置发布环境。"
+        },
+        "settings": {
+          "label": "项目设置",
+          "description": "管理项目配置。"
+        }
+      }
+    },
     "bar": {
       "cancel": "取消",
       "exit": "退出",
@@ -511,6 +555,441 @@
           "body": "布局和交互尽量贴近用户熟悉的模式，让迁移成本更低。"
         }
       }
+    },
+    "settings": {
+      "actions": {
+        "exit": "退出设置"
+      },
+      "editorPage": {
+        "title": "编辑器设置",
+        "subtitle": "对每个项目和新工作区生效的全局默认值。"
+      },
+      "projectPage": {
+        "title": "项目设置",
+        "subtitle": "项目专属配置，并可选覆盖全局默认值。",
+        "tabs": {
+          "project": "项目设置",
+          "global": "全局默认值"
+        },
+        "overrides": {
+          "title": "覆盖",
+          "body": "切换某一行即可为此项目覆盖对应的全局默认值。"
+        }
+      },
+      "overrides": {
+        "toggle": {
+          "on": "项目覆盖",
+          "off": "使用全局"
+        },
+        "labels": {
+          "global": "全局：{{value}}",
+          "effective": "生效：{{value}}"
+        }
+      },
+      "global": {
+        "panels": {
+          "appearance": {
+            "title": "外观与语言",
+            "description": "影响所有工作区编辑器外观与体验的默认设置。"
+          },
+          "behavior": {
+            "title": "编辑器行为",
+            "description": "控制保存、确认提示和工作管理方式。"
+          },
+          "blueprint": {
+            "title": "蓝图默认值",
+            "description": "创建或打开新蓝图时应用的默认设置。"
+          },
+          "components": {
+            "title": "组件与渲染",
+            "description": "控制 MIR 解析与渲染组件的方式。"
+          },
+          "codegen": {
+            "title": "代码生成",
+            "description": "导出代码与构建产物的默认设置。"
+          },
+          "shortcuts": {
+            "title": "快捷键与诊断",
+            "description": "提升效率的设置与调试叠加层。"
+          }
+        },
+        "rows": {
+          "language": {
+            "label": "界面语言",
+            "description": "用于菜单、面板和提示的主语言。",
+            "options": {
+              "en": "English",
+              "zhCN": "简体中文"
+            }
+          },
+          "theme": {
+            "label": "主题偏好",
+            "description": "选择编辑器默认的颜色模式。",
+            "options": {
+              "home": "跟随主页",
+              "light": "浅色",
+              "dark": "深色"
+            }
+          },
+          "density": {
+            "label": "密度",
+            "description": "调整工作区的间距与紧凑程度。",
+            "options": {
+              "comfortable": "舒适",
+              "compact": "紧凑"
+            }
+          },
+          "fontScale": {
+            "label": "字体缩放",
+            "description": "缩放整个编辑器界面的文字大小。"
+          },
+          "autosaveInterval": {
+            "label": "自动保存间隔（秒）",
+            "description": "自动保存更改的时间间隔。"
+          },
+          "undoSteps": {
+            "label": "撤销步数",
+            "description": "撤销栈中保存的最大步数。"
+          },
+          "confirmPrompts": {
+            "label": "确认提示",
+            "description": "何时显示确认对话框。",
+            "options": {
+              "delete": "删除",
+              "reset": "重置",
+              "leave": "离开"
+            }
+          },
+          "panelLayout": {
+            "label": "默认面板布局",
+            "description": "选择编辑器面板的基础布局。",
+            "options": {
+              "balanced": "均衡",
+              "focus": "专注",
+              "wide": "宽屏"
+            }
+          },
+          "viewportSize": {
+            "label": "视口尺寸",
+            "description": "新页面的默认画板尺寸。"
+          },
+          "zoomStep": {
+            "label": "缩放步长",
+            "description": "滚轮或快捷键缩放时的增量。"
+          },
+          "assist": {
+            "label": "辅助覆盖层",
+            "description": "网格、对齐参考与吸附的默认设置。",
+            "options": {
+              "grid": "网格",
+              "alignment": "对齐",
+              "snap": "吸附"
+            }
+          },
+          "panInertia": {
+            "label": "平移惯性",
+            "description": "画布拖拽后的惯性效果。"
+          },
+          "resolverOrder": {
+            "label": "解析顺序",
+            "description": "存在多个注册表时的查找优先级。",
+            "options": {
+              "customMdrNative": "自定义 → MDR → 原生",
+              "mdrNative": "MDR → 原生",
+              "nativeOnly": "仅原生"
+            }
+          },
+          "customNamespaces": {
+            "label": "自定义命名空间",
+            "description": "项目组件允许使用的命名空间。"
+          },
+          "renderMode": {
+            "label": "渲染模式",
+            "description": "选择严格校验或宽松渲染。",
+            "options": {
+              "strict": "严格",
+              "tolerant": "宽松"
+            }
+          },
+          "externalProps": {
+            "label": "外部 Props",
+            "description": "允许在预览时注入运行时 Props。",
+            "options": {
+              "allow": "允许",
+              "disable": "禁用"
+            }
+          },
+          "defaultFramework": {
+            "label": "默认框架",
+            "description": "生成 UI 代码的主要目标框架。",
+            "options": {
+              "react": "React",
+              "vue": "Vue",
+              "html": "HTML"
+            }
+          },
+          "formatting": {
+            "label": "格式化",
+            "description": "代码风格与格式化偏好。",
+            "options": {
+              "prettier": "Prettier",
+              "none": "无"
+            }
+          },
+          "outputPath": {
+            "label": "输出路径",
+            "description": "生成代码保存的位置。"
+          },
+          "importStyle": {
+            "label": "导入风格",
+            "description": "生成的 import 如何组织。",
+            "options": {
+              "auto": "自动",
+              "grouped": "分组",
+              "single": "单条"
+            }
+          },
+          "metadata": {
+            "label": "元数据注释",
+            "description": "在输出中包含 MIR 元数据注释。",
+            "options": {
+              "include": "包含元数据",
+              "skip": "跳过元数据"
+            }
+          },
+          "shortcutPreset": {
+            "label": "快捷键预设",
+            "description": "默认的键盘快捷键方案。",
+            "options": {
+              "default": "默认",
+              "vim": "Vim 风格",
+              "vscode": "VS Code"
+            }
+          },
+          "diagnostics": {
+            "label": "诊断叠加层",
+            "description": "在画布上显示可视化调试提示。",
+            "options": {
+              "selectionBounds": "选区边界",
+              "perfHints": "性能提示",
+              "eventsLog": "事件日志"
+            }
+          },
+          "logLevel": {
+            "label": "日志级别",
+            "description": "控制调试日志的详细程度。",
+            "options": {
+              "error": "错误",
+              "warn": "警告",
+              "info": "信息"
+            }
+          },
+          "telemetry": {
+            "label": "遥测",
+            "description": "分享匿名使用数据。",
+            "options": {
+              "allow": "允许",
+              "disable": "禁用"
+            }
+          }
+        }
+      },
+      "project": {
+        "panels": {
+          "basics": {
+            "title": "项目基础",
+            "description": "此项目独有的标识与默认设置。"
+          },
+          "collaboration": {
+            "title": "协作",
+            "description": "访问、权限与团队工作流的默认设置。"
+          },
+          "designSystem": {
+            "title": "设计系统",
+            "description": "项目专属的 UI Token 与资源库设置。"
+          },
+          "integrations": {
+            "title": "集成与环境",
+            "description": "数据源、认证与环境相关设置。"
+          },
+          "mir": {
+            "title": "MIR 与校验",
+            "description": "Schema 约束与节点策略。"
+          },
+          "build": {
+            "title": "构建与导出",
+            "description": "项目导出配置与构建选项。"
+          }
+        },
+        "rows": {
+          "name": {
+            "label": "项目名称",
+            "description": "在导航与导出中显示的名称。"
+          },
+          "description": {
+            "label": "描述",
+            "description": "面向协作者的高层简介。"
+          },
+          "defaultRoute": {
+            "label": "默认路由",
+            "description": "打开项目时的默认入口路径。"
+          },
+          "timezone": {
+            "label": "时区",
+            "description": "用于日志、调度与时间戳。",
+            "options": {
+              "utc": "UTC",
+              "utcMinus5": "UTC-5（纽约）",
+              "utcPlus1": "UTC+1（柏林）",
+              "utcPlus8": "UTC+8（上海）"
+            }
+          },
+          "defaultRole": {
+            "label": "默认角色",
+            "description": "新协作者默认授予的角色。",
+            "options": {
+              "viewer": "查看者",
+              "editor": "编辑者",
+              "admin": "管理员"
+            }
+          },
+          "previewAccess": {
+            "label": "预览访问",
+            "description": "谁可以打开预览链接。",
+            "options": {
+              "restricted": "受限",
+              "public": "任何拥有链接的人"
+            }
+          },
+          "auditRetention": {
+            "label": "审计保留（天）",
+            "description": "审计事件的保留时长。"
+          },
+          "notifications": {
+            "label": "通知",
+            "description": "默认的通知渠道。",
+            "options": {
+              "mentions": "提及",
+              "builds": "构建",
+              "deployments": "部署"
+            }
+          },
+          "themeTokenSet": {
+            "label": "主题 Token 集",
+            "description": "用于渲染颜色和间距的 Token 包。",
+            "options": {
+              "mdrDefault": "MDR 默认",
+              "mdrMidnight": "MDR 午夜",
+              "mdrSunrise": "MDR 日出"
+            }
+          },
+          "componentLibraryVersion": {
+            "label": "组件库版本",
+            "description": "固定使用的 MDR 共享组件版本。",
+            "options": {
+              "v142Stable": "v1.4.2（稳定）",
+              "v150Beta": "v1.5.0（Beta）"
+            }
+          },
+          "assetHost": {
+            "label": "资源 Host",
+            "description": "主要 CDN 或资源桶的 URL。"
+          },
+          "fontPack": {
+            "label": "字体包",
+            "description": "设计系统可用的字体族。"
+          },
+          "iconSet": {
+            "label": "图标集",
+            "description": "UI 模板的默认图标库。"
+          },
+          "apiBase": {
+            "label": "API 基础 URL",
+            "description": "数据请求的主要 API 端点。"
+          },
+          "authMode": {
+            "label": "认证模式",
+            "description": "预览使用的认证流程。",
+            "options": {
+              "oauth": "OAuth",
+              "apiKey": "API 密钥",
+              "none": "无"
+            }
+          },
+          "envPrefix": {
+            "label": "环境变量前缀",
+            "description": "注入环境变量时使用的前缀。"
+          },
+          "deploymentTarget": {
+            "label": "部署目标",
+            "description": "发布构建的默认环境。",
+            "options": {
+              "staging": "预发布",
+              "production": "生产",
+              "preview": "预览"
+            }
+          },
+          "schemaVersion": {
+            "label": "Schema 版本",
+            "description": "此项目固定使用的 MIR Schema 版本。",
+            "options": {
+              "v10Stable": "1.0（稳定）",
+              "v11Preview": "1.1（预览）"
+            }
+          },
+          "strictness": {
+            "label": "校验严格度",
+            "description": "数值越高，约束规则越严格。"
+          },
+          "customNodes": {
+            "label": "自定义节点",
+            "description": "节点图中允许的自定义节点类型。",
+            "options": {
+              "http": "HTTP",
+              "transform": "转换",
+              "condition": "条件",
+              "loop": "循环"
+            }
+          },
+          "autoMigrate": {
+            "label": "自动迁移",
+            "description": "Schema 更新时自动迁移 MIR。",
+            "options": {
+              "enable": "启用自动迁移",
+              "disable": "禁用自动迁移"
+            }
+          },
+          "buildTarget": {
+            "label": "构建目标",
+            "description": "构建产物的主要运行环境。",
+            "options": {
+              "web": "Web",
+              "mobile": "移动端",
+              "desktop": "桌面端"
+            }
+          },
+          "outputDir": {
+            "label": "输出目录",
+            "description": "构建产物的默认输出目录。"
+          },
+          "minify": {
+            "label": "压缩",
+            "description": "导出时压缩资源。",
+            "options": {
+              "enable": "启用压缩",
+              "disable": "禁用压缩"
+            }
+          },
+          "sourceMaps": {
+            "label": "Source Map",
+            "description": "生成 Source Map 以便调试。",
+            "options": {
+              "enable": "生成 Source Map",
+              "disable": "禁用 Source Map"
+            }
+          }
+        }
+      }
     }
   },
   "export": {
@@ -542,7 +1021,17 @@
     "inspector": {
       "title": "检查器",
       "toggle": "切换检查器",
-      "placeholder": "选择组件以编辑。"
+      "placeholder": "选择组件以编辑。",
+      "fields": {
+        "id": {
+          "label": "组件 ID",
+          "description": "在当前蓝图中保持唯一。",
+          "duplicate": "ID 已存在。"
+        }
+      },
+      "actions": {
+        "apply": "应用"
+      }
     },
     "sidebar": {
       "title": "组件库",

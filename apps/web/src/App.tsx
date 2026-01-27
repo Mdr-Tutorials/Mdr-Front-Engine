@@ -3,6 +3,7 @@ import './App.scss'
 import Home from './home/Home'
 import Editor from './editor/Editor'
 import EditorHome from './editor/EditorHome'
+import ProjectHome from './editor/ProjectHome'
 import BlueprintEditor from './editor/features/design/BlueprintEditor'
 import { EditorSettingsPage } from './editor/features/settings/EditorSettingsPage'
 import { ProjectSettingsPage } from './editor/features/settings/ProjectSettingsPage'
@@ -30,7 +31,7 @@ export const createRoutes = (t: TFunction) => [
       {
         path: 'project/:projectId',
         children: [
-          { index: true, element: <EditorHome /> },
+          { index: true, element: <ProjectHome /> },
           { path: 'blueprint', element: <BlueprintEditor /> },
           { path: 'nodegraph', element: <div>{t('nodeGraphEditor', { ns: 'routes' })}</div> },
           { path: 'component', element: <div>{t('componentEditor', { ns: 'routes' })}</div> },

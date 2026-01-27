@@ -1,6 +1,4 @@
-﻿// src/mir/generator/mirToReact.ts
-
-export const generateReactCode = (mirDoc: any): string => {
+﻿export const generateReactCode = (mirDoc: any): string => {
     const { ui, logic, metadata } = mirDoc;
     const componentName = metadata?.name?.replace(/\s+/g, '') || 'MdrComponent';
 

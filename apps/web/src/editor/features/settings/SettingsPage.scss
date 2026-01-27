@@ -47,6 +47,7 @@
   margin: 0 0 12px;
   font-size: 12px;
   color: var(--color-6);
+  transform: translateY(-16px) translateX(-8px);
 }
 
 .SettingsPanelBody {
@@ -177,8 +178,7 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-
+[data-theme="dark"] {
   .SettingsPageHeader {
     border-bottom-color: rgba(255, 255, 255, 0.08);
   }

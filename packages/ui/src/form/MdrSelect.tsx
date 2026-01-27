@@ -78,7 +78,10 @@ function MdrSelect({
                 value={currentValue}
                 onChange={handleChange}
             >
-                <option value="">{placeholder}</option>
+                {/* Keep empty value selectable state without showing it in the dropdown list. */}
+                <option value="" disabled hidden>
+                    {placeholder}
+                </option>
                 {options.map((option) => (
                     <option key={option.value} value={option.value} disabled={option.disabled}>
                         {option.label}

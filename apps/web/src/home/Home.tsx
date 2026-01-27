@@ -35,6 +35,7 @@ function Home() {
         document.documentElement.setAttribute('data-theme', nextTheme);
         setThemeMode(nextTheme);
     };
+    const logoColor = themeMode === 'dark' ? 'white' : 'black';
 
     const handleQuickExport = () => {
         // 1. 生成代码（默认生成 React，弹窗内可以再切换）
@@ -59,7 +60,7 @@ function Home() {
         <div className="home">
             <MdrNav className='nav'>
                 <MdrNav.Left>
-                    <IconMdr size={30} color="black" />
+                    <IconMdr size={30} color={logoColor} />
                     <MdrNav.Heading heading={t('brand.name')} />
                 </MdrNav.Left>
                 <MdrNav.Right>
@@ -144,7 +145,7 @@ function Home() {
 
             <footer className='footer'>
                 <div className="footer-left">
-                    <IconMdr size={16} color="black" />
+                    <IconMdr size={16} color={logoColor} />
                     <span>{t('footer.copy')}</span>
                 </div>
                 <div className="footer-right">

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { MdrButton, MdrHeading, MdrParagraph, MdrTabs } from '@mdr/ui';
 import { GlobalSettingsContent } from './GlobalSettingsContent';
 import { ProjectSettingsContent } from './ProjectSettingsContent';
@@ -16,6 +17,7 @@ const createOverrideDefaults = (): OverrideState => {
 
 export const ProjectSettingsPage = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation('editor');
     const { projectId } = useParams();
     const [overrides, setOverrides] = useState<OverrideState>(createOverrideDefaults);
 
@@ -28,18 +30,20 @@ export const ProjectSettingsPage = () => {
     const tabs = [
         {
             key: 'project',
-            label: 'Project settings',
+            label: t('settings.projectPage.tabs.project'),
             content: <ProjectSettingsContent />,
         },
         {
             key: 'global',
-            label: 'Global defaults',
+            label: t('settings.projectPage.tabs.global'),
             content: (
                 <div className="SettingsGlobalOverrides">
                     <div className="SettingsNotice">
-                        <span className="SettingsNoticeTitle">Overrides</span>
+                        <span className="SettingsNoticeTitle">
+                            {t('settings.projectPage.overrides.title')}
+                        </span>
                         <span className="SettingsNoticeBody">
-                            Toggle a row to override the global default for this project.
+                            {t('settings.projectPage.overrides.body')}
                         </span>
                     </div>
                     <GlobalSettingsContent
@@ -56,14 +60,14 @@ export const ProjectSettingsPage = () => {
         <div className="SettingsPage">
             <header className="SettingsPageHeader">
                 <div>
-                    <MdrHeading level={2}>Project Settings</MdrHeading>
+                    <MdrHeading level={2}>{t('settings.projectPage.title')}</MdrHeading>
                     <MdrParagraph size="Small" color="Muted">
-                        Project-specific configuration with optional global overrides.
+                        {t('settings.projectPage.subtitle')}
                     </MdrParagraph>
                 </div>
                 <div className="SettingsPageActions">
                     <MdrButton
-                        text="Exit settings"
+                        text={t('settings.actions.exit')}
                         size="Small"
                         category="Secondary"
                         onClick={() => navigate(basePath)}

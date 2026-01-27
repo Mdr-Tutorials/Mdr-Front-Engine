@@ -1,23 +1,25 @@
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { MdrButton, MdrHeading, MdrParagraph } from '@mdr/ui';
 import { GlobalSettingsContent } from './GlobalSettingsContent';
 import './SettingsPage.scss';
 
 export const EditorSettingsPage = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation('editor');
 
     return (
         <div className="SettingsPage">
             <header className="SettingsPageHeader">
                 <div>
-                    <MdrHeading level={2}>Editor Settings</MdrHeading>
+                    <MdrHeading level={2}>{t('settings.editorPage.title')}</MdrHeading>
                     <MdrParagraph size="Small" color="Muted">
-                        Global defaults applied to every project and new workspace.
+                        {t('settings.editorPage.subtitle')}
                     </MdrParagraph>
                 </div>
                 <div className="SettingsPageActions">
                     <MdrButton
-                        text="Exit settings"
+                        text={t('settings.actions.exit')}
                         size="Small"
                         category="Secondary"
                         onClick={() => navigate('/editor')}

@@ -84,7 +84,10 @@ function MdrTreeSelect({
                 value={currentValue}
                 onChange={handleChange}
             >
-                <option value="">{placeholder}</option>
+                {/* Keep empty value selectable state without showing it in the dropdown list. */}
+                <option value="" disabled hidden>
+                    {placeholder}
+                </option>
                 {flatOptions.map(({ option, depth }) => {
                     const prefix = depth > 0 ? `${'-'.repeat(depth)} ` : '';
                     return (

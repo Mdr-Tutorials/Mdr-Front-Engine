@@ -1,8 +1,10 @@
 ﻿import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MdrCheckList, MdrInput, MdrRadioGroup, MdrSelect, MdrSlider, MdrTextarea } from '@mdr/ui';
 import { SettingsPanel, SettingsRow } from './SettingsShared';
 
 export const ProjectSettingsContent = () => {
+    const { t } = useTranslation('editor');
     const [projectValues, setProjectValues] = useState({
         name: 'Marketing Workspace',
         description: 'Landing pages and customer onboarding flows.',
@@ -38,12 +40,12 @@ export const ProjectSettingsContent = () => {
     return (
         <div className="SettingsSectionGroup">
             <SettingsPanel
-                title="Project basics"
-                description="Identity and defaults unique to this project."
+                title={t('settings.project.panels.basics.title')}
+                description={t('settings.project.panels.basics.description')}
             >
                 <SettingsRow
-                    label="Project name"
-                    description="Display name shown in navigation and exports."
+                    label={t('settings.project.rows.name.label')}
+                    description={t('settings.project.rows.name.description')}
                     control={
                         <MdrInput
                             size="Small"
@@ -53,8 +55,8 @@ export const ProjectSettingsContent = () => {
                     }
                 />
                 <SettingsRow
-                    label="Description"
-                    description="High-level summary for collaborators."
+                    label={t('settings.project.rows.description.label')}
+                    description={t('settings.project.rows.description.description')}
                     control={
                         <MdrTextarea
                             size="Small"
@@ -65,8 +67,8 @@ export const ProjectSettingsContent = () => {
                     }
                 />
                 <SettingsRow
-                    label="Default route"
-                    description="Landing path when opening the project."
+                    label={t('settings.project.rows.defaultRoute.label')}
+                    description={t('settings.project.rows.defaultRoute.description')}
                     control={
                         <MdrInput
                             size="Small"
@@ -76,15 +78,15 @@ export const ProjectSettingsContent = () => {
                     }
                 />
                 <SettingsRow
-                    label="Timezone"
-                    description="Used for logs, scheduling, and timestamps."
+                    label={t('settings.project.rows.timezone.label')}
+                    description={t('settings.project.rows.timezone.description')}
                     control={
                         <MdrSelect size="Small"
                             options={[
-                                { label: 'UTC', value: 'UTC' },
-                                { label: 'UTC-5 (New York)', value: 'UTC-5' },
-                                { label: 'UTC+1 (Berlin)', value: 'UTC+1' },
-                                { label: 'UTC+8 (Shanghai)', value: 'UTC+8' },
+                                { label: t('settings.project.rows.timezone.options.utc'), value: 'UTC' },
+                                { label: t('settings.project.rows.timezone.options.utcMinus5'), value: 'UTC-5' },
+                                { label: t('settings.project.rows.timezone.options.utcPlus1'), value: 'UTC+1' },
+                                { label: t('settings.project.rows.timezone.options.utcPlus8'), value: 'UTC+8' },
                             ]}
                             value={projectValues.timezone}
                             onChange={(value) => updateProjectValue('timezone', value)}
@@ -93,18 +95,18 @@ export const ProjectSettingsContent = () => {
                 />
             </SettingsPanel>
             <SettingsPanel
-                title="Collaboration"
-                description="Access, permissions, and team workflow defaults."
+                title={t('settings.project.panels.collaboration.title')}
+                description={t('settings.project.panels.collaboration.description')}
             >
                 <SettingsRow
-                    label="Default role"
-                    description="Role applied to new collaborators."
+                    label={t('settings.project.rows.defaultRole.label')}
+                    description={t('settings.project.rows.defaultRole.description')}
                     control={
                         <MdrRadioGroup
                             options={[
-                                { label: 'Viewer', value: 'viewer' },
-                                { label: 'Editor', value: 'editor' },
-                                { label: 'Admin', value: 'admin' },
+                                { label: t('settings.project.rows.defaultRole.options.viewer'), value: 'viewer' },
+                                { label: t('settings.project.rows.defaultRole.options.editor'), value: 'editor' },
+                                { label: t('settings.project.rows.defaultRole.options.admin'), value: 'admin' },
                             ]}
                             value={projectValues.defaultRole[0]}
                             onChange={(value) => updateProjectValue('defaultRole', [value])}
@@ -112,13 +114,13 @@ export const ProjectSettingsContent = () => {
                     }
                 />
                 <SettingsRow
-                    label="Preview access"
-                    description="Who can open preview links."
+                    label={t('settings.project.rows.previewAccess.label')}
+                    description={t('settings.project.rows.previewAccess.description')}
                     control={
                         <MdrRadioGroup
                             options={[
-                                { label: 'Restricted', value: 'restricted' },
-                                { label: 'Anyone with link', value: 'public' },
+                                { label: t('settings.project.rows.previewAccess.options.restricted'), value: 'restricted' },
+                                { label: t('settings.project.rows.previewAccess.options.public'), value: 'public' },
                             ]}
                             value={projectValues.previewAccess[0]}
                             onChange={(value) => updateProjectValue('previewAccess', [value])}
@@ -126,8 +128,8 @@ export const ProjectSettingsContent = () => {
                     }
                 />
                 <SettingsRow
-                    label="Audit retention (days)"
-                    description="Duration to retain audit events."
+                    label={t('settings.project.rows.auditRetention.label')}
+                    description={t('settings.project.rows.auditRetention.description')}
                     control={
                         <MdrSlider
                             min={7}
@@ -140,14 +142,14 @@ export const ProjectSettingsContent = () => {
                     }
                 />
                 <SettingsRow
-                    label="Notifications"
-                    description="Default notification channels."
+                    label={t('settings.project.rows.notifications.label')}
+                    description={t('settings.project.rows.notifications.description')}
                     control={
                         <MdrCheckList
                             items={[
-                                { label: 'Mentions', value: 'mentions' },
-                                { label: 'Builds', value: 'builds' },
-                                { label: 'Deployments', value: 'deployments' },
+                                { label: t('settings.project.rows.notifications.options.mentions'), value: 'mentions' },
+                                { label: t('settings.project.rows.notifications.options.builds'), value: 'builds' },
+                                { label: t('settings.project.rows.notifications.options.deployments'), value: 'deployments' },
                             ]}
                             value={projectValues.notifications}
                             onChange={(values) => updateProjectValue('notifications', values)}
@@ -156,18 +158,18 @@ export const ProjectSettingsContent = () => {
                 />
             </SettingsPanel>
             <SettingsPanel
-                title="Design system"
-                description="Project-specific UI tokens and asset libraries."
+                title={t('settings.project.panels.designSystem.title')}
+                description={t('settings.project.panels.designSystem.description')}
             >
                 <SettingsRow
-                    label="Theme token set"
-                    description="Token pack used to render colors and spacing."
+                    label={t('settings.project.rows.themeTokenSet.label')}
+                    description={t('settings.project.rows.themeTokenSet.description')}
                     control={
                         <MdrSelect size="Small"
                             options={[
-                                { label: 'MDR Default', value: 'mdr-default' },
-                                { label: 'MDR Midnight', value: 'mdr-midnight' },
-                                { label: 'MDR Sunrise', value: 'mdr-sunrise' },
+                                { label: t('settings.project.rows.themeTokenSet.options.mdrDefault'), value: 'mdr-default' },
+                                { label: t('settings.project.rows.themeTokenSet.options.mdrMidnight'), value: 'mdr-midnight' },
+                                { label: t('settings.project.rows.themeTokenSet.options.mdrSunrise'), value: 'mdr-sunrise' },
                             ]}
                             value={projectValues.themeTokenSet}
                             onChange={(value) => updateProjectValue('themeTokenSet', value)}
@@ -175,13 +177,13 @@ export const ProjectSettingsContent = () => {
                     }
                 />
                 <SettingsRow
-                    label="Component library version"
-                    description="Pinned version of shared MDR components."
+                    label={t('settings.project.rows.componentLibraryVersion.label')}
+                    description={t('settings.project.rows.componentLibraryVersion.description')}
                     control={
                         <MdrSelect size="Small"
                             options={[
-                                { label: 'v1.4.2 (stable)', value: 'v1.4.2' },
-                                { label: 'v1.5.0 (beta)', value: 'v1.5.0' },
+                                { label: t('settings.project.rows.componentLibraryVersion.options.v142Stable'), value: 'v1.4.2' },
+                                { label: t('settings.project.rows.componentLibraryVersion.options.v150Beta'), value: 'v1.5.0' },
                             ]}
                             value={projectValues.componentLibraryVersion}
                             onChange={(value) => updateProjectValue('componentLibraryVersion', value)}
@@ -189,8 +191,8 @@ export const ProjectSettingsContent = () => {
                     }
                 />
                 <SettingsRow
-                    label="Asset host"
-                    description="Primary CDN or asset bucket URL."
+                    label={t('settings.project.rows.assetHost.label')}
+                    description={t('settings.project.rows.assetHost.description')}
                     control={
                         <MdrInput
                             size="Small"
@@ -200,8 +202,8 @@ export const ProjectSettingsContent = () => {
                     }
                 />
                 <SettingsRow
-                    label="Font pack"
-                    description="Font families available in the design system."
+                    label={t('settings.project.rows.fontPack.label')}
+                    description={t('settings.project.rows.fontPack.description')}
                     control={
                         <MdrCheckList
                             items={[
@@ -215,8 +217,8 @@ export const ProjectSettingsContent = () => {
                     }
                 />
                 <SettingsRow
-                    label="Icon set"
-                    description="Default icon pack for UI templates."
+                    label={t('settings.project.rows.iconSet.label')}
+                    description={t('settings.project.rows.iconSet.description')}
                     control={
                         <MdrSelect size="Small"
                             options={[
@@ -231,12 +233,12 @@ export const ProjectSettingsContent = () => {
                 />
             </SettingsPanel>
             <SettingsPanel
-                title="Integrations & environments"
-                description="Data sources, auth, and environment settings."
+                title={t('settings.project.panels.integrations.title')}
+                description={t('settings.project.panels.integrations.description')}
             >
                 <SettingsRow
-                    label="API base URL"
-                    description="Primary API endpoint for data requests."
+                    label={t('settings.project.rows.apiBase.label')}
+                    description={t('settings.project.rows.apiBase.description')}
                     control={
                         <MdrInput
                             size="Small"
@@ -246,14 +248,14 @@ export const ProjectSettingsContent = () => {
                     }
                 />
                 <SettingsRow
-                    label="Auth mode"
-                    description="Authentication flow used by previews."
+                    label={t('settings.project.rows.authMode.label')}
+                    description={t('settings.project.rows.authMode.description')}
                     control={
                         <MdrRadioGroup
                             options={[
-                                { label: 'OAuth', value: 'oauth' },
-                                { label: 'API key', value: 'api-key' },
-                                { label: 'None', value: 'none' },
+                                { label: t('settings.project.rows.authMode.options.oauth'), value: 'oauth' },
+                                { label: t('settings.project.rows.authMode.options.apiKey'), value: 'api-key' },
+                                { label: t('settings.project.rows.authMode.options.none'), value: 'none' },
                             ]}
                             value={projectValues.authMode[0]}
                             onChange={(value) => updateProjectValue('authMode', [value])}
@@ -261,8 +263,8 @@ export const ProjectSettingsContent = () => {
                     }
                 />
                 <SettingsRow
-                    label="Env prefix"
-                    description="Prefix for injected environment variables."
+                    label={t('settings.project.rows.envPrefix.label')}
+                    description={t('settings.project.rows.envPrefix.description')}
                     control={
                         <MdrInput
                             size="Small"
@@ -272,14 +274,14 @@ export const ProjectSettingsContent = () => {
                     }
                 />
                 <SettingsRow
-                    label="Deployment target"
-                    description="Default environment for publishing builds."
+                    label={t('settings.project.rows.deploymentTarget.label')}
+                    description={t('settings.project.rows.deploymentTarget.description')}
                     control={
                         <MdrRadioGroup
                             options={[
-                                { label: 'Staging', value: 'staging' },
-                                { label: 'Production', value: 'production' },
-                                { label: 'Preview', value: 'preview' },
+                                { label: t('settings.project.rows.deploymentTarget.options.staging'), value: 'staging' },
+                                { label: t('settings.project.rows.deploymentTarget.options.production'), value: 'production' },
+                                { label: t('settings.project.rows.deploymentTarget.options.preview'), value: 'preview' },
                             ]}
                             value={projectValues.deploymentTarget[0]}
                             onChange={(value) => updateProjectValue('deploymentTarget', [value])}
@@ -288,17 +290,17 @@ export const ProjectSettingsContent = () => {
                 />
             </SettingsPanel>
             <SettingsPanel
-                title="MIR & validation"
-                description="Schema enforcement and node policy."
+                title={t('settings.project.panels.mir.title')}
+                description={t('settings.project.panels.mir.description')}
             >
                 <SettingsRow
-                    label="Schema version"
-                    description="Pinned MIR schema for this project."
+                    label={t('settings.project.rows.schemaVersion.label')}
+                    description={t('settings.project.rows.schemaVersion.description')}
                     control={
                         <MdrSelect size="Small"
                             options={[
-                                { label: '1.0 (stable)', value: '1.0' },
-                                { label: '1.1 (preview)', value: '1.1' },
+                                { label: t('settings.project.rows.schemaVersion.options.v10Stable'), value: '1.0' },
+                                { label: t('settings.project.rows.schemaVersion.options.v11Preview'), value: '1.1' },
                             ]}
                             value={projectValues.schemaVersion}
                             onChange={(value) => updateProjectValue('schemaVersion', value)}
@@ -306,8 +308,8 @@ export const ProjectSettingsContent = () => {
                     }
                 />
                 <SettingsRow
-                    label="Validation strictness"
-                    description="Higher values enforce more rules."
+                    label={t('settings.project.rows.strictness.label')}
+                    description={t('settings.project.rows.strictness.description')}
                     control={
                         <MdrSlider
                             min={0}
@@ -320,15 +322,15 @@ export const ProjectSettingsContent = () => {
                     }
                 />
                 <SettingsRow
-                    label="Custom nodes"
-                    description="Allowed custom node types in graphs."
+                    label={t('settings.project.rows.customNodes.label')}
+                    description={t('settings.project.rows.customNodes.description')}
                     control={
                         <MdrCheckList
                             items={[
-                                { label: 'HTTP', value: 'http' },
-                                { label: 'Transform', value: 'transform' },
-                                { label: 'Condition', value: 'condition' },
-                                { label: 'Loop', value: 'loop' },
+                                { label: t('settings.project.rows.customNodes.options.http'), value: 'http' },
+                                { label: t('settings.project.rows.customNodes.options.transform'), value: 'transform' },
+                                { label: t('settings.project.rows.customNodes.options.condition'), value: 'condition' },
+                                { label: t('settings.project.rows.customNodes.options.loop'), value: 'loop' },
                             ]}
                             value={projectValues.customNodes}
                             onChange={(values) => updateProjectValue('customNodes', values)}
@@ -336,13 +338,13 @@ export const ProjectSettingsContent = () => {
                     }
                 />
                 <SettingsRow
-                    label="Auto-migrate"
-                    description="Automatically migrate MIR when schema updates."
+                    label={t('settings.project.rows.autoMigrate.label')}
+                    description={t('settings.project.rows.autoMigrate.description')}
                     control={
                         <MdrRadioGroup
                             options={[
-                                { label: 'Enable auto-migrate', value: 'enabled' },
-                                { label: 'Disable auto-migrate', value: 'disabled' },
+                                { label: t('settings.project.rows.autoMigrate.options.enable'), value: 'enabled' },
+                                { label: t('settings.project.rows.autoMigrate.options.disable'), value: 'disabled' },
                             ]}
                             value={projectValues.autoMigrate[0]}
                             onChange={(value) => updateProjectValue('autoMigrate', [value])}
@@ -351,18 +353,18 @@ export const ProjectSettingsContent = () => {
                 />
             </SettingsPanel>
             <SettingsPanel
-                title="Build & export"
-                description="Project export configuration and build options."
+                title={t('settings.project.panels.build.title')}
+                description={t('settings.project.panels.build.description')}
             >
                 <SettingsRow
-                    label="Build target"
-                    description="Primary runtime output for builds."
+                    label={t('settings.project.rows.buildTarget.label')}
+                    description={t('settings.project.rows.buildTarget.description')}
                     control={
                         <MdrRadioGroup
                             options={[
-                                { label: 'Web', value: 'web' },
-                                { label: 'Mobile', value: 'mobile' },
-                                { label: 'Desktop', value: 'desktop' },
+                                { label: t('settings.project.rows.buildTarget.options.web'), value: 'web' },
+                                { label: t('settings.project.rows.buildTarget.options.mobile'), value: 'mobile' },
+                                { label: t('settings.project.rows.buildTarget.options.desktop'), value: 'desktop' },
                             ]}
                             value={projectValues.buildTarget[0]}
                             onChange={(value) => updateProjectValue('buildTarget', [value])}
@@ -370,8 +372,8 @@ export const ProjectSettingsContent = () => {
                     }
                 />
                 <SettingsRow
-                    label="Output directory"
-                    description="Default directory for build artifacts."
+                    label={t('settings.project.rows.outputDir.label')}
+                    description={t('settings.project.rows.outputDir.description')}
                     control={
                         <MdrInput
                             size="Small"
@@ -381,13 +383,13 @@ export const ProjectSettingsContent = () => {
                     }
                 />
                 <SettingsRow
-                    label="Minify"
-                    description="Minify assets on export."
+                    label={t('settings.project.rows.minify.label')}
+                    description={t('settings.project.rows.minify.description')}
                     control={
                         <MdrRadioGroup
                             options={[
-                                { label: 'Enable minify', value: 'enabled' },
-                                { label: 'Disable minify', value: 'disabled' },
+                                { label: t('settings.project.rows.minify.options.enable'), value: 'enabled' },
+                                { label: t('settings.project.rows.minify.options.disable'), value: 'disabled' },
                             ]}
                             value={projectValues.minify[0]}
                             onChange={(value) => updateProjectValue('minify', [value])}
@@ -395,13 +397,13 @@ export const ProjectSettingsContent = () => {
                     }
                 />
                 <SettingsRow
-                    label="Source maps"
-                    description="Generate source maps for debugging."
+                    label={t('settings.project.rows.sourceMaps.label')}
+                    description={t('settings.project.rows.sourceMaps.description')}
                     control={
                         <MdrRadioGroup
                             options={[
-                                { label: 'Emit source maps', value: 'enabled' },
-                                { label: 'Disable source maps', value: 'disabled' },
+                                { label: t('settings.project.rows.sourceMaps.options.enable'), value: 'enabled' },
+                                { label: t('settings.project.rows.sourceMaps.options.disable'), value: 'disabled' },
                             ]}
                             value={projectValues.sourceMaps[0]}
                             onChange={(value) => updateProjectValue('sourceMaps', [value])}
