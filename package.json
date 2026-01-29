@@ -22,6 +22,8 @@
         "build:docs": "turbo run build --filter=@mdr/docs",
         "build:cli": "turbo run build --filter=@mdr/cli",
         "build:vscode": "turbo run build --filter=@mdr/vscode",
+        "storybook:ui": "turbo run storybook --filter=@mdr/ui",
+        "build-storybook:ui": "turbo run build-storybook --filter=@mdr/ui",
         "test": "turbo run test",
         "lint": "turbo run lint",
         "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,go}\"",
