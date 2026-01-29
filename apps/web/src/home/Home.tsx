@@ -107,7 +107,7 @@ function Home() {
             <div className="content">
                 <div className="titles">
                     <h1 className="">
-                        {t('hero.line1.before')} <span>{t('hero.line1.highlight')}</span>
+                        <span>{t('hero.line1.highlight')}</span>
                     </h1>
                     <h1 className="">
                         {t('hero.line2.before')} <span>{t('hero.line2.highlight')}</span>

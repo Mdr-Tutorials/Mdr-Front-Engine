@@ -26,16 +26,15 @@
     },
     "hero": {
       "line1": {
-        "before": "用",
         "highlight": "Mdr"
       },
       "line2": {
-        "before": "构建",
-        "highlight": "界面"
+        "before": "前端",
+        "highlight": "梭哈"
       },
       "line3": {
-        "before": "从灵感到",
-        "highlight": "上线"
+        "before": "灵感顷刻",
+        "highlight": "炼化"
       },
       "subtitle": "可视化设计与代码生成的一体化平台。"
     },
@@ -124,10 +123,10 @@
         "create": "创建"
       },
       "newResource": {
-          "title": "新建资源",
-          "subtitle": "选择一种类型并开始构建",
-          "typeLabel": "类型",
-          "nameLabel": "名称"
+        "title": "新建资源",
+        "subtitle": "选择一种类型并开始构建",
+        "typeLabel": "类型",
+        "nameLabel": "名称"
       },
       "newProject": {
         "title": "新建项目",

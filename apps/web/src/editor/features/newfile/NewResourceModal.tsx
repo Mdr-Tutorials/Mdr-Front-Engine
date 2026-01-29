@@ -142,7 +142,7 @@ function NewResourceModal({
             </label>
             <MdrInput
               id="new-resource-name"
-              placeholder="Untitled"
+              placeholder="项目名称？（默认：'Untitled'）"
               value={name}
               onChange={setName}
             />
@@ -150,12 +150,12 @@ function NewResourceModal({
 
           <div className="NewResourceModalField">
             <label className="NewResourceModalLabel">
-                {t('modals.newProject.descriptionLabel', 'Description')}
+              {t('modals.newProject.descriptionLabel', 'Description')}
             </label>
-            <MdrTextarea 
-                placeholder={t('modals.newProject.descriptionPlaceholder', 'Optional description')} 
-                value={description} 
-                onChange={setDescription} 
+            <MdrTextarea
+              placeholder={t('modals.newProject.descriptionPlaceholder', 'Optional description')}
+              value={description}
+              onChange={setDescription}
             />
           </div>
         </div>
