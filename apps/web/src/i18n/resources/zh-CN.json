@@ -115,7 +115,14 @@
     "modals": {
       "close": "关闭",
       "actions": {
-        "cancel": "取消"
+        "cancel": "取消",
+        "create": "创建"
+      },
+      "newResource": {
+          "title": "新建资源",
+          "subtitle": "选择一种类型并开始构建",
+          "typeLabel": "类型",
+          "nameLabel": "名称"
       },
       "newProject": {
         "title": "新建项目",

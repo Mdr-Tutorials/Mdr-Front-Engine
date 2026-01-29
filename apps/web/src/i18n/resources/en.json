@@ -115,7 +115,14 @@
     "modals": {
       "close": "Close",
       "actions": {
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "create": "Create"
+      },
+      "newResource": {
+        "title": "Create New",
+        "subtitle": "Select a type and start building",
+        "typeLabel": "Type",
+        "nameLabel": "Name"
       },
       "newProject": {
         "title": "Create Project",
