@@ -13,9 +13,10 @@ export interface MdrIconLinkSpecificProps extends MdrIconProps, React.RefAttribu
 }
 
 function MdrIconLink(props: MdrIconLinkSpecificProps) {
-    return <MdrLink className="MdrIconLink" to={props.to} >
-        <MdrIcon {...props} />
-    </MdrLink>
+    const { to, title, ...iconProps } = props;
+    return <MdrLink className="MdrIconLink" to={to} title={title} >
+        <MdrIcon {...iconProps} title={title} />
+    </MdrLink>;
 }
 
-export default MdrIconLink
+export default MdrIconLink;

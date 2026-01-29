@@ -3,6 +3,7 @@
     "nodeGraphEditor": "节点图",
     "componentEditor": "组件",
     "animationEditor": "动画",
+    "resourceManager": "资源管理",
     "testing": "测试",
     "exportSettings": "导出",
     "deploymentSettings": "部署",
@@ -77,6 +78,10 @@
         "component": {
           "label": "组件",
           "description": "管理可复用组件。"
+        },
+        "resources": {
+          "label": "资源",
+          "description": "管理素材与资源库。"
         },
         "nodegraph": {
           "label": "节点图",

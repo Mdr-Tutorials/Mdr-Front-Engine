@@ -4,10 +4,10 @@ import { useTranslation } from "react-i18next";
 import { MdrButton, MdrIcon, MdrIconLink } from "@mdr/ui";
 import { useNavigate, useParams } from "react-router";
 import { useSettingsStore } from "@/editor/store/useSettingsStore";
-import { LogIn, LayoutGrid, GitBranch, Box, Sparkles, TestTube, FileCode, Rocket, Settings } from "lucide-react";
+import { LogIn, LayoutGrid, GitBranch, Box, Sparkles, TestTube, FileCode, Rocket, Settings, Folder } from "lucide-react";
 
 function EditorBar() {
-    const { t } = useTranslation('editor');
+    const { t } = useTranslation(['editor', 'routes']);
     const { projectId } = useParams();
     const navigate = useNavigate();
     const [isExitOpen, setExitOpen] = useState(false);
@@ -15,6 +15,9 @@ function EditorBar() {
     const basePath = projectId ? `/editor/project/${projectId}` : "/editor";
     const exitTarget = projectId ? "/editor" : "/";
     const exitLabel = projectId ? t('bar.exitToEditor') : t('bar.exitToHome');
+    const settingsLabel = projectId
+      ? t('projectHome.actions.settings.label')
+      : t('editorSettings', { ns: 'routes' });
 
     return (
       <nav className="EditorBar" data-theme="dark">
@@ -22,6 +25,7 @@ function EditorBar() {
           <button
             className="EditorBarExitButton"
             aria-label={t('bar.exitAria')}
+            title={t('bar.exitAria')}
             onClick={() => {
               if (confirmPrompts.includes("leave")) {
                 setExitOpen(true);
@@ -39,36 +43,49 @@ function EditorBar() {
               <MdrIconLink
                 icon={<LayoutGrid size={22} />}
                 size={22}
+                title={t('projectHome.actions.blueprint.label')}
                 to={`${basePath}/blueprint`}
               />
               <MdrIconLink
                 icon={<Box size={22} />}
                 size={22}
+                title={t('projectHome.actions.component.label')}
                 to={`${basePath}/component`}
+              />
+              <MdrIconLink
+                icon={<Folder size={22} />}
+                size={22}
+                title={t('projectHome.actions.resources.label')}
+                to={`${basePath}/resources`}
               />
               <MdrIconLink
                 icon={<GitBranch size={22} />}
                 size={22}
+                title={t('projectHome.actions.nodegraph.label')}
                 to={`${basePath}/nodegraph`}
               />
               <MdrIconLink
                 icon={<Sparkles size={22} />}
                 size={22}
+                title={t('projectHome.actions.animation.label')}
                 to={`${basePath}/animation`}
               />
               <MdrIconLink
                 icon={<TestTube size={22} />}
                 size={22}
+                title={t('projectHome.actions.testing.label')}
                 to={`${basePath}/test`}
               />
               <MdrIconLink
                 icon={<FileCode size={22} />}
                 size={22}
+                title={t('projectHome.actions.export.label')}
                 to={`${basePath}/export`}
               />
               <MdrIconLink
                 icon={<Rocket size={22} />}
                 size={22}
+                title={t('projectHome.actions.deployment.label')}
                 to={`${basePath}/deployment`}
               />
             </>
@@ -78,6 +95,7 @@ function EditorBar() {
           <MdrIconLink
             icon={<Settings size={22} />}
             size={22}
+            title={settingsLabel}
             to={`${basePath}/settings`}
           />
         </section>

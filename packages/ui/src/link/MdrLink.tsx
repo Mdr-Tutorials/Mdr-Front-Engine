@@ -6,6 +6,7 @@ import './MdrLink.scss';
 interface MdrLinkSpecificProps {
     to: To;
     text?: string;
+    title?: string;
     disabled?: boolean;
     children?: React.ReactNode;
 }
@@ -15,6 +16,7 @@ export interface MdrLinkProps extends MdrComponent, MdrLinkSpecificProps { }
 function MdrLink({
     to,
     text,
+    title,
     disabled = false,
     children,
     className,
@@ -36,6 +38,7 @@ function MdrLink({
         className: fullClassName,
         style,
         id,
+        title,
         onClick: onClick,
         ...dataProps,
     };

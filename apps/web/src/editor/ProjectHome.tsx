@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router"
-import { Boxes, FileCog, FlaskConical, GitBranch, LayoutGrid, Package, ServerCog, Settings, Sparkles } from "lucide-react"
+import { Boxes, FileCog, FlaskConical, Folder, GitBranch, LayoutGrid, Package, ServerCog, Settings, Sparkles } from "lucide-react"
 import "./ProjectHome.scss"
 import { useEditorStore } from "@/editor/store/useEditorStore"
 
@@ -31,6 +31,11 @@ function ProjectHome() {
         key: "component",
         path: `/editor/project/${resolvedProjectId}/component`,
         icon: <Boxes size={18} />,
+      },
+      {
+        key: "resources",
+        path: `/editor/project/${resolvedProjectId}/resources`,
+        icon: <Folder size={18} />,
       },
       {
         key: "nodegraph",
