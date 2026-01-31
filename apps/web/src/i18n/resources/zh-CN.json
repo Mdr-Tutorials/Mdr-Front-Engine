@@ -55,9 +55,7 @@
     "home": {
       "welcomeTitle": "欢迎回来",
       "actions": {
-        "newProject": "新建项目",
-        "newComponent": "新建组件",
-        "newNodeGraph": "新建节点图"
+        "newProject": "新建项目"
       }
     },
     "projectHome": {

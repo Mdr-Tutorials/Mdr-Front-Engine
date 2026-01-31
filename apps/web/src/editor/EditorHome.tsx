@@ -30,7 +30,7 @@ const MOCK_PROJECTS: MockProject[] = [
     id: 'c1',
     type: 'component',
     name: 'UserCard',
-    description: 'Reusable user profile card with avatar and status indicator.',
+    description: 'Reusable user profile card with avatar and status indicator. Long Long Long Long Long Long Long Long Long Long Long Long Long Long Description',
     updatedAt: Date.now() - 1000 * 60 * 60 * 24 * 2, // 2 days ago
   },
   {
@@ -139,7 +139,7 @@ function ProjectCard({ project }: { project: MockProject }) {
       <div className="ProjectCardFooter">
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <Clock size={14} />
-          <span>{formatTime(project.updatedAt)}</span>
+          <span className="ProjectCardTime">{formatTime(project.updatedAt)}</span>
         </div>
       </div>
     </div>
@@ -169,7 +169,7 @@ function EditorHome() {
             onClick={() => setResourceModalOpen(true)}
           >
             <Plus size={48} />
-            <span>{t('home.actions.createNew', 'Create New')}</span>
+            <span className='EditorNewProject'>{t('home.actions.newProject')}</span>
           </button>
 
           {/* 2. Project List */}

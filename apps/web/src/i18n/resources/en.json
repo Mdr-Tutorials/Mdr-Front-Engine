@@ -56,9 +56,7 @@
     "home": {
       "welcomeTitle": "Welcome back",
       "actions": {
-        "newProject": "New Project",
-        "newComponent": "New Component",
-        "newNodeGraph": "New Node Graph"
+        "newProject": "New Project"
       }
     },
     "projectHome": {
