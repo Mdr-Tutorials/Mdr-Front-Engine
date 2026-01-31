@@ -1059,6 +1059,7 @@
     "viewport": {
       "label": "Viewport",
       "zoom": "Zoom",
+      "reset": "Reset view",
       "size": "Size {{width}}?{{height}}",
       "moreDevices": "More devices",
       "quickPresets": {

@@ -1058,6 +1058,7 @@
     "viewport": {
       "label": "视口",
       "zoom": "缩放",
+      "reset": "重置视图",
       "size": "{{width}}x{{height}}",
       "moreDevices": "更多设备",
       "quickPresets": {

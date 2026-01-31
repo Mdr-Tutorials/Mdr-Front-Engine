@@ -1,6 +1,6 @@
 ﻿import { useTranslation } from "react-i18next"
 import { MdrInput, MdrPopover, MdrSlider } from "@mdr/ui"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown, RotateCcw } from "lucide-react"
 import { VIEWPORT_DEVICE_PRESETS, VIEWPORT_QUICK_PRESETS, VIEWPORT_ZOOM_RANGE } from "./BlueprintEditor.data"
 
 type BlueprintEditorViewportBarProps = {
@@ -11,6 +11,7 @@ type BlueprintEditorViewportBarProps = {
   zoom: number
   zoomStep: number
   onZoomChange: (value: number) => void
+  onResetView: () => void
 }
 
 export function BlueprintEditorViewportBar({
@@ -21,6 +22,7 @@ export function BlueprintEditorViewportBar({
   zoom,
   zoomStep,
   onZoomChange,
+  onResetView,
 }: BlueprintEditorViewportBarProps) {
   const { t } = useTranslation('blueprint')
 
@@ -47,6 +49,10 @@ export function BlueprintEditorViewportBar({
           onChange={onZoomChange}
         />
         <span className="ViewportZoomValue">{zoom}%</span>
+        <button type="button" className="ViewportResetButton" onClick={onResetView}>
+          <RotateCcw size={12} />
+          {t('viewport.reset')}
+        </button>
       </div>
       <div className="ViewportQuickPresets">
         {VIEWPORT_QUICK_PRESETS.map((preset) => {

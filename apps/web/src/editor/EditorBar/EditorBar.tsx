@@ -1,10 +1,11 @@
 ﻿import "./EditorBar.scss";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { MdrButton, MdrIcon, MdrIconLink } from "@mdr/ui";
+import { MdrIcon, MdrIconLink } from "@mdr/ui";
 import { useNavigate, useParams } from "react-router";
 import { useSettingsStore } from "@/editor/store/useSettingsStore";
 import { LogIn, LayoutGrid, GitBranch, Box, Sparkles, TestTube, FileCode, Rocket, Settings, Folder } from "lucide-react";
+import { EditorBarExitModal } from "./EditorBarExitModal";
 
 function EditorBar() {
     const { t } = useTranslation(['editor', 'routes']);
@@ -20,120 +21,100 @@ function EditorBar() {
       : t('editorSettings', { ns: 'routes' });
 
     return (
-      <nav className="EditorBar" data-theme="dark">
-        <section className="EditorBarTop">
-          <button
-            className="EditorBarExitButton"
-            aria-label={t('bar.exitAria')}
-            title={t('bar.exitAria')}
-            onClick={() => {
-              if (confirmPrompts.includes("leave")) {
-                setExitOpen(true);
-                return;
-              }
-              navigate(exitTarget);
-            }}
-          >
-            <MdrIcon icon={<LogIn size={26} />} size={26} />
-          </button>
-        </section>
-        <section className="EditorBarCenter">
-          {projectId && (
-            <>
-              <MdrIconLink
-                icon={<LayoutGrid size={22} />}
-                size={22}
-                title={t('projectHome.actions.blueprint.label')}
-                to={`${basePath}/blueprint`}
-              />
-              <MdrIconLink
-                icon={<Box size={22} />}
-                size={22}
-                title={t('projectHome.actions.component.label')}
-                to={`${basePath}/component`}
-              />
-              <MdrIconLink
-                icon={<Folder size={22} />}
-                size={22}
-                title={t('projectHome.actions.resources.label')}
-                to={`${basePath}/resources`}
-              />
-              <MdrIconLink
-                icon={<GitBranch size={22} />}
-                size={22}
-                title={t('projectHome.actions.nodegraph.label')}
-                to={`${basePath}/nodegraph`}
-              />
-              <MdrIconLink
-                icon={<Sparkles size={22} />}
-                size={22}
-                title={t('projectHome.actions.animation.label')}
-                to={`${basePath}/animation`}
-              />
-              <MdrIconLink
-                icon={<TestTube size={22} />}
-                size={22}
-                title={t('projectHome.actions.testing.label')}
-                to={`${basePath}/test`}
-              />
-              <MdrIconLink
-                icon={<FileCode size={22} />}
-                size={22}
-                title={t('projectHome.actions.export.label')}
-                to={`${basePath}/export`}
-              />
-              <MdrIconLink
-                icon={<Rocket size={22} />}
-                size={22}
-                title={t('projectHome.actions.deployment.label')}
-                to={`${basePath}/deployment`}
-              />
-            </>
-          )}
-        </section>
-        <section className="EditorBarBottom">
-          <MdrIconLink
-            icon={<Settings size={22} />}
-            size={22}
-            title={settingsLabel}
-            to={`${basePath}/settings`}
-          />
-        </section>
-
-        {isExitOpen && (
-          <div
-            className="EditorBarExitOverlay"
-            onClick={() => setExitOpen(false)}
-          >
-            <div
-              className="EditorBarExitModal"
-              onClick={(event) => event.stopPropagation()}
+      <>
+        <nav className="EditorBar" data-theme="dark">
+          <section className="EditorBarTop">
+            <button
+              className="EditorBarExitButton"
+              aria-label={t('bar.exitAria')}
+              title={t('bar.exitAria')}
+              onClick={() => {
+                if (confirmPrompts.includes("leave")) {
+                  setExitOpen(true);
+                  return;
+                }
+                navigate(exitTarget);
+              }}
             >
-              <div className="EditorBarExitTitle">
-                <h3>{t('bar.exitTitle')}</h3>
-                <p>{exitLabel}</p>
-              </div>
-              <div className="EditorBarExitActions">
-                <MdrButton
-                  text={t('bar.cancel')}
-                  category="Ghost"
-                  size="Small"
-                  onClick={() => setExitOpen(false)}
+              <MdrIcon icon={<LogIn size={26} />} size={26} />
+            </button>
+          </section>
+          <section className="EditorBarCenter">
+            {projectId && (
+              <>
+                <MdrIconLink
+                  icon={<LayoutGrid size={22} />}
+                  size={22}
+                  title={t('projectHome.actions.blueprint.label')}
+                  to={`${basePath}/blueprint`}
                 />
-                <MdrButton
-                  text={t('bar.exit')}
-                  category="Primary"
-                  size="Small"
-                  onClick={() => {
-                    setExitOpen(false);
-                    navigate(exitTarget);
-                  }}
+                <MdrIconLink
+                  icon={<Box size={22} />}
+                  size={22}
+                  title={t('projectHome.actions.component.label')}
+                  to={`${basePath}/component`}
                 />
-              </div>
-            </div>
-          </div>
-        )}
-      </nav>
+                <MdrIconLink
+                  icon={<Folder size={22} />}
+                  size={22}
+                  title={t('projectHome.actions.resources.label')}
+                  to={`${basePath}/resources`}
+                />
+                <MdrIconLink
+                  icon={<GitBranch size={22} />}
+                  size={22}
+                  title={t('projectHome.actions.nodegraph.label')}
+                  to={`${basePath}/nodegraph`}
+                />
+                <MdrIconLink
+                  icon={<Sparkles size={22} />}
+                  size={22}
+                  title={t('projectHome.actions.animation.label')}
+                  to={`${basePath}/animation`}
+                />
+                <MdrIconLink
+                  icon={<TestTube size={22} />}
+                  size={22}
+                  title={t('projectHome.actions.testing.label')}
+                  to={`${basePath}/test`}
+                />
+                <MdrIconLink
+                  icon={<FileCode size={22} />}
+                  size={22}
+                  title={t('projectHome.actions.export.label')}
+                  to={`${basePath}/export`}
+                />
+                <MdrIconLink
+                  icon={<Rocket size={22} />}
+                  size={22}
+                  title={t('projectHome.actions.deployment.label')}
+                  to={`${basePath}/deployment`}
+                />
+              </>
+            )}
+          </section>
+          <section className="EditorBarBottom">
+            <MdrIconLink
+              icon={<Settings size={22} />}
+              size={22}
+              title={settingsLabel}
+              to={`${basePath}/settings`}
+            />
+          </section>
+        </nav>
+        <EditorBarExitModal
+          isOpen={isExitOpen}
+          exitLabel={exitLabel}
+          cancelLabel={t('bar.cancel')}
+          exitText={t('bar.exit')}
+          title={t('bar.exitTitle')}
+          onClose={() => setExitOpen(false)}
+          onConfirm={() => {
+            setExitOpen(false);
+            navigate(exitTarget);
+          }}
+        />
+      </>
     );
 }
 

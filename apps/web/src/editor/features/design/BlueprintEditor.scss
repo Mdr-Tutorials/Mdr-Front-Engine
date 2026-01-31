@@ -362,7 +362,7 @@
   background: transparent;
   cursor: pointer;
   border-radius: 10px;
-  padding: 4px 6px;
+  padding: 2px 0;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -544,9 +544,8 @@
 }
 
 .BlueprintEditorTreeCount {
-  height: 18px;
-  min-width: 18px;
-  padding: 0 6px;
+  height: 15px;
+  min-width: 15px;
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.04);
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -1080,6 +1079,28 @@
   text-align: right;
 }
 
+.ViewportResetButton {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  height: 24px;
+  padding: 0 8px;
+  font-size: 11px;
+  line-height: 1;
+  background: var(--color-0);
+  color: var(--color-7);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.ViewportResetButton:hover {
+  border-color: rgba(0, 0, 0, 0.2);
+  color: var(--color-9);
+}
+
 .ViewportQuickPresets {
   display: inline-flex;
   align-items: center;
@@ -1093,8 +1114,10 @@
 .ViewportQuickPreset {
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 999px;
-  padding: 2px 8px;
+  height: 24px;
+  padding: 0 8px;
   font-size: 11px;
+  line-height: 1;
   background: var(--color-0);
   color: var(--color-7);
   cursor: pointer;
@@ -1115,8 +1138,10 @@
 .ViewportMoreButton {
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 999px;
-  padding: 2px 8px;
+  height: 24px;
+  padding: 0 8px;
   font-size: 11px;
+  line-height: 1;
   background: var(--color-0);
   color: var(--color-7);
   cursor: pointer;
@@ -1606,7 +1631,15 @@
     border-color: rgba(255, 255, 255, 0.12);
   }
 
+  .ViewportResetButton {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
   .ViewportMoreButton:hover {
+    border-color: rgba(255, 255, 255, 0.28);
+  }
+
+  .ViewportResetButton:hover {
     border-color: rgba(255, 255, 255, 0.28);
   }
 

@@ -1,0 +1,45 @@
+.EditorBarExitOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 8, 8, 0.5);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.EditorBarExitModal {
+  width: min(420px, 90vw);
+  background: var(--color-0);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
+  padding: 18px 20px 20px;
+  color: var(--color-10);
+}
+
+.EditorBarExitTitle h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.EditorBarExitTitle p {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--color-6);
+}
+
+.EditorBarExitActions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .EditorBarExitModal {
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+}

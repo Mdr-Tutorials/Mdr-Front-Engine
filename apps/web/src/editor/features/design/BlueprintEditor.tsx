@@ -561,6 +561,10 @@ function BlueprintEditor() {
     setBlueprintState(blueprintKey, { pan: nextPan })
   }
 
+  const handleResetView = () => {
+    setBlueprintState(blueprintKey, { zoom: DEFAULT_BLUEPRINT_STATE.zoom, pan: DEFAULT_BLUEPRINT_STATE.pan })
+  }
+
   const handleNodeSelect = (nodeId: string) => {
     setBlueprintState(blueprintKey, { selectedId: nodeId })
   }
@@ -844,6 +848,7 @@ function BlueprintEditor() {
         zoom={zoom}
         zoomStep={zoomStep}
         onZoomChange={handleZoomChange}
+        onResetView={handleResetView}
       />
     </div>
   )
