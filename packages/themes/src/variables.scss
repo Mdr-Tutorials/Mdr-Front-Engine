@@ -1,3 +1,5 @@
+@use "sass:color";
+
 * {
     margin: 0;
     padding: 0;
@@ -104,7 +106,12 @@ $transitions: (
     // 注入颜色（浅色）
     @each $key, $value in $colors-light {
         --color-#{$key}: #{$value};
+        --color-#{$key}-rgb: #{color.channel($value, "red")} #{color.channel($value, "green")} #{color.channel($value, "blue")};
     }
+
+    // 语义化颜色（可被 Tailwind 映射）
+    --color-node-bg: var(--color-1);
+    --color-node-bg-rgb: var(--color-1-rgb);
 
     // 注入其他不变量
     @each $key, $value in $spacing {
@@ -133,6 +140,7 @@ $transitions: (
     :root {
         @each $key, $value in $colors-dark {
             --color-#{$key}: #{$value};
+            --color-#{$key}-rgb: #{color.channel($value, "red")} #{color.channel($value, "green")} #{color.channel($value, "blue")};
         }
     }
 }
@@ -141,11 +149,13 @@ $transitions: (
 [data-theme="light"] {
     @each $key, $value in $colors-light {
         --color-#{$key}: #{$value};
+        --color-#{$key}-rgb: #{color.channel($value, "red")} #{color.channel($value, "green")} #{color.channel($value, "blue")};
     }
 }
 
 [data-theme="dark"] {
     @each $key, $value in $colors-dark {
         --color-#{$key}: #{$value};
+        --color-#{$key}-rgb: #{color.channel($value, "red")} #{color.channel($value, "green")} #{color.channel($value, "blue")};
     }
 }
