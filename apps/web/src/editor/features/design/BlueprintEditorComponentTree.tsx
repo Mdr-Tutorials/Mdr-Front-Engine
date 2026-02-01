@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { ArrowDown, ArrowUp, Box, ChevronDown, ChevronRight, ChevronUp, Copy, GripVertical, LayoutGrid, Layers, MoreHorizontal, MousePointerClick, Trash2, Type, TextCursorInput } from "lucide-react"
-import { useDroppable } from "@dnd-kit/core"
-import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable"
+import { useDraggable, useDroppable } from "@dnd-kit/core"
 import { CSS } from "@dnd-kit/utilities"
 import type { ComponentNode } from "@/core/types/engine.types"
 import { useEditorStore } from "@/editor/store/useEditorStore"
@@ -10,6 +9,7 @@ import { useEditorStore } from "@/editor/store/useEditorStore"
 type BlueprintEditorComponentTreeProps = {
   isCollapsed: boolean
   selectedId?: string
+  dropHint?: { overNodeId: string; placement: "before" | "after" | "child" } | null
   onToggleCollapse: () => void
   onSelectNode: (nodeId: string) => void
   onDeleteSelected: () => void
@@ -55,6 +55,7 @@ type TreeNodeProps = {
   depth: number
   expandedKeys: string[]
   selectedId?: string
+  dropHint?: { overNodeId: string; placement: "before" | "after" | "child" } | null
   rootId?: string
   parentId?: string
   openMenuId?: string | null
@@ -73,6 +74,7 @@ function BlueprintTreeNode({
   depth,
   expandedKeys,
   selectedId,
+  dropHint,
   rootId,
   parentId,
   openMenuId,
@@ -88,7 +90,8 @@ function BlueprintTreeNode({
   const isExpanded = expandedKeys.includes(node.id)
   const Icon = getNodeIcon(node.type)
   const isRoot = rootId && node.id === rootId
-  const { attributes, listeners, setNodeRef: setSortableRef, transform, transition, isDragging } = useSortable({
+  const dropPlacement = dropHint?.overNodeId === node.id ? dropHint.placement : null
+  const { attributes, listeners, setNodeRef: setDragRef, transform, isDragging } = useDraggable({
     id: node.id,
     data: { kind: "tree-sort", nodeId: node.id, parentId },
     disabled: isRoot,
@@ -97,13 +100,12 @@ function BlueprintTreeNode({
     id: `tree-node:${node.id}`,
     data: { kind: "tree-node", nodeId: node.id },
   })
-  const setNodeRef = (element: HTMLButtonElement | null) => {
-    setSortableRef(element)
+  const setNodeRef = (element: HTMLDivElement | null) => {
+    setDragRef(element)
     setDropRef(element)
   }
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
     opacity: isDragging ? 0.6 : undefined,
   }
 
@@ -137,7 +139,7 @@ function BlueprintTreeNode({
           ref={setNodeRef}
           role="button"
           tabIndex={0}
-          className={`BlueprintEditorTreeItem ${selectedId === node.id ? "Selected" : ""} ${isOver ? "IsOver" : ""}`}
+          className={`BlueprintEditorTreeItem ${selectedId === node.id ? "Selected" : ""} ${isOver ? "IsOver" : ""} ${dropPlacement === "before" ? "DropBefore" : ""} ${dropPlacement === "after" ? "DropAfter" : ""} ${dropPlacement === "child" ? "DropChild" : ""}`.trim()}
           style={style}
           onClick={() => onSelect(node.id)}
           onKeyDown={(event) => {
@@ -243,26 +245,25 @@ function BlueprintTreeNode({
       </div>
       {hasChildren && isExpanded && (
         <div className="BlueprintEditorTreeChildren">
-          <SortableContext items={children.map((child) => child.id)} strategy={verticalListSortingStrategy}>
-            {children.map((child) => (
-              <BlueprintTreeNode
-                key={child.id}
-                node={child}
-                depth={depth + 1}
-                expandedKeys={expandedKeys}
-                selectedId={selectedId}
-                rootId={rootId}
-                parentId={node.id}
-                openMenuId={openMenuId}
-                onMenuAction={onMenuAction}
-                onToggle={onToggle}
-                onSelect={onSelect}
-                onDelete={onDelete}
-                onCopy={onCopy}
-                onMove={onMove}
-              />
-            ))}
-          </SortableContext>
+          {children.map((child) => (
+            <BlueprintTreeNode
+              key={child.id}
+              node={child}
+              depth={depth + 1}
+              expandedKeys={expandedKeys}
+              selectedId={selectedId}
+              dropHint={dropHint}
+              rootId={rootId}
+              parentId={node.id}
+              openMenuId={openMenuId}
+              onMenuAction={onMenuAction}
+              onToggle={onToggle}
+              onSelect={onSelect}
+              onDelete={onDelete}
+              onCopy={onCopy}
+              onMove={onMove}
+            />
+          ))}
         </div>
       )}
     </div>
@@ -272,6 +273,7 @@ function BlueprintTreeNode({
 export function BlueprintEditorComponentTree({
   isCollapsed,
   selectedId,
+  dropHint,
   onToggleCollapse,
   onSelectNode,
   onDeleteSelected,
@@ -394,22 +396,21 @@ export function BlueprintEditorComponentTree({
       >
         {rootNode ? (
           <div className="BlueprintEditorTreeList">
-            <SortableContext items={[rootNode.id]} strategy={verticalListSortingStrategy}>
-              <BlueprintTreeNode
-                node={rootNode}
-                depth={0}
-                expandedKeys={expandedKeys}
-                selectedId={selectedId}
-                rootId={rootNode.id}
-                openMenuId={openMenuId}
-                onMenuAction={holdMenuOpen}
-                onToggle={handleToggle}
-                onSelect={onSelectNode}
-                onDelete={onDeleteNode}
-                onCopy={onCopyNode}
-                onMove={onMoveNode}
-              />
-            </SortableContext>
+            <BlueprintTreeNode
+              node={rootNode}
+              depth={0}
+              expandedKeys={expandedKeys}
+              selectedId={selectedId}
+              dropHint={dropHint}
+              rootId={rootNode.id}
+              openMenuId={openMenuId}
+              onMenuAction={holdMenuOpen}
+              onToggle={handleToggle}
+              onSelect={onSelectNode}
+              onDelete={onDeleteNode}
+              onCopy={onCopyNode}
+              onMove={onMoveNode}
+            />
           </div>
         ) : (
           <div className="BlueprintEditorTreePlaceholder">

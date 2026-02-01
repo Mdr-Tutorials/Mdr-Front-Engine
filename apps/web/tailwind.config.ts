@@ -3,7 +3,6 @@ import type { Config } from "tailwindcss"
 const cssVarRgb = (name: string) => `rgb(var(${name}-rgb) / <alpha-value>)`
 
 export default {
-  prefix: "tw-",
   content: [
     "./index.html",
     "./src/**/*.{ts,tsx,js,jsx}",

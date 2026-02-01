@@ -16,11 +16,9 @@ describe("EditorHome", () => {
   })
 
   it("sorts projects by most recently updated", () => {
-    const { container } = render(<EditorHome />)
+    render(<EditorHome />)
 
-    const titles = Array.from(container.querySelectorAll(".ProjectCardTitle")).map(
-      (node) => node.textContent,
-    )
+    const titles = screen.getAllByRole("heading", { level: 3 }).map((node) => node.textContent)
 
     expect(titles[0]).toBe("SaaS Dashboard")
   })

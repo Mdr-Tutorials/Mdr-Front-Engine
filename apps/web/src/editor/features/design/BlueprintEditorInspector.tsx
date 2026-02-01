@@ -5,6 +5,7 @@ import { AlertTriangle, Check, ChevronLeft, ChevronRight } from "lucide-react"
 import { MdrInput } from "@mdr/ui"
 import type { ComponentNode } from "@/core/types/engine.types"
 import { useEditorStore } from "@/editor/store/useEditorStore"
+import { INSPECTOR_PANELS } from "./inspector/panels/registry"
 
 type BlueprintEditorInspectorProps = {
   isCollapsed: boolean
@@ -36,6 +37,24 @@ const renameNodeId = (node: ComponentNode, fromId: string, toId: string): Compon
   return { ...node, children: nextChildren }
 }
 
+const updateNodeById = (
+  node: ComponentNode,
+  targetId: string,
+  updater: (node: ComponentNode) => ComponentNode,
+): { node: ComponentNode; updated: boolean } => {
+  if (node.id === targetId) {
+    return { node: updater(node), updated: true }
+  }
+  if (!node.children?.length) return { node, updated: false }
+  let updated = false
+  const nextChildren = node.children.map((child) => {
+    const result = updateNodeById(child, targetId, updater)
+    if (result.updated) updated = true
+    return result.node
+  })
+  return updated ? { node: { ...node, children: nextChildren }, updated: true } : { node, updated: false }
+}
+
 export function BlueprintEditorInspector({ isCollapsed, onToggleCollapse }: BlueprintEditorInspectorProps) {
   const { t } = useTranslation('blueprint')
   const { projectId } = useParams()
@@ -63,6 +82,14 @@ export function BlueprintEditorInspector({ isCollapsed, onToggleCollapse }: Blue
     allIds.has(trimmedDraftId)
   const isDirty = Boolean(selectedNode?.id) && trimmedDraftId !== selectedNode?.id
   const canApply = Boolean(selectedNode?.id) && Boolean(trimmedDraftId) && isDirty && !isDuplicate
+
+  const updateSelectedNode = (updater: (node: ComponentNode) => ComponentNode) => {
+    if (!selectedNode?.id) return
+    updateMirDoc((doc) => {
+      const result = updateNodeById(doc.ui.root, selectedNode.id, updater)
+      return result.updated ? { ...doc, ui: { ...doc.ui, root: result.node } } : doc
+    })
+  }
 
   const applyRename = () => {
     if (!selectedNode?.id || !canApply) return
@@ -141,6 +168,10 @@ export function BlueprintEditorInspector({ isCollapsed, onToggleCollapse }: Blue
                   </div>
                 )}
               </div>
+
+              {INSPECTOR_PANELS.filter((panel) => panel.match(selectedNode)).map((panel) => (
+                <div key={panel.key}>{panel.render({ node: selectedNode, updateNode: updateSelectedNode })}</div>
+              ))}
             </div>
           ) : (
             <div className="InspectorPlaceholder">

@@ -1,10 +1,9 @@
-﻿// src/editor/features/export/ExportModal.tsx
+// src/editor/features/export/ExportModal.tsx
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import { generateReactCode } from '@/mir/generator/mirToReact';
 import { CodeViewer } from './CodeViewer';
-import './ExportModal.scss'; // 👈 必须引入这个文件！
 import { testDoc } from '@/mock/pagaData';
 
 export const ExportModal = () => {
@@ -23,31 +22,41 @@ export const ExportModal = () => {
     if (!isExportModalOpen) return null;
 
     return (
-        <div className="export-modal-overlay">
-            <div className="export-modal-container">
+        <div className="fixed inset-0 z-[9999] flex h-screen w-screen items-center justify-center bg-[rgba(0,0,0,0.7)] backdrop-blur-[4px]">
+            <div className="flex h-[80vh] w-[85vw] flex-col overflow-hidden rounded-[12px] border border-[#333] bg-[#1e1e1e] text-white shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5)]">
 
-                <div className="export-modal-header">
-                    <h2>{t('title')}</h2>
-                    <button className="close-btn" onClick={() => setExportModalOpen(false)} aria-label={t('close')}>✕</button>
+                <div className="flex items-center justify-between border-b border-[#333] bg-[#252526] px-[24px] py-[16px]">
+                    <h2 className="m-0 text-[1.1rem] font-medium text-[#ccc]">{t('title')}</h2>
+                    <button
+                        className="cursor-pointer border-0 bg-transparent text-[20px] text-[#888] hover:text-white"
+                        onClick={() => setExportModalOpen(false)}
+                        aria-label={t('close')}
+                    >
+                        ✕
+                    </button>
                 </div>
 
-                <div className="export-modal-tabs">
-                    <button className="tab-item active">{t('tabs.react')}</button>
-                    <button className="tab-item">{t('tabs.vue')}</button>
+                <div className="flex bg-[#2d2d2d] px-[10px]">
+                    <button className="cursor-pointer border-0 border-b-2 border-b-[#3b82f6] bg-[#1e1e1e] px-[20px] py-[10px] text-[13px] text-[#3b82f6]">
+                        {t('tabs.react')}
+                    </button>
+                    <button className="cursor-pointer border-0 border-b-2 border-b-transparent bg-transparent px-[20px] py-[10px] text-[13px] text-[#aaa]">
+                        {t('tabs.vue')}
+                    </button>
                 </div>
 
-                <div className="export-modal-content">
+                <div className="flex flex-1 flex-col overflow-hidden p-[20px]">
                     {/* 这里放置你的语法高亮组件 */}
                     <CodeViewer code={code} lang="typescript" />
 
-                    <div className="code-footer">
+                    <div className="mt-[12px] flex justify-between text-[12px] text-[#666]">
                         <span>{t('footer.generator')}</span>
                         <button
                             onClick={() => {
                                 navigator.clipboard.writeText(code);
                                 alert(t('copySuccess'));
                             }}
-                            style={{ color: '#3b82f6', background: 'none', border: 'none', cursor: 'pointer' }}
+                            className="cursor-pointer border-0 bg-transparent text-[#3b82f6]"
                         >
                             {t('copy')}
                         </button>

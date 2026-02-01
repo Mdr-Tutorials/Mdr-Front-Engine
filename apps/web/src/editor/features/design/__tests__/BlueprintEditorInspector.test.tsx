@@ -31,6 +31,27 @@ vi.mock("@mdr/ui", () => ({
       onKeyDown={onKeyDown}
     />
   ),
+  MdrSelect: ({
+    value,
+    options,
+    onChange,
+  }: {
+    value?: string
+    options: { label: string; value: string }[]
+    onChange?: (value: string) => void
+  }) => (
+    <select
+      data-testid="mdr-select"
+      value={value ?? ""}
+      onChange={(event) => onChange?.(event.target.value)}
+    >
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  ),
 }))
 
 beforeEach(() => {

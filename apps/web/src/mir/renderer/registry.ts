@@ -1,5 +1,5 @@
 import type React from 'react';
-import { MdrButton, MdrButtonLink, MdrCard, MdrDiv, MdrHeading, MdrInput, MdrLink, MdrPanel, MdrParagraph, MdrSection, MdrText, MdrTextarea } from '@mdr/ui';
+import * as MdrUi from '@mdr/ui';
 import type { ComponentNode } from '@/core/types/engine.types';
 
 export type ComponentKind = 'html' | 'mdr' | 'custom';
@@ -165,18 +165,44 @@ const registerNativeComponents = (registry: ComponentRegistry) => {
 };
 
 const registerMdrComponents = (registry: ComponentRegistry) => {
-    registry.register('MdrDiv', MdrDiv, mdrAdapter);
-    registry.register('MdrText', MdrText, mdrTextAdapter);
-    registry.register('MdrHeading', MdrHeading, mdrTextAdapter);
-    registry.register('MdrParagraph', MdrParagraph, mdrTextAdapter);
-    registry.register('MdrButton', MdrButton, mdrButtonAdapter);
-    registry.register('MdrButtonLink', MdrButtonLink, mdrButtonAdapter);
-    registry.register('MdrInput', MdrInput, mdrInputAdapter);
-    registry.register('MdrTextarea', MdrTextarea, mdrInputAdapter);
-    registry.register('MdrLink', MdrLink, mdrTextPropAdapter);
-    registry.register('MdrSection', MdrSection, mdrAdapter);
-    registry.register('MdrCard', MdrCard, mdrAdapter);
-    registry.register('MdrPanel', MdrPanel, mdrAdapter);
+    // Auto-register all components exported by @mdr/ui to keep the canvas renderer extensible.
+    // Defaults to mdrAdapter; specific components override via adapterOverrides below.
+    Object.entries(MdrUi).forEach(([key, component]) => {
+        if (!key.startsWith('Mdr')) return;
+        if (!component) return;
+        const isValidElementType =
+            typeof component === 'function' ||
+            (typeof component === 'object' && component !== null && '$$typeof' in component);
+        if (!isValidElementType) return;
+        registry.register(key, component as React.ElementType, mdrAdapter);
+    });
+
+    const adapterOverrides: Record<string, ComponentAdapter> = {
+        MdrDiv: mdrAdapter,
+        MdrSection: mdrAdapter,
+        MdrCard: mdrAdapter,
+        MdrPanel: mdrAdapter,
+
+        MdrText: mdrTextAdapter,
+        MdrHeading: mdrTextAdapter,
+        MdrParagraph: mdrTextAdapter,
+
+        MdrButton: mdrButtonAdapter,
+        MdrButtonLink: mdrButtonAdapter,
+
+        MdrInput: mdrInputAdapter,
+        MdrTextarea: mdrInputAdapter,
+
+        MdrLink: mdrTextPropAdapter,
+    };
+
+    Object.keys(MdrUi).forEach((type) => {
+        const adapter = adapterOverrides[type];
+        if (!adapter) return;
+        const component = (MdrUi as Record<string, unknown>)[type];
+        if (!component) return;
+        registry.register(type, component as React.ElementType, adapter);
+    });
 };
 
 export const createComponentRegistry = (): ComponentRegistry => {

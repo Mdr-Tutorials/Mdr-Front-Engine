@@ -45,6 +45,7 @@ const PreviewWrapper = ({ scale = DEFAULT_PREVIEW_SCALE, className = "", wide = 
 
 type DraggablePreviewCardProps = {
   itemId: string
+  selectedSize?: string
   className: string
   role?: string
   tabIndex?: number
@@ -58,6 +59,7 @@ type DraggablePreviewCardProps = {
 
 const DraggablePreviewCard = ({
   itemId,
+  selectedSize,
   className,
   role,
   tabIndex,
@@ -70,7 +72,7 @@ const DraggablePreviewCard = ({
 }: DraggablePreviewCardProps) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `palette:${itemId}`,
-    data: { kind: "palette-item", itemId },
+    data: { kind: "palette-item", itemId, selectedSize },
   })
 
   return (
@@ -84,6 +86,40 @@ const DraggablePreviewCard = ({
       onKeyDown={onKeyDown}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      {...attributes}
+      {...listeners}
+    >
+      {children}
+    </div>
+  )
+}
+
+type DraggableVariantCardProps = {
+  itemId: string
+  variantId: string
+  variantProps?: Record<string, unknown>
+  selectedSize?: string
+  className: string
+  children: ReactNode
+}
+
+const DraggableVariantCard = ({
+  itemId,
+  variantId,
+  variantProps,
+  selectedSize,
+  className,
+  children,
+}: DraggableVariantCardProps) => {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: `palette:${itemId}:${variantId}`,
+    data: { kind: "palette-item", itemId, variantId, variantProps, selectedSize },
+  })
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`${className} ${isDragging ? "IsDragging" : ""}`.trim()}
       {...attributes}
       {...listeners}
     >
@@ -168,6 +204,7 @@ export function BlueprintEditorSidebar({
                         >
                           <DraggablePreviewCard
                             itemId={item.id}
+                            selectedSize={selectedSizeValue}
                             className={`ComponentPreviewCard ${hasVariants ? "HasVariants" : ""}`}
                             role={hasVariants ? "button" : undefined}
                             tabIndex={hasVariants ? 0 : -1}
@@ -252,16 +289,23 @@ export function BlueprintEditorSidebar({
                                   variant.scale ?? item.scale ?? COMPACT_PREVIEW_SCALE,
                                   isWide,
                                 )
+                                const variantNode = variant.renderElement
+                                  ? variant.renderElement({ size: selectedSizeValue })
+                                  : variant.element
                                 return (
-                                  <div
+                                  <DraggableVariantCard
                                     key={`${item.id}-${variant.id}`}
+                                    itemId={item.id}
+                                    variantId={variant.id}
+                                    variantProps={variant.props}
+                                    selectedSize={selectedSizeValue}
                                     className={`ComponentVariantCard ${isWide ? "Wide" : ""}`}
                                   >
                                     <PreviewWrapper scale={variantScale} wide={isWide} className="Small">
-                                      {variant.element}
+                                      {variantNode}
                                     </PreviewWrapper>
                                     <span className="ComponentVariantLabel">{variant.label}</span>
-                                  </div>
+                                  </DraggableVariantCard>
                                 )
                               })}
                             </div>

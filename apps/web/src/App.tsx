@@ -8,6 +8,7 @@ import BlueprintEditor from './editor/features/design/BlueprintEditor'
 import { ProjectResources } from './editor/features/resources/ProjectResources'
 import { EditorSettingsPage } from './editor/features/settings/EditorSettingsPage'
 import { ProjectSettingsPage } from './editor/features/settings/ProjectSettingsPage'
+import { ExportMirPage } from './editor/features/export/ExportMirPage'
 import { AuthPage } from './auth/AuthPage'
 import { ProfilePage } from './auth/ProfilePage'
 
@@ -39,7 +40,7 @@ export const createRoutes = (t: TFunction) => [
           { path: 'animation', element: <div>{t('animationEditor', { ns: 'routes' })}</div> },
           { path: 'resources', element: <ProjectResources /> },
           { path: 'test', element: <div>{t('testing', { ns: 'routes' })}</div> },
-          { path: 'export', element: <div>{t('exportSettings', { ns: 'routes' })}</div> },
+          { path: 'export', element: <ExportMirPage /> },
           { path: 'deployment', element: <div>{t('deploymentSettings', { ns: 'routes' })}</div> },
           { path: 'settings', element: <ProjectSettingsPage /> },
         ],

@@ -49,9 +49,14 @@ export function BlueprintEditorViewportBar({
           onChange={onZoomChange}
         />
         <span className="ViewportZoomValue">{zoom}%</span>
-        <button type="button" className="ViewportResetButton" onClick={onResetView}>
+        <button
+          type="button"
+          className="ViewportResetButton"
+          onClick={onResetView}
+          aria-label={t('viewport.reset')}
+        >
           <RotateCcw size={12} />
-          {t('viewport.reset')}
+          <span className="ViewportResetText">{t('viewport.reset')}</span>
         </button>
       </div>
       <div className="ViewportQuickPresets">
@@ -70,6 +75,32 @@ export function BlueprintEditorViewportBar({
           </button>
           )
         })}
+      </div>
+      <div className="ViewportQuickPresetsMenu">
+        <label className="ViewportQuickPresetsMenuLabel" htmlFor="ViewportQuickPresetsSelect">
+          {t('viewport.quickPresetMenu')}
+        </label>
+        <select
+          id="ViewportQuickPresetsSelect"
+          className="ViewportQuickPresetsSelect"
+          defaultValue=""
+          onChange={(event) => {
+            const preset = VIEWPORT_QUICK_PRESETS.find((item) => item.id === event.target.value)
+            if (!preset) return
+            onViewportWidthChange(preset.width)
+            onViewportHeightChange(preset.height)
+          }}
+        >
+          <option value="">{t('viewport.quickPresetMenu')}</option>
+          {VIEWPORT_QUICK_PRESETS.map((preset) => {
+            const presetLabel = t(preset.labelKey, { defaultValue: `${preset.width}×${preset.height}` })
+            return (
+              <option key={preset.id} value={preset.id}>
+                {presetLabel}
+              </option>
+            )
+          })}
+        </select>
       </div>
       <MdrPopover
         className="ViewportDevicePopover"

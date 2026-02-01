@@ -131,6 +131,28 @@ describe("BlueprintEditorViewportBar", () => {
     expect(onViewportHeightChange).toHaveBeenCalledWith(preset.height)
   })
 
+  it("applies quick preset menu selections", () => {
+    const onViewportWidthChange = vi.fn()
+    const onViewportHeightChange = vi.fn()
+
+    render(
+      <BlueprintEditorViewportBar
+        viewportWidth="1440"
+        viewportHeight="900"
+        onViewportWidthChange={onViewportWidthChange}
+        onViewportHeightChange={onViewportHeightChange}
+        zoom={100}
+        zoomStep={5}
+        onZoomChange={() => {}}
+        onResetView={() => {}}
+      />
+    )
+
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: QUICK_PRESETS[0].id } })
+    expect(onViewportWidthChange).toHaveBeenCalledWith(QUICK_PRESETS[0].width)
+    expect(onViewportHeightChange).toHaveBeenCalledWith(QUICK_PRESETS[0].height)
+  })
+
   it("applies device preset selections", () => {
     const onViewportWidthChange = vi.fn()
     const onViewportHeightChange = vi.fn()

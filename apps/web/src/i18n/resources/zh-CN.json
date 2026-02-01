@@ -1004,6 +1004,11 @@
   },
   "export": {
     "title": "导出代码",
+    "mir": {
+      "title": "MIR",
+      "description": "当前项目的 MIR JSON（临时页）",
+      "empty": "暂无 MIR（先进入蓝图编辑器创建组件）"
+    },
     "close": "关闭",
     "copy": "复制",
     "copySuccess": "已复制",
@@ -1060,6 +1065,7 @@
       "label": "视口",
       "zoom": "缩放",
       "reset": "重置视图",
+      "quickPresetMenu": "预设",
       "size": "{{width}}x{{height}}",
       "moreDevices": "更多设备",
       "quickPresets": {

@@ -370,7 +370,34 @@
   min-width: 0;
   text-align: left;
   color: var(--color-8);
+  position: relative;
   transition: color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.BlueprintEditorTreeItem.DropBefore::before,
+.BlueprintEditorTreeItem.DropAfter::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  height: 2px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.65);
+  pointer-events: none;
+}
+
+.BlueprintEditorTreeItem.DropBefore::before {
+  top: -4px;
+}
+
+.BlueprintEditorTreeItem.DropAfter::before {
+  bottom: -4px;
+}
+
+.BlueprintEditorTreeItem.DropChild {
+  background: rgba(0, 0, 0, 0.03);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
 }
 
 .BlueprintEditorTreeActions {
@@ -957,7 +984,6 @@
 .BlueprintEditorCanvasArtboard {
   position: relative;
   background: var(--color-0);
-  border-radius: 22px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 22px 45px rgba(0, 0, 0, 0.12);
   overflow: hidden;
@@ -1111,6 +1137,31 @@
   white-space: nowrap;
 }
 
+.ViewportQuickPresetsMenu {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ViewportQuickPresetsMenuLabel {
+  font-weight: 600;
+  color: var(--color-8);
+  white-space: nowrap;
+}
+
+.ViewportQuickPresetsSelect {
+  height: 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: var(--color-0);
+  color: var(--color-9);
+  font-size: 11px;
+  padding: 0 10px;
+  min-width: 0;
+}
+
 .ViewportQuickPreset {
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 999px;
@@ -1155,6 +1206,33 @@
 .ViewportMoreButton:hover {
   border-color: rgba(0, 0, 0, 0.2);
   color: var(--color-9);
+}
+
+@media (max-width: 980px) {
+  .ViewportInputs .MdrInput {
+    width: 62px;
+    max-width: 62px;
+  }
+
+  .ViewportZoomLabel {
+    display: none;
+  }
+
+  .ViewportZoomControl .MdrSliderInput {
+    width: 92px;
+  }
+
+  .ViewportResetText {
+    display: none;
+  }
+
+  .ViewportQuickPresets {
+    display: none;
+  }
+
+  .ViewportQuickPresetsMenu {
+    display: inline-flex;
+  }
 }
 
 .ViewportDevicePopover .MdrPopoverPanel {
@@ -1363,6 +1441,184 @@
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+.InspectorTextInput {
+  width: 100%;
+  min-width: 0;
+  height: 30px;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0 10px;
+  font-size: 12px;
+  color: var(--color-9);
+}
+
+.InspectorTextInput::placeholder {
+  color: var(--color-4);
+}
+
+.InspectorTextInput:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.InspectorUnitInput {
+  width: 100%;
+  max-width: 100px;
+  position: relative;
+}
+
+.InspectorUnitInputFrame {
+  width: 100%;
+  height: 32px;
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: var(--color-0);
+  overflow: hidden;
+}
+
+.InspectorUnitInputAmount {
+  width: 40px;
+  flex: 0 0 auto;
+}
+
+[data-theme='dark'] .InspectorUnitInputFrame {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.InspectorUnitInput.Disabled {
+  opacity: 0.6;
+}
+
+.InspectorUnitInputAmount .InspectorTextInput {
+  padding: 0 6px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.InspectorUnitInputDivider {
+  width: 1px;
+  height: 18px;
+  background: rgba(0, 0, 0, 0.12);
+  flex: 0 0 auto;
+}
+
+[data-theme='dark'] .InspectorUnitInputDivider {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.InspectorUnitInputUnit {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.InspectorUnitInputUnitButton {
+  height: 100%;
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0 8px;
+  font-size: 12px;
+  color: var(--color-9);
+  width: 48px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.InspectorUnitInputUnitButton:disabled {
+  cursor: not-allowed;
+}
+
+.InspectorUnitInputUnitMenu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  width: 400px;
+  max-height: 200px;
+  overflow: auto;
+  padding: 8px;
+  border-radius: 12px;
+  background: var(--color-0);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12);
+  z-index: 8;
+}
+
+[data-theme='dark'] .InspectorUnitInputUnitMenu {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(24, 24, 28, 0.96);
+}
+
+.InspectorUnitInputUnitGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.InspectorUnitInputUnitGroup+.InspectorUnitInputUnitGroup {
+  margin-top: 10px;
+}
+
+.InspectorUnitInputUnitGroupLabel {
+  font-size: 10px;
+  color: var(--color-6);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.InspectorUnitInputUnitGroupItems {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
+  gap: 6px;
+}
+
+.InspectorUnitInputUnitOption {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  height: 26px;
+  background: transparent;
+  color: var(--color-8);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.InspectorUnitInputUnitOption:hover {
+  border-color: rgba(0, 0, 0, 0.18);
+  color: var(--color-9);
+}
+
+.InspectorUnitInputUnitOption.Active {
+  border-color: rgba(0, 0, 0, 0.18);
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--color-9);
+}
+
+[data-theme='dark'] .InspectorUnitInputUnitOption {
+  border-color: rgba(255, 255, 255, 0.14);
+  color: var(--color-8);
+}
+
+[data-theme='dark'] .InspectorUnitInputUnitOption:hover {
+  border-color: rgba(255, 255, 255, 0.24);
+  color: var(--color-9);
+}
+
+[data-theme='dark'] .InspectorUnitInputUnitOption.Active {
+  border-color: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .InspectorFieldActions {

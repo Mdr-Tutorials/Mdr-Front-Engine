@@ -1,11 +1,5 @@
 @use "sass:color";
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
     font-family: Inter, 'HarmonyOS Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     // 设置默认背景和文字颜色，确保切换时有底色

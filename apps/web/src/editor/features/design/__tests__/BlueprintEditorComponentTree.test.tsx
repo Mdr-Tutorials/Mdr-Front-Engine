@@ -4,23 +4,17 @@ import { BlueprintEditorComponentTree } from "../BlueprintEditorComponentTree"
 import { createMirDoc, resetEditorStore } from "@/test-utils/editorStore"
 
 vi.mock("@dnd-kit/core", () => ({
-  useDroppable: () => ({
-    setNodeRef: () => {},
-    isOver: false,
-  }),
-}))
-
-vi.mock("@dnd-kit/sortable", () => ({
-  SortableContext: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  useSortable: () => ({
+  useDraggable: () => ({
     attributes: {},
     listeners: {},
     setNodeRef: () => {},
     transform: null,
-    transition: undefined,
     isDragging: false,
   }),
-  verticalListSortingStrategy: () => {},
+  useDroppable: () => ({
+    setNodeRef: () => {},
+    isOver: false,
+  }),
 }))
 
 vi.mock("@dnd-kit/utilities", () => ({

@@ -80,9 +80,9 @@ describe("NewResourceModal", () => {
     const onClose = vi.fn()
     vi.stubGlobal("crypto", { randomUUID: () => "uuid-2" })
 
-    const { container } = render(<NewResourceModal open onClose={onClose} />)
-    const typeButtons = container.querySelectorAll(".NewResourceModalTypeItem")
-    fireEvent.click(typeButtons[1])
+    render(<NewResourceModal open onClose={onClose} />)
+
+    fireEvent.click(screen.getByRole("button", { name: "modals.newComponent.title" }))
 
     fireEvent.click(screen.getByRole("button", { name: "modals.actions.create" }))
 

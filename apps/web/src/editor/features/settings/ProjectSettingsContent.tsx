@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdrCheckList, MdrInput, MdrRadioGroup, MdrSelect, MdrSlider, MdrTextarea } from '@mdr/ui';
 import { SettingsPanel, SettingsRow } from './SettingsShared';
@@ -38,7 +38,7 @@ export const ProjectSettingsContent = () => {
     };
 
     return (
-        <div className="SettingsSectionGroup">
+        <div className="grid gap-[18px]">
             <SettingsPanel
                 title={t('settings.project.panels.basics.title')}
                 description={t('settings.project.panels.basics.description')}

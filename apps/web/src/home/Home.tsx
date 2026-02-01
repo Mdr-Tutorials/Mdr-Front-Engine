@@ -9,7 +9,6 @@ import { useAuthStore } from '@/auth/useAuthStore';
 import { generateReactCode } from '@/mir/generator/mirToReact';
 import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
 import { testDoc } from '@/mock/pagaData';
-import './Home.scss'
 
 function Home() {
     const { t, i18n } = useTranslation('home');
@@ -36,6 +35,11 @@ function Home() {
         setThemeMode(nextTheme);
     };
     const logoColor = themeMode === 'dark' ? 'white' : 'black';
+    const secondaryHeadingClassName = 'mt-[15px] text-[20px] font-normal text-[var(--color-6)]';
+    const navIconClassName =
+        'inline-flex h-[36px] w-[36px] cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-[var(--color-7)] no-underline transition-colors duration-200 ease-[ease] hover:bg-[var(--color-1)] hover:text-[var(--color-10)]';
+    const profileLinkClassName =
+        'inline-flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[var(--color-1)] no-underline transition-[box-shadow,transform] duration-200 ease-[ease] hover:-translate-y-px hover:shadow-[0_10px_18px_rgba(0,0,0,0.12)]';
 
     const handleQuickExport = () => {
         // 1. 生成代码（默认生成 React，弹窗内可以再切换）
@@ -57,71 +61,86 @@ function Home() {
         undefined;
 
     return (
-        <div className="home">
-            <MdrNav className='nav'>
+        <div className="mx-auto flex min-h-screen w-[calc(100vw-80px)] flex-col items-center justify-start">
+            <MdrNav>
                 <MdrNav.Left>
                     <IconMdr size={30} color={logoColor} />
                     <MdrNav.Heading heading={t('brand.name')} />
                 </MdrNav.Left>
                 <MdrNav.Right>
-                    <p>{t('nav.community')}</p>
-                    <p>{t('nav.tutorials')}</p>
-                    <p>{t('nav.docs')}</p>
-                    <a
-                        className="HomeNavIcon"
-                        href="https://github.com/Mdr-Tutorials/Mdr-Front-Engine"
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label={t('nav.github')}
-                        title={t('nav.github')}
-                    >
-                        <Github size={18} />
-                    </a>
-                    <button
-                        type="button"
-                        className="HomeNavIcon"
-                        onClick={toggleLanguage}
-                        aria-label={t('nav.languageSwitch')}
-                        title={t('nav.languageSwitch')}
-                    >
-                        <Languages size={18} />
-                    </button>
-                    <button
-                        type="button"
-                        className="HomeNavIcon"
-                        onClick={toggleTheme}
-                        aria-label={themeMode === 'dark' ? '切换到浅色主题' : '切换到深色主题'}
-                        title={themeMode === 'dark' ? '切换到浅色主题' : '切换到深色主题'}
-                    >
-                        {themeMode === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-                    </button>
-                    {user ? (
-                        <MdrLink to="/profile" className="HomeProfileLink">
-                            <MdrAvatar size="Small" initials={initials} />
-                        </MdrLink>
-                    ) : (
-                        <MdrButtonLink text={t('nav.signIn')} size="Small" category="Ghost" to="/auth" />
-                    )}
+                    <div className="flex items-center gap-[8px]">
+                        <p>{t('nav.community')}</p>
+                        <p>{t('nav.tutorials')}</p>
+                        <p>{t('nav.docs')}</p>
+                        <a
+                            className={navIconClassName}
+                            href="https://github.com/Mdr-Tutorials/Mdr-Front-Engine"
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label={t('nav.github')}
+                            title={t('nav.github')}
+                        >
+                            <Github size={18} />
+                        </a>
+                        <button
+                            type="button"
+                            className={navIconClassName}
+                            onClick={toggleLanguage}
+                            aria-label={t('nav.languageSwitch')}
+                            title={t('nav.languageSwitch')}
+                        >
+                            <Languages size={18} />
+                        </button>
+                        <button
+                            type="button"
+                            className={navIconClassName}
+                            onClick={toggleTheme}
+                            aria-label={themeMode === 'dark' ? '切换到浅色主题' : '切换到深色主题'}
+                            title={themeMode === 'dark' ? '切换到浅色主题' : '切换到深色主题'}
+                        >
+                            {themeMode === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+                        </button>
+                        {user ? (
+                            <MdrLink
+                                to="/profile"
+                                className={profileLinkClassName}
+                            >
+                                <MdrAvatar size="Small" initials={initials} />
+                            </MdrLink>
+                        ) : (
+                            <MdrButtonLink text={t('nav.signIn')} size="Small" category="Ghost" to="/auth" />
+                        )}
+                    </div>
                 </MdrNav.Right>
             </MdrNav>
-            <div className="content">
-                <div className="titles">
-                    <h1 className="">
-                        <span>{t('hero.line1.highlight')}</span>
+            <div className="w-[85vw] flex-1">
+                <div className="mt-[100px] flex flex-col text-[var(--color-9)]">
+                    <h1 className="text-[64px] font-medium">
+                        <span className="font-extrabold text-[var(--color-10)] underline decoration-wavy decoration-4 underline-offset-[7px]">
+                            {t('hero.line1.highlight')}
+                        </span>
                     </h1>
-                    <h1 className="">
-                        {t('hero.line2.before')} <span>{t('hero.line2.highlight')}</span>
+                    <h1 className="text-[64px] font-medium">
+                        {t('hero.line2.before')}{' '}
+                        <span className="font-extrabold text-[var(--color-10)] underline decoration-wavy decoration-4 underline-offset-[7px]">
+                            {t('hero.line2.highlight')}
+                        </span>
                     </h1>
-                    <h1>{t('hero.line3.before')} <span>{t('hero.line3.highlight')}</span></h1>
+                    <h1 className="text-[64px] font-medium">
+                        {t('hero.line3.before')}{' '}
+                        <span className="font-extrabold text-[var(--color-10)] underline decoration-wavy decoration-4 underline-offset-[7px]">
+                            {t('hero.line3.highlight')}
+                        </span>
+                    </h1>
                 </div>
-                <h2>{t('hero.subtitle')}</h2>
-                <div className="button-bar">
-                    <MdrButtonLink text={t('actions.enterEditor')} size='Big' category='Primary' to={"/editor"} />
-                    <MdrButtonLink text={t('actions.viewDocs')} size='Big' category='Secondary' to={"http://localhost:5174"} />
+                <h2 className={secondaryHeadingClassName}>{t('hero.subtitle')}</h2>
+                <div className="mt-[80px] flex flex-row gap-[24px]">
+                    <MdrButtonLink text={t('actions.enterEditor')} size="Big" category="Primary" to="/editor" />
+                    <MdrButtonLink text={t('actions.viewDocs')} size="Big" category="Secondary" to="http://localhost:5174" />
                 </div>
 
-                <section className="divider">
-                    <h2>{t('mirTest.title')}</h2>
+                <section className="mt-[30vh]">
+                    <h2 className={secondaryHeadingClassName}>{t('mirTest.title')}</h2>
 
                     <MIRRenderer
                         node={testDoc.ui.root}
@@ -133,7 +152,7 @@ function Home() {
                     />
                     <button
                         onClick={handleQuickExport}
-                        className="export-button"
+                        className="my-[20px] inline-flex items-center gap-[8px] rounded-[6px] border-0 bg-[#4f46e5] px-[16px] py-[8px] text-[14px] font-medium text-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[#4338ca] active:scale-[0.95] [&_svg]:shrink-0"
                     >
                         <Download size={16} />
                         <span>{t('mirTest.exportButton')}</span>
@@ -143,12 +162,12 @@ function Home() {
 
             <ExportModal />
 
-            <footer className='footer'>
-                <div className="footer-left">
+            <footer className="mt-auto flex w-full flex-row items-center justify-between px-10 py-4">
+                <div className="flex items-center gap-[8px] text-[1em] text-[var(--color-7)]">
                     <IconMdr size={16} color={logoColor} />
                     <span>{t('footer.copy')}</span>
                 </div>
-                <div className="footer-right">
+                <div className="flex items-center gap-[8px] text-[1em] text-[var(--color-7)]">
                     <Footprints size={16} />
                     <span>{t('footer.placeholder')}</span>
                 </div>

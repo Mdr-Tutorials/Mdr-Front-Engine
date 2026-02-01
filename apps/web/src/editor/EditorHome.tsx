@@ -1,7 +1,6 @@
-﻿import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Plus, Box, Layers, Workflow, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import './EditorHome.scss';
 import { TIPS, type TipId } from './tips';
 import NewResourceModal from './features/newfile/NewResourceModal';
 
@@ -30,7 +29,7 @@ const MOCK_PROJECTS: MockProject[] = [
     id: 'c1',
     type: 'component',
     name: 'UserCard',
-    description: 'Reusable user profile card with avatar and status indicator. Long Long Long Long Long Long Long Long Long Long Long Long Long Long Description',
+    description: 'Reusable user profile card with avatar and status indicator. Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Description',
     updatedAt: Date.now() - 1000 * 60 * 60 * 24 * 2, // 2 days ago
   },
   {
@@ -92,7 +91,10 @@ function EditorTipsRandom() {
   const tipId = TIPS[active] as TipId;
 
   return (
-    <div className="EditorHomeSmallTip" onClick={clickNext}>
+    <div
+      className="mt-auto cursor-pointer select-none p-[12px] text-center text-[14px] text-[#999] hover:text-[var(--color-9)]"
+      onClick={clickNext}
+    >
       <p>
         {t('tips.prefix')} {t(`tips.items.${tipId}.body`)}
       </p>
@@ -126,20 +128,20 @@ function ProjectCard({ project }: { project: MockProject }) {
   };
 
   return (
-    <div className="ProjectCard">
-      <div className="ProjectCardContent">
-        <div style={{ color: 'var(--color-primary)', marginBottom: 8 }}>
+    <div className="relative flex h-full min-h-[280px] w-full cursor-pointer flex-col justify-between rounded-[16px] border border-[var(--color-2)] bg-[var(--color-1)] p-[24px] transition-all duration-[300ms] ease-[ease] hover:-translate-y-1 hover:border-[var(--color-4)] hover:bg-[var(--color-0)] hover:shadow-[var(--shadow-lg)]">
+      <div className="flex flex-col gap-[12px]">
+        <div className="mb-[8px] text-[var(--color-primary)]">
           {getIcon(project.type)}
         </div>
-        <h3 className="ProjectCardTitle">{project.name}</h3>
-        <p className="ProjectCardDescription">
+        <h3 className="m-0 text-[18px] font-semibold text-[var(--color-10)]">{project.name}</h3>
+        <p className="flex items-center justify-between border-t border-[var(--color-2)] pt-[16px] text-[12px] leading-[1.5] text-[var(--color-5)]">
           {project.description || 'No description'}
         </p>
       </div>
-      <div className="ProjectCardFooter">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div>
+        <div className="flex items-center gap-[6px]">
           <Clock size={14} />
-          <span className="ProjectCardTime">{formatTime(project.updatedAt)}</span>
+          <span className="text-[12px]">{formatTime(project.updatedAt)}</span>
         </div>
       </div>
     </div>
@@ -156,20 +158,20 @@ function EditorHome() {
   );
 
   return (
-    <div className="EditorHome">
-      <div className="EditorHomeMain">
-        <header className="EditorHomeHeader">
-          <h1>{t('home.welcomeTitle')}</h1>
+    <div className="flex h-full w-full flex-1 bg-[var(--color-0)] text-[var(--color-10)]">
+      <div className="flex flex-1 flex-col gap-[32px] overflow-y-auto p-[40px]">
+        <header className="flex w-full flex-col gap-[8px]">
+          <h1 className="m-0 text-[24px] font-semibold leading-[1.25] text-[var(--color-10)]">{t('home.welcomeTitle')}</h1>
         </header>
 
-        <div className="EditorHomeGrid">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-[20px] auto-rows-[minmax(280px,auto)] max-[1200px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1">
           {/* 1. New Resource Button (Create New) */}
           <button
-            className="EditorHomeNewProjectButton"
+            className="flex h-full min-h-[280px] w-full cursor-pointer flex-col items-center justify-center rounded-[16px] border-2 border-dashed border-[var(--color-3)] bg-[var(--color-1)] text-[18px] text-[var(--color-10)] transition-all duration-[300ms] ease-[ease] hover:border-[var(--color-6)] hover:bg-[var(--color-2)]"
             onClick={() => setResourceModalOpen(true)}
           >
             <Plus size={48} />
-            <span className='EditorNewProject'>{t('home.actions.newProject')}</span>
+            <span className="text-[16px]">{t('home.actions.newProject')}</span>
           </button>
 
           {/* 2. Project List */}
@@ -178,7 +180,7 @@ function EditorHome() {
           ))}
         </div>
 
-        <div className="EditorHomeFooter">
+        <div className="mt-[48px] flex items-center justify-center pb-[20px]">
           <EditorTipsRandom />
         </div>
       </div>

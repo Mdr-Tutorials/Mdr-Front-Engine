@@ -1005,6 +1005,11 @@
   },
   "export": {
     "title": "Export Code",
+    "mir": {
+      "title": "MIR",
+      "description": "Current project MIR JSON (temporary page)",
+      "empty": "No MIR yet (create components in Blueprint Editor first)"
+    },
     "close": "Close",
     "copy": "Copy",
     "copySuccess": "Copied",
@@ -1061,6 +1066,7 @@
       "label": "Viewport",
       "zoom": "Zoom",
       "reset": "Reset view",
+      "quickPresetMenu": "Presets",
       "size": "Size {{width}}?{{height}}",
       "moreDevices": "More devices",
       "quickPresets": {

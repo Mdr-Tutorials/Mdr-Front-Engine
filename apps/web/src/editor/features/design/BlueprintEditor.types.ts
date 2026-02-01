@@ -11,6 +11,8 @@ export type ComponentPreviewVariant = {
   label: string
   element: ReactNode
   scale?: number
+  renderElement?: (options: { size?: string }) => ReactNode
+  props?: Record<string, unknown>
 }
 
 export type ComponentPreviewOption = {

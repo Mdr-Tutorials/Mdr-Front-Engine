@@ -1,4 +1,3 @@
-﻿import "./EditorBar.scss";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MdrIcon, MdrIconLink } from "@mdr/ui";
@@ -19,13 +18,18 @@ function EditorBar() {
     const settingsLabel = projectId
       ? t('projectHome.actions.settings.label')
       : t('editorSettings', { ns: 'routes' });
+    const barIconGroupClassName =
+      "flex flex-col items-center gap-[14px] [&_.MdrIconLink]:!text-[var(--color-9)] [&_.MdrIconLink:hover]:!text-[var(--color-10)]";
 
     return (
       <>
-        <nav className="EditorBar" data-theme="dark">
-          <section className="EditorBarTop">
+        <nav
+          className="flex min-h-screen max-h-screen w-[72px] flex-col items-center justify-between bg-[var(--color-2)] px-[14px] py-[20px]"
+          data-theme="dark"
+        >
+          <section className="flex flex-col items-center gap-[12px] [&_.MdrIconLink]:!text-[var(--color-9)] [&_.MdrIconLink:hover]:!text-[var(--color-10)]">
             <button
-              className="EditorBarExitButton"
+              className="inline-flex cursor-pointer items-center justify-center rounded-[10px] border-0 bg-transparent p-[6px] text-[var(--color-9)] transition-[color,background-color] duration-[150ms] ease-[ease] hover:bg-[rgba(255,255,255,0.08)] hover:text-[var(--color-10)]"
               aria-label={t('bar.exitAria')}
               title={t('bar.exitAria')}
               onClick={() => {
@@ -39,7 +43,7 @@ function EditorBar() {
               <MdrIcon icon={<LogIn size={26} />} size={26} />
             </button>
           </section>
-          <section className="EditorBarCenter">
+          <section className={`flex flex-1 flex-col items-center justify-center ${barIconGroupClassName}`}>
             {projectId && (
               <>
                 <MdrIconLink
@@ -99,7 +103,7 @@ function EditorBar() {
               </>
             )}
           </section>
-          <section className="EditorBarBottom">
+          <section className="flex flex-col items-center gap-[12px] [&_.MdrIconLink]:!text-[var(--color-9)] [&_.MdrIconLink:hover]:!text-[var(--color-10)]">
             <MdrIconLink
               icon={<Settings size={22} />}
               size={22}

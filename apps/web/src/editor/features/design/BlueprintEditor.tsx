@@ -1,6 +1,6 @@
 ﻿import { type KeyboardEvent, useEffect, useMemo, useRef, useState } from "react"
 import { useParams } from "react-router"
-import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core"
+import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors, type DragEndEvent, type DragMoveEvent, type DragStartEvent } from "@dnd-kit/core"
 import { DEFAULT_ROUTES, VIEWPORT_ZOOM_RANGE } from "./BlueprintEditor.data"
 import { BlueprintEditorAddressBar } from "./BlueprintEditorAddressBar"
 import { BlueprintEditorCanvas } from "./BlueprintEditorCanvas"
@@ -13,6 +13,33 @@ import type { ComponentNode, MIRDocument } from "@/core/types/engine.types"
 import { DEFAULT_BLUEPRINT_STATE, useEditorStore } from "@/editor/store/useEditorStore"
 import { useSettingsStore } from "@/editor/store/useSettingsStore"
 import "./BlueprintEditor.scss"
+
+export type TreeDropPlacement = "before" | "after" | "child"
+
+type TreeDropHint = { overNodeId: string; placement: TreeDropPlacement } | null
+
+export const getTreeDropPlacement = (options: {
+  canNest: boolean
+  overTop: number
+  overHeight: number
+  activeCenterY: number
+}): TreeDropPlacement => {
+  const { canNest, overTop, overHeight, activeCenterY } = options
+  if (!Number.isFinite(overTop) || !Number.isFinite(overHeight) || overHeight <= 0 || !Number.isFinite(activeCenterY)) {
+    return "after"
+  }
+
+  const rawRatio = (activeCenterY - overTop) / overHeight
+  const ratio = Math.max(0, Math.min(1, rawRatio))
+
+  if (canNest) {
+    if (ratio < 1 / 3) return "before"
+    if (ratio > 2 / 3) return "after"
+    return "child"
+  }
+
+  return ratio < 1 / 2 ? "before" : "after"
+}
 
 const createRouteId = () => {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -36,38 +63,50 @@ const createNodeIdFactory = (doc: MIRDocument) => {
   }
 }
 
-const createNodeFromPaletteItem = (itemId: string, createId: (type: string) => string): ComponentNode => {
+export const createNodeFromPaletteItem = (
+  itemId: string,
+  createId: (type: string) => string,
+  variantProps?: Record<string, unknown>,
+  selectedSize?: string,
+): ComponentNode => {
   const typeFromPalette = (value: string) =>
     `Mdr${value
       .split(/[-_]/)
       .filter(Boolean)
       .map((segment) => `${segment.charAt(0).toUpperCase()}${segment.slice(1)}`)
       .join("")}`
-  const labelText = (text: string, size: "Tiny" | "Small" | "Medium" | "Large" | "Big" = "Tiny"): ComponentNode => ({
-    id: createId("MdrText"),
-    type: "MdrText",
-    text,
-    props: { size, weight: size === "Tiny" ? "SemiBold" : "Bold" },
-  })
 
   if (itemId === "text") {
-    return { id: createId("MdrText"), type: "MdrText", text: "Text", props: { size: "Medium" } }
+    return { id: createId("MdrText"), type: "MdrText", text: "Text", props: { size: selectedSize ?? "Medium" } }
   }
   if (itemId === "heading") {
-    return { id: createId("MdrHeading"), type: "MdrHeading", text: "Heading", props: { level: 2, weight: "Bold" } }
+    const rawLevel = variantProps?.level
+    const resolvedLevel = typeof rawLevel === "number" ? rawLevel : typeof rawLevel === "string" ? Number(rawLevel) : 2
+    const level = Number.isFinite(resolvedLevel) ? resolvedLevel : 2
+    return {
+      id: createId("MdrHeading"),
+      type: "MdrHeading",
+      text: "Heading",
+      props: { ...variantProps, level, weight: "Bold", size: selectedSize },
+    }
   }
   if (itemId === "paragraph") {
-    return { id: createId("MdrParagraph"), type: "MdrParagraph", text: "Paragraph", props: { size: "Medium" } }
+    return { id: createId("MdrParagraph"), type: "MdrParagraph", text: "Paragraph", props: { size: selectedSize ?? "Medium" } }
   }
   if (itemId === "button") {
-    return { id: createId("MdrButton"), type: "MdrButton", text: "Button", props: { size: "Medium", category: "Primary" } }
+    return {
+      id: createId("MdrButton"),
+      type: "MdrButton",
+      text: "Button",
+      props: { size: selectedSize ?? "Medium", category: "Primary", ...variantProps },
+    }
   }
   if (itemId === "button-link") {
     return {
       id: createId("MdrButtonLink"),
       type: "MdrButtonLink",
       text: "Link",
-      props: { to: "/blueprint", size: "Medium", category: "Secondary" },
+      props: { to: "/blueprint", size: selectedSize ?? "Medium", category: "Secondary", ...variantProps },
     }
   }
   if (itemId === "link") {
@@ -89,7 +128,6 @@ const createNodeFromPaletteItem = (itemId: string, createId: (type: string) => s
         borderRadius: "14px",
         backgroundColor: "rgba(255, 255, 255, 0.75)",
       },
-      children: [labelText("Div")],
     }
   }
   if (itemId === "flex") {
@@ -104,11 +142,6 @@ const createNodeFromPaletteItem = (itemId: string, createId: (type: string) => s
         borderRadius: "14px",
         backgroundColor: "rgba(255, 255, 255, 0.75)",
       },
-      children: [
-        labelText("Flex", "Small"),
-        { id: createId("MdrDiv"), type: "MdrDiv", props: { width: 36, height: 18, borderRadius: 8, backgroundColor: "rgba(0,0,0,0.08)" } },
-        { id: createId("MdrDiv"), type: "MdrDiv", props: { width: 24, height: 18, borderRadius: 8, backgroundColor: "rgba(0,0,0,0.12)" } },
-      ],
     }
   }
   if (itemId === "grid") {
@@ -124,12 +157,6 @@ const createNodeFromPaletteItem = (itemId: string, createId: (type: string) => s
         backgroundColor: "rgba(255, 255, 255, 0.75)",
       },
       style: { gridTemplateColumns: "repeat(2, minmax(0, 1fr))" },
-      children: [
-        labelText("Grid", "Small"),
-        { id: createId("MdrDiv"), type: "MdrDiv", props: { height: 18, borderRadius: 8, backgroundColor: "rgba(0,0,0,0.08)" } },
-        { id: createId("MdrDiv"), type: "MdrDiv", props: { height: 18, borderRadius: 8, backgroundColor: "rgba(0,0,0,0.12)" } },
-        { id: createId("MdrDiv"), type: "MdrDiv", props: { height: 18, borderRadius: 8, backgroundColor: "rgba(0,0,0,0.06)" } },
-      ],
     }
   }
   if (itemId === "section") {
@@ -137,7 +164,6 @@ const createNodeFromPaletteItem = (itemId: string, createId: (type: string) => s
       id: createId("MdrSection"),
       type: "MdrSection",
       props: { size: "Medium", padding: "Medium", backgroundColor: "Light" },
-      children: [labelText("Section", "Small")],
     }
   }
   if (itemId === "card") {
@@ -145,7 +171,6 @@ const createNodeFromPaletteItem = (itemId: string, createId: (type: string) => s
       id: createId("MdrCard"),
       type: "MdrCard",
       props: { size: "Medium", variant: "Bordered", padding: "Medium" },
-      children: [labelText("Card", "Small")],
     }
   }
   if (itemId === "panel") {
@@ -153,7 +178,6 @@ const createNodeFromPaletteItem = (itemId: string, createId: (type: string) => s
       id: createId("MdrPanel"),
       type: "MdrPanel",
       props: { size: "Medium", variant: "Default", padding: "Medium", title: "Panel" },
-      children: [labelText("Panel content", "Small")],
     }
   }
 
@@ -171,7 +195,6 @@ const createNodeFromPaletteItem = (itemId: string, createId: (type: string) => s
       borderRadius: "14px",
       backgroundColor: "rgba(255, 255, 255, 0.75)",
     },
-    children: [labelText(inferredType, "Small")],
   }
 }
 
@@ -450,6 +473,7 @@ function BlueprintEditor() {
   const blueprintKey = projectId ?? "global"
   const blueprintState = useEditorStore((state) => state.blueprintStateByProject[blueprintKey])
   const setBlueprintState = useEditorStore((state) => state.setBlueprintState)
+  const mirDoc = useEditorStore((state) => state.mirDoc)
   const updateMirDoc = useEditorStore((state) => state.updateMirDoc)
   const zoomStep = useSettingsStore((state) => state.global.zoomStep)
   const defaultViewportWidth = useSettingsStore((state) => state.global.viewportWidth)
@@ -666,14 +690,91 @@ function BlueprintEditor() {
     }
   }
 
+  const [treeDropHint, setTreeDropHint] = useState<TreeDropHint>(null)
+
+  const handleDragMove = (event: DragMoveEvent) => {
+    const data = event.active.data.current as any
+    const over = event.over
+    if (!over || data?.kind !== "tree-sort") {
+      setTreeDropHint(null)
+      return
+    }
+
+    const root = mirDoc?.ui?.root
+    if (!root) {
+      setTreeDropHint(null)
+      return
+    }
+
+    const overData = over.data.current as any
+    const overId = typeof over.id === "string" ? over.id : null
+    const overNodeIdRaw =
+      overData?.kind === "tree-sort"
+        ? overData.nodeId
+        : overData?.kind === "tree-node"
+          ? overData.nodeId
+          : overId?.startsWith("tree-node:")
+            ? overId.slice("tree-node:".length)
+            : null
+
+    const overNodeId = typeof overNodeIdRaw === "string" ? overNodeIdRaw : null
+    if (!overNodeId) {
+      setTreeDropHint(null)
+      return
+    }
+
+    const activeId = data.nodeId
+    if (!activeId || activeId === overNodeId) {
+      setTreeDropHint(null)
+      return
+    }
+
+    const overNode = findNodeById(root, overNodeId)
+    if (!overNode) {
+      setTreeDropHint(null)
+      return
+    }
+
+    const canNest =
+      supportsChildrenForNode(overNode) &&
+      !isAncestorOf(root, activeId, overNodeId)
+
+    const translated = event.active.rect?.current?.translated ?? event.active.rect?.current?.initial
+    const activeCenterY = translated ? translated.top + translated.height / 2 : Number.NaN
+    const hasGeometry = Boolean(
+      over.rect &&
+        Number.isFinite(over.rect.top) &&
+        Number.isFinite(over.rect.height) &&
+        over.rect.height > 0 &&
+        Number.isFinite(activeCenterY),
+    )
+
+    const placement = hasGeometry
+      ? getTreeDropPlacement({
+        canNest,
+        overTop: over.rect.top,
+        overHeight: over.rect.height,
+        activeCenterY,
+      })
+      : overData?.kind === "tree-node"
+        ? canNest
+          ? "child"
+          : "after"
+        : "after"
+
+    setTreeDropHint({ overNodeId, placement })
+  }
+
   const handleDragCancel = () => {
     setActivePaletteItemId(null)
+    setTreeDropHint(null)
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
     const data = event.active.data.current as any
     const over = event.over
     setActivePaletteItemId(null)
+    setTreeDropHint(null)
     if (!over) return
     if (data?.kind === "tree-sort") {
       const overData = over.data.current as any
@@ -685,52 +786,68 @@ function BlueprintEditor() {
         const root = doc.ui.root
         if (activeId === root.id) return doc
 
-        let targetParentId: string | null = null
-        let targetIndex: number | null = null
-        const overTreeNodeId =
-          overData?.kind === "tree-node"
+        const overNodeIdRaw =
+          overData?.kind === "tree-sort"
             ? overData.nodeId
-            : overId?.startsWith("tree-node:")
-              ? overId.slice("tree-node:".length)
-              : null
+            : overData?.kind === "tree-node"
+              ? overData.nodeId
+              : overId?.startsWith("tree-node:")
+                ? overId.slice("tree-node:".length)
+                : null
         const isOverRoot = overId === "tree-root" || overData?.kind === "tree-root"
 
-        if (overData?.kind === "tree-sort") {
-          const overNodeId = overData.nodeId
-          const overParentId = overData.parentId
-          if (!overNodeId || !overParentId) return doc
-          if (overNodeId === activeId) return doc
-          if (isAncestorOf(root, activeId, overParentId)) return doc
-          if (overParentId === activeParentId) {
-            const result = reorderChildById(root, activeParentId, activeId, overNodeId)
-            return result.moved ? { ...doc, ui: { ...doc.ui, root: result.node } } : doc
-          }
-          const targetParent = findNodeById(root, overParentId)
-          const siblings = targetParent?.children ?? []
-          const overIndex = siblings.findIndex((item) => item.id === overNodeId)
-          if (overIndex === -1) return doc
-          targetParentId = overParentId
-          targetIndex = overIndex
-        } else if (overTreeNodeId) {
-          if (overTreeNodeId === activeId) return doc
-          if (isAncestorOf(root, activeId, overTreeNodeId)) return doc
-          const overNode = findNodeById(root, overTreeNodeId)
-          if (!overNode) return doc
-          if (supportsChildrenForNode(overNode)) {
-            targetParentId = overTreeNodeId
+        const overNodeId = typeof overNodeIdRaw === "string" ? overNodeIdRaw : null
+        if (overNodeId === activeId) return doc
+
+        const overNode = overNodeId ? findNodeById(root, overNodeId) : null
+        const canNest = Boolean(overNode && supportsChildrenForNode(overNode))
+
+        const translated = event.active.rect?.current?.translated ?? event.active.rect?.current?.initial
+        const activeCenterY = translated ? translated.top + translated.height / 2 : Number.NaN
+        const hasGeometry = Boolean(
+          over.rect &&
+            Number.isFinite(over.rect.top) &&
+            Number.isFinite(over.rect.height) &&
+            over.rect.height > 0 &&
+            Number.isFinite(activeCenterY),
+        )
+
+        const placement = hasGeometry
+          ? getTreeDropPlacement({
+            canNest,
+            overTop: over.rect.top,
+            overHeight: over.rect.height,
+            activeCenterY,
+          })
+          : overData?.kind === "tree-node"
+            ? canNest
+              ? "child"
+              : "after"
+            : "after"
+
+        let targetParentId: string | null = null
+        let targetIndex: number | null = null
+
+        if (isOverRoot) {
+          targetParentId = root.id
+          targetIndex = root.children?.length ?? 0
+        } else if (overNode) {
+          if (overNode.id === root.id) {
+            targetParentId = root.id
+            targetIndex = root.children?.length ?? 0
+          } else if (placement === "child" && canNest) {
+            targetParentId = overNode.id
             targetIndex = overNode.children?.length ?? 0
           } else {
-            const parentId = findParentId(root, overTreeNodeId)
+            const parentId = findParentId(root, overNode.id)
             if (!parentId) return doc
             const parentNode = findNodeById(root, parentId)
             const siblings = parentNode?.children ?? []
-            const overIndex = siblings.findIndex((item) => item.id === overTreeNodeId)
+            const overIndex = siblings.findIndex((item) => item.id === overNode.id)
+            if (overIndex === -1) return doc
             targetParentId = parentId
-            targetIndex = overIndex >= 0 ? overIndex + 1 : siblings.length
+            targetIndex = placement === "before" ? overIndex : overIndex + 1
           }
-        } else if (isOverRoot) {
-          targetParentId = root.id
-          targetIndex = root.children?.length ?? 0
         }
 
         if (!targetParentId || targetIndex === null) return doc
@@ -756,6 +873,8 @@ function BlueprintEditor() {
     if (data?.kind !== "palette-item") return
 
     const itemId = String(data.itemId)
+    const variantProps = data.variantProps as Record<string, unknown> | undefined
+    const selectedSize = data.selectedSize as string | undefined
     const overData = over.data.current as any
     const dropKind = overData?.kind
     const dropNodeId = dropKind === "tree-node" ? String(overData.nodeId) : null
@@ -764,7 +883,7 @@ function BlueprintEditor() {
     let nextNodeId = ""
     updateMirDoc((doc) => {
       const createId = createNodeIdFactory(doc)
-      const newNode = createNodeFromPaletteItem(itemId, createId)
+      const newNode = createNodeFromPaletteItem(itemId, createId, variantProps, selectedSize)
       nextNodeId = newNode.id
       return insertIntoMirDoc(doc, targetId, newNode)
     })
@@ -786,6 +905,7 @@ function BlueprintEditor() {
       <DndContext
         sensors={sensors}
         onDragStart={handleDragStart}
+        onDragMove={handleDragMove}
         onDragCancel={handleDragCancel}
         onDragEnd={handleDragEnd}
       >
@@ -810,6 +930,7 @@ function BlueprintEditor() {
           <BlueprintEditorComponentTree
             isCollapsed={isTreeCollapsed}
             selectedId={selectedId}
+            dropHint={treeDropHint}
             onToggleCollapse={() => setTreeCollapsed((prev) => !prev)}
             onSelectNode={handleNodeSelect}
             onDeleteSelected={handleDeleteSelected}

@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     MdrCheckList,
@@ -61,16 +61,19 @@ export const GlobalSettingsContent = ({
             <>
                 <button
                     type="button"
-                    className={`SettingsOverrideToggle ${enabled ? 'On' : ''}`}
+                    className={`rounded-full border px-[10px] py-[4px] text-[11px] transition-all duration-[150ms] ease-[ease] ${enabled
+                        ? 'border-transparent bg-[var(--color-9)] text-[var(--color-0)]'
+                        : "border-[rgba(0,0,0,0.12)] bg-[var(--color-1)] text-[var(--color-7)] hover:border-[rgba(0,0,0,0.2)] hover:text-[var(--color-9)] [[data-theme='dark']_&]:border-[rgba(255,255,255,0.16)] [[data-theme='dark']_&]:bg-[rgba(255,255,255,0.08)]"
+                        }`}
                     aria-pressed={enabled}
                     onClick={() => onToggleOverride?.(key)}
                 >
                     {enabled ? t('settings.overrides.toggle.on') : t('settings.overrides.toggle.off')}
                 </button>
-                <span className="SettingsRowMetaLabel">
+                <span className="leading-[1.2]">
                     {t('settings.overrides.labels.global', { value: globalValue })}
                 </span>
-                <span className="SettingsRowMetaLabel">
+                <span className="leading-[1.2]">
                     {t('settings.overrides.labels.effective', { value: effectiveValue })}
                 </span>
             </>
@@ -78,7 +81,7 @@ export const GlobalSettingsContent = ({
     };
 
     return (
-        <div className="SettingsSectionGroup">
+        <div className="grid gap-[18px]">
             <SettingsPanel
                 title={t('settings.global.panels.appearance.title')}
                 description={t('settings.global.panels.appearance.description')}
@@ -233,14 +236,14 @@ export const GlobalSettingsContent = ({
                     description={t('settings.global.rows.viewportSize.description')}
                     meta={renderMeta('viewportWidth')}
                     control={
-                        <div className="SettingsInputGroup">
+                        <div className="inline-flex items-center gap-[6px]">
                             <MdrInput
                                 size="Small"
                                 value={String(resolveValue('viewportWidth'))}
                                 onChange={(value) => updateValue('viewportWidth', value)}
                                 disabled={!isOverrideEnabled('viewportWidth')}
                             />
-                            <span>×</span>
+                            <span className="text-[12px] text-[var(--color-6)]">×</span>
                             <MdrInput
                                 size="Small"
                                 value={String(resolveValue('viewportHeight'))}

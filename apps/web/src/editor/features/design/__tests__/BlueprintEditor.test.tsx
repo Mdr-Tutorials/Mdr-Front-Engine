@@ -31,6 +31,7 @@ type ViewportBarProps = {
 type ComponentTreeProps = {
   isCollapsed: boolean
   selectedId?: string
+  dropHint?: { overNodeId: string; placement: "before" | "after" | "child" } | null
   onToggleCollapse: () => void
   onSelectNode: (nodeId: string) => void
   onDeleteSelected: () => void

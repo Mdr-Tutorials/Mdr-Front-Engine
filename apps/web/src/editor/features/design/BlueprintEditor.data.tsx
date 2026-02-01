@@ -126,24 +126,13 @@ export const DEFAULT_PREVIEW_SCALE = 0.72
 export const COMPACT_PREVIEW_SCALE = 0.6
 const WIDE_PREVIEW_SCALE_BOOST = 1.18
 
-const TEXT_SIZES = ["Tiny", "Small", "Medium", "Large", "Big"] as const
 const HEADING_LEVELS = [1, 2, 3, 4, 5, 6] as const
-const PARAGRAPH_SIZES = ["Small", "Medium", "Large"] as const
 const BUTTON_CATEGORIES = ["Primary", "Secondary", "Danger", "SubDanger", "Warning", "SubWarning", "Ghost"] as const
-const INPUT_SIZES = ["Small", "Medium", "Large"] as const
-const SECTION_SIZES = ["Small", "Medium", "Large"] as const
 const CARD_VARIANTS = ["Default", "Bordered", "Elevated", "Flat"] as const
 const PANEL_VARIANTS = ["Default", "Bordered", "Filled"] as const
 const NAV_COLUMNS = [2, 3] as const
-const NAVBAR_SIZES = ["Small", "Medium", "Large"] as const
-const IMAGE_SIZES = ["Small", "Medium", "Large"] as const
-const AVATAR_SIZES = ["ExtraSmall", "Small", "Medium", "Large", "ExtraLarge"] as const
-const TABLE_SIZES = ["Small", "Medium", "Large"] as const
-const LIST_SIZES = ["Small", "Medium", "Large"] as const
 const TAG_VARIANTS = ["Soft", "Outline", "Solid"] as const
 const PROGRESS_STATUSES = ["Default", "Success", "Warning", "Danger"] as const
-const SPINNER_SIZES = ["Small", "Medium", "Large"] as const
-const MODAL_SIZES = ["Small", "Medium", "Large"] as const
 const DRAWER_PLACEMENTS = ["Left", "Right", "Top", "Bottom"] as const
 const TOOLTIP_PLACEMENTS = ["Top", "Right", "Bottom", "Left"] as const
 const MESSAGE_TYPES = ["Info", "Success", "Warning", "Danger"] as const
@@ -158,15 +147,26 @@ const SIZE_OPTIONS: ComponentPreviewOption[] = [
 ]
 
 const BUTTON_SIZE_OPTIONS: ComponentPreviewOption[] = [
+  { id: "XS", label: "XS", value: "Tiny" },
   { id: "S", label: "S", value: "Small" },
   { id: "M", label: "M", value: "Medium" },
   { id: "L", label: "L", value: "Big" },
 ]
 
 const TEXT_SIZE_OPTIONS: ComponentPreviewOption[] = [
+  { id: "T", label: "T", value: "Tiny" },
   { id: "S", label: "S", value: "Small" },
   { id: "M", label: "M", value: "Medium" },
   { id: "L", label: "L", value: "Large" },
+  { id: "B", label: "B", value: "Big" },
+]
+
+const AVATAR_SIZE_OPTIONS: ComponentPreviewOption[] = [
+  { id: "XS", label: "XS", value: "ExtraSmall" },
+  { id: "S", label: "S", value: "Small" },
+  { id: "M", label: "M", value: "Medium" },
+  { id: "L", label: "L", value: "Large" },
+  { id: "XL", label: "XL", value: "ExtraLarge" },
 ]
 
 const WIDE_GROUP_IDS = new Set(["navigation", "layout", "chart"])
@@ -181,12 +181,16 @@ const buildVariants = <T extends string | number>(
   render: (value: T) => ReactNode,
   labelFormatter?: (value: T) => string,
   scale?: number | ((value: T) => number),
+  dynamicRender?: (value: T, options: { size?: string }) => ReactNode,
+  propsBuilder?: (value: T) => Record<string, unknown>,
 ): ComponentPreviewVariant[] =>
   values.map((value) => ({
     id: String(value),
     label: labelFormatter ? labelFormatter(value) : String(value),
     element: render(value),
     scale: typeof scale === "function" ? scale(value) : scale,
+    ...(dynamicRender && { renderElement: (options: { size?: string }) => dynamicRender(value, options) }),
+    ...(propsBuilder && { props: propsBuilder(value) }),
   }))
 
 export const getDefaultSizeId = (options?: ComponentPreviewOption[]) =>
@@ -346,11 +350,8 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         preview: <MdrText size="Medium">Text</MdrText>,
         sizeOptions: TEXT_SIZE_OPTIONS,
         renderPreview: ({ size }) => (
-          <MdrText size={(size ?? "Medium") as "Small" | "Medium" | "Large"}>Text</MdrText>
+          <MdrText size={(size ?? "Medium") as "Tiny" | "Small" | "Medium" | "Large" | "Big"}>Text</MdrText>
         ),
-        variants: buildVariants(TEXT_SIZES, (size) => (
-          <MdrText size={size}>Text</MdrText>
-        )),
       },
       {
         id: "heading",
@@ -360,6 +361,9 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
           HEADING_LEVELS,
           (level) => <MdrHeading level={level}>H{level}</MdrHeading>,
           (level) => `H${level}`,
+          undefined,
+          undefined,
+          (level) => ({ level }),
         ),
       },
       {
@@ -370,9 +374,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         renderPreview: ({ size }) => (
           <MdrParagraph size={(size ?? "Medium") as "Small" | "Medium" | "Large"}>Paragraph</MdrParagraph>
         ),
-        variants: buildVariants(PARAGRAPH_SIZES, (size) => (
-          <MdrParagraph size={size}>Paragraph</MdrParagraph>
-        )),
       },
       {
         id: "button",
@@ -380,11 +381,18 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         preview: <MdrButton text="Button" size="Medium" category="Primary" />,
         sizeOptions: BUTTON_SIZE_OPTIONS,
         renderPreview: ({ size }) => (
-          <MdrButton text="Button" size={(size ?? "Medium") as "Small" | "Medium" | "Big"} category="Primary" />
+          <MdrButton text="Button" size={(size ?? "Medium") as "Tiny" | "Small" | "Medium" | "Big"} category="Primary" />
         ),
-        variants: buildVariants(BUTTON_CATEGORIES, (category) => (
-          <MdrButton text={category} size="Medium" category={category} />
-        )),
+        variants: buildVariants(
+          BUTTON_CATEGORIES,
+          (category) => <MdrButton text={category} size="Medium" category={category} />,
+          undefined,
+          undefined,
+          (category, { size }) => (
+            <MdrButton text={category} size={(size ?? "Medium") as "Tiny" | "Small" | "Medium" | "Big"} category={category} />
+          ),
+          (category) => ({ category }),
+        ),
       },
       {
         id: "button-link",
@@ -397,13 +405,25 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
           <MdrButtonLink
             text="Link"
             to="/blueprint"
-            size={(size ?? "Medium") as "Small" | "Medium" | "Big"}
+            size={(size ?? "Medium") as "Tiny" | "Small" | "Medium" | "Big"}
             category="Secondary"
           />
         ),
-        variants: buildVariants(BUTTON_CATEGORIES, (category) => (
-          <MdrButtonLink text={category} to="/blueprint" size="Medium" category={category} />
-        )),
+        variants: buildVariants(
+          BUTTON_CATEGORIES,
+          (category) => <MdrButtonLink text={category} to="/blueprint" size="Medium" category={category} />,
+          undefined,
+          undefined,
+          (category, { size }) => (
+            <MdrButtonLink
+              text={category}
+              to="/blueprint"
+              size={(size ?? "Medium") as "Tiny" | "Small" | "Medium" | "Big"}
+              category={category}
+            />
+          ),
+          (category) => ({ category }),
+        ),
       },
       {
         id: "icon",
@@ -503,11 +523,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
             <MdrText size="Tiny">Section</MdrText>
           </MdrSection>
         ),
-        variants: buildVariants(SECTION_SIZES, (size) => (
-          <MdrSection size={size} padding="Small" backgroundColor="Light">
-            <MdrText size="Tiny">Section</MdrText>
-          </MdrSection>
-        )),
         scale: 0.65,
       },
       {
@@ -565,9 +580,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         renderPreview: ({ size }) => (
           <MdrInput size={(size ?? "Medium") as "Small" | "Medium" | "Large"} placeholder="Input" value="Hello" />
         ),
-        variants: buildVariants(INPUT_SIZES, (size) => (
-          <MdrInput size={size} placeholder="Input" value="Hello" />
-        )),
       },
       {
         id: "textarea",
@@ -582,9 +594,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
             value="Notes"
           />
         ),
-        variants: buildVariants(INPUT_SIZES, (size) => (
-          <MdrTextarea size={size} placeholder="Textarea" rows={2} value="Notes" />
-        )),
       },
       {
         id: "search",
@@ -594,9 +603,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         renderPreview: ({ size }) => (
           <MdrSearch size={(size ?? "Medium") as "Small" | "Medium" | "Large"} value="Query" />
         ),
-        variants: buildVariants(INPUT_SIZES, (size) => (
-          <MdrSearch size={size} value="Query" />
-        )),
         scale: 0.5,
       },
       {
@@ -607,9 +613,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         renderPreview: ({ size }) => (
           <MdrDatePicker size={(size ?? "Medium") as "Small" | "Medium" | "Large"} value="2025-01-01" />
         ),
-        variants: buildVariants(INPUT_SIZES, (size) => (
-          <MdrDatePicker size={size} value="2025-01-01" />
-        )),
       },
       {
         id: "date-range-picker",
@@ -623,9 +626,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
             endValue="2025-01-07"
           />
         ),
-        variants: buildVariants(INPUT_SIZES, (size) => (
-          <MdrDateRangePicker size={size} startValue="2025-01-01" endValue="2025-01-07" />
-        )),
       },
       {
         id: "time-picker",
@@ -635,9 +635,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         renderPreview: ({ size }) => (
           <MdrTimePicker size={(size ?? "Medium") as "Small" | "Medium" | "Large"} value="09:30" />
         ),
-        variants: buildVariants(INPUT_SIZES, (size) => (
-          <MdrTimePicker size={size} value="09:30" />
-        )),
         scale: 0.85,
       },
       {
@@ -652,13 +649,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
             defaultValue={{ province: "east", city: "metro", district: "downtown" }}
           />
         ),
-        variants: buildVariants(INPUT_SIZES, (size) => (
-          <MdrRegionPicker
-            size={size}
-            options={REGION_OPTIONS}
-            defaultValue={{ province: "east", city: "metro", district: "downtown" }}
-          />
-        )),
         scale: 0.8,
       },
       {
@@ -669,9 +659,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         renderPreview: ({ size }) => (
           <MdrVerificationCode size={(size ?? "Medium") as "Small" | "Medium" | "Large"} defaultValue="123456" />
         ),
-        variants: buildVariants(INPUT_SIZES, (size) => (
-          <MdrVerificationCode size={size} defaultValue="123456" />
-        )),
         scale: 0.6,
       },
       {
@@ -682,9 +669,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         renderPreview: ({ size }) => (
           <MdrPasswordStrength size={(size ?? "Medium") as "Small" | "Medium" | "Large"} defaultValue="Abc123!@" />
         ),
-        variants: buildVariants(INPUT_SIZES, (size) => (
-          <MdrPasswordStrength size={size} defaultValue="Abc123!@" />
-        )),
         scale: 0.6,
       },
       {
@@ -699,9 +683,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
             defaultValue="user@example.com"
           />
         ),
-        variants: buildVariants(INPUT_SIZES, (size) => (
-          <MdrRegexInput size={size} pattern="^\\S+@\\S+\\.\\S+$" defaultValue="user@example.com" />
-        )),
       },
       {
         id: "file-upload",
@@ -729,9 +710,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         renderPreview: ({ size }) => (
           <MdrRating size={(size ?? "Medium") as "Small" | "Medium" | "Large"} defaultValue={3} />
         ),
-        variants: buildVariants(INPUT_SIZES, (size) => (
-          <MdrRating size={size} defaultValue={3} />
-        )),
       },
       {
         id: "color-picker",
@@ -745,9 +723,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
             showTextInput={false}
           />
         ),
-        variants: buildVariants(INPUT_SIZES, (size) => (
-          <MdrColorPicker size={size} defaultValue="#7c3aed" showTextInput={false} />
-        )),
       },
       {
         id: "slider",
@@ -757,9 +732,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         renderPreview: ({ size }) => (
           <MdrSlider size={(size ?? "Medium") as "Small" | "Medium" | "Large"} defaultValue={48} />
         ),
-        variants: buildVariants(INPUT_SIZES, (size) => (
-          <MdrSlider size={size} defaultValue={48} />
-        )),
       },
       {
         id: "range",
@@ -806,9 +778,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         renderPreview: ({ size }) => (
           <MdrNavbar size={(size ?? "Medium") as "Small" | "Medium" | "Large"} brand="Mdr" items={NAVBAR_ITEMS} />
         ),
-        variants: buildVariants(NAVBAR_SIZES, (size) => (
-          <MdrNavbar size={size} brand="Mdr" items={NAVBAR_ITEMS} />
-        )),
         scale: 0.5,
       },
       {
@@ -864,21 +833,18 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         renderPreview: ({ size }) => (
           <MdrImage src={PLACEHOLDER_IMAGE} alt="Preview" size={(size ?? "Medium") as "Small" | "Medium" | "Large"} />
         ),
-        variants: buildVariants(IMAGE_SIZES, (size) => (
-          <MdrImage src={PLACEHOLDER_IMAGE} alt="Preview" size={size} />
-        )),
       },
       {
         id: "avatar",
         name: "Avatar",
         preview: <MdrAvatar src={PLACEHOLDER_AVATAR} size="Medium" />,
-        sizeOptions: SIZE_OPTIONS,
+        sizeOptions: AVATAR_SIZE_OPTIONS,
         renderPreview: ({ size }) => (
-          <MdrAvatar src={PLACEHOLDER_AVATAR} size={(size ?? "Medium") as "Small" | "Medium" | "Large"} />
+          <MdrAvatar
+            src={PLACEHOLDER_AVATAR}
+            size={(size ?? "Medium") as "ExtraSmall" | "Small" | "Medium" | "Large" | "ExtraLarge"}
+          />
         ),
-        variants: buildVariants(AVATAR_SIZES, (size) => (
-          <MdrAvatar src={PLACEHOLDER_AVATAR} size={size} />
-        )),
       },
       {
         id: "image-gallery",
@@ -949,9 +915,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
             size={(size ?? "Medium") as "Small" | "Medium" | "Large"}
           />
         ),
-        variants: buildVariants(TABLE_SIZES, (size) => (
-          <MdrTable data={TABLE_DATA} columns={TABLE_COLUMNS} size={size} />
-        )),
         scale: 0.48,
       },
       {
@@ -968,9 +931,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         renderPreview: ({ size }) => (
           <MdrList items={LIST_ITEMS} size={(size ?? "Medium") as "Small" | "Medium" | "Large"} />
         ),
-        variants: buildVariants(LIST_SIZES, (size) => (
-          <MdrList items={LIST_ITEMS} size={size} />
-        )),
         scale: 0.55,
       },
       {
@@ -1041,9 +1001,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
         renderPreview: ({ size }) => (
           <MdrSpinner size={(size ?? "Medium") as "Small" | "Medium" | "Large"} label="Loading" />
         ),
-        variants: buildVariants(SPINNER_SIZES, (size) => (
-          <MdrSpinner size={size} label="Loading" />
-        )),
         scale: 0.75,
       },
       {
@@ -1097,16 +1054,6 @@ export const COMPONENT_GROUPS: ComponentGroup[] = [
             <MdrText size="Tiny">Details</MdrText>
           </MdrModal>
         ),
-        variants: buildVariants(MODAL_SIZES, (size) => (
-          <MdrModal
-            open
-            size={size}
-            title="Modal"
-            footer={<MdrButton text="OK" size="Tiny" category="Primary" />}
-          >
-            <MdrText size="Tiny">Details</MdrText>
-          </MdrModal>
-        )),
         scale: 0.45,
       },
       {
