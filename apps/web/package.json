@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node ../../node_modules/vitest/vitest.mjs --config vitest.config.ts --run",
+    "test:watch": "node ../../node_modules/vitest/vitest.mjs --config vitest.config.ts",
+    "test:coverage": "node ../../node_modules/vitest/vitest.mjs --config vitest.config.ts --run --coverage --maxConcurrency=1"
   },
   "dependencies": {
     "@builder.io/mitosis": "^0.13.0",
@@ -54,6 +57,7 @@
     "@typescript-eslint/parser": "^8.46.3",
     "@vitejs/plugin-react": "^5.1.0",
     "@vitejs/plugin-react-swc": "^4.2.1",
+    "@vitest/coverage-v8": "3.2.4",
     "eslint": "^9.39.1",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",

@@ -2,6 +2,8 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  max-width: 1400px;
+  padding: 0 24px;
   color: var(--color-10);
 }
 
@@ -96,6 +98,7 @@
 .SettingsRowMeta {
   display: flex;
   flex-direction: column;
+  margin-left: 24px;
   gap: 6px;
   align-items: flex-start;
   font-size: 11px;
@@ -175,6 +178,7 @@
 
   .SettingsRowMeta {
     align-items: flex-start;
+    margin-left: 0;
   }
 }
 

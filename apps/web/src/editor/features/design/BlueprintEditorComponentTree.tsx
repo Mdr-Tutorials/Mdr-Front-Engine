@@ -133,13 +133,21 @@ function BlueprintTreeNode({
         >
           <GripVertical size={14} />
         </button>
-        <button
-          type="button"
+        <div
           ref={setNodeRef}
+          role="button"
+          tabIndex={0}
           className={`BlueprintEditorTreeItem ${selectedId === node.id ? "Selected" : ""} ${isOver ? "IsOver" : ""}`}
           style={style}
           onClick={() => onSelect(node.id)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault()
+              onSelect(node.id)
+            }
+          }}
           title={`${node.type} (${node.id})`}
+          aria-label={`${node.type} (${node.id})`}
         >
           <span className="BlueprintEditorTreeIcon" aria-hidden="true">
             <Icon size={14} />
@@ -231,7 +239,7 @@ function BlueprintTreeNode({
               </span>
             </span>
           </span>
-        </button>
+        </div>
       </div>
       {hasChildren && isExpanded && (
         <div className="BlueprintEditorTreeChildren">

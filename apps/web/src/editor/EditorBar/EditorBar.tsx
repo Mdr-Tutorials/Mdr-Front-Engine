@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { MdrIcon, MdrIconLink } from "@mdr/ui";
 import { useNavigate, useParams } from "react-router";
 import { useSettingsStore } from "@/editor/store/useSettingsStore";
-import { LogIn, LayoutGrid, GitBranch, Box, Sparkles, TestTube, FileCode, Rocket, Settings, Folder } from "lucide-react";
+import { LogIn, LayoutGrid, GitBranch, Box, Sparkles, TestTube, FileCode, Rocket, Settings, Folder, Home } from "lucide-react";
 import { EditorBarExitModal } from "./EditorBarExitModal";
 
 function EditorBar() {
@@ -42,6 +42,12 @@ function EditorBar() {
           <section className="EditorBarCenter">
             {projectId && (
               <>
+                <MdrIconLink
+                  icon={<Home size={22} />}
+                  size={22}
+                  title={t('bar.projectHome')}
+                  to={`/editor/project/${projectId}`}
+                />
                 <MdrIconLink
                   icon={<LayoutGrid size={22} />}
                   size={22}

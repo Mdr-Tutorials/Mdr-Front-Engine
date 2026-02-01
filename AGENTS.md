@@ -1,4 +1,3 @@
-```markdown
 # MdrFrontEngine Agents 开发指南
 
 ## 概述
@@ -411,6 +410,8 @@ test('拖拽组件到画布', async ({ page }) => {
 });
 ```
 
+注意：不要过度 mock。尤其不要 mock 核心逻辑。
+
 ---
 
 ## Agent 协作示例
@@ -571,42 +572,3 @@ test('拖拽组件到画布', async ({ page }) => {
 - Pre-commit hook 检查代码规范
 
 读取文件时请务必添加 `-Encoding utf8` 参数。例如使用 `Get-Content -Encoding utf8 AGENTS.md`。
-
----
-
-## 附录
-
-### Agent 技能矩阵
-
-| Agent        | TypeScript | React | Node.js | Testing | 架构设计 |
-| ------------ | ---------- | ----- | ------- | ------- | -------- |
-| Coordinator  | ⭐⭐⭐        | ⭐⭐⭐   | ⭐⭐      | ⭐⭐⭐     | ⭐⭐⭐⭐⭐    |
-| Architecture | ⭐⭐⭐⭐       | ⭐⭐⭐   | ⭐⭐⭐     | ⭐⭐      | ⭐⭐⭐⭐⭐    |
-| UI Agent     | ⭐⭐⭐⭐⭐      | ⭐⭐⭐⭐⭐ | ⭐⭐      | ⭐⭐⭐     | ⭐⭐⭐      |
-| MIR Agent    | ⭐⭐⭐⭐⭐      | ⭐⭐⭐   | ⭐⭐⭐⭐    | ⭐⭐⭐     | ⭐⭐⭐⭐     |
-| Node Graph   | ⭐⭐⭐⭐       | ⭐⭐⭐⭐  | ⭐⭐⭐     | ⭐⭐⭐     | ⭐⭐⭐      |
-| Test Agent   | ⭐⭐⭐        | ⭐⭐⭐   | ⭐⭐      | ⭐⭐⭐⭐⭐   | ⭐⭐       |
-
-### 常用命令速查
-
-```bash
-# 运行特定 Agent 的任务
-pnpm task:run --agent=ui --task=001
-
-# 查看任务状态
-pnpm task:status
-
-# 生成任务报告
-pnpm task:report --week=1
-
-# 运行集成测试
-pnpm test:integration
-```
-
----
-
-**维护者**: MdrFrontEngine Core Team  
-**最后更新**: 2025-01-22  
-**版本**: v1.0
-
-```
