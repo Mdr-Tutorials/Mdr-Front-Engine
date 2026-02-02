@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Plus, Box, Layers, Workflow, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { TIPS, type TipId } from './tips';
+import { truncate } from '@/utils/truncate'
 import NewResourceModal from './features/newfile/NewResourceModal';
 
 // Mock Data Types
@@ -133,9 +134,11 @@ function ProjectCard({ project }: { project: MockProject }) {
         <div className="mb-[8px] text-[var(--color-primary)]">
           {getIcon(project.type)}
         </div>
-        <h3 className="m-0 text-[18px] font-semibold text-[var(--color-10)]">{project.name}</h3>
+        <h3 className="m-0 text-[18px] font-semibold text-[var(--color-10)]">
+          {project.name}
+        </h3>
         <p className="flex items-center justify-between border-t border-[var(--color-2)] pt-[16px] text-[12px] leading-[1.5] text-[var(--color-5)]">
-          {project.description || 'No description'}
+          {truncate(project.description, 160) || 'No description'}
         </p>
       </div>
       <div>

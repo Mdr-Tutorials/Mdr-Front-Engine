@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { InspectorTextInput } from "./InspectorTextInput"
 
 type UnitGroup = {
@@ -32,129 +33,57 @@ type UnitInputProps = {
   quantity?: UnitInputQuantity
 }
 
-const UNIT_TITLES: Record<string, string> = {
-  // length
-  px: "像素（CSS px，通常 1px = 1/96in）",
-  cm: "厘米",
-  mm: "毫米",
-  Q: "四分之一毫米（1Q = 1/40cm）",
-  in: "英寸",
-  pt: "点（1pt = 1/72in）",
-  pc: "派卡（1pc = 12pt）",
-
-  // font-relative length
-  em: "相对当前元素字体大小",
-  rem: "相对根元素字体大小",
-  ex: "相对 x-height（依字体而异）",
-  rex: "相对根元素 x-height",
-  cap: "相对大写字母高度（cap-height）",
-  rcap: "相对根元素大写字母高度",
-  ch: "相对“0”的宽度（依字体而异）",
-  rch: "相对根元素“0”的宽度",
-  ic: "相对全角字符宽度（依字体而异）",
-  ric: "相对根元素全角字符宽度",
-  lh: "相对当前元素行高",
-  rlh: "相对根元素行高",
-
-  // viewport length
-  vw: "视口宽度的 1%",
-  vh: "视口高度的 1%",
-  vi: "视口 inline 方向的 1%",
-  vb: "视口 block 方向的 1%",
-  vmin: "视口较小边的 1%",
-  vmax: "视口较大边的 1%",
-  svw: "Small viewport 宽度的 1%",
-  svh: "Small viewport 高度的 1%",
-  svi: "Small viewport inline 的 1%",
-  svb: "Small viewport block 的 1%",
-  lvw: "Large viewport 宽度的 1%",
-  lvh: "Large viewport 高度的 1%",
-  lvi: "Large viewport inline 的 1%",
-  lvb: "Large viewport block 的 1%",
-  dvw: "Dynamic viewport 宽度的 1%",
-  dvh: "Dynamic viewport 高度的 1%",
-  dvi: "Dynamic viewport inline 的 1%",
-  dvb: "Dynamic viewport block 的 1%",
-
-  // container length
-  cqw: "容器查询宽度的 1%",
-  cqh: "容器查询高度的 1%",
-  cqi: "容器查询 inline 的 1%",
-  cqb: "容器查询 block 的 1%",
-  cqmin: "容器较小边的 1%",
-  cqmax: "容器较大边的 1%",
-
-  // percentage
-  "%": "百分比（相对父/上下文，具体取决于属性）",
-
-  // angle
-  deg: "角度（度）",
-  grad: "角度（百分度）",
-  rad: "角度（弧度）",
-  turn: "角度（圈，1turn = 360deg）",
-
-  // time
-  s: "时间（秒）",
-  ms: "时间（毫秒）",
-
-  // frequency
-  Hz: "频率（赫兹）",
-  kHz: "频率（千赫兹）",
-
-  // resolution
-  dpi: "分辨率（每英寸点数）",
-  dpcm: "分辨率（每厘米点数）",
-  dppx: "分辨率（每像素点数）",
-}
-
 type NormalizedUnitGroup = {
   label: string
   units: Array<{ unit: string; title: string }>
 }
 
-const normalizeGroups = (groups: UnitGroup[]): NormalizedUnitGroup[] =>
+const normalizeGroups = (groups: UnitGroup[], getUnitTitle: (unit: string) => string): NormalizedUnitGroup[] =>
   groups.map((group) => ({
     label: group.label,
     units: group.units.map((entry) => {
-      if (typeof entry === "string") return { unit: entry, title: UNIT_TITLES[entry] ?? entry }
-      return { unit: entry.unit, title: entry.title ?? UNIT_TITLES[entry.unit] ?? entry.unit }
+      if (typeof entry === "string") return { unit: entry, title: getUnitTitle(entry) }
+      return { unit: entry.unit, title: entry.title ?? getUnitTitle(entry.unit) }
     }),
   }))
 
-const GROUPS_LENGTH: UnitGroup[] = [
+const getGroupsForQuantity = (
+  quantity: UnitInputQuantity,
+  t: (key: string) => string
+): UnitGroup[] => {
   // https://developer.mozilla.org/docs/Web/CSS/length
-  { label: "Absolute length", units: ["px", "cm", "mm", "Q", "in", "pt", "pc"] },
-  { label: "Font-relative", units: ["em", "rem", "ex", "rex", "cap", "rcap", "ch", "rch", "ic", "ric", "lh", "rlh"] },
-  { label: "Viewport", units: ["vw", "vh", "vi", "vb", "vmin", "vmax", "svw", "svh", "svi", "svb", "lvw", "lvh", "lvi", "lvb", "dvw", "dvh", "dvi", "dvb"] },
-  { label: "Container", units: ["cqw", "cqh", "cqi", "cqb", "cqmin", "cqmax"] },
-]
+  const GROUPS_LENGTH: UnitGroup[] = [
+    { label: t("unitInput.groups.absoluteLength"), units: ["px", "cm", "mm", "Q", "in", "pt", "pc"] },
+    { label: t("unitInput.groups.fontRelative"), units: ["em", "rem", "ex", "rex", "cap", "rcap", "ch", "rch", "ic", "ric", "lh", "rlh"] },
+    { label: t("unitInput.groups.viewport"), units: ["vw", "vh", "vi", "vb", "vmin", "vmax", "svw", "svh", "svi", "svb", "lvw", "lvh", "lvi", "lvb", "dvw", "dvh", "dvi", "dvb"] },
+    { label: t("unitInput.groups.container"), units: ["cqw", "cqh", "cqi", "cqb", "cqmin", "cqmax"] },
+  ]
 
-const GROUPS_PERCENTAGE: UnitGroup[] = [
   // https://developer.mozilla.org/docs/Web/CSS/percentage
-  { label: "Percentage", units: ["%"] },
-]
+  const GROUPS_PERCENTAGE: UnitGroup[] = [
+    { label: t("unitInput.groups.percentage"), units: ["%"] },
+  ]
 
-const GROUPS_ANGLE: UnitGroup[] = [
   // https://developer.mozilla.org/docs/Web/CSS/angle
-  { label: "Angle", units: ["deg", "grad", "rad", "turn"] },
-]
+  const GROUPS_ANGLE: UnitGroup[] = [
+    { label: t("unitInput.groups.angle"), units: ["deg", "grad", "rad", "turn"] },
+  ]
 
-const GROUPS_TIME: UnitGroup[] = [
   // https://developer.mozilla.org/docs/Web/CSS/time
-  { label: "Time", units: ["s", "ms"] },
-]
+  const GROUPS_TIME: UnitGroup[] = [
+    { label: t("unitInput.groups.time"), units: ["s", "ms"] },
+  ]
 
-const GROUPS_FREQUENCY: UnitGroup[] = [
   // https://developer.mozilla.org/docs/Web/CSS/frequency
-  { label: "Frequency", units: ["Hz", "kHz"] },
-]
+  const GROUPS_FREQUENCY: UnitGroup[] = [
+    { label: t("unitInput.groups.frequency"), units: ["Hz", "kHz"] },
+  ]
 
-const GROUPS_RESOLUTION: UnitGroup[] = [
   // https://developer.mozilla.org/docs/Web/CSS/resolution
-  { label: "Resolution", units: ["dpi", "dpcm", "dppx"] },
-]
+  const GROUPS_RESOLUTION: UnitGroup[] = [
+    { label: t("unitInput.groups.resolution"), units: ["dpi", "dpcm", "dppx"] },
+  ]
 
-const groupsForQuantity = (quantity: UnitInputQuantity): UnitGroup[] => {
   switch (quantity) {
     case "length":
       return GROUPS_LENGTH
@@ -227,8 +156,17 @@ export function UnitInput({
   units,
   quantity = "all",
 }: UnitInputProps) {
+  const { t } = useTranslation('blueprint')
+
+  const getUnitTitle = (unit: string): string => {
+    return t(`unitInput.units.${unit}`, { defaultValue: unit })
+  }
+
   const parsed = useMemo(() => parseValue(value), [value])
-  const groups = useMemo(() => normalizeGroups(units ?? groupsForQuantity(quantity)), [quantity, units])
+  const groups = useMemo(
+    () => normalizeGroups(units ?? getGroupsForQuantity(quantity, t), getUnitTitle),
+    [quantity, units, t]
+  )
   const [draftAmount, setDraftAmount] = useState(parsed.amount)
   const [draftUnit, setDraftUnit] = useState(parsed.unit)
   const [isOpen, setIsOpen] = useState(false)
@@ -290,7 +228,7 @@ export function UnitInput({
             disabled={disabled}
             aria-label={draftUnit}
             aria-expanded={isOpen}
-            title={UNIT_TITLES[draftUnit] ?? draftUnit}
+            title={getUnitTitle(draftUnit)}
             onClick={() => setIsOpen((prev) => !prev)}
           >
             <span>{draftUnit}</span>
@@ -304,7 +242,7 @@ export function UnitInput({
             const hasCurrent = knownUnits.includes(draftUnit)
             const currentGroup: NormalizedUnitGroup[] = hasCurrent
               ? []
-              : [{ label: "Current", units: [{ unit: draftUnit, title: UNIT_TITLES[draftUnit] ?? draftUnit }] }]
+              : [{ label: t("unitInput.groups.current"), units: [{ unit: draftUnit, title: getUnitTitle(draftUnit) }] }]
             return [...currentGroup, ...groups]
           })().map((group) => (
             <div key={group.label} className="InspectorUnitInputUnitGroup">

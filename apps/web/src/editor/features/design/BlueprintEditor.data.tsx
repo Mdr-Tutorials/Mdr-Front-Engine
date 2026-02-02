@@ -127,7 +127,7 @@ export const COMPACT_PREVIEW_SCALE = 0.6
 const WIDE_PREVIEW_SCALE_BOOST = 1.18
 
 const HEADING_LEVELS = [1, 2, 3, 4, 5, 6] as const
-const BUTTON_CATEGORIES = ["Primary", "Secondary", "Danger", "SubDanger", "Warning", "SubWarning", "Ghost"] as const
+const BUTTON_CATEGORIES = ["Primary", "Secondary", "Danger", "SubtleDanger", "Warning", "SubtleWarning", "Ghost"] as const
 const CARD_VARIANTS = ["Default", "Bordered", "Elevated", "Flat"] as const
 const PANEL_VARIANTS = ["Default", "Bordered", "Filled"] as const
 const NAV_COLUMNS = [2, 3] as const

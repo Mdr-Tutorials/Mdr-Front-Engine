@@ -31,20 +31,20 @@ import { MdrButton } from '@mdr/ui';
 
 **Props**:
 
-| 属性 | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `text` | string | - | 按钮文本 |
-| `size` | `'Big'` \| `'Medium'` \| `'Small'` \| `'Tiny'` | `'Medium'` | 按钮尺寸 |
-| `category` | `'Primary'` \| `'Secondary'` \| `'Danger'` \| `'SubDanger'` \| `'Warning'` \| `'SubWarning'` \| `'Ghost'` | `'Primary'` | 按钮类型 |
-| `disabled` | boolean | `false` | 禁用状态 |
-| `icon` | ReactNode | - | 图标 |
-| `onlyIcon` | boolean | `false` | 仅显示图标 |
-| `iconPosition` | `'Left'` \| `'Right'` | `'Left'` | 图标位置 |
-| `className` | string | - | 自定义类名 |
-| `style` | CSSProperties | - | 内联样式 |
-| `id` | string | - | 元素 ID |
-| `onClick` | function | - | 点击事件 |
-| `as` | ElementType | `'button'` | 渲染的 HTML 元素 |
+| 属性           | 类型                                                                                                            | 默认值      | 描述             |
+| -------------- | --------------------------------------------------------------------------------------------------------------- | ----------- | ---------------- |
+| `text`         | string                                                                                                          | -           | 按钮文本         |
+| `size`         | `'Big'` \| `'Medium'` \| `'Small'` \| `'Tiny'`                                                                  | `'Medium'`  | 按钮尺寸         |
+| `category`     | `'Primary'` \| `'Secondary'` \| `'Danger'` \| `'SubtleDanger'` \| `'Warning'` \| `'SubtleWarning'` \| `'Ghost'` | `'Primary'` | 按钮类型         |
+| `disabled`     | boolean                                                                                                         | `false`     | 禁用状态         |
+| `icon`         | ReactNode                                                                                                       | -           | 图标             |
+| `onlyIcon`     | boolean                                                                                                         | `false`     | 仅显示图标       |
+| `iconPosition` | `'Left'` \| `'Right'`                                                                                           | `'Left'`    | 图标位置         |
+| `className`    | string                                                                                                          | -           | 自定义类名       |
+| `style`        | CSSProperties                                                                                                   | -           | 内联样式         |
+| `id`           | string                                                                                                          | -           | 元素 ID          |
+| `onClick`      | function                                                                                                        | -           | 点击事件         |
+| `as`           | ElementType                                                                                                     | `'button'`  | 渲染的 HTML 元素 |
 
 ### MdrButtonLink
 
@@ -69,32 +69,32 @@ import { MdrInput } from '@mdr/ui';
 
 **Props**:
 
-| 属性 | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `type` | `'Text'` \| `'Password'` \| `'Email'` \| `'Number'` \| `'Tel'` \| `'Url'` \| `'Search'` \| `'Date'` \| `'Time'` | `'Text'` | 输入类型 |
-| `placeholder` | string | - | 占位文本 |
-| `value` | string | - | 输入值 |
-| `size` | `'Small'` \| `'Medium'` \| `'Large'` | `'Medium'` | 尺寸 |
-| `state` | `'Default'` \| `'Error'` \| `'Warning'` \| `'Success'` | `'Default'` | 状态 |
-| `disabled` | boolean | `false` | 禁用状态 |
-| `readOnly` | boolean | `false` | 只读状态 |
-| `required` | boolean | `false` | 必填 |
-| `minLength` | number | - | 最小长度 |
-| `maxLength` | number | - | 最大长度 |
-| `min` | number | - | 最小值（number 类型） |
-| `max` | number | - | 最大值（number 类型） |
-| `step` | number | - | 步进值 |
-| `pattern` | string | - | 正则验证 |
-| `autoFocus` | boolean | `false` | 自动聚焦 |
-| `autoComplete` | string | - | 自动完成 |
-| `name` | string | - | 表单名称 |
-| `icon` | ReactNode | - | 图标 |
-| `iconPosition` | `'Left'` \| `'Right'` | `'Left'` | 图标位置 |
-| `onChange` | function | - | 值变化事件 |
-| `onFocus` | function | - | 聚焦事件 |
-| `onBlur` | function | - | 失焦事件 |
-| `onKeyDown` | function | - | 键盘按下事件 |
-| `onKeyUp` | function | - | 键盘松开事件 |
+| 属性           | 类型                                                                                                            | 默认值      | 描述                  |
+| -------------- | --------------------------------------------------------------------------------------------------------------- | ----------- | --------------------- |
+| `type`         | `'Text'` \| `'Password'` \| `'Email'` \| `'Number'` \| `'Tel'` \| `'Url'` \| `'Search'` \| `'Date'` \| `'Time'` | `'Text'`    | 输入类型              |
+| `placeholder`  | string                                                                                                          | -           | 占位文本              |
+| `value`        | string                                                                                                          | -           | 输入值                |
+| `size`         | `'Small'` \| `'Medium'` \| `'Large'`                                                                            | `'Medium'`  | 尺寸                  |
+| `state`        | `'Default'` \| `'Error'` \| `'Warning'` \| `'Success'`                                                          | `'Default'` | 状态                  |
+| `disabled`     | boolean                                                                                                         | `false`     | 禁用状态              |
+| `readOnly`     | boolean                                                                                                         | `false`     | 只读状态              |
+| `required`     | boolean                                                                                                         | `false`     | 必填                  |
+| `minLength`    | number                                                                                                          | -           | 最小长度              |
+| `maxLength`    | number                                                                                                          | -           | 最大长度              |
+| `min`          | number                                                                                                          | -           | 最小值（number 类型） |
+| `max`          | number                                                                                                          | -           | 最大值（number 类型） |
+| `step`         | number                                                                                                          | -           | 步进值                |
+| `pattern`      | string                                                                                                          | -           | 正则验证              |
+| `autoFocus`    | boolean                                                                                                         | `false`     | 自动聚焦              |
+| `autoComplete` | string                                                                                                          | -           | 自动完成              |
+| `name`         | string                                                                                                          | -           | 表单名称              |
+| `icon`         | ReactNode                                                                                                       | -           | 图标                  |
+| `iconPosition` | `'Left'` \| `'Right'`                                                                                           | `'Left'`    | 图标位置              |
+| `onChange`     | function                                                                                                        | -           | 值变化事件            |
+| `onFocus`      | function                                                                                                        | -           | 聚焦事件              |
+| `onBlur`       | function                                                                                                        | -           | 失焦事件              |
+| `onKeyDown`    | function                                                                                                        | -           | 键盘按下事件          |
+| `onKeyUp`      | function                                                                                                        | -           | 键盘松开事件          |
 
 ### MdrTextarea
 
@@ -127,18 +127,18 @@ import { MdrSelect } from '@mdr/ui';
 
 **Props**:
 
-| 属性 | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `label` | string | - | 标签文本 |
-| `description` | string | - | 描述文本 |
-| `message` | string | - | 提示/错误信息 |
-| `options` | `MdrSelectOption[]` | `[]` | 选项列表 |
-| `value` | string | - | 选中值（受控） |
-| `defaultValue` | string | - | 默认值（非受控） |
-| `placeholder` | string | - | 占位文本 |
-| `size` | `'Small'` \| `'Medium'` \| `'Large'` | `'Medium'` | 尺寸 |
-| `disabled` | boolean | `false` | 禁用状态 |
-| `onChange` | function | - | 值变化事件 |
+| 属性           | 类型                                 | 默认值     | 描述             |
+| -------------- | ------------------------------------ | ---------- | ---------------- |
+| `label`        | string                               | -          | 标签文本         |
+| `description`  | string                               | -          | 描述文本         |
+| `message`      | string                               | -          | 提示/错误信息    |
+| `options`      | `MdrSelectOption[]`                  | `[]`       | 选项列表         |
+| `value`        | string                               | -          | 选中值（受控）   |
+| `defaultValue` | string                               | -          | 默认值（非受控） |
+| `placeholder`  | string                               | -          | 占位文本         |
+| `size`         | `'Small'` \| `'Medium'` \| `'Large'` | `'Medium'` | 尺寸             |
+| `disabled`     | boolean                              | `false`    | 禁用状态         |
+| `onChange`     | function                             | -          | 值变化事件       |
 
 **MdrSelectOption**:
 
@@ -168,19 +168,19 @@ import { MdrFileUpload } from '@mdr/ui';
 
 **Props**:
 
-| 属性 | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `label` | string | - | 标签文本 |
-| `description` | string | - | 描述文本 |
-| `message` | string | - | 提示信息 |
-| `accept` | string | - | 接受的文件类型 |
-| `multiple` | boolean | `false` | 是否多选 |
-| `disabled` | boolean | `false` | 禁用状态 |
-| `required` | boolean | `false` | 必填 |
-| `showList` | boolean | `true` | 显示文件列表 |
-| `value` | File[] | - | 文件列表（受控） |
-| `defaultValue` | File[] | - | 默认文件列表 |
-| `onChange` | function | - | 文件变化事件 |
+| 属性           | 类型     | 默认值  | 描述             |
+| -------------- | -------- | ------- | ---------------- |
+| `label`        | string   | -       | 标签文本         |
+| `description`  | string   | -       | 描述文本         |
+| `message`      | string   | -       | 提示信息         |
+| `accept`       | string   | -       | 接受的文件类型   |
+| `multiple`     | boolean  | `false` | 是否多选         |
+| `disabled`     | boolean  | `false` | 禁用状态         |
+| `required`     | boolean  | `false` | 必填             |
+| `showList`     | boolean  | `true`  | 显示文件列表     |
+| `value`        | File[]   | -       | 文件列表（受控） |
+| `defaultValue` | File[]   | -       | 默认文件列表     |
+| `onChange`     | function | -       | 文件变化事件     |
 
 ### MdrRating
 
@@ -199,18 +199,18 @@ import { MdrRating } from '@mdr/ui';
 
 **Props**:
 
-| 属性 | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `label` | string | - | 标签文本 |
-| `description` | string | - | 描述文本 |
-| `message` | string | - | 提示信息 |
-| `value` | number | - | 评分值（受控） |
-| `defaultValue` | number | - | 默认评分 |
-| `max` | number | `5` | 最大评分 |
-| `size` | `'Small'` \| `'Medium'` \| `'Large'` | `'Medium'` | 尺寸 |
-| `readOnly` | boolean | `false` | 只读状态 |
-| `disabled` | boolean | `false` | 禁用状态 |
-| `onChange` | function | - | 评分变化事件 |
+| 属性           | 类型                                 | 默认值     | 描述           |
+| -------------- | ------------------------------------ | ---------- | -------------- |
+| `label`        | string                               | -          | 标签文本       |
+| `description`  | string                               | -          | 描述文本       |
+| `message`      | string                               | -          | 提示信息       |
+| `value`        | number                               | -          | 评分值（受控） |
+| `defaultValue` | number                               | -          | 默认评分       |
+| `max`          | number                               | `5`        | 最大评分       |
+| `size`         | `'Small'` \| `'Medium'` \| `'Large'` | `'Medium'` | 尺寸           |
+| `readOnly`     | boolean                              | `false`    | 只读状态       |
+| `disabled`     | boolean                              | `false`    | 禁用状态       |
+| `onChange`     | function                             | -          | 评分变化事件   |
 
 ### 其他表单组件
 
@@ -262,17 +262,17 @@ interface User {
 
 **Props**:
 
-| 属性 | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `data` | T[] | `[]` | 数据源 |
-| `columns` | `MdrTableColumn<T>[]` | `[]` | 列配置 |
-| `size` | `'Small'` \| `'Medium'` \| `'Large'` | `'Medium'` | 尺寸 |
-| `bordered` | boolean | `false` | 显示边框 |
-| `striped` | boolean | `false` | 斑马纹 |
-| `hoverable` | boolean | `true` | 悬停高亮 |
-| `title` | string | - | 表格标题 |
-| `caption` | string | - | 表格说明 |
-| `emptyText` | string | `'暂无数据'` | 空数据文本 |
+| 属性        | 类型                                 | 默认值       | 描述       |
+| ----------- | ------------------------------------ | ------------ | ---------- |
+| `data`      | T[]                                  | `[]`         | 数据源     |
+| `columns`   | `MdrTableColumn<T>[]`                | `[]`         | 列配置     |
+| `size`      | `'Small'` \| `'Medium'` \| `'Large'` | `'Medium'`   | 尺寸       |
+| `bordered`  | boolean                              | `false`      | 显示边框   |
+| `striped`   | boolean                              | `false`      | 斑马纹     |
+| `hoverable` | boolean                              | `true`       | 悬停高亮   |
+| `title`     | string                               | -            | 表格标题   |
+| `caption`   | string                               | -            | 表格说明   |
+| `emptyText` | string                               | `'暂无数据'` | 空数据文本 |
 
 **MdrTableColumn<T>**:
 
@@ -306,13 +306,13 @@ import { MdrList } from '@mdr/ui';
 
 **Props**:
 
-| 属性 | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `items` | `MdrListItem[]` | `[]` | 列表项 |
-| `size` | `'Small'` \| `'Medium'` \| `'Large'` | `'Medium'` | 尺寸 |
-| `bordered` | boolean | `false` | 显示边框 |
-| `split` | boolean | `true` | 显示分割线 |
-| `renderItem` | function | - | 自定义渲染函数 |
+| 属性         | 类型                                 | 默认值     | 描述           |
+| ------------ | ------------------------------------ | ---------- | -------------- |
+| `items`      | `MdrListItem[]`                      | `[]`       | 列表项         |
+| `size`       | `'Small'` \| `'Medium'` \| `'Large'` | `'Medium'` | 尺寸           |
+| `bordered`   | boolean                              | `false`    | 显示边框       |
+| `split`      | boolean                              | `true`     | 显示分割线     |
+| `renderItem` | function                             | -          | 自定义渲染函数 |
 
 ### MdrBadge
 
@@ -332,14 +332,14 @@ import { MdrBadge } from '@mdr/ui';
 
 **Props**:
 
-| 属性 | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `count` | number | - | 显示数字 |
-| `max` | number | `99` | 最大显示数字 |
-| `dot` | boolean | `false` | 显示为小红点 |
-| `showZero` | boolean | `false` | 数字为 0 时是否显示 |
-| `color` | string | - | 自定义颜色 |
-| `children` | ReactNode | - | 子元素 |
+| 属性       | 类型      | 默认值  | 描述                |
+| ---------- | --------- | ------- | ------------------- |
+| `count`    | number    | -       | 显示数字            |
+| `max`      | number    | `99`    | 最大显示数字        |
+| `dot`      | boolean   | `false` | 显示为小红点        |
+| `showZero` | boolean   | `false` | 数字为 0 时是否显示 |
+| `color`    | string    | -       | 自定义颜色          |
+| `children` | ReactNode | -       | 子元素              |
 
 ### 其他数据组件
 
@@ -376,12 +376,12 @@ import { MdrTabs } from '@mdr/ui';
 
 **Props**:
 
-| 属性 | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `items` | `MdrTabItem[]` | `[]` | 标签项配置 |
-| `activeKey` | string | - | 当前激活标签（受控） |
-| `defaultActiveKey` | string | - | 默认激活标签 |
-| `onChange` | function | - | 切换事件 |
+| 属性               | 类型           | 默认值 | 描述                 |
+| ------------------ | -------------- | ------ | -------------------- |
+| `items`            | `MdrTabItem[]` | `[]`   | 标签项配置           |
+| `activeKey`        | string         | -      | 当前激活标签（受控） |
+| `defaultActiveKey` | string         | -      | 默认激活标签         |
+| `onChange`         | function       | -      | 切换事件             |
 
 **MdrTabItem**:
 
@@ -425,16 +425,16 @@ import { MdrPanel } from '@mdr/ui';
 
 **Props**:
 
-| 属性 | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `children` | ReactNode | - | 内容 |
-| `size` | `'Small'` \| `'Medium'` \| `'Large'` | `'Medium'` | 尺寸 |
-| `variant` | `'Default'` \| `'Bordered'` \| `'Filled'` | `'Default'` | 变体样式 |
-| `padding` | `'None'` \| `'Small'` \| `'Medium'` \| `'Large'` | `'Medium'` | 内边距 |
-| `collapsible` | boolean | `false` | 是否可折叠 |
-| `collapsed` | boolean | - | 折叠状态（受控） |
-| `onToggle` | function | - | 折叠切换事件 |
-| `title` | string | - | 标题 |
+| 属性          | 类型                                             | 默认值      | 描述             |
+| ------------- | ------------------------------------------------ | ----------- | ---------------- |
+| `children`    | ReactNode                                        | -           | 内容             |
+| `size`        | `'Small'` \| `'Medium'` \| `'Large'`             | `'Medium'`  | 尺寸             |
+| `variant`     | `'Default'` \| `'Bordered'` \| `'Filled'`        | `'Default'` | 变体样式         |
+| `padding`     | `'None'` \| `'Small'` \| `'Medium'` \| `'Large'` | `'Medium'`  | 内边距           |
+| `collapsible` | boolean                                          | `false`     | 是否可折叠       |
+| `collapsed`   | boolean                                          | -           | 折叠状态（受控） |
+| `onToggle`    | function                                         | -           | 折叠切换事件     |
+| `title`       | string                                           | -           | 标题             |
 
 ### 其他容器组件
 
@@ -458,14 +458,14 @@ import { MdrHeading } from '@mdr/ui';
 
 **Props**:
 
-| 属性 | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `children` | ReactNode | - | 内容 |
-| `level` | `1` \| `2` \| `3` \| `4` \| `5` \| `6` | `1` | 标题级别 |
-| `weight` | `'Light'` \| `'Normal'` \| `'Medium'` \| `'SemiBold'` \| `'Bold'` | `'Bold'` | 字重 |
-| `color` | `'Default'` \| `'Muted'` \| `'Primary'` \| `'Secondary'` \| `'Danger'` \| `'Warning'` \| `'Success'` | `'Default'` | 颜色 |
-| `align` | `'Left'` \| `'Center'` \| `'Right'` | `'Left'` | 对齐 |
-| `as` | ElementType | - | 渲染元素 |
+| 属性       | 类型                                                                                                 | 默认值      | 描述     |
+| ---------- | ---------------------------------------------------------------------------------------------------- | ----------- | -------- |
+| `children` | ReactNode                                                                                            | -           | 内容     |
+| `level`    | `1` \| `2` \| `3` \| `4` \| `5` \| `6`                                                               | `1`         | 标题级别 |
+| `weight`   | `'Light'` \| `'Normal'` \| `'Medium'` \| `'SemiBold'` \| `'Bold'`                                    | `'Bold'`    | 字重     |
+| `color`    | `'Default'` \| `'Muted'` \| `'Primary'` \| `'Secondary'` \| `'Danger'` \| `'Warning'` \| `'Success'` | `'Default'` | 颜色     |
+| `align`    | `'Left'` \| `'Center'` \| `'Right'`                                                                  | `'Left'`    | 对齐     |
+| `as`       | ElementType                                                                                          | -           | 渲染元素 |
 
 ### 其他文本组件
 
@@ -491,12 +491,12 @@ import { FiCheck } from 'react-icons/fi';
 
 **Props**:
 
-| 属性 | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `icon` | IconRenderable | - | 图标（React Element、SVG 组件、react-icons） |
-| `size` | number \| string | `24` | 图标尺寸 |
-| `color` | string | `'currentColor'` | 图标颜色 |
-| `title` | string | - | 无障碍标题 |
+| 属性    | 类型             | 默认值           | 描述                                         |
+| ------- | ---------------- | ---------------- | -------------------------------------------- |
+| `icon`  | IconRenderable   | -                | 图标（React Element、SVG 组件、react-icons） |
+| `size`  | number \| string | `24`             | 图标尺寸                                     |
+| `color` | string           | `'currentColor'` | 图标颜色                                     |
+| `title` | string           | -                | 无障碍标题                                   |
 
 ### MdrIconLink
 
@@ -542,16 +542,16 @@ import { MdrModal } from '@mdr/ui';
 
 **Props**:
 
-| 属性 | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `open` | boolean | `false` | 显示状态 |
-| `title` | string | - | 标题 |
-| `children` | ReactNode | - | 内容 |
-| `footer` | ReactNode | - | 底部内容 |
-| `size` | `'Small'` \| `'Medium'` \| `'Large'` | `'Medium'` | 尺寸 |
-| `closeOnOverlayClick` | boolean | `true` | 点击遮罩关闭 |
-| `showClose` | boolean | `true` | 显示关闭按钮 |
-| `onClose` | function | - | 关闭事件 |
+| 属性                  | 类型                                 | 默认值     | 描述         |
+| --------------------- | ------------------------------------ | ---------- | ------------ |
+| `open`                | boolean                              | `false`    | 显示状态     |
+| `title`               | string                               | -          | 标题         |
+| `children`            | ReactNode                            | -          | 内容         |
+| `footer`              | ReactNode                            | -          | 底部内容     |
+| `size`                | `'Small'` \| `'Medium'` \| `'Large'` | `'Medium'` | 尺寸         |
+| `closeOnOverlayClick` | boolean                              | `true`     | 点击遮罩关闭 |
+| `showClose`           | boolean                              | `true`     | 显示关闭按钮 |
+| `onClose`             | function                             | -          | 关闭事件     |
 
 ### MdrMessage
 
@@ -570,12 +570,12 @@ import { MdrMessage } from '@mdr/ui';
 
 **Props**:
 
-| 属性 | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `text` | string | - | 消息内容 |
-| `type` | `'Info'` \| `'Success'` \| `'Warning'` \| `'Danger'` | `'Info'` | 消息类型 |
-| `closable` | boolean | `false` | 可关闭 |
-| `onClose` | function | - | 关闭事件 |
+| 属性       | 类型                                                 | 默认值   | 描述     |
+| ---------- | ---------------------------------------------------- | -------- | -------- |
+| `text`     | string                                               | -        | 消息内容 |
+| `type`     | `'Info'` \| `'Success'` \| `'Warning'` \| `'Danger'` | `'Info'` | 消息类型 |
+| `closable` | boolean                                              | `false`  | 可关闭   |
+| `onClose`  | function                                             | -        | 关闭事件 |
 
 ### 其他反馈组件
 

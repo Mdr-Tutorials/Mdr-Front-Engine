@@ -16,7 +16,7 @@ const meta: Meta<typeof MdrButton> = {
         },
         category: {
             control: 'select',
-            options: ['Primary', 'Secondary', 'Danger', 'SubDanger', 'Warning', 'SubWarning', 'Ghost'],
+            options: ['Primary', 'Secondary', 'Danger', 'SubtleDanger', 'Warning', 'SubtleWarning', 'Ghost'],
             description: '按钮类型',
         },
         disabled: {
@@ -141,11 +141,11 @@ export const AllCategories: Story = {
             </div>
             <div style={{ display: 'flex', gap: '12px' }}>
                 <MdrButton text="Danger" category="Danger" />
-                <MdrButton text="SubDanger" category="SubDanger" />
+                <MdrButton text="SubtleDanger" category="SubtleDanger" />
             </div>
             <div style={{ display: 'flex', gap: '12px' }}>
                 <MdrButton text="Warning" category="Warning" />
-                <MdrButton text="SubWarning" category="SubWarning" />
+                <MdrButton text="SubtleWarning" category="SubtleWarning" />
             </div>
             <div style={{ display: 'flex', gap: '12px' }}>
                 <MdrButton text="Ghost" category="Ghost" />

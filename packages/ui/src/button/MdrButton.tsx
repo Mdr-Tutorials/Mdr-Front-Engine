@@ -5,7 +5,7 @@ import type React from 'react';
 interface MdrButtonSpecificProps {
     text?: string,
     size?: 'Big' | 'Medium' | 'Small' | 'Tiny',
-    category?: 'Primary' | 'Secondary' | 'Danger' | 'SubDanger' | 'Warning' | 'SubWarning' | 'Ghost',
+    category?: 'Primary' | 'Secondary' | 'Danger' | 'SubtleDanger' | 'Warning' | 'SubtleWarning' | 'Ghost',
     disabled?: boolean,
     icon?: React.ReactNode,
     onlyIcon?: boolean,

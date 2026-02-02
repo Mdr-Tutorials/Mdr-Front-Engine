@@ -119,17 +119,17 @@
         }
     }
 
-    &.SubDanger {
+    &.SubtleDanger {
         background-color: transparent;
-        color: var(--color-subdanger);
-        border-color: var(--color-subdanger);
+        color: var(--color-danger-subtle);
+        border-color: var(--color-danger-subtle);
 
         &:not(.Disabled):hover {
-            @include button-hover(var(--color-subdanger-hover), var(--color-danger), var(--color-danger-hover));
+            @include button-hover(var(--color-danger-subtle-hover), var(--color-danger), var(--color-danger-hover));
         }
     }
 
-    &.SubWarning {
+    &.SubtleWarning {
         background-color: transparent;
         color: var(--color-subwarning);
         border-color: var(--color-subwarning);

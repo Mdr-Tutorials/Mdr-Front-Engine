@@ -8,7 +8,6 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-// 1. 定义两套颜色值映射（Primitive 层）
 $colors-light: (
     0: #FFFFFF,
     1: #FCFCFC,
@@ -24,8 +23,8 @@ $colors-light: (
     success: #1b9335,
     danger: #ff6265,
     danger-hover: #D9363E,
-    subdanger: #ff8080,
-    subdanger-hover: #D9363E23,
+    danger-subtle: #ff8080,
+    danger-subtle-hover: #D9363E23,
     warning: #ffb007,
     warning-hover: #eb9901,
     subwarning: #ffb728,
@@ -33,7 +32,6 @@ $colors-light: (
 );
 
 $colors-dark: (
-    // 这里的逻辑是将浅色的 0 (白) 映射到深色的 9/10 (黑/深灰)
     0: #0D0D0D,
     1: #1A1A1A,
     2: #262626,
@@ -45,19 +43,17 @@ $colors-dark: (
     8: #E0E0E0,
     9: #F5F5F5,
     10: #FFFFFF,
-    // 功能色在深色模式下通常需要微调亮度以符合对比度标准
     success: #23ad41,
-    danger: #ff8080,
-    danger-hover: #ff6265,
-    subdanger: #441a1a,
-    subdanger-hover: #662222,
-    warning: #ffc107,
-    warning-hover: #ffb007,
-    subwarning: #332b00,
-    subwarning-hover: #4d4100,
+    danger: #de6f6f,
+    danger-hover: #dd5457,
+    danger-subtle: #b74444,
+    danger-subtle-hover: #a73434,
+    warning: #c99906,
+    warning-hover: #a87509,
+    subwarning: #9c891b,
+    subwarning-hover: #8a770e,
 );
 
-// 其他不随主题变化的变量
 $spacing: (
     none: 0,
     xs: 4px,

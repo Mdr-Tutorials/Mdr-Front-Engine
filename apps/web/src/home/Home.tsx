@@ -5,6 +5,7 @@ import { MdrAvatar, MdrButtonLink, MdrLink, MdrNav } from '@mdr/ui';
 import { IconMdr } from '../components/icons/IconMdr';
 import { ExportModal } from '@/editor/features/export/ExportModal';
 import { useEditorStore } from '@/editor/store/useEditorStore';
+import { useSettingsStore } from '@/editor/store/useSettingsStore';
 import { useAuthStore } from '@/auth/useAuthStore';
 import { generateReactCode } from '@/mir/generator/mirToReact';
 import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
@@ -23,11 +24,13 @@ function Home() {
         return 'light';
     });
     const { setGeneratedCode, setExportModalOpen } = useEditorStore();
+    const setGlobalValue = useSettingsStore((state) => state.setGlobalValue);
     const user = useAuthStore((state) => state.user);
     const handleIncrement = () => setCount((prev) => prev + 1);
     const toggleLanguage = () => {
         const nextLanguage = i18n.language?.startsWith('zh') ? 'en' : 'zh-CN';
         i18n.changeLanguage(nextLanguage);
+        setGlobalValue('language', nextLanguage);
     };
     const toggleTheme = () => {
         const nextTheme = themeMode === 'dark' ? 'light' : 'dark';

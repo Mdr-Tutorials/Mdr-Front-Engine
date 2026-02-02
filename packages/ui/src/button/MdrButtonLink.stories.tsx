@@ -17,7 +17,7 @@ const meta: Meta<typeof MdrButtonLink> = {
         },
         category: {
             control: 'select',
-            options: ['Primary', 'Secondary', 'Danger', 'SubDanger', 'Warning', 'SubWarning', 'Ghost'],
+            options: ['Primary', 'Secondary', 'Danger', 'SubtleDanger', 'Warning', 'SubtleWarning', 'Ghost'],
             description: '按钮类型',
         },
         disabled: {

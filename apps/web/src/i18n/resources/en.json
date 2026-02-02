@@ -26,18 +26,17 @@
     },
     "hero": {
       "line1": {
-        "before": "Build",
-        "highlight": "interfaces"
+        "highlight": "Mdr"
       },
       "line2": {
-        "before": "with",
-        "highlight": "MDR"
+        "before": "Frontend",
+        "highlight": "All in"
       },
       "line3": {
-        "before": "from idea to",
-        "highlight": "production"
+        "before": "Instantly",
+        "highlight": "Transmuted"
       },
-      "subtitle": "Visual design and code generation for modern apps."
+      "subtitle": "Orchestrate logic, drive data, and transmute inspiration into code."
     },
     "actions": {
       "enterEditor": "Enter Editor",
@@ -166,404 +165,404 @@
       "prefix": "Tip",
       "items": {
         "ux01": {
-          "title": "先写清用户故事",
-          "body": "在画蓝图前，先用一句话说清这个界面要帮用户完成什么。"
+          "title": "Write the user story first",
+          "body": "Before sketching, write one sentence describing what this screen helps users accomplish."
         },
         "ux02": {
-          "title": "蓝图别太大",
-          "body": "一个蓝图只负责一件事，复杂流程拆成几个小蓝图，画面就不会一眼看花。"
+          "title": "Keep blueprints focused",
+          "body": "One blueprint, one job. Split complex flows into smaller blueprints to avoid visual overload."
         },
         "ux03": {
-          "title": "流程从结果倒推",
-          "body": "先想清用户完成操作后的画面，再往前推每一步要发生什么。"
+          "title": "Work backwards from the outcome",
+          "body": "Start by visualizing the end state, then trace back each step users need to take."
         },
         "ux04": {
-          "title": "节点命名说人话",
-          "body": "节点名字写成用户能懂的动作，比如“提交表单”，少用缩写。"
+          "title": "Name nodes in plain language",
+          "body": "Use action names users understand like 'Submit Form', and avoid abbreviations."
         },
         "ux05": {
-          "title": "少拖一点线",
-          "body": "能用分组、别名减少交叉连线的地方，就不要让画布变成“意大利面”。"
+          "title": "Minimize wire spaghetti",
+          "body": "Use grouping and aliases to reduce crossing wires—keep your canvas clean."
         },
         "ux06": {
-          "title": "状态统一放一边",
-          "body": "把页面状态节点尽量聚在一起，方便一眼看出有什么会变。"
+          "title": "Group state nodes together",
+          "body": "Cluster state nodes in one area so you can see what changes at a glance."
         },
         "ux07": {
-          "title": "常用操作放手边",
-          "body": "把常用组件和蓝图收藏在左侧顶端，减少来回滚动找东西。"
+          "title": "Pin frequent tools nearby",
+          "body": "Favorite common components and blueprints at the top to reduce scrolling."
         },
         "ux08": {
-          "title": "组件预览要清晰",
-          "body": "给自定义组件配一张好认的缩略图，下次拖拽时不会选错。"
+          "title": "Use clear component previews",
+          "body": "Give custom components recognizable thumbnails to avoid picking the wrong one."
         },
         "ux09": {
-          "title": "占位文案也认真写",
-          "body": "即便是占位文字，也用接近真实的文案，才能看出交互是不是顺畅。"
+          "title": "Write realistic placeholder text",
+          "body": "Even placeholder copy should be close to real content to test flow and clarity."
         },
         "ux10": {
-          "title": "一步一保存",
-          "body": "做完一个小修改就点一下保存或 commit，方便以后回滚。"
+          "title": "Save or commit often",
+          "body": "After each small change, save or commit so you can roll back easily if needed."
         },
         "ux11": {
-          "title": "用颜色区分模块",
-          "body": "给不同功能区域的节点上色，比如数据、视图、交互，用颜色帮自己记路。"
+          "title": "Color-code node categories",
+          "body": "Use colors to distinguish data, view, and interaction nodes—let color guide you."
         },
         "ux12": {
-          "title": "错误提示要具体",
-          "body": "校验失败时别只写“出错了”，要告诉用户哪里错、怎么改。"
+          "title": "Make error messages specific",
+          "body": "Don't just say 'Error'. Tell users exactly what's wrong and how to fix it."
         },
         "ux13": {
-          "title": "拖拽时给对齐感",
-          "body": "开启对齐辅助线，让组件自动贴边，界面看起来更稳。"
+          "title": "Enable alignment guides",
+          "body": "Turn on snap-to-edge guides so components align crisply and consistently."
         },
         "ux14": {
-          "title": "多用布局组件",
-          "body": "先用栅格、Flex 容器搭框架，再填细节，响应式会简单很多。"
+          "title": "Use layout components first",
+          "body": "Start with grids and flex containers, then fill in details—responsive design gets easier."
         },
         "ux15": {
-          "title": "移动端先试一次",
-          "body": "预览时至少切一次手机尺寸，早一点发现“点不到”“挤在一起”的问题。"
+          "title": "Test mobile view early",
+          "body": "Preview at phone size at least once to catch 'can't tap' or 'too cramped' issues early."
         },
         "ux16": {
-          "title": "按钮状态要完整",
-          "body": "别只设计正常态，还要试一下悬停、按下、禁用，看是否一致。"
+          "title": "Design complete button states",
+          "body": "Don't stop at normal state—test hover, pressed, and disabled to ensure consistency."
         },
         "ux17": {
-          "title": "列表别一次塞满",
-          "body": "有长列表就加分页或懒加载，别让用户滚到怀疑人生。"
+          "title": "Don't load everything at once",
+          "body": "For long lists, add pagination or lazy loading—don't make users scroll endlessly."
         },
         "ux18": {
-          "title": "加载时给点反馈",
-          "body": "任何超过一秒的操作，都给一个明显的 loading 状态。"
+          "title": "Show loading feedback",
+          "body": "Any operation over one second deserves a visible loading indicator."
         },
         "ux19": {
-          "title": "表单别吓人",
-          "body": "多段表单拆成步骤，顶部显示进度，让用户知道还差几步。"
+          "title": "Break up intimidating forms",
+          "body": "Split multi-part forms into steps with a progress bar so users know what's left."
         },
         "ux20": {
-          "title": "用真实数据演练",
-          "body": "调试时尽量连上真实结构的 mock 数据，才能发现字段命名的问题。"
+          "title": "Test with real data structures",
+          "body": "Use mock data with realistic structure to catch field naming and layout issues."
         },
         "ux21": {
-          "title": "复用逻辑别复制",
-          "body": "常用逻辑抽成蓝图片段或函数节点，下次直接引用而不是复制一坨。"
+          "title": "Extract reusable logic",
+          "body": "Turn common logic into blueprint fragments or function nodes—don't copy-paste."
         },
         "ux22": {
-          "title": "边画边写备注",
-          "body": "在关键节点旁加一条简短注释，下个月的你会感谢现在的自己。"
+          "title": "Add notes as you go",
+          "body": "Drop a quick comment next to key nodes—future you will be grateful."
         },
         "ux23": {
-          "title": "交互路径别绕远",
-          "body": "从蓝图入口到结果，尽量保证用户只需要 3～5 步操作。"
+          "title": "Keep interaction paths short",
+          "body": "From entry to outcome, aim for 3-5 steps to keep users moving smoothly."
         },
         "ux24": {
-          "title": "空状态也要好看",
-          "body": "列表为空时配一句温柔的提示和引导，而不是一片空白。"
+          "title": "Design thoughtful empty states",
+          "body": "When lists are empty, show friendly guidance instead of blank space."
         },
         "ux25": {
-          "title": "默认值帮用户偷懒",
-          "body": "给常见选项设置合理的默认值，让用户少选一步。"
+          "title": "Use smart defaults",
+          "body": "Set sensible defaults for common choices so users can skip a step."
         },
         "ux26": {
-          "title": "危险操作要二次确认",
-          "body": "删除、重置这类操作加个确认弹窗，并说明会带来什么后果。"
+          "title": "Confirm destructive actions",
+          "body": "Add a confirmation dialog for delete or reset, and explain the consequences."
         },
         "ux27": {
-          "title": "结果页面要有回路",
-          "body": "成功页面给出“返回上一页”或“继续下一步”的按钮，别让用户只剩个关闭。"
+          "title": "Always provide a next step",
+          "body": "On success screens, offer 'Go back' or 'Continue next' instead of just a close button."
         },
         "ux28": {
-          "title": "自测一遍任务流程",
-          "body": "发布前自己用这个界面完成一次真实任务，体验不顺的地方都记下来。"
+          "title": "Walk through your own flow",
+          "body": "Before launch, complete a real task with your UI and note any friction."
         },
         "ux29": {
-          "title": "键盘操作也要通",
-          "body": "给常用操作配快捷键，让熟练用户不用总是去点鼠标。"
+          "title": "Support keyboard navigation",
+          "body": "Add shortcuts for common actions so power users don't need to reach for the mouse."
         },
         "ux30": {
-          "title": "错误信息可复制",
-          "body": "设计错误提示时考虑能不能一键复制，方便用户贴给开发排查。"
+          "title": "Make error messages copyable",
+          "body": "Let users copy error text with one click for easier troubleshooting."
         },
         "ux31": {
-          "title": "提示别挡内容",
-          "body": "悬浮提示尽量出现在不会挡住主要信息的位置。"
+          "title": "Position tooltips carefully",
+          "body": "Place hover hints where they won't block key information."
         },
         "ux32": {
-          "title": "滚动位置帮用户记",
-          "body": "列表返回时尽量记住滚动位置，让用户回来的时候还在原来的地方。"
+          "title": "Remember scroll position",
+          "body": "When users return to a list, restore their scroll position."
         },
         "ux33": {
-          "title": "别用纯颜色当区分",
-          "body": "颜色差异不明显时，加上图标或文字标记照顾色弱用户。"
+          "title": "Don't rely on color alone",
+          "body": "Add icons or text labels to help colorblind users distinguish states."
         },
         "ux34": {
-          "title": "组件命名看用途",
-          "body": "组件名字多用“用途+场景”，比如“主按钮/对话框确认”。"
+          "title": "Name components by purpose",
+          "body": "Use 'purpose + context' names like 'Primary Button / Dialog Confirm'."
         },
         "ux35": {
-          "title": "保持侧边栏干净",
-          "body": "不常用的高级配置折叠起来，别一开始就把人吓跑。"
+          "title": "Keep sidebars clean",
+          "body": "Collapse advanced settings so beginners aren't overwhelmed at first glance."
         },
         "ux36": {
-          "title": "先做一条黄金路径",
-          "body": "先把最典型用户的那条路径做顺，再补其他分支。"
+          "title": "Build the happy path first",
+          "body": "Perfect the most typical user journey before handling edge cases."
         },
         "ux37": {
-          "title": "节点顺序贴近思维",
-          "body": "让节点从左到右按真实思考顺序排放，降低未来阅读成本。"
+          "title": "Arrange nodes logically",
+          "body": "Flow nodes left-to-right in the order users think—reduce future reading cost."
         },
         "ux38": {
-          "title": "用分组讲故事",
-          "body": "按“获取数据→处理数据→展示数据”的顺序分组，让蓝图像一条故事线。"
+          "title": "Group nodes like a story",
+          "body": "Structure as 'fetch data → process → display' to make blueprints tell a clear story."
         },
         "ux39": {
-          "title": "善用模板起步",
-          "body": "类似的页面优先从模板开始改，而不是每次从空白画布开始受苦。"
+          "title": "Start from templates",
+          "body": "For similar pages, clone a template instead of starting from scratch."
         },
         "ux40": {
-          "title": "设计时多问“然后呢”",
-          "body": "每个页面都问一句，用户下一步最自然会做什么，再给他那条路。"
+          "title": "Ask 'then what?' at every step",
+          "body": "For each screen, ask what users naturally do next, then provide that path."
         },
         "ux41": {
-          "title": "渐进暴露高级选项",
-          "body": "初始界面只露出必填项，其他高级配置用“展开更多”承载。"
+          "title": "Progressively disclose options",
+          "body": "Show only required fields at first, hide advanced config behind 'Show more'."
         },
         "ux42": {
-          "title": "别让 loading 卡死",
-          "body": "需要长时间计算的节点尽量异步，避免拖垮整个界面。"
+          "title": "Keep heavy nodes async",
+          "body": "Run long computations asynchronously to avoid locking up the entire UI."
         },
         "ux43": {
-          "title": "预览环境要贴近线上",
-          "body": "预览用的配置尽量跟线上一致，避免“上线才发现不对”。"
+          "title": "Match preview to production",
+          "body": "Use production-like settings in preview to avoid 'works here, breaks live' surprises."
         },
         "ux44": {
-          "title": "组件文档离画布近一点",
-          "body": "在属性面板里直接放文档链接，让使用者不用到处翻。"
+          "title": "Put docs near the canvas",
+          "body": "Add a doc link directly in the properties panel so users don't hunt for help."
         },
         "ux45": {
-          "title": "用空白引导视线",
-          "body": "别害怕留白，让关键按钮周围多一点呼吸空间。"
+          "title": "Use whitespace to guide eyes",
+          "body": "Don't fear empty space—give key buttons breathing room."
         },
         "ux46": {
-          "title": "默认主题别太花",
-          "body": "主题色控制在两三种以内，让内容而不是配色成为主角。"
+          "title": "Keep default themes simple",
+          "body": "Limit theme colors to two or three—let content shine, not the palette."
         },
         "ux47": {
-          "title": "对齐规则要统一",
-          "body": "一个页面里标题、正文、按钮尽量对齐在同一条基线。"
+          "title": "Align consistently",
+          "body": "Within a page, align titles, body text, and buttons to a common baseline."
         },
         "ux48": {
-          "title": "表格支持逐列操作",
-          "body": "长表格提供按列排序和筛选，帮助用户快速找到关键数据。"
+          "title": "Enable column sorting",
+          "body": "Let users sort and filter tables by column to find key data quickly."
         },
         "ux49": {
-          "title": "表单校验即时反馈",
-          "body": "优先在输入时提示错误，而不是提交后一次性红一片。"
+          "title": "Validate input in real-time",
+          "body": "Show errors as users type, not after they submit everything."
         },
         "ux50": {
-          "title": "多语言预留空间",
-          "body": "设计文案时适当预留长度，避免切换语言后布局炸裂。"
+          "title": "Plan for localization",
+          "body": "Leave extra length for text so layouts don't break when switching languages."
         },
         "ux51": {
-          "title": "节点错误醒目但不吓人",
-          "body": "出错节点标红即可，提示语更建议用对话式，而不是“严重错误”。"
+          "title": "Make errors visible, not scary",
+          "body": "Highlight error nodes in red, but use conversational language instead of 'CRITICAL ERROR'."
         },
         "ux52": {
-          "title": "历史版本说人话",
-          "body": "版本备注写清“改了什么给谁用”，而不是只写“fix”。"
+          "title": "Write human commit messages",
+          "body": "Describe what changed and for whom, not just 'fix'."
         },
         "ux53": {
-          "title": "协作时先约命名规范",
-          "body": "团队共用项目前先约定节点和组件命名，减少误会。"
+          "title": "Agree on naming conventions",
+          "body": "Before collaborating, establish node and component naming rules to avoid confusion."
         },
         "ux54": {
-          "title": "实时协作要有存在感",
-          "body": "在画布上显示其他协作者的光标和操作，避免互相覆盖。"
+          "title": "Show collaborator presence",
+          "body": "Display other users' cursors and actions on canvas to prevent conflicts."
         },
         "ux55": {
-          "title": "冲突解决可视化",
-          "body": "合并改动时尽量用可视化 diff，而不是只丢一堆 JSON。"
+          "title": "Visualize merge conflicts",
+          "body": "Use visual diffs instead of raw JSON when merging changes."
         },
         "ux56": {
-          "title": "新手看得到“下一步”",
-          "body": "界面里总要有一个下一步建议按钮，引导新手往前走。"
+          "title": "Always show next steps",
+          "body": "New users should always see a suggested next action button."
         },
         "ux57": {
-          "title": "减少无意义的确认框",
-          "body": "能自动恢复的操作就别弹确认框，节省用户点击。"
+          "title": "Skip pointless confirmations",
+          "body": "Don't confirm actions that are easily undone—save users' clicks."
         },
         "ux58": {
-          "title": "常用蓝图做成库",
-          "body": "把通用业务流程整理成蓝图库，团队共享提升速度。"
+          "title": "Build a blueprint library",
+          "body": "Package common workflows as reusable blueprints for the whole team."
         },
         "ux59": {
-          "title": "样式命名思考重用",
-          "body": "样式命名多按语义而非颜色，比如“主操作色”，方便统一调整。"
+          "title": "Name styles semantically",
+          "body": "Use 'primary action' instead of 'blue' so themes can change easily."
         },
         "ux60": {
-          "title": "按场景组织页面",
-          "body": "侧边导航按“任务场景”而非“技术模块”分类，让非技术同事也能找到。"
+          "title": "Organize by user tasks",
+          "body": "Structure navigation by scenarios, not tech modules, so non-devs can navigate too."
         },
         "ux61": {
-          "title": "节点配置避免长滚动",
-          "body": "参数多时按小节折叠，别把属性面板做成新一条“长表单”。"
+          "title": "Collapse long property panels",
+          "body": "Break parameter lists into sections to avoid endless scrolling."
         },
         "ux62": {
-          "title": "拖拽目标要有磁性",
-          "body": "在可放置区域加轻微吸附感，让新手更容易放对位置。"
+          "title": "Add magnetic drop zones",
+          "body": "Make drop targets slightly magnetic so beginners land components correctly."
         },
         "ux63": {
-          "title": "预览入口永远可见",
-          "body": "保证预览按钮在任何面板展开时都能找到，减少“找按钮”时间。"
+          "title": "Keep preview button visible",
+          "body": "Ensure the preview button is accessible no matter which panels are open."
         },
         "ux64": {
-          "title": "保持回退足够细",
-          "body": "撤销粒度以“一个有意义动作”为单位，而不是几十步打包。"
+          "title": "Keep undo granular",
+          "body": "Undo should revert one meaningful action, not fifty steps at once."
         },
         "ux65": {
-          "title": "导出代码前先跑一遍",
-          "body": "导出前在编辑器里点一遍关键按钮，确认没有明显交互坑。"
+          "title": "Test before exporting",
+          "body": "Click through key interactions in the editor before exporting code."
         },
         "ux66": {
-          "title": "接口失败也优雅",
-          "body": "请求失败时保持原有数据，不要突然清空整页。"
+          "title": "Fail gracefully",
+          "body": "When requests fail, keep existing data instead of clearing the screen."
         },
         "ux67": {
-          "title": "加载骨架优于空白",
-          "body": "列表和卡片加载时用骨架屏占位，比纯白屏更安心。"
+          "title": "Use skeleton screens",
+          "body": "Show skeleton placeholders while loading lists or cards—better than blank."
         },
         "ux68": {
-          "title": "提示语少用专业术语",
-          "body": "能用“保存失败，请检查网络”就别说“请求超时”。"
+          "title": "Avoid jargon in messages",
+          "body": "Say 'Save failed, check network' instead of 'Request timeout'."
         },
         "ux69": {
-          "title": "按设备分组断点",
-          "body": "响应式断点按“手机/平板/桌面”思考，而不是死记宽度数字。"
+          "title": "Think device, not pixels",
+          "body": "Set responsive breakpoints by 'phone/tablet/desktop', not exact widths."
         },
         "ux70": {
-          "title": "覆盖路径要可撤回",
-          "body": "任何覆盖已有配置的操作，都提供一键回滚入口。"
+          "title": "Allow rollback on overrides",
+          "body": "For any config override, provide a one-click undo."
         },
         "ux71": {
-          "title": "默认布局照顾鼠标轨迹",
-          "body": "把“保存”和“发布”放在常用移动路径上，让手少走弯路。"
+          "title": "Optimize mouse travel",
+          "body": "Place 'Save' and 'Publish' along common cursor paths to reduce movement."
         },
         "ux72": {
-          "title": "预置几个好用的空状态",
-          "body": "为常见场景准备空状态模板，拖上去稍微改文案就能用。"
+          "title": "Provide empty state templates",
+          "body": "Offer drag-and-drop empty state templates for common scenarios."
         },
         "ux73": {
-          "title": "列表操作集中在右侧",
-          "body": "表格操作按钮统一放在一列，别散落在各个单元格。"
+          "title": "Group table actions on the right",
+          "body": "Put row actions in one column instead of scattering them across cells."
         },
         "ux74": {
-          "title": "避免多重滚动条",
-          "body": "尽量避免一个屏幕上出现两个以上可独立滚动的区域。"
+          "title": "Avoid nested scrollbars",
+          "body": "Try not to have more than one scrollable area on screen at once."
         },
         "ux75": {
-          "title": "蓝图入口位置固定",
-          "body": "让主要入口节点始终在画布左上固定区域，方便一眼找到。"
+          "title": "Fix blueprint entry position",
+          "body": "Keep main entry nodes in the top-left so they're easy to find."
         },
         "ux76": {
-          "title": "用图标辅助理解",
-          "body": "给重要节点类别配统一图标，久了不用看字也能分辨。"
+          "title": "Use icons to speed recognition",
+          "body": "Give node categories consistent icons—eventually you won't need to read labels."
         },
         "ux77": {
-          "title": "属性面板记住上次折叠",
-          "body": "让面板记住用户习惯折叠哪些区块，下次打开更干净。"
+          "title": "Remember panel collapse state",
+          "body": "Let the panel remember which sections users prefer collapsed."
         },
         "ux78": {
-          "title": "跳出编辑也要保存提示",
-          "body": "用户关闭页面时若有未保存更改，温柔地提醒一声。"
+          "title": "Warn on unsaved exit",
+          "body": "If users close with unsaved changes, gently remind them."
         },
         "ux79": {
-          "title": "用例驱动节点设计",
-          "body": "添加新节点前先写一两个典型用例，避免配置项越堆越多。"
+          "title": "Design nodes with use cases",
+          "body": "Before adding a new node type, write two typical use cases to avoid bloat."
         },
         "ux80": {
-          "title": "插件权限清晰可见",
-          "body": "安装插件时明确说明会访问哪些数据，给用户足够安全感。"
+          "title": "Show plugin permissions clearly",
+          "body": "When installing plugins, explicitly list what data they access."
         },
         "ux81": {
-          "title": "调试面板与画布并排",
-          "body": "调试信息尽量与画布同屏出现，避免来回切换视角。"
+          "title": "Show debug info side-by-side",
+          "body": "Display debug logs next to the canvas instead of forcing context switching."
         },
         "ux82": {
-          "title": "日志按用户任务过滤",
-          "body": "调试日志支持按用户会话或操作链路过滤，快速定位问题。"
+          "title": "Filter logs by user task",
+          "body": "Let users filter debug logs by session or action chain for faster troubleshooting."
         },
         "ux83": {
-          "title": "Mock 数据别太完美",
-          "body": "测试数据故意放一点异常值，看看界面是否还能稳住。"
+          "title": "Mock data shouldn't be perfect",
+          "body": "Include some edge cases in test data to see if your UI can handle them."
         },
         "ux84": {
-          "title": "慢接口提前标记",
-          "body": "对已知耗时长的节点加标识，提醒设计时尽量别串太多在一起。"
+          "title": "Flag slow operations",
+          "body": "Mark known slow nodes so designers avoid chaining too many in sequence."
         },
         "ux85": {
-          "title": "动画只为强化反馈",
-          "body": "动画只用来说明状态变化，避免为了好看而让操作拖沓。"
+          "title": "Animate to clarify, not decorate",
+          "body": "Only use animation to explain state changes—don't slow users down for aesthetics."
         },
         "ux86": {
-          "title": "颜色含义保持一致",
-          "body": "一个项目里，绿色永远代表成功，红色永远代表危险，不要混用。"
+          "title": "Keep color meanings consistent",
+          "body": "Green always means success, red always means danger—never mix them."
         },
         "ux87": {
-          "title": "导航层级控制在三层内",
-          "body": "菜单层级超过三层时考虑重构信息架构。"
+          "title": "Limit nav depth to three",
+          "body": "If menus go deeper than three levels, rethink your information architecture."
         },
         "ux88": {
-          "title": "搜索支持模糊匹配",
-          "body": "节点和组件搜索支持拼音、别名或模糊匹配，照顾不同习惯。"
+          "title": "Support fuzzy search",
+          "body": "Let node and component search handle typos, pinyin, or partial matches."
         },
         "ux89": {
-          "title": "帮助入口就近放",
-          "body": "复杂面板旁放一个“小问号”，跳到对应文档，不用用户自己去找。"
+          "title": "Put help where it's needed",
+          "body": "Add a '?' icon next to complex panels that links directly to relevant docs."
         },
         "ux90": {
-          "title": "导出配置可分享",
-          "body": "导出的构建配置允许一键分享给同事，减少口头对齐。"
+          "title": "Make configs shareable",
+          "body": "Allow one-click sharing of build configs so teams stay aligned."
         },
         "ux91": {
-          "title": "首屏只做一件事",
-          "body": "用户进入编辑器后，优先引导完成一个简单但完整的小任务。"
+          "title": "Focus the first screen",
+          "body": "When users enter the editor, guide them to complete one simple, full task."
         },
         "ux92": {
-          "title": "默认项目给出参考",
-          "body": "新建工作区时附带一个可删除的示例项目，帮新手快速上手。"
+          "title": "Include a sample project",
+          "body": "New workspaces should include a deletable example to help users explore."
         },
         "ux93": {
-          "title": "操作历史可搜索",
-          "body": "在复杂调试场景中，让用户能按关键字搜到曾经做过的操作。"
+          "title": "Make history searchable",
+          "body": "In complex debugging, let users search operation history by keyword."
         },
         "ux94": {
-          "title": "蓝图大小随内容自适应",
-          "body": "自动调整画布缩放，让整体结构一开始就能看全。"
+          "title": "Auto-fit canvas to content",
+          "body": "Adjust canvas zoom so the whole blueprint structure is visible from the start."
         },
         "ux95": {
-          "title": "导出代码含注释",
-          "body": "生成的代码里适当保留和蓝图对应的注释，方便开发者二次修改。"
+          "title": "Include comments in exports",
+          "body": "Generated code should include blueprint-linked comments for easier dev handoff."
         },
         "ux96": {
-          "title": "失败案例也写进文档",
-          "body": "在文档里写清“不要这样用”的例子，少踩重复的坑。"
+          "title": "Document failure modes",
+          "body": "In docs, include 'don't do this' examples to help users avoid common pitfalls."
         },
         "ux97": {
-          "title": "保持一条安全回路",
-          "body": "无论设计多复杂，都确保用户有办法“回到主页”或“撤销操作”。"
+          "title": "Always provide an escape hatch",
+          "body": "No matter how complex, users should always be able to 'Go home' or 'Undo'."
         },
         "ux98": {
-          "title": "表单默认按回车提交",
-          "body": "对常见表单开启回车提交，让键盘用户更顺手。"
+          "title": "Enable Enter to submit",
+          "body": "For common forms, let keyboard users press Enter to submit."
         },
         "ux99": {
-          "title": "节点面板可按角色切换",
-          "body": "给设计、开发、运营不同角色提供不同视图，减少信息噪音。"
+          "title": "Switch views by role",
+          "body": "Offer different node panel views for designers, devs, and ops to reduce noise."
         },
         "ux100": {
-          "title": "尊重用户已有习惯",
-          "body": "布局和交互尽量贴近用户熟悉的模式，让迁移成本更低。"
+          "title": "Respect existing habits",
+          "body": "Match layouts and interactions to patterns users already know—reduce migration cost."
         }
       }
     },
@@ -1067,7 +1066,7 @@
       "zoom": "Zoom",
       "reset": "Reset view",
       "quickPresetMenu": "Presets",
-      "size": "Size {{width}}?{{height}}",
+      "size": "Size {{width}}x{{height}}",
       "moreDevices": "More devices",
       "quickPresets": {
         "desktop": "Desktop",
@@ -1121,6 +1120,77 @@
         "tablet": "Tablet",
         "phone": "Phone",
         "watch": "Watch"
+      }
+    },
+    "unitInput": {
+      "groups": {
+        "absoluteLength": "Absolute length",
+        "fontRelative": "Font-relative",
+        "viewport": "Viewport",
+        "container": "Container",
+        "percentage": "Percentage",
+        "angle": "Angle",
+        "time": "Time",
+        "frequency": "Frequency",
+        "resolution": "Resolution",
+        "current": "Current"
+      },
+      "units": {
+        "px": "Pixel (CSS px, typically 1px = 1/96in)",
+        "cm": "Centimeter",
+        "mm": "Millimeter",
+        "Q": "Quarter-millimeter (1Q = 1/40cm)",
+        "in": "Inch",
+        "pt": "Point (1pt = 1/72in)",
+        "pc": "Pica (1pc = 12pt)",
+        "em": "Relative to current element font size",
+        "rem": "Relative to root element font size",
+        "ex": "Relative to x-height (font-dependent)",
+        "rex": "Relative to root element x-height",
+        "cap": "Relative to cap-height",
+        "rcap": "Relative to root element cap-height",
+        "ch": "Relative to width of \"0\" (font-dependent)",
+        "rch": "Relative to root element \"0\" width",
+        "ic": "Relative to full-width character (font-dependent)",
+        "ric": "Relative to root element full-width character",
+        "lh": "Relative to current element line height",
+        "rlh": "Relative to root element line height",
+        "vw": "1% of viewport width",
+        "vh": "1% of viewport height",
+        "vi": "1% of viewport inline direction",
+        "vb": "1% of viewport block direction",
+        "vmin": "1% of viewport smaller dimension",
+        "vmax": "1% of viewport larger dimension",
+        "svw": "1% of small viewport width",
+        "svh": "1% of small viewport height",
+        "svi": "1% of small viewport inline",
+        "svb": "1% of small viewport block",
+        "lvw": "1% of large viewport width",
+        "lvh": "1% of large viewport height",
+        "lvi": "1% of large viewport inline",
+        "lvb": "1% of large viewport block",
+        "dvw": "1% of dynamic viewport width",
+        "dvh": "1% of dynamic viewport height",
+        "dvi": "1% of dynamic viewport inline",
+        "dvb": "1% of dynamic viewport block",
+        "cqw": "1% of container query width",
+        "cqh": "1% of container query height",
+        "cqi": "1% of container query inline",
+        "cqb": "1% of container query block",
+        "cqmin": "1% of container smaller dimension",
+        "cqmax": "1% of container larger dimension",
+        "%": "Percentage (relative to parent/context, property-specific)",
+        "deg": "Degree",
+        "grad": "Gradian",
+        "rad": "Radian",
+        "turn": "Turn (1turn = 360deg)",
+        "s": "Second",
+        "ms": "Millisecond",
+        "Hz": "Hertz",
+        "kHz": "Kilohertz",
+        "dpi": "Dots per inch",
+        "dpcm": "Dots per centimeter",
+        "dppx": "Dots per pixel"
       }
     }
   },
