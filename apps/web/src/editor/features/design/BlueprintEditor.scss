@@ -989,6 +989,7 @@
   overflow: hidden;
 }
 
+
 .BlueprintEditorCanvasArtboard [data-mir-selected="true"] {
   outline: 2px solid var(--color-primary, var(--color-9));
   outline-offset: 2px;
@@ -1441,6 +1442,14 @@
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+.InspectorSingleInput {
+  width: 100%;
+}
+
+.InspectorSingleInput > * {
+  flex: 1;
 }
 
 .InspectorTextInput {

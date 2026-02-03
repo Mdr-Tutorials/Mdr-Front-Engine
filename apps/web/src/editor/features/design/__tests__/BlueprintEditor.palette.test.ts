@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest"
 import { createNodeFromPaletteItem, getTreeDropPlacement } from "../BlueprintEditor"
+import { COMPONENT_GROUPS } from "../BlueprintEditor.data"
 
 describe("createNodeFromPaletteItem", () => {
+  const paletteItems = COMPONENT_GROUPS.flatMap((group) => group.items)
+
   it("applies heading variantProps.level when provided", () => {
     const createId = (type: string) => `${type}-1`
     const node = createNodeFromPaletteItem("heading", createId, { level: 5 })
@@ -13,6 +16,29 @@ describe("createNodeFromPaletteItem", () => {
     const createId = (type: string) => `${type}-1`
     const node = createNodeFromPaletteItem("heading", createId, { level: "6" })
     expect(node.props?.level).toBe(6)
+  })
+
+  it("creates nodes for every palette item", () => {
+    const createId = (type: string) => `${type}-1`
+    paletteItems.forEach((item) => {
+      const node = createNodeFromPaletteItem(item.id, createId)
+      expect(node.id).toBe(`${node.type}-1`)
+    })
+  })
+
+  it("creates nodes for palette variants and size selections", () => {
+    const createId = (type: string) => `${type}-1`
+    paletteItems.forEach((item) => {
+      const selectedSize = item.sizeOptions?.[0]?.value
+      if (selectedSize) {
+        const node = createNodeFromPaletteItem(item.id, createId, undefined, selectedSize)
+        expect(node.id).toBe(`${node.type}-1`)
+      }
+      item.variants?.forEach((variant) => {
+        const node = createNodeFromPaletteItem(item.id, createId, variant.props, selectedSize)
+        expect(node.id).toBe(`${node.type}-1`)
+      })
+    })
   })
 })
 

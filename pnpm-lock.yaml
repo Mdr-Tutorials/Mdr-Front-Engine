@@ -27,18 +27,27 @@ importers:
         specifier: ^11.1.0
         version: 11.1.0
     devDependencies:
+      '@eslint/js':
+        specifier: ^9.39.1
+        version: 9.39.1
       '@types/node':
         specifier: ^24.10.0
         version: 24.10.0
+      eslint:
+        specifier: ^9.39.1
+        version: 9.39.1(jiti@2.6.1)
+      globals:
+        specifier: ^16.5.0
+        version: 16.5.0
       tsx:
         specifier: ^4.20.6
         version: 4.20.6
       typescript:
         specifier: ~5.9.3
         version: 5.9.3
-      vite:
-        specifier: npm:rolldown-vite@7.1.14
-        version: rolldown-vite@7.1.14(@types/node@24.10.0)(esbuild@0.25.12)(jiti@2.6.1)(sass@1.97.1)(tsx@4.20.6)
+      typescript-eslint:
+        specifier: ^8.46.3
+        version: 8.46.3(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)
 
   apps/docs:
     devDependencies:
@@ -11466,23 +11475,6 @@ snapshots:
       fsevents: 2.3.3
       jiti: 2.6.1
       sass: 1.93.3
-      tsx: 4.20.6
-
-  rolldown-vite@7.1.14(@types/node@24.10.0)(esbuild@0.25.12)(jiti@2.6.1)(sass@1.97.1)(tsx@4.20.6):
-    dependencies:
-      '@oxc-project/runtime': 0.92.0
-      fdir: 6.5.0(picomatch@4.0.3)
-      lightningcss: 1.30.2
-      picomatch: 4.0.3
-      postcss: 8.5.6
-      rolldown: 1.0.0-beta.41
-      tinyglobby: 0.2.15
-    optionalDependencies:
-      '@types/node': 24.10.0
-      esbuild: 0.25.12
-      fsevents: 2.3.3
-      jiti: 2.6.1
-      sass: 1.97.1
       tsx: 4.20.6
 
   rolldown@1.0.0-beta.41:

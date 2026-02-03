@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import type { KeyboardEvent, ReactNode } from "react"
 import BlueprintEditor from "../BlueprintEditor"
 import { DEFAULT_BLUEPRINT_STATE, useEditorStore } from "@/editor/store/useEditorStore"
-import { VIEWPORT_ZOOM_RANGE } from "../BlueprintEditor.data"
+import { COMPONENT_GROUPS, VIEWPORT_ZOOM_RANGE } from "../BlueprintEditor.data"
 import { createMirDoc, resetEditorStore, resetSettingsStore } from "@/test-utils/editorStore"
 
 const PROJECT_ID = "project-1"
@@ -247,6 +247,19 @@ beforeEach(() => {
 })
 
 const getBlueprintState = () => useEditorStore.getState().blueprintStateByProject[PROJECT_ID]
+
+const countNodes = (node: { children?: unknown[] }): number => {
+  const children = Array.isArray(node.children) ? node.children : []
+  return 1 + children.reduce((total, child: any) => total + countNodes(child), 0)
+}
+
+const getPaletteItemIds = () => {
+  const ids = new Set<string>()
+  COMPONENT_GROUPS.forEach((group) => {
+    group.items.forEach((item) => ids.add(item.id))
+  })
+  return Array.from(ids)
+}
 
 describe("BlueprintEditor", () => {
   it("initializes blueprint state from global viewport defaults", async () => {
@@ -690,5 +703,31 @@ describe("BlueprintEditor", () => {
 
     const children = useEditorStore.getState().mirDoc.ui.root.children ?? []
     expect(children.map((child) => child.id)).toEqual(["child-2", "child-1"])
+  })
+
+  it("drops every palette item on the canvas without crashing", async () => {
+    render(<BlueprintEditor />)
+
+    await waitFor(() => {
+      expect(getBlueprintState()).toBeTruthy()
+    })
+
+    const dndProps = (globalThis as { __dndProps?: { onDragEnd?: (event: DragEndPayload) => void } })
+      .__dndProps
+    const itemIds = getPaletteItemIds()
+    let totalNodes = countNodes(useEditorStore.getState().mirDoc.ui.root)
+
+    itemIds.forEach((itemId) => {
+      act(() => {
+        useEditorStore.getState().setBlueprintState(PROJECT_ID, { selectedId: "root" })
+        dndProps?.onDragEnd?.({
+          active: { data: { current: { kind: "palette-item", itemId } } },
+          over: { id: "canvas-drop", data: { current: { kind: "canvas" } } },
+        })
+      })
+      const nextTotal = countNodes(useEditorStore.getState().mirDoc.ui.root)
+      expect(nextTotal).toBe(totalNodes + 1)
+      totalNodes = nextTotal
+    })
   })
 })

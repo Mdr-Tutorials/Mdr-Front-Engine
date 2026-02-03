@@ -1009,6 +1009,12 @@
       "description": "当前项目的 MIR JSON（临时页）",
       "empty": "暂无 MIR（先进入蓝图编辑器创建组件）"
     },
+    "react": {
+      "title": "React",
+      "description": "基于当前 MIR 生成的 React 组件代码",
+      "empty": "暂无 React 代码（先生成 MIR）",
+      "error": "React 代码生成失败"
+    },
     "close": "关闭",
     "copy": "复制",
     "copySuccess": "已复制",
@@ -1016,6 +1022,7 @@
       "generator": "由 Mdr Front Engine 生成"
     },
     "tabs": {
+      "mir": "MIR",
       "react": "React",
       "vue": "Vue"
     }
@@ -1042,6 +1049,18 @@
           "label": "组件 ID",
           "description": "在当前蓝图中保持唯一。",
           "duplicate": "ID 已存在。"
+        }
+      },
+      "panels": {
+        "text": {
+          "title": "文本",
+          "description": "编辑组件显示的文本内容。",
+          "fields": {
+            "text": "文本",
+            "title": "标题",
+            "label": "标签",
+            "description": "描述"
+          }
         }
       },
       "actions": {

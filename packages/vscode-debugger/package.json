@@ -6,7 +6,7 @@
     "scripts": {
         "build": "tsc",
         "dev": "tsc --watch",
-        "test": "vitest run",
+        "test": "echo \"No tests for vscode-debugger\" && exit 0",
         "start": "node lib/debugAdapter.js"
     },
     "dependencies": {
