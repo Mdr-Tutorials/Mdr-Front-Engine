@@ -1,10 +1,10 @@
 type InspectorTextInputProps = {
-  value: string
-  onChange: (value: string) => void
-  placeholder?: string
-  disabled?: boolean
-  inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"]
-}
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  disabled?: boolean;
+  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode'];
+};
 
 export function InspectorTextInput({
   value,
@@ -22,5 +22,5 @@ export function InspectorTextInput({
       inputMode={inputMode}
       onChange={(event) => onChange(event.target.value)}
     />
-  )
+  );
 }

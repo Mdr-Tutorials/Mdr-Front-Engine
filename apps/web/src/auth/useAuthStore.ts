@@ -1,14 +1,14 @@
-import { create } from "zustand"
-import type { PublicUser } from "./authApi"
+import { create } from 'zustand';
+import type { PublicUser } from './authApi';
 
 type AuthState = {
-  token: string | null
-  expiresAt: string | null
-  user: PublicUser | null
-  setSession: (token: string, user: PublicUser, expiresAt?: string) => void
-  setUser: (user: PublicUser | null) => void
-  clearSession: () => void
-}
+  token: string | null;
+  expiresAt: string | null;
+  user: PublicUser | null;
+  setSession: (token: string, user: PublicUser, expiresAt?: string) => void;
+  setUser: (user: PublicUser | null) => void;
+  clearSession: () => void;
+};
 
 export const useAuthStore = create<AuthState>()((set) => ({
   token: null,
@@ -22,4 +22,4 @@ export const useAuthStore = create<AuthState>()((set) => ({
     }),
   setUser: (user) => set({ user }),
   clearSession: () => set({ token: null, user: null, expiresAt: null }),
-}))
+}));

@@ -4,19 +4,22 @@ import { resolve } from 'path';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 export default defineConfig({
-  plugins: [react(), nodePolyfills({
-    globals: {
-      Buffer: true,
-      global: true,
-      process: true,
-    },
-    protocolImports: true,
-  })],
+  plugins: [
+    react(),
+    nodePolyfills({
+      globals: {
+        Buffer: true,
+        global: true,
+        process: true,
+      },
+      protocolImports: true,
+    }),
+  ],
   define: {
     'process.cwd': '(() => "/")',
     'process.env': {},
     'process.platform': JSON.stringify('browser'),
-    'global': 'globalThis',
+    global: 'globalThis',
   },
   resolve: {
     dedupe: ['react', 'react-dom', 'react-router'],

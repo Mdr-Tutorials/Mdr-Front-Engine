@@ -73,7 +73,9 @@ function NewResourceModal({
       >
         <header className="flex items-center justify-between border-b border-b-[rgba(0,0,0,0.06)] bg-[linear-gradient(120deg,var(--color-1),var(--color-0))] px-[22px] py-[18px]">
           <div>
-            <h2 className="m-0 text-[18px] font-bold">{t('modals.newResource.title', 'Create New')}</h2>
+            <h2 className="m-0 text-[18px] font-bold">
+              {t('modals.newResource.title', 'Create New')}
+            </h2>
             <p className="mt-[6px] text-[12px] text-[var(--color-6)]">
               {t(
                 'modals.newResource.subtitle',
@@ -98,10 +100,11 @@ function NewResourceModal({
             <div className="mb-[8px] grid grid-cols-3 gap-[16px]">
               <button
                 type="button"
-                className={`flex cursor-pointer flex-col items-center justify-center gap-[8px] rounded-[var(--radius-lg)] border p-[16px] transition-all duration-[150ms] ease-[ease] ${type === 'project'
+                className={`flex cursor-pointer flex-col items-center justify-center gap-[8px] rounded-[var(--radius-lg)] border p-[16px] transition-all duration-[150ms] ease-[ease] ${
+                  type === 'project'
                     ? 'border-[var(--color-10)] bg-[var(--color-0)] text-[var(--color-10)]'
                     : 'border-[var(--color-3)] bg-[var(--color-1)] text-[var(--color-6)] hover:bg-[var(--color-2)] hover:text-[var(--color-10)]'
-                  }`}
+                }`}
                 onClick={() => setType('project')}
               >
                 <Box size={24} />
@@ -113,10 +116,11 @@ function NewResourceModal({
               </button>
               <button
                 type="button"
-                className={`flex cursor-pointer flex-col items-center justify-center gap-[8px] rounded-[var(--radius-lg)] border p-[16px] transition-all duration-[150ms] ease-[ease] ${type === 'component'
+                className={`flex cursor-pointer flex-col items-center justify-center gap-[8px] rounded-[var(--radius-lg)] border p-[16px] transition-all duration-[150ms] ease-[ease] ${
+                  type === 'component'
                     ? 'border-[var(--color-10)] bg-[var(--color-0)] text-[var(--color-10)]'
                     : 'border-[var(--color-3)] bg-[var(--color-1)] text-[var(--color-6)] hover:bg-[var(--color-2)] hover:text-[var(--color-10)]'
-                  }`}
+                }`}
                 onClick={() => setType('component')}
               >
                 <Layers size={24} />
@@ -128,10 +132,11 @@ function NewResourceModal({
               </button>
               <button
                 type="button"
-                className={`flex cursor-pointer flex-col items-center justify-center gap-[8px] rounded-[var(--radius-lg)] border p-[16px] transition-all duration-[150ms] ease-[ease] ${type === 'nodegraph'
+                className={`flex cursor-pointer flex-col items-center justify-center gap-[8px] rounded-[var(--radius-lg)] border p-[16px] transition-all duration-[150ms] ease-[ease] ${
+                  type === 'nodegraph'
                     ? 'border-[var(--color-10)] bg-[var(--color-0)] text-[var(--color-10)]'
                     : 'border-[var(--color-3)] bg-[var(--color-1)] text-[var(--color-6)] hover:bg-[var(--color-2)] hover:text-[var(--color-10)]'
-                  }`}
+                }`}
                 onClick={() => setType('nodegraph')}
               >
                 <Workflow size={24} />
@@ -164,7 +169,10 @@ function NewResourceModal({
               {t('modals.newProject.descriptionLabel', 'Description')}
             </label>
             <MdrTextarea
-              placeholder={t('modals.newProject.descriptionPlaceholder', 'Optional description')}
+              placeholder={t(
+                'modals.newProject.descriptionPlaceholder',
+                'Optional description'
+              )}
               value={description}
               onChange={setDescription}
             />

@@ -1,9 +1,9 @@
-import { fireEvent, render, screen } from "@testing-library/react"
-import { beforeEach, describe, expect, it, vi } from "vitest"
-import { BlueprintEditorComponentTree } from "../BlueprintEditorComponentTree"
-import { createMirDoc, resetEditorStore } from "@/test-utils/editorStore"
+import { fireEvent, render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { BlueprintEditorComponentTree } from '../BlueprintEditorComponentTree';
+import { createMirDoc, resetEditorStore } from '@/test-utils/editorStore';
 
-vi.mock("@dnd-kit/core", () => ({
+vi.mock('@dnd-kit/core', () => ({
   useDraggable: () => ({
     attributes: {},
     listeners: {},
@@ -15,17 +15,17 @@ vi.mock("@dnd-kit/core", () => ({
     setNodeRef: () => {},
     isOver: false,
   }),
-}))
+}));
 
-vi.mock("@dnd-kit/utilities", () => ({
+vi.mock('@dnd-kit/utilities', () => ({
   CSS: {
     Transform: {
-      toString: () => "",
+      toString: () => '',
     },
   },
-}))
+}));
 
-vi.mock("lucide-react", () => ({
+vi.mock('lucide-react', () => ({
   ArrowDown: () => null,
   ArrowUp: () => null,
   Box: () => null,
@@ -41,14 +41,14 @@ vi.mock("lucide-react", () => ({
   Trash2: () => null,
   Type: () => null,
   TextCursorInput: () => null,
-}))
+}));
 
 beforeEach(() => {
-  resetEditorStore()
-})
+  resetEditorStore();
+});
 
-describe("BlueprintEditorComponentTree", () => {
-  it("renders collapsed state with expand button", () => {
+describe('BlueprintEditorComponentTree', () => {
+  it('renders collapsed state with expand button', () => {
     render(
       <BlueprintEditorComponentTree
         isCollapsed
@@ -60,25 +60,31 @@ describe("BlueprintEditorComponentTree", () => {
         onCopyNode={() => {}}
         onMoveNode={() => {}}
       />
-    )
+    );
 
-    expect(screen.getByRole("button", { name: "Expand component tree" })).toBeTruthy()
-  })
+    expect(
+      screen.getByRole('button', { name: 'Expand component tree' })
+    ).toBeTruthy();
+  });
 
-  it("shows node counts and selection, and fires actions", () => {
+  it('shows node counts and selection, and fires actions', () => {
     resetEditorStore({
       mirDoc: createMirDoc([
-        { id: "child-1", type: "MdrText", text: "Text" },
-        { id: "child-2", type: "MdrDiv", children: [{ id: "child-2a", type: "MdrText", text: "Nested" }] },
+        { id: 'child-1', type: 'MdrText', text: 'Text' },
+        {
+          id: 'child-2',
+          type: 'MdrDiv',
+          children: [{ id: 'child-2a', type: 'MdrText', text: 'Nested' }],
+        },
       ]),
-    })
+    });
 
-    const onToggleCollapse = vi.fn()
-    const onSelectNode = vi.fn()
-    const onDeleteSelected = vi.fn()
-    const onDeleteNode = vi.fn()
-    const onCopyNode = vi.fn()
-    const onMoveNode = vi.fn()
+    const onToggleCollapse = vi.fn();
+    const onSelectNode = vi.fn();
+    const onDeleteSelected = vi.fn();
+    const onDeleteNode = vi.fn();
+    const onCopyNode = vi.fn();
+    const onMoveNode = vi.fn();
 
     render(
       <BlueprintEditorComponentTree
@@ -91,24 +97,26 @@ describe("BlueprintEditorComponentTree", () => {
         onCopyNode={onCopyNode}
         onMoveNode={onMoveNode}
       />
-    )
+    );
 
-    expect(screen.getByText("4")).toBeTruthy()
-    fireEvent.click(screen.getByRole("button", { name: "Collapse component tree" }))
-    expect(onToggleCollapse).toHaveBeenCalled()
+    expect(screen.getByText('4')).toBeTruthy();
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Collapse component tree' })
+    );
+    expect(onToggleCollapse).toHaveBeenCalled();
 
-    fireEvent.click(screen.getByTitle("MdrText (child-1)"))
-    expect(onSelectNode).toHaveBeenCalledWith("child-1")
+    fireEvent.click(screen.getByTitle('MdrText (child-1)'));
+    expect(onSelectNode).toHaveBeenCalledWith('child-1');
 
-    const deleteButtons = screen.getAllByLabelText("Delete")
-    fireEvent.click(deleteButtons[1])
-    expect(onDeleteNode).toHaveBeenCalledWith("child-1")
+    const deleteButtons = screen.getAllByLabelText('Delete');
+    fireEvent.click(deleteButtons[1]);
+    expect(onDeleteNode).toHaveBeenCalledWith('child-1');
 
-    fireEvent.click(screen.getByLabelText("Delete selected component"))
-    expect(onDeleteSelected).toHaveBeenCalled()
+    fireEvent.click(screen.getByLabelText('Delete selected component'));
+    expect(onDeleteSelected).toHaveBeenCalled();
 
-    const moveUpButtons = screen.getAllByLabelText("Move up")
-    fireEvent.click(moveUpButtons[1])
-    expect(onMoveNode).toHaveBeenCalledWith("child-1", "up")
-  })
-})
+    const moveUpButtons = screen.getAllByLabelText('Move up');
+    fireEvent.click(moveUpButtons[1]);
+    expect(onMoveNode).toHaveBeenCalledWith('child-1', 'up');
+  });
+});

@@ -1,16 +1,16 @@
-﻿import { MdrButton, MdrInput } from "@mdr/ui"
-import { Link2, Plus } from "lucide-react"
-import { useTranslation } from "react-i18next"
-import type { RouteItem } from "./BlueprintEditor.types"
+﻿import { MdrButton, MdrInput } from '@mdr/ui';
+import { Link2, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import type { RouteItem } from './BlueprintEditor.types';
 
 type BlueprintEditorAddressBarProps = {
-  currentPath: string
-  newPath: string
-  routes: RouteItem[]
-  onCurrentPathChange: (value: string) => void
-  onNewPathChange: (value: string) => void
-  onAddRoute: () => void
-}
+  currentPath: string;
+  newPath: string;
+  routes: RouteItem[];
+  onCurrentPathChange: (value: string) => void;
+  onNewPathChange: (value: string) => void;
+  onAddRoute: () => void;
+};
 
 export function BlueprintEditorAddressBar({
   currentPath,
@@ -20,7 +20,7 @@ export function BlueprintEditorAddressBar({
   onNewPathChange,
   onAddRoute,
 }: BlueprintEditorAddressBarProps) {
-  const { t } = useTranslation('blueprint')
+  const { t } = useTranslation('blueprint');
 
   return (
     <section className="BlueprintEditorAddressBar">
@@ -71,5 +71,5 @@ export function BlueprintEditorAddressBar({
         </select>
       </div>
     </section>
-  )
+  );
 }

@@ -1,62 +1,82 @@
-import { type KeyboardEvent, type PointerEvent, useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { useTranslation } from "react-i18next"
-import { useDroppable } from "@dnd-kit/core"
-import { useEditorStore } from "@/editor/store/useEditorStore"
-import { useSettingsStore } from "@/editor/store/useSettingsStore"
-import { MIRRenderer } from "@/mir/renderer/MIRRenderer"
-import { createOrderedComponentRegistry, parseResolverOrder } from "@/mir/renderer/registry"
-import { VIEWPORT_ZOOM_RANGE } from "./BlueprintEditor.data"
+import {
+  type KeyboardEvent,
+  type PointerEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { useTranslation } from 'react-i18next';
+import { useDroppable } from '@dnd-kit/core';
+import { useEditorStore } from '@/editor/store/useEditorStore';
+import { useSettingsStore } from '@/editor/store/useSettingsStore';
+import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
+import {
+  createOrderedComponentRegistry,
+  parseResolverOrder,
+} from '@/mir/renderer/registry';
+import { VIEWPORT_ZOOM_RANGE } from './BlueprintEditor.data';
 
 type BlueprintEditorCanvasProps = {
-  viewportWidth: string
-  viewportHeight: string
-  zoom: number
-  pan: { x: number; y: number }
-  selectedId?: string
-  onPanChange: (pan: { x: number; y: number }) => void
-  onZoomChange: (value: number) => void
-  onSelectNode: (nodeId: string) => void
-}
+  viewportWidth: string;
+  viewportHeight: string;
+  zoom: number;
+  pan: { x: number; y: number };
+  selectedId?: string;
+  onPanChange: (pan: { x: number; y: number }) => void;
+  onZoomChange: (value: number) => void;
+  onSelectNode: (nodeId: string) => void;
+};
 
 type PanState = {
-  pointerId: number | null
-  startX: number
-  startY: number
-  originX: number
-  originY: number
-  moved: boolean
-}
+  pointerId: number | null;
+  startX: number;
+  startY: number;
+  originX: number;
+  originY: number;
+  moved: boolean;
+};
 
-const DRAG_THRESHOLD = 3
-const WHEEL_LINE_HEIGHT = 16
-const WHEEL_PAGE_SIZE = 800
+const DRAG_THRESHOLD = 3;
+const WHEEL_LINE_HEIGHT = 16;
+const WHEEL_PAGE_SIZE = 800;
 const getTimestamp = () =>
-  typeof performance !== "undefined" && typeof performance.now === "function"
+  typeof performance !== 'undefined' && typeof performance.now === 'function'
     ? performance.now()
-    : Date.now()
+    : Date.now();
 
 const parseDimension = (value: string, fallback: number, min: number) => {
-  const parsed = Number.parseInt(value, 10)
-  if (!Number.isFinite(parsed) || parsed <= 0) return fallback
-  return Math.max(min, parsed)
-}
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed) || parsed <= 0) return fallback;
+  return Math.max(min, parsed);
+};
 
 const isInteractiveTarget = (target: HTMLElement | null) => {
-  if (!target) return false
-  return Boolean(target.closest("button, input, textarea, select, option, a, label, [contenteditable=\"true\"]"))
-}
+  if (!target) return false;
+  return Boolean(
+    target.closest(
+      'button, input, textarea, select, option, a, label, [contenteditable="true"]'
+    )
+  );
+};
 
 const normalizeWheelDelta = (event: WheelEvent) => {
   if (event.deltaMode === 1) {
-    return { x: event.deltaX * WHEEL_LINE_HEIGHT, y: event.deltaY * WHEEL_LINE_HEIGHT }
+    return {
+      x: event.deltaX * WHEEL_LINE_HEIGHT,
+      y: event.deltaY * WHEEL_LINE_HEIGHT,
+    };
   }
   if (event.deltaMode === 2) {
-    const pageWidth = typeof window === "undefined" ? WHEEL_PAGE_SIZE : window.innerWidth
-    const pageHeight = typeof window === "undefined" ? WHEEL_PAGE_SIZE : window.innerHeight
-    return { x: event.deltaX * pageWidth, y: event.deltaY * pageHeight }
+    const pageWidth =
+      typeof window === 'undefined' ? WHEEL_PAGE_SIZE : window.innerWidth;
+    const pageHeight =
+      typeof window === 'undefined' ? WHEEL_PAGE_SIZE : window.innerHeight;
+    return { x: event.deltaX * pageWidth, y: event.deltaY * pageHeight };
   }
-  return { x: event.deltaX, y: event.deltaY }
-}
+  return { x: event.deltaX, y: event.deltaY };
+};
 
 export function BlueprintEditorCanvas({
   viewportWidth,
@@ -68,17 +88,19 @@ export function BlueprintEditorCanvas({
   onZoomChange,
   onSelectNode,
 }: BlueprintEditorCanvasProps) {
-  const { t } = useTranslation('blueprint')
-  const assist = useSettingsStore((state) => state.global.assist)
-  const panInertia = useSettingsStore((state) => state.global.panInertia)
-  const zoomStep = useSettingsStore((state) => state.global.zoomStep)
-  const renderMode = useSettingsStore((state) => state.global.renderMode)
-  const allowExternalProps = useSettingsStore((state) => state.global.allowExternalProps)
-  const resolverOrder = useSettingsStore((state) => state.global.resolverOrder)
-  const diagnostics = useSettingsStore((state) => state.global.diagnostics)
-  const [isPanning, setIsPanning] = useState(false)
-  const mirDoc = useEditorStore((state) => state.mirDoc)
-  const surfaceRef = useRef<HTMLDivElement | null>(null)
+  const { t } = useTranslation('blueprint');
+  const assist = useSettingsStore((state) => state.global.assist);
+  const panInertia = useSettingsStore((state) => state.global.panInertia);
+  const zoomStep = useSettingsStore((state) => state.global.zoomStep);
+  const renderMode = useSettingsStore((state) => state.global.renderMode);
+  const allowExternalProps = useSettingsStore(
+    (state) => state.global.allowExternalProps
+  );
+  const resolverOrder = useSettingsStore((state) => state.global.resolverOrder);
+  const diagnostics = useSettingsStore((state) => state.global.diagnostics);
+  const [isPanning, setIsPanning] = useState(false);
+  const mirDoc = useEditorStore((state) => state.mirDoc);
+  const surfaceRef = useRef<HTMLDivElement | null>(null);
   const panState = useRef<PanState>({
     pointerId: null,
     startX: 0,
@@ -86,120 +108,123 @@ export function BlueprintEditorCanvas({
     originX: 0,
     originY: 0,
     moved: false,
-  })
-  const panRef = useRef(pan)
-  const zoomRef = useRef(zoom)
-  const zoomStepRef = useRef(zoomStep)
-  const onPanChangeRef = useRef(onPanChange)
-  const onZoomChangeRef = useRef(onZoomChange)
-  const velocityRef = useRef({ x: 0, y: 0 })
-  const lastMoveRef = useRef({ x: 0, y: 0, time: 0 })
-  const inertiaFrameRef = useRef<number | null>(null)
-  const suppressSelectRef = useRef(false)
-  const canvasWidth = parseDimension(viewportWidth, 1440, 320)
-  const canvasHeight = parseDimension(viewportHeight, 900, 240)
-  const scale = Math.min(2, Math.max(0.4, zoom / 100))
-  const showGrid = assist.includes("grid")
-  const showSelectionDiagnostics = diagnostics.includes("selection")
+  });
+  const panRef = useRef(pan);
+  const zoomRef = useRef(zoom);
+  const zoomStepRef = useRef(zoomStep);
+  const onPanChangeRef = useRef(onPanChange);
+  const onZoomChangeRef = useRef(onZoomChange);
+  const velocityRef = useRef({ x: 0, y: 0 });
+  const lastMoveRef = useRef({ x: 0, y: 0, time: 0 });
+  const inertiaFrameRef = useRef<number | null>(null);
+  const suppressSelectRef = useRef(false);
+  const canvasWidth = parseDimension(viewportWidth, 1440, 320);
+  const canvasHeight = parseDimension(viewportHeight, 900, 240);
+  const scale = Math.min(2, Math.max(0.4, zoom / 100));
+  const showGrid = assist.includes('grid');
+  const showSelectionDiagnostics = diagnostics.includes('selection');
   const registry = useMemo(
     () => createOrderedComponentRegistry(parseResolverOrder(resolverOrder)),
     [resolverOrder]
-  )
+  );
   const { setNodeRef: setCanvasDropRef, isOver: isCanvasOver } = useDroppable({
-    id: "canvas-drop",
-    data: { kind: "canvas" },
-  })
+    id: 'canvas-drop',
+    data: { kind: 'canvas' },
+  });
 
   useEffect(() => {
-    panRef.current = pan
-  }, [pan])
+    panRef.current = pan;
+  }, [pan]);
 
   useEffect(() => {
-    zoomRef.current = zoom
-  }, [zoom])
+    zoomRef.current = zoom;
+  }, [zoom]);
 
   useEffect(() => {
-    zoomStepRef.current = zoomStep
-  }, [zoomStep])
+    zoomStepRef.current = zoomStep;
+  }, [zoomStep]);
 
   useEffect(() => {
-    onPanChangeRef.current = onPanChange
-  }, [onPanChange])
+    onPanChangeRef.current = onPanChange;
+  }, [onPanChange]);
 
   useEffect(() => {
-    onZoomChangeRef.current = onZoomChange
-  }, [onZoomChange])
+    onZoomChangeRef.current = onZoomChange;
+  }, [onZoomChange]);
 
   useEffect(() => {
     return () => {
-      if (typeof window === "undefined") return
+      if (typeof window === 'undefined') return;
       if (inertiaFrameRef.current) {
-        window.cancelAnimationFrame(inertiaFrameRef.current)
+        window.cancelAnimationFrame(inertiaFrameRef.current);
       }
-    }
-  }, [])
+    };
+  }, []);
 
   const stopInertia = useCallback(() => {
-    if (typeof window === "undefined") return
+    if (typeof window === 'undefined') return;
     if (inertiaFrameRef.current) {
-      window.cancelAnimationFrame(inertiaFrameRef.current)
-      inertiaFrameRef.current = null
+      window.cancelAnimationFrame(inertiaFrameRef.current);
+      inertiaFrameRef.current = null;
     }
-  }, [])
+  }, []);
 
   const applyPan = useCallback((nextPan: { x: number; y: number }) => {
-    panRef.current = nextPan
-    onPanChangeRef.current(nextPan)
-  }, [])
+    panRef.current = nextPan;
+    onPanChangeRef.current(nextPan);
+  }, []);
 
   const applyZoom = useCallback((nextZoom: number) => {
-    const clamped = Math.min(VIEWPORT_ZOOM_RANGE.max, Math.max(VIEWPORT_ZOOM_RANGE.min, nextZoom))
-    zoomRef.current = clamped
-    onZoomChangeRef.current(clamped)
-  }, [])
+    const clamped = Math.min(
+      VIEWPORT_ZOOM_RANGE.max,
+      Math.max(VIEWPORT_ZOOM_RANGE.min, nextZoom)
+    );
+    zoomRef.current = clamped;
+    onZoomChangeRef.current(clamped);
+  }, []);
 
   useEffect(() => {
-    const surface = surfaceRef.current
-    if (!surface) return
+    const surface = surfaceRef.current;
+    if (!surface) return;
     const handleWheel = (event: WheelEvent) => {
-      const target = event.target instanceof HTMLElement ? event.target : null
-      if (isInteractiveTarget(target)) return
-      const { x, y } = normalizeWheelDelta(event)
-      const shouldZoom = event.ctrlKey || event.metaKey
-      stopInertia()
+      const target = event.target instanceof HTMLElement ? event.target : null;
+      if (isInteractiveTarget(target)) return;
+      const { x, y } = normalizeWheelDelta(event);
+      const shouldZoom = event.ctrlKey || event.metaKey;
+      stopInertia();
       if (shouldZoom) {
-        const zoomAxis = y !== 0 ? y : x
-        if (zoomAxis === 0) return
-        event.preventDefault()
-        const direction = zoomAxis > 0 ? -1 : 1
-        applyZoom(zoomRef.current + direction * zoomStepRef.current)
-        return
+        const zoomAxis = y !== 0 ? y : x;
+        if (zoomAxis === 0) return;
+        event.preventDefault();
+        const direction = zoomAxis > 0 ? -1 : 1;
+        applyZoom(zoomRef.current + direction * zoomStepRef.current);
+        return;
       }
-      const panX = event.shiftKey ? -y : -x
-      const panY = event.shiftKey ? 0 : -y
-      if (panX === 0 && panY === 0) return
-      event.preventDefault()
-      applyPan({ x: panRef.current.x + panX, y: panRef.current.y + panY })
-    }
-    surface.addEventListener("wheel", handleWheel, { passive: false })
+      const panX = event.shiftKey ? -y : -x;
+      const panY = event.shiftKey ? 0 : -y;
+      if (panX === 0 && panY === 0) return;
+      event.preventDefault();
+      applyPan({ x: panRef.current.x + panX, y: panRef.current.y + panY });
+    };
+    surface.addEventListener('wheel', handleWheel, { passive: false });
     return () => {
-      surface.removeEventListener("wheel", handleWheel)
-    }
-  }, [applyPan, applyZoom, stopInertia])
+      surface.removeEventListener('wheel', handleWheel);
+    };
+  }, [applyPan, applyZoom, stopInertia]);
 
   const setSurfaceNodeRef = useCallback(
     (node: HTMLDivElement | null) => {
-      surfaceRef.current = node
-      setCanvasDropRef(node)
+      surfaceRef.current = node;
+      setCanvasDropRef(node);
     },
-    [setCanvasDropRef],
-  )
+    [setCanvasDropRef]
+  );
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    if (event.button !== 0) return
-    if (isInteractiveTarget(event.target as HTMLElement)) return
-    event.currentTarget.focus()
-    stopInertia()
+    if (event.button !== 0) return;
+    if (isInteractiveTarget(event.target as HTMLElement)) return;
+    event.currentTarget.focus();
+    stopInertia();
     panState.current = {
       pointerId: event.pointerId,
       startX: event.clientX,
@@ -207,111 +232,120 @@ export function BlueprintEditorCanvas({
       originX: pan.x,
       originY: pan.y,
       moved: false,
-    }
-    velocityRef.current = { x: 0, y: 0 }
-    lastMoveRef.current = { x: event.clientX, y: event.clientY, time: getTimestamp() }
-      ; (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
-  }
+    };
+    velocityRef.current = { x: 0, y: 0 };
+    lastMoveRef.current = {
+      x: event.clientX,
+      y: event.clientY,
+      time: getTimestamp(),
+    };
+    (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+  };
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    if (panState.current.pointerId !== event.pointerId) return
-    const deltaX = event.clientX - panState.current.startX
-    const deltaY = event.clientY - panState.current.startY
-    const now = getTimestamp()
-    const lastMove = lastMoveRef.current
-    const deltaTime = now - lastMove.time
+    if (panState.current.pointerId !== event.pointerId) return;
+    const deltaX = event.clientX - panState.current.startX;
+    const deltaY = event.clientY - panState.current.startY;
+    const now = getTimestamp();
+    const lastMove = lastMoveRef.current;
+    const deltaTime = now - lastMove.time;
     if (deltaTime > 0) {
       velocityRef.current = {
         x: (event.clientX - lastMove.x) / deltaTime,
         y: (event.clientY - lastMove.y) / deltaTime,
-      }
+      };
     }
-    lastMoveRef.current = { x: event.clientX, y: event.clientY, time: now }
-    if (!panState.current.moved && Math.hypot(deltaX, deltaY) > DRAG_THRESHOLD) {
-      panState.current.moved = true
-      setIsPanning(true)
+    lastMoveRef.current = { x: event.clientX, y: event.clientY, time: now };
+    if (
+      !panState.current.moved &&
+      Math.hypot(deltaX, deltaY) > DRAG_THRESHOLD
+    ) {
+      panState.current.moved = true;
+      setIsPanning(true);
     }
-    if (!panState.current.moved) return
-    event.preventDefault()
+    if (!panState.current.moved) return;
+    event.preventDefault();
     applyPan({
       x: panState.current.originX + deltaX,
       y: panState.current.originY + deltaY,
-    })
-  }
+    });
+  };
 
   const startInertia = () => {
-    if (typeof window === "undefined") return
-    if (panInertia <= 0) return
-    const baseVelocity = velocityRef.current
-    let velocityX = baseVelocity.x * 16
-    let velocityY = baseVelocity.y * 16
-    if (Math.abs(velocityX) + Math.abs(velocityY) < 0.1) return
-    const inertiaStrength = Math.min(1, Math.max(0, panInertia / 100))
-    const damping = 0.86 + inertiaStrength * 0.12
+    if (typeof window === 'undefined') return;
+    if (panInertia <= 0) return;
+    const baseVelocity = velocityRef.current;
+    let velocityX = baseVelocity.x * 16;
+    let velocityY = baseVelocity.y * 16;
+    if (Math.abs(velocityX) + Math.abs(velocityY) < 0.1) return;
+    const inertiaStrength = Math.min(1, Math.max(0, panInertia / 100));
+    const damping = 0.86 + inertiaStrength * 0.12;
     const step = () => {
-      velocityX *= damping
-      velocityY *= damping
+      velocityX *= damping;
+      velocityY *= damping;
       if (Math.abs(velocityX) + Math.abs(velocityY) < 0.1) {
-        inertiaFrameRef.current = null
-        return
+        inertiaFrameRef.current = null;
+        return;
       }
       applyPan({
         x: panRef.current.x + velocityX,
         y: panRef.current.y + velocityY,
-      })
-      inertiaFrameRef.current = window.requestAnimationFrame(step)
-    }
-    inertiaFrameRef.current = window.requestAnimationFrame(step)
-  }
+      });
+      inertiaFrameRef.current = window.requestAnimationFrame(step);
+    };
+    inertiaFrameRef.current = window.requestAnimationFrame(step);
+  };
 
   const endPan = (event: PointerEvent<HTMLDivElement>) => {
-    if (panState.current.pointerId !== event.pointerId) return
-    const shouldInertia = panState.current.moved
+    if (panState.current.pointerId !== event.pointerId) return;
+    const shouldInertia = panState.current.moved;
     if (panState.current.moved) {
-      suppressSelectRef.current = true
+      suppressSelectRef.current = true;
       setTimeout(() => {
-        suppressSelectRef.current = false
-      }, 0)
+        suppressSelectRef.current = false;
+      }, 0);
     }
-    panState.current.pointerId = null
-    panState.current.moved = false
-    setIsPanning(false)
+    panState.current.pointerId = null;
+    panState.current.moved = false;
+    setIsPanning(false);
     if (shouldInertia) {
-      startInertia()
+      startInertia();
     }
-  }
+  };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (!(event.ctrlKey || event.metaKey)) return
-    if (isInteractiveTarget(event.target as HTMLElement)) return
+    if (!(event.ctrlKey || event.metaKey)) return;
+    if (isInteractiveTarget(event.target as HTMLElement)) return;
     const isZoomIn =
-      event.key === "+" ||
-      event.key === "=" ||
-      event.code === "Equal" ||
-      event.code === "NumpadAdd"
+      event.key === '+' ||
+      event.key === '=' ||
+      event.code === 'Equal' ||
+      event.code === 'NumpadAdd';
     const isZoomOut =
-      event.key === "-" ||
-      event.key === "_" ||
-      event.code === "Minus" ||
-      event.code === "NumpadSubtract"
-    if (!isZoomIn && !isZoomOut) return
-    event.preventDefault()
-    stopInertia()
-    const delta = (isZoomIn ? 1 : -1) * zoomStepRef.current
-    applyZoom(zoomRef.current + delta)
-  }
+      event.key === '-' ||
+      event.key === '_' ||
+      event.code === 'Minus' ||
+      event.code === 'NumpadSubtract';
+    if (!isZoomIn && !isZoomOut) return;
+    event.preventDefault();
+    stopInertia();
+    const delta = (isZoomIn ? 1 : -1) * zoomStepRef.current;
+    applyZoom(zoomRef.current + delta);
+  };
 
   const handleNodeSelect = (nodeId: string) => {
-    if (suppressSelectRef.current) return
-    onSelectNode(nodeId)
-  }
+    if (suppressSelectRef.current) return;
+    onSelectNode(nodeId);
+  };
 
-  const hasChildren = Boolean(mirDoc?.ui?.root?.children?.length)
+  const hasChildren = Boolean(mirDoc?.ui?.root?.children?.length);
 
   return (
-    <section className={`BlueprintEditorCanvas ${showSelectionDiagnostics ? "" : "HideSelectionDiagnostics"}`}>
+    <section
+      className={`BlueprintEditorCanvas ${showSelectionDiagnostics ? '' : 'HideSelectionDiagnostics'}`}
+    >
       <div
-        className={`BlueprintEditorCanvasSurface ${isPanning ? "IsPanning" : ""} ${isCanvasOver ? "IsOver" : ""}`}
+        className={`BlueprintEditorCanvasSurface ${isPanning ? 'IsPanning' : ''} ${isCanvasOver ? 'IsOver' : ''}`}
         ref={setSurfaceNodeRef}
         tabIndex={0}
         onPointerDown={handlePointerDown}
@@ -342,7 +376,7 @@ export function BlueprintEditorCanvas({
                   onNodeSelect={handleNodeSelect}
                   registry={registry}
                   renderMode={renderMode}
-                  allowExternalProps={allowExternalProps === "enabled"}
+                  allowExternalProps={allowExternalProps === 'enabled'}
                 />
               ) : (
                 <div className="BlueprintEditorCanvasPlaceholder">
@@ -355,5 +389,5 @@ export function BlueprintEditorCanvas({
         </div>
       </div>
     </section>
-  )
+  );
 }

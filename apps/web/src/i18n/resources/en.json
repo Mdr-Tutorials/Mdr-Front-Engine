@@ -1070,6 +1070,9 @@
     "sidebar": {
       "title": "Component Library",
       "toggleLibrary": "Toggle library",
+      "openSearch": "Search components",
+      "searchPlaceholder": "Search components...",
+      "clearSearch": "Clear search",
       "collapseVariants": "Collapse variants",
       "expandVariants": "Expand variants"
     },

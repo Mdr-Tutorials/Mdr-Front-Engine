@@ -29,7 +29,7 @@
         "test:web:watch": "pnpm --filter @mdr/web test:watch",
         "test:web:coverage": "pnpm --filter @mdr/web test:coverage",
         "lint": "turbo run lint",
-        "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,go}\"",
+        "format": "prettier --write \"**/*.{ts,tsx}\"",
         "clean": "turbo run clean && rm -rf node_modules",
         "cli": "node apps/cli/bin/mdr.js",
         "prepare": "husky install"

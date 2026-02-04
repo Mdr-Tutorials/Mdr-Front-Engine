@@ -7,75 +7,77 @@ import { ProjectSettingsContent } from './ProjectSettingsContent';
 import { type OverrideState, createGlobalDefaults } from './SettingsDefaults';
 
 const createOverrideDefaults = (): OverrideState => {
-    const defaults = createGlobalDefaults();
-    return Object.keys(defaults).reduce<OverrideState>((acc, key) => {
-        acc[key] = false;
-        return acc;
-    }, {});
+  const defaults = createGlobalDefaults();
+  return Object.keys(defaults).reduce<OverrideState>((acc, key) => {
+    acc[key] = false;
+    return acc;
+  }, {});
 };
 
 export const ProjectSettingsPage = () => {
-    const navigate = useNavigate();
-    const { t } = useTranslation('editor');
-    const { projectId } = useParams();
-    const [overrides, setOverrides] = useState<OverrideState>(createOverrideDefaults);
+  const navigate = useNavigate();
+  const { t } = useTranslation('editor');
+  const { projectId } = useParams();
+  const [overrides, setOverrides] = useState<OverrideState>(
+    createOverrideDefaults
+  );
 
-    const handleToggleOverride = (key: keyof typeof overrides) => {
-        setOverrides((prev) => ({ ...prev, [key]: !prev[key] }));
-    };
+  const handleToggleOverride = (key: keyof typeof overrides) => {
+    setOverrides((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
 
-    const basePath = projectId ? `/editor/project/${projectId}` : '/editor';
+  const basePath = projectId ? `/editor/project/${projectId}` : '/editor';
 
-    const tabs = [
-        {
-            key: 'project',
-            label: t('settings.projectPage.tabs.project'),
-            content: <ProjectSettingsContent />,
-        },
-        {
-            key: 'global',
-            label: t('settings.projectPage.tabs.global'),
-            content: (
-                <div className="grid gap-[12px]">
-                    <div className="flex items-center gap-[10px] rounded-[12px] bg-[rgba(0,0,0,0.04)] px-[12px] py-[8px] text-[12px] text-[var(--color-7)] [[data-theme='dark']_&]:bg-[rgba(255,255,255,0.08)]">
-                        <span className="font-semibold text-[var(--color-9)]">
-                            {t('settings.projectPage.overrides.title')}
-                        </span>
-                        <span className="text-[var(--color-6)]">
-                            {t('settings.projectPage.overrides.body')}
-                        </span>
-                    </div>
-                    <GlobalSettingsContent
-                        mode="project"
-                        overrides={overrides}
-                        onToggleOverride={handleToggleOverride}
-                    />
-                </div>
-            ),
-        },
-    ];
-
-    return (
-        <div className="mx-auto flex min-h-screen max-w-[1400px] flex-col px-[24px] text-[var(--color-10)]">
-            <header className="flex items-center justify-between gap-[16px] border-b border-b-[rgba(0,0,0,0.06)] px-[24px] py-[16px] backdrop-blur-[10px] [[data-theme='dark']_&]:border-b-[rgba(255,255,255,0.08)]">
-                <div>
-                    <MdrHeading level={2}>{t('settings.projectPage.title')}</MdrHeading>
-                    <MdrParagraph size="Small" color="Muted">
-                        {t('settings.projectPage.subtitle')}
-                    </MdrParagraph>
-                </div>
-                <div className="flex gap-[10px]">
-                    <MdrButton
-                        text={t('settings.actions.exit')}
-                        size="Small"
-                        category="Secondary"
-                        onClick={() => navigate(basePath)}
-                    />
-                </div>
-            </header>
-            <main className="flex flex-col gap-[18px] px-[24px] pb-[32px] pt-[16px] max-[1100px]:px-[18px] max-[1100px]:pb-[24px] max-[1100px]:pt-[14px]">
-                <MdrTabs items={tabs} />
-            </main>
+  const tabs = [
+    {
+      key: 'project',
+      label: t('settings.projectPage.tabs.project'),
+      content: <ProjectSettingsContent />,
+    },
+    {
+      key: 'global',
+      label: t('settings.projectPage.tabs.global'),
+      content: (
+        <div className="grid gap-3">
+          <div className="flex items-center gap-2.5 rounded-xl bg-[rgba(0,0,0,0.04)] px-3 py-2 text-[12px] text-(--color-7) in-data-[theme='dark']:bg-[rgba(255,255,255,0.08)]">
+            <span className="font-semibold text-(--color-9)">
+              {t('settings.projectPage.overrides.title')}
+            </span>
+            <span className="text-(--color-6)">
+              {t('settings.projectPage.overrides.body')}
+            </span>
+          </div>
+          <GlobalSettingsContent
+            mode="project"
+            overrides={overrides}
+            onToggleOverride={handleToggleOverride}
+          />
         </div>
-    );
+      ),
+    },
+  ];
+
+  return (
+    <div className="mx-auto flex min-h-screen max-w-350 flex-col px-6 text-(--color-10)">
+      <header className="flex items-center justify-between gap-4 border-b border-b-[rgba(0,0,0,0.06)] px-6 py-4 backdrop-blur-[10px] in-data-[theme='dark']:border-b-[rgba(255,255,255,0.08)]">
+        <div>
+          <MdrHeading level={2}>{t('settings.projectPage.title')}</MdrHeading>
+          <MdrParagraph size="Small" color="Muted">
+            {t('settings.projectPage.subtitle')}
+          </MdrParagraph>
+        </div>
+        <div className="flex gap-2.5">
+          <MdrButton
+            text={t('settings.actions.exit')}
+            size="Small"
+            category="Secondary"
+            onClick={() => navigate(basePath)}
+          />
+        </div>
+      </header>
+      <main className="flex flex-col gap-4.5 px-6 pb-8 pt-4 max-[1100px]:px-4.5 max-[1100px]:pb-6 max-[1100px]:pt-3.5">
+        <MdrTabs items={tabs} />
+      </main>
+    </div>
+  );
 };

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Plus, Box, Layers, Workflow, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { TIPS, type TipId } from './tips';
-import { truncate } from '@/utils/truncate'
+import { truncate } from '@/utils/truncate';
 import NewResourceModal from './features/newfile/NewResourceModal';
 
 // Mock Data Types
@@ -30,7 +30,8 @@ const MOCK_PROJECTS: MockProject[] = [
     id: 'c1',
     type: 'component',
     name: 'UserCard',
-    description: 'Reusable user profile card with avatar and status indicator. Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Description',
+    description:
+      'Reusable user profile card with avatar and status indicator. Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Description',
     updatedAt: Date.now() - 1000 * 60 * 60 * 24 * 2, // 2 days ago
   },
   {
@@ -164,7 +165,9 @@ function EditorHome() {
     <div className="flex h-full w-full flex-1 bg-[var(--color-0)] text-[var(--color-10)]">
       <div className="flex flex-1 flex-col gap-[32px] overflow-y-auto p-[40px]">
         <header className="flex w-full flex-col gap-[8px]">
-          <h1 className="m-0 text-[24px] font-semibold leading-[1.25] text-[var(--color-10)]">{t('home.welcomeTitle')}</h1>
+          <h1 className="m-0 text-[24px] font-semibold leading-[1.25] text-[var(--color-10)]">
+            {t('home.welcomeTitle')}
+          </h1>
         </header>
 
         <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-[20px] auto-rows-[minmax(280px,auto)] max-[1200px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1">

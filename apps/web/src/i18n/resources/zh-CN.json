@@ -1070,6 +1070,9 @@
     "sidebar": {
       "title": "组件库",
       "toggleLibrary": "切换组件库",
+      "openSearch": "搜索组件",
+      "searchPlaceholder": "搜索组件...",
+      "clearSearch": "清空搜索",
       "collapseVariants": "收起变体",
       "expandVariants": "展开变体"
     },

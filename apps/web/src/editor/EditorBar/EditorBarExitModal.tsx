@@ -1,14 +1,14 @@
-import { MdrButton } from "@mdr/ui"
+import { MdrButton } from '@mdr/ui';
 
 type EditorBarExitModalProps = {
-  isOpen: boolean
-  exitLabel: string
-  cancelLabel: string
-  exitText: string
-  title: string
-  onClose: () => void
-  onConfirm: () => void
-}
+  isOpen: boolean;
+  exitLabel: string;
+  cancelLabel: string;
+  exitText: string;
+  title: string;
+  onClose: () => void;
+  onConfirm: () => void;
+};
 
 export function EditorBarExitModal({
   isOpen,
@@ -19,7 +19,7 @@ export function EditorBarExitModal({
   onClose,
   onConfirm,
 }: EditorBarExitModalProps) {
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div
@@ -32,13 +32,25 @@ export function EditorBarExitModal({
       >
         <div>
           <h3 className="m-0 text-[18px] font-bold">{title}</h3>
-          <p className="mt-[6px] text-[12px] text-[var(--color-6)]">{exitLabel}</p>
+          <p className="mt-[6px] text-[12px] text-[var(--color-6)]">
+            {exitLabel}
+          </p>
         </div>
         <div className="mt-[16px] flex justify-end gap-[10px]">
-          <MdrButton text={cancelLabel} category="Ghost" size="Small" onClick={onClose} />
-          <MdrButton text={exitText} category="Primary" size="Small" onClick={onConfirm} />
+          <MdrButton
+            text={cancelLabel}
+            category="Ghost"
+            size="Small"
+            onClick={onClose}
+          />
+          <MdrButton
+            text={exitText}
+            category="Primary"
+            size="Small"
+            onClick={onConfirm}
+          />
         </div>
       </div>
     </div>
-  )
+  );
 }

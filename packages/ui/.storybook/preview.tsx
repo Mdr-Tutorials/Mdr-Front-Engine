@@ -1,7 +1,7 @@
-import type { Preview } from "@storybook/react";
+import type { Preview } from '@storybook/react';
 // 引入 MemoryRouter
 import { MemoryRouter } from 'react-router';
-import '@mdr/themes'
+import '@mdr/themes';
 
 const preview: Preview = {
   parameters: {

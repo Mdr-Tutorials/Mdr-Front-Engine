@@ -1,16 +1,16 @@
-import type { TFunction } from 'i18next'
-import './App.scss'
-import Home from './home/Home'
-import Editor from './editor/Editor'
-import EditorHome from './editor/EditorHome'
-import ProjectHome from './editor/ProjectHome'
-import BlueprintEditor from './editor/features/design/BlueprintEditor'
-import { ProjectResources } from './editor/features/resources/ProjectResources'
-import { EditorSettingsPage } from './editor/features/settings/EditorSettingsPage'
-import { ProjectSettingsPage } from './editor/features/settings/ProjectSettingsPage'
-import { ExportMirPage } from './editor/features/export/ExportMirPage'
-import { AuthPage } from './auth/AuthPage'
-import { ProfilePage } from './auth/ProfilePage'
+import type { TFunction } from 'i18next';
+import './App.scss';
+import Home from './home/Home';
+import Editor from './editor/Editor';
+import EditorHome from './editor/EditorHome';
+import ProjectHome from './editor/ProjectHome';
+import BlueprintEditor from './editor/features/design/BlueprintEditor';
+import { ProjectResources } from './editor/features/resources/ProjectResources';
+import { EditorSettingsPage } from './editor/features/settings/EditorSettingsPage';
+import { ProjectSettingsPage } from './editor/features/settings/ProjectSettingsPage';
+import { ExportMirPage } from './editor/features/export/ExportMirPage';
+import { AuthPage } from './auth/AuthPage';
+import { ProfilePage } from './auth/ProfilePage';
 
 export const createRoutes = (t: TFunction) => [
   {
@@ -35,21 +35,42 @@ export const createRoutes = (t: TFunction) => [
         children: [
           { index: true, element: <ProjectHome /> },
           { path: 'blueprint', element: <BlueprintEditor /> },
-          { path: 'nodegraph', element: <div>{t('nodeGraphEditor', { ns: 'routes' })}</div> },
-          { path: 'component', element: <div>{t('componentEditor', { ns: 'routes' })}</div> },
-          { path: 'animation', element: <div>{t('animationEditor', { ns: 'routes' })}</div> },
+          {
+            path: 'nodegraph',
+            element: <div>{t('nodeGraphEditor', { ns: 'routes' })}</div>,
+          },
+          {
+            path: 'component',
+            element: <div>{t('componentEditor', { ns: 'routes' })}</div>,
+          },
+          {
+            path: 'animation',
+            element: <div>{t('animationEditor', { ns: 'routes' })}</div>,
+          },
           { path: 'resources', element: <ProjectResources /> },
-          { path: 'test', element: <div>{t('testing', { ns: 'routes' })}</div> },
+          {
+            path: 'test',
+            element: <div>{t('testing', { ns: 'routes' })}</div>,
+          },
           { path: 'export', element: <ExportMirPage /> },
-          { path: 'deployment', element: <div>{t('deploymentSettings', { ns: 'routes' })}</div> },
+          {
+            path: 'deployment',
+            element: <div>{t('deploymentSettings', { ns: 'routes' })}</div>,
+          },
           { path: 'settings', element: <ProjectSettingsPage /> },
         ],
       },
-      { path: 'component', element: <div>{t('componentEditor', { ns: 'routes' })}</div> },
+      {
+        path: 'component',
+        element: <div>{t('componentEditor', { ns: 'routes' })}</div>,
+      },
       { path: 'blueprint', element: <BlueprintEditor /> },
       { path: 'settings', element: <EditorSettingsPage /> },
     ],
   },
-  { path: 'community', element: <div>{t('communityPage', { ns: 'routes' })}</div> },
+  {
+    path: 'community',
+    element: <div>{t('communityPage', { ns: 'routes' })}</div>,
+  },
   { path: 'about', element: <div>{t('aboutPage', { ns: 'routes' })}</div> },
-]
+];

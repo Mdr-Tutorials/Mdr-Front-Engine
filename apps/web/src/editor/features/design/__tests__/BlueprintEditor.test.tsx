@@ -1,101 +1,136 @@
-import { fireEvent, render, screen, waitFor, act } from "@testing-library/react"
-import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { KeyboardEvent, ReactNode } from "react"
-import BlueprintEditor from "../BlueprintEditor"
-import { DEFAULT_BLUEPRINT_STATE, useEditorStore } from "@/editor/store/useEditorStore"
-import { COMPONENT_GROUPS, VIEWPORT_ZOOM_RANGE } from "../BlueprintEditor.data"
-import { createMirDoc, resetEditorStore, resetSettingsStore } from "@/test-utils/editorStore"
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  act,
+} from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { KeyboardEvent, ReactNode } from 'react';
+import BlueprintEditor from '../BlueprintEditor';
+import {
+  DEFAULT_BLUEPRINT_STATE,
+  useEditorStore,
+} from '@/editor/store/useEditorStore';
+import {
+  getComponentGroups,
+  VIEWPORT_ZOOM_RANGE,
+} from '../BlueprintEditor.data';
+import {
+  createMirDoc,
+  resetEditorStore,
+  resetSettingsStore,
+} from '@/test-utils/editorStore';
 
-const PROJECT_ID = "project-1"
+const PROJECT_ID = 'project-1';
 
 type AddressBarProps = {
-  currentPath: string
-  newPath: string
-  routes: { id: string; path: string }[]
-  onCurrentPathChange: (value: string) => void
-  onNewPathChange: (value: string) => void
-  onAddRoute: () => void
-}
+  currentPath: string;
+  newPath: string;
+  routes: { id: string; path: string }[];
+  onCurrentPathChange: (value: string) => void;
+  onNewPathChange: (value: string) => void;
+  onAddRoute: () => void;
+};
 
 type ViewportBarProps = {
-  viewportWidth: string
-  viewportHeight: string
-  onViewportWidthChange: (value: string) => void
-  onViewportHeightChange: (value: string) => void
-  zoom: number
-  zoomStep: number
-  onZoomChange: (value: number) => void
-  onResetView: () => void
-}
+  viewportWidth: string;
+  viewportHeight: string;
+  onViewportWidthChange: (value: string) => void;
+  onViewportHeightChange: (value: string) => void;
+  zoom: number;
+  zoomStep: number;
+  onZoomChange: (value: number) => void;
+  onResetView: () => void;
+};
 
 type ComponentTreeProps = {
-  isCollapsed: boolean
-  selectedId?: string
-  dropHint?: { overNodeId: string; placement: "before" | "after" | "child" } | null
-  onToggleCollapse: () => void
-  onSelectNode: (nodeId: string) => void
-  onDeleteSelected: () => void
-  onDeleteNode: (nodeId: string) => void
-  onCopyNode: (nodeId: string) => void
-  onMoveNode: (nodeId: string, direction: "up" | "down") => void
-}
+  isCollapsed: boolean;
+  selectedId?: string;
+  dropHint?: {
+    overNodeId: string;
+    placement: 'before' | 'after' | 'child';
+  } | null;
+  onToggleCollapse: () => void;
+  onSelectNode: (nodeId: string) => void;
+  onDeleteSelected: () => void;
+  onDeleteNode: (nodeId: string) => void;
+  onCopyNode: (nodeId: string) => void;
+  onMoveNode: (nodeId: string, direction: 'up' | 'down') => void;
+};
 
 type SidebarProps = {
-  isCollapsed: boolean
-  collapsedGroups: Record<string, boolean>
-  expandedPreviews: Record<string, boolean>
-  sizeSelections: Record<string, string>
-  statusSelections: Record<string, number>
-  onToggleCollapse: () => void
-  onToggleGroup: (groupId: string) => void
-  onTogglePreview: (previewId: string) => void
-  onPreviewKeyDown: (event: KeyboardEvent<HTMLDivElement>, previewId: string, hasVariants: boolean) => void
-  onSizeSelect: (itemId: string, sizeId: string) => void
-  onStatusSelect: (itemId: string, index: number) => void
-  onStatusCycleStart: (itemId: string, total: number) => void
-  onStatusCycleStop: (itemId: string) => void
-}
+  isCollapsed: boolean;
+  collapsedGroups: Record<string, boolean>;
+  expandedPreviews: Record<string, boolean>;
+  sizeSelections: Record<string, string>;
+  statusSelections: Record<string, number>;
+  onToggleCollapse: () => void;
+  onToggleGroup: (groupId: string) => void;
+  onTogglePreview: (previewId: string) => void;
+  onPreviewKeyDown: (
+    event: KeyboardEvent<HTMLDivElement>,
+    previewId: string,
+    hasVariants: boolean
+  ) => void;
+  onSizeSelect: (itemId: string, sizeId: string) => void;
+  onStatusSelect: (itemId: string, index: number) => void;
+  onStatusCycleStart: (itemId: string, total: number) => void;
+  onStatusCycleStop: (itemId: string) => void;
+};
 
 type InspectorProps = {
-  isCollapsed: boolean
-  onToggleCollapse: () => void
-}
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
+};
 
 type CanvasProps = {
-  viewportWidth: string
-  viewportHeight: string
-  zoom: number
-  pan: { x: number; y: number }
-  selectedId?: string
-  onPanChange: (pan: { x: number; y: number }) => void
-  onZoomChange: (value: number) => void
-  onSelectNode: (nodeId: string) => void
-}
+  viewportWidth: string;
+  viewportHeight: string;
+  zoom: number;
+  pan: { x: number; y: number };
+  selectedId?: string;
+  onPanChange: (pan: { x: number; y: number }) => void;
+  onZoomChange: (value: number) => void;
+  onSelectNode: (nodeId: string) => void;
+};
 
 type DragEndPayload = {
-  active: { data: { current: { kind: string; itemId?: string; nodeId?: string; parentId?: string } } }
-  over: { id?: string; data: { current?: { kind?: string; nodeId?: string; parentId?: string } } } | null
-}
+  active: {
+    data: {
+      current: {
+        kind: string;
+        itemId?: string;
+        nodeId?: string;
+        parentId?: string;
+      };
+    };
+  };
+  over: {
+    id?: string;
+    data: { current?: { kind?: string; nodeId?: string; parentId?: string } };
+  } | null;
+};
 
-vi.mock("react-router", () => ({
+vi.mock('react-router', () => ({
   useParams: () => ({ projectId: PROJECT_ID }),
-}))
+}));
 
-vi.mock("@dnd-kit/core", () => {
+vi.mock('@dnd-kit/core', () => {
   const DndContext = ({ children, ...props }: { children: ReactNode }) => {
-    ;(globalThis as { __dndProps?: unknown }).__dndProps = props
-    return <div data-testid="dnd-context">{children}</div>
-  }
+    (globalThis as { __dndProps?: unknown }).__dndProps = props;
+    return <div data-testid="dnd-context">{children}</div>;
+  };
   const DragOverlay = ({ children }: { children?: ReactNode }) => (
     <div data-testid="drag-overlay">{children}</div>
-  )
+  );
   class PointerSensor {}
-  const useSensor = () => ({})
-  const useSensors = (...sensors: unknown[]) => sensors
-  return { DndContext, DragOverlay, PointerSensor, useSensor, useSensors }
-})
+  const useSensor = () => ({});
+  const useSensors = (...sensors: unknown[]) => sensors;
+  return { DndContext, DragOverlay, PointerSensor, useSensor, useSensors };
+});
 
-vi.mock("../BlueprintEditorAddressBar", () => ({
+vi.mock('../BlueprintEditorAddressBar', () => ({
   BlueprintEditorAddressBar: ({
     currentPath,
     newPath,
@@ -110,14 +145,22 @@ vi.mock("../BlueprintEditorAddressBar", () => ({
       data-new={newPath}
       data-routes={routes.length}
     >
-      <button type="button" data-testid="set-new-path" onClick={() => onNewPathChange("/new-route")} />
-      <button type="button" data-testid="set-current-path" onClick={() => onCurrentPathChange("/search")} />
+      <button
+        type="button"
+        data-testid="set-new-path"
+        onClick={() => onNewPathChange('/new-route')}
+      />
+      <button
+        type="button"
+        data-testid="set-current-path"
+        onClick={() => onCurrentPathChange('/search')}
+      />
       <button type="button" data-testid="add-route" onClick={onAddRoute} />
     </div>
   ),
-}))
+}));
 
-vi.mock("../BlueprintEditorViewportBar", () => ({
+vi.mock('../BlueprintEditorViewportBar', () => ({
   BlueprintEditorViewportBar: ({
     viewportWidth,
     viewportHeight,
@@ -133,16 +176,32 @@ vi.mock("../BlueprintEditorViewportBar", () => ({
       data-height={viewportHeight}
       data-zoom={zoom}
     >
-      <button type="button" data-testid="zoom-max" onClick={() => onZoomChange(VIEWPORT_ZOOM_RANGE.max + 50)} />
-      <button type="button" data-testid="zoom-min" onClick={() => onZoomChange(VIEWPORT_ZOOM_RANGE.min - 20)} />
+      <button
+        type="button"
+        data-testid="zoom-max"
+        onClick={() => onZoomChange(VIEWPORT_ZOOM_RANGE.max + 50)}
+      />
+      <button
+        type="button"
+        data-testid="zoom-min"
+        onClick={() => onZoomChange(VIEWPORT_ZOOM_RANGE.min - 20)}
+      />
       <button type="button" data-testid="reset-view" onClick={onResetView} />
-      <button type="button" data-testid="set-width" onClick={() => onViewportWidthChange("1111")} />
-      <button type="button" data-testid="set-height" onClick={() => onViewportHeightChange("777")} />
+      <button
+        type="button"
+        data-testid="set-width"
+        onClick={() => onViewportWidthChange('1111')}
+      />
+      <button
+        type="button"
+        data-testid="set-height"
+        onClick={() => onViewportHeightChange('777')}
+      />
     </div>
   ),
-}))
+}));
 
-vi.mock("../BlueprintEditorComponentTree", () => ({
+vi.mock('../BlueprintEditorComponentTree', () => ({
   BlueprintEditorComponentTree: ({
     isCollapsed,
     selectedId,
@@ -153,19 +212,51 @@ vi.mock("../BlueprintEditorComponentTree", () => ({
     onCopyNode,
     onMoveNode,
   }: ComponentTreeProps) => (
-    <div data-testid="component-tree" data-collapsed={String(isCollapsed)} data-selected={selectedId ?? ""}>
-      <button type="button" data-testid="toggle-tree" onClick={onToggleCollapse} />
-      <button type="button" data-testid="select-node" onClick={() => onSelectNode("node-1")} />
-      <button type="button" data-testid="delete-selected" onClick={onDeleteSelected} />
-      <button type="button" data-testid="delete-node" onClick={() => onDeleteNode("child-1")} />
-      <button type="button" data-testid="copy-node" onClick={() => onCopyNode("child-1")} />
-      <button type="button" data-testid="move-up" onClick={() => onMoveNode("child-1", "up")} />
-      <button type="button" data-testid="move-up-2" onClick={() => onMoveNode("child-2", "up")} />
+    <div
+      data-testid="component-tree"
+      data-collapsed={String(isCollapsed)}
+      data-selected={selectedId ?? ''}
+    >
+      <button
+        type="button"
+        data-testid="toggle-tree"
+        onClick={onToggleCollapse}
+      />
+      <button
+        type="button"
+        data-testid="select-node"
+        onClick={() => onSelectNode('node-1')}
+      />
+      <button
+        type="button"
+        data-testid="delete-selected"
+        onClick={onDeleteSelected}
+      />
+      <button
+        type="button"
+        data-testid="delete-node"
+        onClick={() => onDeleteNode('child-1')}
+      />
+      <button
+        type="button"
+        data-testid="copy-node"
+        onClick={() => onCopyNode('child-1')}
+      />
+      <button
+        type="button"
+        data-testid="move-up"
+        onClick={() => onMoveNode('child-1', 'up')}
+      />
+      <button
+        type="button"
+        data-testid="move-up-2"
+        onClick={() => onMoveNode('child-2', 'up')}
+      />
     </div>
   ),
-}))
+}));
 
-vi.mock("../BlueprintEditorSidebar", () => ({
+vi.mock('../BlueprintEditorSidebar', () => ({
   BlueprintEditorSidebar: ({
     isCollapsed,
     collapsedGroups,
@@ -186,36 +277,73 @@ vi.mock("../BlueprintEditorSidebar", () => ({
       data-collapsed={String(isCollapsed)}
       data-group-collapsed={String(Boolean(collapsedGroups.base))}
       data-preview-expanded={String(Boolean(expandedPreviews.button))}
-      data-size-selection={sizeSelections.button ?? ""}
+      data-size-selection={sizeSelections.button ?? ''}
       data-status-selection={
-        typeof statusSelections.button === "number" ? String(statusSelections.button) : ""
+        typeof statusSelections.button === 'number'
+          ? String(statusSelections.button)
+          : ''
       }
     >
-      <button type="button" data-testid="toggle-sidebar" onClick={onToggleCollapse} />
-      <button type="button" data-testid="toggle-group" onClick={() => onToggleGroup("base")} />
-      <button type="button" data-testid="toggle-preview" onClick={() => onTogglePreview("button")} />
+      <button
+        type="button"
+        data-testid="toggle-sidebar"
+        onClick={onToggleCollapse}
+      />
+      <button
+        type="button"
+        data-testid="toggle-group"
+        onClick={() => onToggleGroup('base')}
+      />
+      <button
+        type="button"
+        data-testid="toggle-preview"
+        onClick={() => onTogglePreview('button')}
+      />
       <button
         type="button"
         data-testid="preview-key"
-        onKeyDown={(event) => onPreviewKeyDown(event, "button", true)}
+        onKeyDown={(event) => onPreviewKeyDown(event, 'button', true)}
       />
-      <button type="button" data-testid="select-size" onClick={() => onSizeSelect("button", "L")} />
-      <button type="button" data-testid="select-status" onClick={() => onStatusSelect("button", 1)} />
-      <button type="button" data-testid="start-status" onClick={() => onStatusCycleStart("button", 2)} />
-      <button type="button" data-testid="stop-status" onClick={() => onStatusCycleStop("button")} />
+      <button
+        type="button"
+        data-testid="select-size"
+        onClick={() => onSizeSelect('button', 'L')}
+      />
+      <button
+        type="button"
+        data-testid="select-status"
+        onClick={() => onStatusSelect('button', 1)}
+      />
+      <button
+        type="button"
+        data-testid="start-status"
+        onClick={() => onStatusCycleStart('button', 2)}
+      />
+      <button
+        type="button"
+        data-testid="stop-status"
+        onClick={() => onStatusCycleStop('button')}
+      />
     </aside>
   ),
-}))
+}));
 
-vi.mock("../BlueprintEditorInspector", () => ({
-  BlueprintEditorInspector: ({ isCollapsed, onToggleCollapse }: InspectorProps) => (
+vi.mock('../BlueprintEditorInspector', () => ({
+  BlueprintEditorInspector: ({
+    isCollapsed,
+    onToggleCollapse,
+  }: InspectorProps) => (
     <aside data-testid="inspector" data-collapsed={String(isCollapsed)}>
-      <button type="button" data-testid="toggle-inspector" onClick={onToggleCollapse} />
+      <button
+        type="button"
+        data-testid="toggle-inspector"
+        onClick={onToggleCollapse}
+      />
     </aside>
   ),
-}))
+}));
 
-vi.mock("../BlueprintEditorCanvas", () => ({
+vi.mock('../BlueprintEditorCanvas', () => ({
   BlueprintEditorCanvas: ({
     viewportWidth,
     viewportHeight,
@@ -232,159 +360,182 @@ vi.mock("../BlueprintEditorCanvas", () => ({
       data-height={viewportHeight}
       data-zoom={zoom}
       data-pan={`${pan.x},${pan.y}`}
-      data-selected={selectedId ?? ""}
+      data-selected={selectedId ?? ''}
     >
-      <button type="button" data-testid="pan-right" onClick={() => onPanChange({ x: pan.x + 20, y: pan.y })} />
-      <button type="button" data-testid="zoom-in" onClick={() => onZoomChange(zoom + 10)} />
-      <button type="button" data-testid="select-canvas-node" onClick={() => onSelectNode("node-2")} />
+      <button
+        type="button"
+        data-testid="pan-right"
+        onClick={() => onPanChange({ x: pan.x + 20, y: pan.y })}
+      />
+      <button
+        type="button"
+        data-testid="zoom-in"
+        onClick={() => onZoomChange(zoom + 10)}
+      />
+      <button
+        type="button"
+        data-testid="select-canvas-node"
+        onClick={() => onSelectNode('node-2')}
+      />
     </section>
   ),
-}))
+}));
 
 beforeEach(() => {
-  resetEditorStore()
-  resetSettingsStore()
-})
+  resetEditorStore();
+  resetSettingsStore();
+});
 
-const getBlueprintState = () => useEditorStore.getState().blueprintStateByProject[PROJECT_ID]
+const getBlueprintState = () =>
+  useEditorStore.getState().blueprintStateByProject[PROJECT_ID];
 
 const countNodes = (node: { children?: unknown[] }): number => {
-  const children = Array.isArray(node.children) ? node.children : []
-  return 1 + children.reduce((total, child: any) => total + countNodes(child), 0)
-}
+  const children = Array.isArray(node.children) ? node.children : [];
+  return (
+    1 + children.reduce((total, child: any) => total + countNodes(child), 0)
+  );
+};
 
 const getPaletteItemIds = () => {
-  const ids = new Set<string>()
-  COMPONENT_GROUPS.forEach((group) => {
-    group.items.forEach((item) => ids.add(item.id))
-  })
-  return Array.from(ids)
-}
+  const ids = new Set<string>();
+  getComponentGroups().forEach((group) => {
+    group.items.forEach((item) => ids.add(item.id));
+  });
+  return Array.from(ids);
+};
 
-describe("BlueprintEditor", () => {
-  it("initializes blueprint state from global viewport defaults", async () => {
-    resetSettingsStore({ viewportWidth: "1600", viewportHeight: "900" })
+describe('BlueprintEditor', () => {
+  it('initializes blueprint state from global viewport defaults', async () => {
+    resetSettingsStore({ viewportWidth: '1600', viewportHeight: '900' });
 
-    render(<BlueprintEditor />)
-
-    await waitFor(() => {
-      expect(getBlueprintState()).toBeTruthy()
-    })
-
-    const blueprintState = getBlueprintState()
-    expect(blueprintState?.viewportWidth).toBe("1600")
-    expect(blueprintState?.viewportHeight).toBe("900")
-  })
-
-  it("adds a route and updates the current path", async () => {
-    render(<BlueprintEditor />)
-
-    const addressBar = screen.getByTestId("address-bar")
-    const initialRoutes = Number(addressBar.getAttribute("data-routes") ?? 0)
-
-    fireEvent.click(screen.getByTestId("set-new-path"))
-    fireEvent.click(screen.getByTestId("add-route"))
+    render(<BlueprintEditor />);
 
     await waitFor(() => {
-      expect(Number(addressBar.getAttribute("data-routes") ?? 0)).toBe(initialRoutes + 1)
-    })
+      expect(getBlueprintState()).toBeTruthy();
+    });
 
-    expect(addressBar.getAttribute("data-current")).toBe("/new-route")
-  })
+    const blueprintState = getBlueprintState();
+    expect(blueprintState?.viewportWidth).toBe('1600');
+    expect(blueprintState?.viewportHeight).toBe('900');
+  });
 
-  it("falls back to timestamp-based route ids when crypto is unavailable", async () => {
-    vi.stubGlobal("crypto", undefined)
+  it('adds a route and updates the current path', async () => {
+    render(<BlueprintEditor />);
 
-    render(<BlueprintEditor />)
+    const addressBar = screen.getByTestId('address-bar');
+    const initialRoutes = Number(addressBar.getAttribute('data-routes') ?? 0);
 
-    const addressBar = screen.getByTestId("address-bar")
-    const initialRoutes = Number(addressBar.getAttribute("data-routes") ?? 0)
-
-    fireEvent.click(screen.getByTestId("set-new-path"))
-    fireEvent.click(screen.getByTestId("add-route"))
-
-    await waitFor(() => {
-      expect(Number(addressBar.getAttribute("data-routes") ?? 0)).toBe(initialRoutes + 1)
-    })
-
-    vi.unstubAllGlobals()
-  })
-
-  it("honors focus layout by collapsing the sidebar and inspector", async () => {
-    resetSettingsStore({ panelLayout: "focus" })
-
-    render(<BlueprintEditor />)
+    fireEvent.click(screen.getByTestId('set-new-path'));
+    fireEvent.click(screen.getByTestId('add-route'));
 
     await waitFor(() => {
-      expect(screen.getByTestId("sidebar").getAttribute("data-collapsed")).toBe("true")
-    })
-    expect(screen.getByTestId("inspector").getAttribute("data-collapsed")).toBe("true")
-  })
+      expect(Number(addressBar.getAttribute('data-routes') ?? 0)).toBe(
+        initialRoutes + 1
+      );
+    });
 
-  it("toggles preview and group state from the sidebar", () => {
-    render(<BlueprintEditor />)
+    expect(addressBar.getAttribute('data-current')).toBe('/new-route');
+  });
 
-    const sidebar = screen.getByTestId("sidebar")
-    expect(sidebar.getAttribute("data-group-collapsed")).toBe("false")
+  it('falls back to timestamp-based route ids when crypto is unavailable', async () => {
+    vi.stubGlobal('crypto', undefined);
 
-    fireEvent.click(screen.getByTestId("toggle-group"))
-    expect(sidebar.getAttribute("data-group-collapsed")).toBe("true")
+    render(<BlueprintEditor />);
 
-    fireEvent.click(screen.getByTestId("toggle-preview"))
-    expect(sidebar.getAttribute("data-preview-expanded")).toBe("true")
+    const addressBar = screen.getByTestId('address-bar');
+    const initialRoutes = Number(addressBar.getAttribute('data-routes') ?? 0);
 
-    fireEvent.keyDown(screen.getByTestId("preview-key"), { key: "Enter" })
-    expect(sidebar.getAttribute("data-preview-expanded")).toBe("false")
-  })
+    fireEvent.click(screen.getByTestId('set-new-path'));
+    fireEvent.click(screen.getByTestId('add-route'));
 
-  it("updates size and status selections from the sidebar", () => {
-    render(<BlueprintEditor />)
+    await waitFor(() => {
+      expect(Number(addressBar.getAttribute('data-routes') ?? 0)).toBe(
+        initialRoutes + 1
+      );
+    });
 
-    const sidebar = screen.getByTestId("sidebar")
-    fireEvent.click(screen.getByTestId("select-size"))
-    fireEvent.click(screen.getByTestId("select-status"))
+    vi.unstubAllGlobals();
+  });
 
-    expect(sidebar.getAttribute("data-size-selection")).toBe("L")
-    expect(sidebar.getAttribute("data-status-selection")).toBe("1")
-  })
+  it('honors focus layout by collapsing the sidebar and inspector', async () => {
+    resetSettingsStore({ panelLayout: 'focus' });
 
-  it("cycles status selections when requested", () => {
-    vi.useFakeTimers()
-    render(<BlueprintEditor />)
+    render(<BlueprintEditor />);
 
-    const sidebar = screen.getByTestId("sidebar")
-    fireEvent.click(screen.getByTestId("start-status"))
+    await waitFor(() => {
+      expect(screen.getByTestId('sidebar').getAttribute('data-collapsed')).toBe(
+        'true'
+      );
+    });
+    expect(screen.getByTestId('inspector').getAttribute('data-collapsed')).toBe(
+      'true'
+    );
+  });
+
+  it('toggles preview and group state from the sidebar', () => {
+    render(<BlueprintEditor />);
+
+    const sidebar = screen.getByTestId('sidebar');
+    expect(sidebar.getAttribute('data-group-collapsed')).toBe('false');
+
+    fireEvent.click(screen.getByTestId('toggle-group'));
+    expect(sidebar.getAttribute('data-group-collapsed')).toBe('true');
+
+    fireEvent.click(screen.getByTestId('toggle-preview'));
+    expect(sidebar.getAttribute('data-preview-expanded')).toBe('true');
+
+    fireEvent.keyDown(screen.getByTestId('preview-key'), { key: 'Enter' });
+    expect(sidebar.getAttribute('data-preview-expanded')).toBe('false');
+  });
+
+  it('updates size and status selections from the sidebar', () => {
+    render(<BlueprintEditor />);
+
+    const sidebar = screen.getByTestId('sidebar');
+    fireEvent.click(screen.getByTestId('select-size'));
+    fireEvent.click(screen.getByTestId('select-status'));
+
+    expect(sidebar.getAttribute('data-size-selection')).toBe('L');
+    expect(sidebar.getAttribute('data-status-selection')).toBe('1');
+  });
+
+  it('cycles status selections when requested', () => {
+    vi.useFakeTimers();
+    render(<BlueprintEditor />);
+
+    const sidebar = screen.getByTestId('sidebar');
+    fireEvent.click(screen.getByTestId('start-status'));
 
     act(() => {
-      vi.advanceTimersByTime(1200)
-    })
+      vi.advanceTimersByTime(1200);
+    });
 
-    expect(sidebar.getAttribute("data-status-selection")).toBe("1")
-    fireEvent.click(screen.getByTestId("stop-status"))
-    vi.useRealTimers()
-  })
+    expect(sidebar.getAttribute('data-status-selection')).toBe('1');
+    fireEvent.click(screen.getByTestId('stop-status'));
+    vi.useRealTimers();
+  });
 
-  it("clamps zoom values to the allowed range", async () => {
-    render(<BlueprintEditor />)
-
-    await waitFor(() => {
-      expect(getBlueprintState()).toBeTruthy()
-    })
-
-    fireEvent.click(screen.getByTestId("zoom-max"))
+  it('clamps zoom values to the allowed range', async () => {
+    render(<BlueprintEditor />);
 
     await waitFor(() => {
-      expect(getBlueprintState()?.zoom).toBe(VIEWPORT_ZOOM_RANGE.max)
-    })
+      expect(getBlueprintState()).toBeTruthy();
+    });
 
-    fireEvent.click(screen.getByTestId("zoom-min"))
+    fireEvent.click(screen.getByTestId('zoom-max'));
 
     await waitFor(() => {
-      expect(getBlueprintState()?.zoom).toBe(VIEWPORT_ZOOM_RANGE.min)
-    })
-  })
+      expect(getBlueprintState()?.zoom).toBe(VIEWPORT_ZOOM_RANGE.max);
+    });
 
-  it("resets zoom and pan to defaults", async () => {
+    fireEvent.click(screen.getByTestId('zoom-min'));
+
+    await waitFor(() => {
+      expect(getBlueprintState()?.zoom).toBe(VIEWPORT_ZOOM_RANGE.min);
+    });
+  });
+
+  it('resets zoom and pan to defaults', async () => {
     resetEditorStore({
       blueprintStateByProject: {
         [PROJECT_ID]: {
@@ -393,341 +544,422 @@ describe("BlueprintEditor", () => {
           pan: { x: 240, y: 120 },
         },
       },
-    })
+    });
 
-    render(<BlueprintEditor />)
+    render(<BlueprintEditor />);
 
-    fireEvent.click(screen.getByTestId("reset-view"))
-
-    await waitFor(() => {
-      expect(getBlueprintState()?.zoom).toBe(DEFAULT_BLUEPRINT_STATE.zoom)
-    })
-    expect(getBlueprintState()?.pan).toEqual(DEFAULT_BLUEPRINT_STATE.pan)
-  })
-
-  it("updates viewport dimensions from the viewport bar", async () => {
-    render(<BlueprintEditor />)
+    fireEvent.click(screen.getByTestId('reset-view'));
 
     await waitFor(() => {
-      expect(getBlueprintState()).toBeTruthy()
-    })
+      expect(getBlueprintState()?.zoom).toBe(DEFAULT_BLUEPRINT_STATE.zoom);
+    });
+    expect(getBlueprintState()?.pan).toEqual(DEFAULT_BLUEPRINT_STATE.pan);
+  });
 
-    fireEvent.click(screen.getByTestId("set-width"))
-    fireEvent.click(screen.getByTestId("set-height"))
+  it('updates viewport dimensions from the viewport bar', async () => {
+    render(<BlueprintEditor />);
 
     await waitFor(() => {
-      expect(getBlueprintState()?.viewportWidth).toBe("1111")
-    })
-    expect(getBlueprintState()?.viewportHeight).toBe("777")
-  })
+      expect(getBlueprintState()).toBeTruthy();
+    });
 
-  it("inserts palette items on canvas drop and selects the new node", async () => {
-    render(<BlueprintEditor />)
+    fireEvent.click(screen.getByTestId('set-width'));
+    fireEvent.click(screen.getByTestId('set-height'));
 
-    const dndProps = (globalThis as { __dndProps?: { onDragEnd?: (event: DragEndPayload) => void } })
-      .__dndProps
-    expect(dndProps?.onDragEnd).toBeTruthy()
+    await waitFor(() => {
+      expect(getBlueprintState()?.viewportWidth).toBe('1111');
+    });
+    expect(getBlueprintState()?.viewportHeight).toBe('777');
+  });
+
+  it('inserts palette items on canvas drop and selects the new node', async () => {
+    render(<BlueprintEditor />);
+
+    const dndProps = (
+      globalThis as {
+        __dndProps?: { onDragEnd?: (event: DragEndPayload) => void };
+      }
+    ).__dndProps;
+    expect(dndProps?.onDragEnd).toBeTruthy();
 
     act(() => {
       dndProps?.onDragEnd?.({
-        active: { data: { current: { kind: "palette-item", itemId: "button" } } },
-        over: { id: "canvas-drop", data: { current: { kind: "canvas" } } },
-      })
-    })
+        active: {
+          data: { current: { kind: 'palette-item', itemId: 'button' } },
+        },
+        over: { id: 'canvas-drop', data: { current: { kind: 'canvas' } } },
+      });
+    });
 
     await waitFor(() => {
-      expect(getBlueprintState()?.selectedId).toBe("MdrButton-1")
-    })
+      expect(getBlueprintState()?.selectedId).toBe('MdrButton-1');
+    });
 
-    const mirDoc = useEditorStore.getState().mirDoc
-    expect(mirDoc.ui.root.children?.[0].type).toBe("MdrButton")
-  })
+    const mirDoc = useEditorStore.getState().mirDoc;
+    expect(mirDoc.ui.root.children?.[0].type).toBe('MdrButton');
+  });
 
-  it("shows the drag overlay while dragging a palette item", () => {
-    render(<BlueprintEditor />)
+  it('shows the drag overlay while dragging a palette item', () => {
+    render(<BlueprintEditor />);
 
-    const dndProps = (globalThis as { __dndProps?: { onDragStart?: (event: DragEndPayload) => void } })
-      .__dndProps
-    expect(dndProps?.onDragStart).toBeTruthy()
+    const dndProps = (
+      globalThis as {
+        __dndProps?: { onDragStart?: (event: DragEndPayload) => void };
+      }
+    ).__dndProps;
+    expect(dndProps?.onDragStart).toBeTruthy();
 
     act(() => {
       dndProps?.onDragStart?.({
-        active: { data: { current: { kind: "palette-item", itemId: "text" } } },
+        active: { data: { current: { kind: 'palette-item', itemId: 'text' } } },
         over: null,
-      })
-    })
+      });
+    });
 
-    expect(screen.getByTestId("drag-overlay").textContent).toContain("text")
-  })
+    expect(screen.getByTestId('drag-overlay').textContent).toContain('text');
+  });
 
-  it("clears the drag overlay on cancel", () => {
-    render(<BlueprintEditor />)
+  it('clears the drag overlay on cancel', () => {
+    render(<BlueprintEditor />);
 
-    const dndProps = (globalThis as { __dndProps?: { onDragStart?: (event: DragEndPayload) => void; onDragCancel?: () => void } })
-      .__dndProps
+    const dndProps = (
+      globalThis as {
+        __dndProps?: {
+          onDragStart?: (event: DragEndPayload) => void;
+          onDragCancel?: () => void;
+        };
+      }
+    ).__dndProps;
 
     act(() => {
       dndProps?.onDragStart?.({
-        active: { data: { current: { kind: "palette-item", itemId: "text" } } },
+        active: { data: { current: { kind: 'palette-item', itemId: 'text' } } },
         over: null,
-      })
-    })
+      });
+    });
 
-    expect(screen.getByTestId("drag-overlay").textContent).toContain("text")
+    expect(screen.getByTestId('drag-overlay').textContent).toContain('text');
 
     act(() => {
-      dndProps?.onDragCancel?.()
-    })
+      dndProps?.onDragCancel?.();
+    });
 
-    expect(screen.getByTestId("drag-overlay").textContent).toBe("")
-  })
+    expect(screen.getByTestId('drag-overlay').textContent).toBe('');
+  });
 
-  it("inserts new nodes as children when dropping on a node that supports children", async () => {
+  it('inserts new nodes as children when dropping on a node that supports children', async () => {
     resetEditorStore({
       mirDoc: createMirDoc([
-        { id: "div-1", type: "MdrDiv", children: [] },
-        { id: "text-1", type: "MdrText", text: "Hello" },
+        { id: 'div-1', type: 'MdrDiv', children: [] },
+        { id: 'text-1', type: 'MdrText', text: 'Hello' },
       ]),
-    })
+    });
 
-    render(<BlueprintEditor />)
+    render(<BlueprintEditor />);
 
-    const dndProps = (globalThis as { __dndProps?: { onDragEnd?: (event: DragEndPayload) => void } })
-      .__dndProps
+    const dndProps = (
+      globalThis as {
+        __dndProps?: { onDragEnd?: (event: DragEndPayload) => void };
+      }
+    ).__dndProps;
 
     act(() => {
       dndProps?.onDragEnd?.({
-        active: { data: { current: { kind: "palette-item", itemId: "button" } } },
-        over: { id: "tree-node:div-1", data: { current: { kind: "tree-node", nodeId: "div-1" } } },
-      })
-    })
+        active: {
+          data: { current: { kind: 'palette-item', itemId: 'button' } },
+        },
+        over: {
+          id: 'tree-node:div-1',
+          data: { current: { kind: 'tree-node', nodeId: 'div-1' } },
+        },
+      });
+    });
 
     await waitFor(() => {
-      expect(getBlueprintState()?.selectedId).toBe("MdrButton-1")
-    })
+      expect(getBlueprintState()?.selectedId).toBe('MdrButton-1');
+    });
 
-    const mirDoc = useEditorStore.getState().mirDoc
-    const divNode = mirDoc.ui.root.children?.[0]
-    expect(divNode?.id).toBe("div-1")
-    expect(divNode?.children?.[0].type).toBe("MdrButton")
-  })
+    const mirDoc = useEditorStore.getState().mirDoc;
+    const divNode = mirDoc.ui.root.children?.[0];
+    expect(divNode?.id).toBe('div-1');
+    expect(divNode?.children?.[0].type).toBe('MdrButton');
+  });
 
-  it("inserts new nodes after a node that does not support children", async () => {
+  it('inserts new nodes after a node that does not support children', async () => {
     resetEditorStore({
       mirDoc: createMirDoc([
-        { id: "button-1", type: "MdrButton", text: "Button" },
-        { id: "text-1", type: "MdrText", text: "Hello" },
+        { id: 'button-1', type: 'MdrButton', text: 'Button' },
+        { id: 'text-1', type: 'MdrText', text: 'Hello' },
       ]),
-    })
+    });
 
-    render(<BlueprintEditor />)
+    render(<BlueprintEditor />);
 
-    const dndProps = (globalThis as { __dndProps?: { onDragEnd?: (event: DragEndPayload) => void } })
-      .__dndProps
+    const dndProps = (
+      globalThis as {
+        __dndProps?: { onDragEnd?: (event: DragEndPayload) => void };
+      }
+    ).__dndProps;
 
     act(() => {
       dndProps?.onDragEnd?.({
-        active: { data: { current: { kind: "palette-item", itemId: "text" } } },
-        over: { id: "tree-node:button-1", data: { current: { kind: "tree-node", nodeId: "button-1" } } },
-      })
-    })
+        active: { data: { current: { kind: 'palette-item', itemId: 'text' } } },
+        over: {
+          id: 'tree-node:button-1',
+          data: { current: { kind: 'tree-node', nodeId: 'button-1' } },
+        },
+      });
+    });
 
     await waitFor(() => {
-      expect(getBlueprintState()?.selectedId).toBe("MdrText-2")
-    })
+      expect(getBlueprintState()?.selectedId).toBe('MdrText-2');
+    });
 
-    const children = useEditorStore.getState().mirDoc.ui.root.children ?? []
-    expect(children.map((child) => child.id)).toEqual(["button-1", "MdrText-2", "text-1"])
-  })
+    const children = useEditorStore.getState().mirDoc.ui.root.children ?? [];
+    expect(children.map((child) => child.id)).toEqual([
+      'button-1',
+      'MdrText-2',
+      'text-1',
+    ]);
+  });
 
-  it("reorders nodes when dragging within the tree", async () => {
+  it('reorders nodes when dragging within the tree', async () => {
     resetEditorStore({
       mirDoc: createMirDoc([
-        { id: "node-a", type: "MdrText", text: "A" },
-        { id: "node-b", type: "MdrText", text: "B" },
+        { id: 'node-a', type: 'MdrText', text: 'A' },
+        { id: 'node-b', type: 'MdrText', text: 'B' },
       ]),
-    })
+    });
 
-    render(<BlueprintEditor />)
+    render(<BlueprintEditor />);
 
-    const dndProps = (globalThis as { __dndProps?: { onDragEnd?: (event: DragEndPayload) => void } })
-      .__dndProps
+    const dndProps = (
+      globalThis as {
+        __dndProps?: { onDragEnd?: (event: DragEndPayload) => void };
+      }
+    ).__dndProps;
 
     act(() => {
       dndProps?.onDragEnd?.({
-        active: { data: { current: { kind: "tree-sort", nodeId: "node-a", parentId: "root" } } },
-        over: { id: "tree-node:node-b", data: { current: { kind: "tree-sort", nodeId: "node-b", parentId: "root" } } },
-      })
-    })
+        active: {
+          data: {
+            current: { kind: 'tree-sort', nodeId: 'node-a', parentId: 'root' },
+          },
+        },
+        over: {
+          id: 'tree-node:node-b',
+          data: {
+            current: { kind: 'tree-sort', nodeId: 'node-b', parentId: 'root' },
+          },
+        },
+      });
+    });
 
-    const children = useEditorStore.getState().mirDoc.ui.root.children ?? []
-    expect(children.map((child) => child.id)).toEqual(["node-b", "node-a"])
-  })
+    const children = useEditorStore.getState().mirDoc.ui.root.children ?? [];
+    expect(children.map((child) => child.id)).toEqual(['node-b', 'node-a']);
+  });
 
-  it("moves nodes across parents when dropping on another tree node", () => {
+  it('moves nodes across parents when dropping on another tree node', () => {
     resetEditorStore({
       mirDoc: createMirDoc([
-        { id: "div-a", type: "MdrDiv", children: [{ id: "child-1", type: "MdrText", text: "A" }] },
-        { id: "div-b", type: "MdrDiv", children: [] },
+        {
+          id: 'div-a',
+          type: 'MdrDiv',
+          children: [{ id: 'child-1', type: 'MdrText', text: 'A' }],
+        },
+        { id: 'div-b', type: 'MdrDiv', children: [] },
       ]),
-    })
+    });
 
-    render(<BlueprintEditor />)
+    render(<BlueprintEditor />);
 
-    const dndProps = (globalThis as { __dndProps?: { onDragEnd?: (event: DragEndPayload) => void } })
-      .__dndProps
+    const dndProps = (
+      globalThis as {
+        __dndProps?: { onDragEnd?: (event: DragEndPayload) => void };
+      }
+    ).__dndProps;
 
     act(() => {
       dndProps?.onDragEnd?.({
-        active: { data: { current: { kind: "tree-sort", nodeId: "child-1", parentId: "div-a" } } },
-        over: { id: "tree-node:div-b", data: { current: { kind: "tree-node", nodeId: "div-b" } } },
-      })
-    })
+        active: {
+          data: {
+            current: {
+              kind: 'tree-sort',
+              nodeId: 'child-1',
+              parentId: 'div-a',
+            },
+          },
+        },
+        over: {
+          id: 'tree-node:div-b',
+          data: { current: { kind: 'tree-node', nodeId: 'div-b' } },
+        },
+      });
+    });
 
-    const children = useEditorStore.getState().mirDoc.ui.root.children ?? []
-    const divA = children.find((child) => child.id === "div-a")
-    const divB = children.find((child) => child.id === "div-b")
+    const children = useEditorStore.getState().mirDoc.ui.root.children ?? [];
+    const divA = children.find((child) => child.id === 'div-a');
+    const divB = children.find((child) => child.id === 'div-b');
 
-    expect(divA?.children ?? []).toHaveLength(0)
-    expect(divB?.children?.[0]?.id).toBe("child-1")
-  })
+    expect(divA?.children ?? []).toHaveLength(0);
+    expect(divB?.children?.[0]?.id).toBe('child-1');
+  });
 
-  it("moves nodes within the same parent when dropping after a non-container node", () => {
+  it('moves nodes within the same parent when dropping after a non-container node', () => {
     resetEditorStore({
       mirDoc: createMirDoc([
-        { id: "btn-1", type: "MdrButton", text: "A" },
-        { id: "btn-2", type: "MdrButton", text: "B" },
-        { id: "div-1", type: "MdrDiv", children: [] },
+        { id: 'btn-1', type: 'MdrButton', text: 'A' },
+        { id: 'btn-2', type: 'MdrButton', text: 'B' },
+        { id: 'div-1', type: 'MdrDiv', children: [] },
       ]),
-    })
+    });
 
-    render(<BlueprintEditor />)
+    render(<BlueprintEditor />);
 
-    const dndProps = (globalThis as { __dndProps?: { onDragEnd?: (event: DragEndPayload) => void } })
-      .__dndProps
+    const dndProps = (
+      globalThis as {
+        __dndProps?: { onDragEnd?: (event: DragEndPayload) => void };
+      }
+    ).__dndProps;
 
     act(() => {
       dndProps?.onDragEnd?.({
-        active: { data: { current: { kind: "tree-sort", nodeId: "btn-1", parentId: "root" } } },
-        over: { id: "tree-node:btn-2", data: { current: { kind: "tree-node", nodeId: "btn-2" } } },
-      })
-    })
+        active: {
+          data: {
+            current: { kind: 'tree-sort', nodeId: 'btn-1', parentId: 'root' },
+          },
+        },
+        over: {
+          id: 'tree-node:btn-2',
+          data: { current: { kind: 'tree-node', nodeId: 'btn-2' } },
+        },
+      });
+    });
 
-    const children = useEditorStore.getState().mirDoc.ui.root.children ?? []
-    expect(children.map((child) => child.id)).toEqual(["btn-2", "btn-1", "div-1"])
-  })
+    const children = useEditorStore.getState().mirDoc.ui.root.children ?? [];
+    expect(children.map((child) => child.id)).toEqual([
+      'btn-2',
+      'btn-1',
+      'div-1',
+    ]);
+  });
 
-  it("deletes the selected node and promotes selection to the parent", async () => {
+  it('deletes the selected node and promotes selection to the parent', async () => {
     resetEditorStore({
-      mirDoc: createMirDoc([{ id: "child-1", type: "MdrText", text: "Text" }]),
+      mirDoc: createMirDoc([{ id: 'child-1', type: 'MdrText', text: 'Text' }]),
       blueprintStateByProject: {
         [PROJECT_ID]: {
           ...DEFAULT_BLUEPRINT_STATE,
-          selectedId: "child-1",
+          selectedId: 'child-1',
         },
       },
-    })
+    });
 
-    render(<BlueprintEditor />)
+    render(<BlueprintEditor />);
 
-    fireEvent.click(screen.getByTestId("delete-selected"))
+    fireEvent.click(screen.getByTestId('delete-selected'));
 
     await waitFor(() => {
-      expect(getBlueprintState()?.selectedId).toBe("root")
-    })
+      expect(getBlueprintState()?.selectedId).toBe('root');
+    });
 
-    const mirDoc = useEditorStore.getState().mirDoc
-    expect(mirDoc.ui.root.children).toBeUndefined()
-  })
+    const mirDoc = useEditorStore.getState().mirDoc;
+    expect(mirDoc.ui.root.children).toBeUndefined();
+  });
 
-  it("deletes a node without changing selection when another node is selected", async () => {
+  it('deletes a node without changing selection when another node is selected', async () => {
     resetEditorStore({
       mirDoc: createMirDoc([
-        { id: "child-1", type: "MdrText", text: "Text" },
-        { id: "child-2", type: "MdrText", text: "Text 2" },
+        { id: 'child-1', type: 'MdrText', text: 'Text' },
+        { id: 'child-2', type: 'MdrText', text: 'Text 2' },
       ]),
       blueprintStateByProject: {
         [PROJECT_ID]: {
           ...DEFAULT_BLUEPRINT_STATE,
-          selectedId: "child-2",
+          selectedId: 'child-2',
         },
       },
-    })
+    });
 
-    render(<BlueprintEditor />)
+    render(<BlueprintEditor />);
 
-    fireEvent.click(screen.getByTestId("delete-node"))
+    fireEvent.click(screen.getByTestId('delete-node'));
 
     await waitFor(() => {
-      expect(getBlueprintState()?.selectedId).toBe("child-2")
-    })
+      expect(getBlueprintState()?.selectedId).toBe('child-2');
+    });
 
-    const children = useEditorStore.getState().mirDoc.ui.root.children ?? []
-    expect(children.map((child) => child.id)).toEqual(["child-2"])
-  })
+    const children = useEditorStore.getState().mirDoc.ui.root.children ?? [];
+    expect(children.map((child) => child.id)).toEqual(['child-2']);
+  });
 
-  it("copies a node and selects the cloned node", async () => {
+  it('copies a node and selects the cloned node', async () => {
     resetEditorStore({
-      mirDoc: createMirDoc([{ id: "child-1", type: "MdrText", text: "Text" }]),
+      mirDoc: createMirDoc([{ id: 'child-1', type: 'MdrText', text: 'Text' }]),
       blueprintStateByProject: {
         [PROJECT_ID]: {
           ...DEFAULT_BLUEPRINT_STATE,
-          selectedId: "child-1",
+          selectedId: 'child-1',
         },
       },
-    })
+    });
 
-    render(<BlueprintEditor />)
+    render(<BlueprintEditor />);
 
-    fireEvent.click(screen.getByTestId("copy-node"))
+    fireEvent.click(screen.getByTestId('copy-node'));
 
     await waitFor(() => {
-      expect(getBlueprintState()?.selectedId).toBe("MdrText-2")
-    })
+      expect(getBlueprintState()?.selectedId).toBe('MdrText-2');
+    });
 
-    const children = useEditorStore.getState().mirDoc.ui.root.children ?? []
-    expect(children.map((child) => child.id)).toEqual(["child-1", "MdrText-2"])
-  })
+    const children = useEditorStore.getState().mirDoc.ui.root.children ?? [];
+    expect(children.map((child) => child.id)).toEqual(['child-1', 'MdrText-2']);
+  });
 
-  it("moves nodes within the same parent", async () => {
+  it('moves nodes within the same parent', async () => {
     resetEditorStore({
       mirDoc: createMirDoc([
-        { id: "child-1", type: "MdrText", text: "Text" },
-        { id: "child-2", type: "MdrText", text: "Text 2" },
+        { id: 'child-1', type: 'MdrText', text: 'Text' },
+        { id: 'child-2', type: 'MdrText', text: 'Text 2' },
       ]),
-    })
+    });
 
-    render(<BlueprintEditor />)
+    render(<BlueprintEditor />);
 
-    fireEvent.click(screen.getByTestId("move-up-2"))
+    fireEvent.click(screen.getByTestId('move-up-2'));
 
-    const children = useEditorStore.getState().mirDoc.ui.root.children ?? []
-    expect(children.map((child) => child.id)).toEqual(["child-2", "child-1"])
-  })
+    const children = useEditorStore.getState().mirDoc.ui.root.children ?? [];
+    expect(children.map((child) => child.id)).toEqual(['child-2', 'child-1']);
+  });
 
-  it("drops every palette item on the canvas without crashing", async () => {
-    render(<BlueprintEditor />)
+  it('drops every palette item on the canvas without crashing', async () => {
+    render(<BlueprintEditor />);
 
     await waitFor(() => {
-      expect(getBlueprintState()).toBeTruthy()
-    })
+      expect(getBlueprintState()).toBeTruthy();
+    });
 
-    const dndProps = (globalThis as { __dndProps?: { onDragEnd?: (event: DragEndPayload) => void } })
-      .__dndProps
-    const itemIds = getPaletteItemIds()
-    let totalNodes = countNodes(useEditorStore.getState().mirDoc.ui.root)
+    const dndProps = (
+      globalThis as {
+        __dndProps?: { onDragEnd?: (event: DragEndPayload) => void };
+      }
+    ).__dndProps;
+    const itemIds = getPaletteItemIds();
+    let totalNodes = countNodes(useEditorStore.getState().mirDoc.ui.root);
 
     itemIds.forEach((itemId) => {
       act(() => {
-        useEditorStore.getState().setBlueprintState(PROJECT_ID, { selectedId: "root" })
+        useEditorStore
+          .getState()
+          .setBlueprintState(PROJECT_ID, { selectedId: 'root' });
         dndProps?.onDragEnd?.({
-          active: { data: { current: { kind: "palette-item", itemId } } },
-          over: { id: "canvas-drop", data: { current: { kind: "canvas" } } },
-        })
-      })
-      const nextTotal = countNodes(useEditorStore.getState().mirDoc.ui.root)
-      expect(nextTotal).toBe(totalNodes + 1)
-      totalNodes = nextTotal
-    })
-  })
-})
+          active: { data: { current: { kind: 'palette-item', itemId } } },
+          over: { id: 'canvas-drop', data: { current: { kind: 'canvas' } } },
+        });
+      });
+      const nextTotal = countNodes(useEditorStore.getState().mirDoc.ui.root);
+      expect(nextTotal).toBe(totalNodes + 1);
+      totalNodes = nextTotal;
+    });
+  });
+});

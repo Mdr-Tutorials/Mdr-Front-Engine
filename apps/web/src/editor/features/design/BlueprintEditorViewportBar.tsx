@@ -1,18 +1,22 @@
-import { useTranslation } from "react-i18next"
-import { MdrInput, MdrPopover, MdrSlider } from "@mdr/ui"
-import { ChevronDown, RotateCcw } from "lucide-react"
-import { VIEWPORT_DEVICE_PRESETS, VIEWPORT_QUICK_PRESETS, VIEWPORT_ZOOM_RANGE } from "./BlueprintEditor.data"
+import { useTranslation } from 'react-i18next';
+import { MdrInput, MdrPopover, MdrSlider } from '@mdr/ui';
+import { ChevronDown, RotateCcw } from 'lucide-react';
+import {
+  VIEWPORT_DEVICE_PRESETS,
+  VIEWPORT_QUICK_PRESETS,
+  VIEWPORT_ZOOM_RANGE,
+} from './BlueprintEditor.data';
 
 type BlueprintEditorViewportBarProps = {
-  viewportWidth: string
-  viewportHeight: string
-  onViewportWidthChange: (value: string) => void
-  onViewportHeightChange: (value: string) => void
-  zoom: number
-  zoomStep: number
-  onZoomChange: (value: number) => void
-  onResetView: () => void
-}
+  viewportWidth: string;
+  viewportHeight: string;
+  onViewportWidthChange: (value: string) => void;
+  onViewportHeightChange: (value: string) => void;
+  zoom: number;
+  zoomStep: number;
+  onZoomChange: (value: number) => void;
+  onResetView: () => void;
+};
 
 export function BlueprintEditorViewportBar({
   viewportWidth,
@@ -24,16 +28,24 @@ export function BlueprintEditorViewportBar({
   onZoomChange,
   onResetView,
 }: BlueprintEditorViewportBarProps) {
-  const { t } = useTranslation('blueprint')
+  const { t } = useTranslation('blueprint');
 
   return (
     <section className="BlueprintEditorViewportBar">
       <div className="ViewportControls">
         <div className="ViewportLabel">{t('viewport.label')}</div>
         <div className="ViewportInputs">
-          <MdrInput size="Small" value={viewportWidth} onChange={onViewportWidthChange} />
+          <MdrInput
+            size="Small"
+            value={viewportWidth}
+            onChange={onViewportWidthChange}
+          />
           <span>×</span>
-          <MdrInput size="Small" value={viewportHeight} onChange={onViewportHeightChange} />
+          <MdrInput
+            size="Small"
+            value={viewportHeight}
+            onChange={onViewportHeightChange}
+          />
         </div>
       </div>
       <div className="ViewportZoom">
@@ -61,23 +73,28 @@ export function BlueprintEditorViewportBar({
       </div>
       <div className="ViewportQuickPresets">
         {VIEWPORT_QUICK_PRESETS.map((preset) => {
-          const presetLabel = t(preset.labelKey, { defaultValue: `${preset.width}×${preset.height}` })
+          const presetLabel = t(preset.labelKey, {
+            defaultValue: `${preset.width}×${preset.height}`,
+          });
           return (
-          <button
-            key={preset.id}
-            className="ViewportQuickPreset"
-            onClick={() => {
-              onViewportWidthChange(preset.width)
-              onViewportHeightChange(preset.height)
-            }}
-          >
-            {presetLabel}
-          </button>
-          )
+            <button
+              key={preset.id}
+              className="ViewportQuickPreset"
+              onClick={() => {
+                onViewportWidthChange(preset.width);
+                onViewportHeightChange(preset.height);
+              }}
+            >
+              {presetLabel}
+            </button>
+          );
         })}
       </div>
       <div className="ViewportQuickPresetsMenu">
-        <label className="ViewportQuickPresetsMenuLabel" htmlFor="ViewportQuickPresetsSelect">
+        <label
+          className="ViewportQuickPresetsMenuLabel"
+          htmlFor="ViewportQuickPresetsSelect"
+        >
           {t('viewport.quickPresetMenu')}
         </label>
         <select
@@ -85,20 +102,24 @@ export function BlueprintEditorViewportBar({
           className="ViewportQuickPresetsSelect"
           defaultValue=""
           onChange={(event) => {
-            const preset = VIEWPORT_QUICK_PRESETS.find((item) => item.id === event.target.value)
-            if (!preset) return
-            onViewportWidthChange(preset.width)
-            onViewportHeightChange(preset.height)
+            const preset = VIEWPORT_QUICK_PRESETS.find(
+              (item) => item.id === event.target.value
+            );
+            if (!preset) return;
+            onViewportWidthChange(preset.width);
+            onViewportHeightChange(preset.height);
           }}
         >
           <option value="">{t('viewport.quickPresetMenu')}</option>
           {VIEWPORT_QUICK_PRESETS.map((preset) => {
-            const presetLabel = t(preset.labelKey, { defaultValue: `${preset.width}×${preset.height}` })
+            const presetLabel = t(preset.labelKey, {
+              defaultValue: `${preset.width}×${preset.height}`,
+            });
             return (
               <option key={preset.id} value={preset.id}>
                 {presetLabel}
               </option>
-            )
+            );
           })}
         </select>
       </div>
@@ -107,17 +128,22 @@ export function BlueprintEditorViewportBar({
         content={
           <div className="ViewportDeviceList">
             {VIEWPORT_DEVICE_PRESETS.map((preset) => {
-              const Icon = preset.icon
-              const deviceName = t(preset.nameKey, { defaultValue: preset.id })
-              const deviceKind = t(preset.kindKey, { defaultValue: preset.kind })
-              const sizeLabel = t('viewport.size', { width: preset.width, height: preset.height })
+              const Icon = preset.icon;
+              const deviceName = t(preset.nameKey, { defaultValue: preset.id });
+              const deviceKind = t(preset.kindKey, {
+                defaultValue: preset.kind,
+              });
+              const sizeLabel = t('viewport.size', {
+                width: preset.width,
+                height: preset.height,
+              });
               return (
                 <button
                   key={preset.id}
                   className="ViewportPreset"
                   onClick={() => {
-                    onViewportWidthChange(preset.width)
-                    onViewportHeightChange(preset.height)
+                    onViewportWidthChange(preset.width);
+                    onViewportHeightChange(preset.height);
                   }}
                   aria-label={`${deviceName} ${sizeLabel}`}
                 >
@@ -128,11 +154,9 @@ export function BlueprintEditorViewportBar({
                     <span className="ViewportPresetName">{deviceName}</span>
                     <span className="ViewportPresetType">{deviceKind}</span>
                   </span>
-                  <span className="ViewportPresetSize">
-                    {sizeLabel}
-                  </span>
+                  <span className="ViewportPresetSize">{sizeLabel}</span>
                 </button>
-              )
+              );
             })}
           </div>
         }
@@ -143,5 +167,5 @@ export function BlueprintEditorViewportBar({
         </button>
       </MdrPopover>
     </section>
-  )
+  );
 }

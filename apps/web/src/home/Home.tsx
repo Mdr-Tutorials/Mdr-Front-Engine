@@ -73,7 +73,7 @@ function Home() {
           <MdrNav.Heading heading={t('brand.name')} />
         </MdrNav.Left>
         <MdrNav.Right>
-          <div className="flex items-center gap-[8px]">
+          <div className="flex items-center gap-2">
             <p>{t('nav.community')}</p>
             <p>{t('nav.tutorials')}</p>
             <p>{t('nav.docs')}</p>
@@ -123,27 +123,27 @@ function Home() {
         </MdrNav.Right>
       </MdrNav>
       <div className="w-[85vw] flex-1">
-        <div className="mt-[100px] flex flex-col text-[var(--color-9)]">
+        <div className="mt-25 flex flex-col text-(--color-9)">
           <h1 className="text-[64px] font-medium">
-            <span className="font-extrabold text-[var(--color-10)] underline decoration-wavy decoration-4 underline-offset-[7px]">
+            <span className="font-extrabold text-(--color-10) underline decoration-wavy decoration-4 underline-offset-[7px]">
               {t('hero.line1.highlight')}
             </span>
           </h1>
           <h1 className="text-[64px] font-medium">
             {t('hero.line2.before')}{' '}
-            <span className="font-extrabold text-[var(--color-10)] underline decoration-wavy decoration-4 underline-offset-[7px]">
+            <span className="font-extrabold text-(--color-10) underline decoration-wavy decoration-4 underline-offset-[7px]">
               {t('hero.line2.highlight')}
             </span>
           </h1>
           <h1 className="text-[64px] font-medium">
             {t('hero.line3.before')}{' '}
-            <span className="font-extrabold text-[var(--color-10)] underline decoration-wavy decoration-4 underline-offset-[7px]">
+            <span className="font-extrabold text-(--color-10) underline decoration-wavy decoration-4 underline-offset-[7px]">
               {t('hero.line3.highlight')}
             </span>
           </h1>
         </div>
         <h2 className={secondaryHeadingClassName}>{t('hero.subtitle')}</h2>
-        <div className="mt-[80px] flex flex-row gap-[24px]">
+        <div className="mt-20 flex flex-row gap-6">
           <MdrButtonLink
             text={t('actions.enterEditor')}
             size="Big"
@@ -171,7 +171,7 @@ function Home() {
           />
           <button
             onClick={handleQuickExport}
-            className="my-[20px] inline-flex items-center gap-[8px] rounded-[6px] border-0 bg-[#4f46e5] px-[16px] py-[8px] text-[14px] font-medium text-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[#4338ca] active:scale-[0.95] [&_svg]:shrink-0"
+            className="my-5 inline-flex items-center gap-2 rounded-md border-0 bg-[#4f46e5] px-4 py-2 text-[14px] font-medium text-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] transition-all duration-200 ease-in-out hover:bg-[#4338ca] active:scale-[0.95] [&_svg]:shrink-0"
           >
             <Download size={16} />
             <span>{t('mirTest.exportButton')}</span>
@@ -182,11 +182,11 @@ function Home() {
       <ExportModal />
 
       <footer className="mt-auto flex w-full flex-row items-center justify-between px-10 py-4">
-        <div className="flex items-center gap-[8px] text-[1em] text-[var(--color-7)]">
+        <div className="flex items-center gap-2 text-[1em] text-(--color-7)">
           <IconMdr size={16} color={logoColor} />
           <span>{t('footer.copy')}</span>
         </div>
-        <div className="flex items-center gap-[8px] text-[1em] text-[var(--color-7)]">
+        <div className="flex items-center gap-2 text-[1em] text-(--color-7)">
           <Footprints size={16} />
           <span>{t('footer.placeholder')}</span>
         </div>

@@ -1,0 +1,191 @@
+import { describe, expect, it } from 'vitest';
+import { render } from '@testing-library/react';
+import {
+  createNodeFromPaletteItem,
+  getTreeDropPlacement,
+} from '../BlueprintEditor';
+import { getComponentGroups } from '../BlueprintEditor.data';
+import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
+import { mdrAdapter } from '@/mir/renderer/registry';
+import { createMirDoc } from '@/test-utils/editorStore';
+
+describe('createNodeFromPaletteItem', () => {
+  const paletteItems = getComponentGroups().flatMap((group) => group.items);
+
+  it('applies heading variantProps.level when provided', () => {
+    const createId = (type: string) => `${type}-1`;
+    const node = createNodeFromPaletteItem('heading', createId, { level: 5 });
+    expect(node.type).toBe('MdrHeading');
+    expect(node.props?.level).toBe(5);
+  });
+
+  it('coerces heading variantProps.level when it is a string', () => {
+    const createId = (type: string) => `${type}-1`;
+    const node = createNodeFromPaletteItem('heading', createId, { level: '6' });
+    expect(node.props?.level).toBe(6);
+  });
+
+  it('creates nodes for every palette item', () => {
+    const createId = (type: string) => `${type}-1`;
+    paletteItems.forEach((item) => {
+      const node = createNodeFromPaletteItem(item.id, createId);
+      expect(node.id).toBe(`${node.type}-1`);
+    });
+  });
+
+  it('creates nodes for palette variants and size selections', () => {
+    const createId = (type: string) => `${type}-1`;
+    paletteItems.forEach((item) => {
+      const selectedSize = item.sizeOptions?.[0]?.value;
+      if (selectedSize) {
+        const node = createNodeFromPaletteItem(
+          item.id,
+          createId,
+          undefined,
+          selectedSize
+        );
+        expect(node.id).toBe(`${node.type}-1`);
+      }
+      item.variants?.forEach((variant) => {
+        const node = createNodeFromPaletteItem(
+          item.id,
+          createId,
+          variant.props,
+          selectedSize
+        );
+        expect(node.id).toBe(`${node.type}-1`);
+      });
+    });
+  });
+});
+
+describe('getTreeDropPlacement', () => {
+  it('uses thirds when nesting is allowed', () => {
+    expect(
+      getTreeDropPlacement({
+        canNest: true,
+        overTop: 0,
+        overHeight: 90,
+        activeCenterY: 10,
+      })
+    ).toBe('before');
+    expect(
+      getTreeDropPlacement({
+        canNest: true,
+        overTop: 0,
+        overHeight: 90,
+        activeCenterY: 45,
+      })
+    ).toBe('child');
+    expect(
+      getTreeDropPlacement({
+        canNest: true,
+        overTop: 0,
+        overHeight: 90,
+        activeCenterY: 80,
+      })
+    ).toBe('after');
+  });
+
+  it('uses halves when nesting is not allowed', () => {
+    expect(
+      getTreeDropPlacement({
+        canNest: false,
+        overTop: 0,
+        overHeight: 100,
+        activeCenterY: 10,
+      })
+    ).toBe('before');
+    expect(
+      getTreeDropPlacement({
+        canNest: false,
+        overTop: 0,
+        overHeight: 100,
+        activeCenterY: 60,
+      })
+    ).toBe('after');
+  });
+});
+
+describe('palette drag rendering', () => {
+  const paletteItems = getComponentGroups().flatMap((group) => group.items);
+
+  const createIdFactory = () => {
+    const counts: Record<string, number> = {};
+    return (type: string) => {
+      const next = (counts[type] ?? 0) + 1;
+      counts[type] = next;
+      return `${type}-${next}`;
+    };
+  };
+
+  it('creates nodes with expected props and renders without crashing', () => {
+    const StubComponent = ({ children }: { children?: React.ReactNode }) => (
+      <div>{children}</div>
+    );
+    const registry = {
+      register: () => {},
+      get: () => undefined,
+      resolve: (type: string) => ({
+        type,
+        component: StubComponent,
+        adapter: mdrAdapter,
+      }),
+    };
+
+    paletteItems.forEach((item) => {
+      const selectedSize = item.sizeOptions?.[0]?.value;
+      const variantEntries = [
+        { id: 'base', props: undefined as Record<string, unknown> | undefined },
+      ].concat(
+        item.variants?.map((variant) => ({
+          id: variant.id,
+          props: variant.props,
+        })) ?? []
+      );
+
+      variantEntries.forEach((variant) => {
+        const createId = createIdFactory();
+        const node = createNodeFromPaletteItem(
+          item.id,
+          createId,
+          variant.props,
+          selectedSize
+        );
+
+        if (selectedSize) {
+          expect(node.props?.size).toBe(selectedSize);
+        }
+
+        if (variant.props) {
+          Object.entries(variant.props).forEach(([key, value]) => {
+            if (item.id === 'heading' && key === 'level') {
+              const resolved =
+                typeof value === 'string' ? Number(value) : value;
+              expect(node.props?.level).toBe(resolved);
+              return;
+            }
+            expect(
+              (node.props as Record<string, unknown> | undefined)?.[key]
+            ).toBe(value);
+          });
+        }
+
+        let renderError: unknown;
+        try {
+          const { unmount } = render(
+            <MIRRenderer
+              node={node}
+              mirDoc={createMirDoc([node])}
+              registry={registry}
+            />
+          );
+          unmount();
+        } catch (error) {
+          renderError = error;
+        }
+        expect(renderError).toBeUndefined();
+      });
+    });
+  });
+});

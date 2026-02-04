@@ -1,19 +1,19 @@
-import { fireEvent, render, screen } from "@testing-library/react"
-import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { ReactNode } from "react"
-import { EditorSettingsPage } from "../EditorSettingsPage"
-import { ProjectSettingsPage } from "../ProjectSettingsPage"
+import { fireEvent, render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { ReactNode } from 'react';
+import { EditorSettingsPage } from '../EditorSettingsPage';
+import { ProjectSettingsPage } from '../ProjectSettingsPage';
 
-const navigateMock = vi.fn()
-let params: { projectId?: string } = { projectId: "project-99" }
-const tabsSpy = vi.fn()
+const navigateMock = vi.fn();
+let params: { projectId?: string } = { projectId: 'project-99' };
+const tabsSpy = vi.fn();
 
-vi.mock("react-router", () => ({
+vi.mock('react-router', () => ({
   useNavigate: () => navigateMock,
   useParams: () => params,
-}))
+}));
 
-vi.mock("@mdr/ui", () => ({
+vi.mock('@mdr/ui', () => ({
   MdrButton: ({ text, onClick }: { text: string; onClick?: () => void }) => (
     <button type="button" onClick={onClick}>
       {text}
@@ -21,8 +21,12 @@ vi.mock("@mdr/ui", () => ({
   ),
   MdrHeading: ({ children }: { children: ReactNode }) => <h2>{children}</h2>,
   MdrParagraph: ({ children }: { children: ReactNode }) => <p>{children}</p>,
-  MdrTabs: ({ items }: { items: { key: string; label: string; content: ReactNode }[] }) => {
-    tabsSpy(items)
+  MdrTabs: ({
+    items,
+  }: {
+    items: { key: string; label: string; content: ReactNode }[];
+  }) => {
+    tabsSpy(items);
     return (
       <div data-testid="tabs">
         {items.map((item) => (
@@ -32,44 +36,48 @@ vi.mock("@mdr/ui", () => ({
           </div>
         ))}
       </div>
-    )
+    );
   },
-}))
+}));
 
-vi.mock("../GlobalSettingsContent", () => ({
+vi.mock('../GlobalSettingsContent', () => ({
   GlobalSettingsContent: ({ mode }: { mode?: string }) => (
-    <div data-testid={`global-settings-${mode ?? "global"}`} />
+    <div data-testid={`global-settings-${mode ?? 'global'}`} />
   ),
-}))
+}));
 
-vi.mock("../ProjectSettingsContent", () => ({
+vi.mock('../ProjectSettingsContent', () => ({
   ProjectSettingsContent: () => <div data-testid="project-settings" />,
-}))
+}));
 
-describe("Settings pages", () => {
+describe('Settings pages', () => {
   beforeEach(() => {
-    navigateMock.mockClear()
-    tabsSpy.mockClear()
-    params = { projectId: "project-99" }
-  })
+    navigateMock.mockClear();
+    tabsSpy.mockClear();
+    params = { projectId: 'project-99' };
+  });
 
-  it("routes back to editor home from editor settings", () => {
-    render(<EditorSettingsPage />)
+  it('routes back to editor home from editor settings', () => {
+    render(<EditorSettingsPage />);
 
-    fireEvent.click(screen.getByRole("button", { name: "settings.actions.exit" }))
+    fireEvent.click(
+      screen.getByRole('button', { name: 'settings.actions.exit' })
+    );
 
-    expect(navigateMock).toHaveBeenCalledWith("/editor")
-  })
+    expect(navigateMock).toHaveBeenCalledWith('/editor');
+  });
 
-  it("renders project and global tabs and exits to project home", () => {
-    render(<ProjectSettingsPage />)
+  it('renders project and global tabs and exits to project home', () => {
+    render(<ProjectSettingsPage />);
 
-    expect(screen.getByTestId("tab-project")).toBeTruthy()
-    expect(screen.getByTestId("tab-global")).toBeTruthy()
-    expect(screen.getByTestId("global-settings-project")).toBeTruthy()
+    expect(screen.getByTestId('tab-project')).toBeTruthy();
+    expect(screen.getByTestId('tab-global')).toBeTruthy();
+    expect(screen.getByTestId('global-settings-project')).toBeTruthy();
 
-    fireEvent.click(screen.getByRole("button", { name: "settings.actions.exit" }))
+    fireEvent.click(
+      screen.getByRole('button', { name: 'settings.actions.exit' })
+    );
 
-    expect(navigateMock).toHaveBeenCalledWith("/editor/project/project-99")
-  })
-})
+    expect(navigateMock).toHaveBeenCalledWith('/editor/project/project-99');
+  });
+});
