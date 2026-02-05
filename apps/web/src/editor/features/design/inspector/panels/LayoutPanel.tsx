@@ -8,6 +8,39 @@ import type {
 } from './types';
 import { InspectorRow } from '../components/InspectorRow';
 import { UnitInput } from '../components/UnitInput';
+import { IconButtonGroup } from '../components/IconButtonGroup';
+import {
+  FlexRowIcon,
+  FlexColumnIcon,
+  FlexRowReverseIcon,
+  FlexColumnReverseIcon,
+} from '../components/FlexDirectionIcons';
+import {
+  JustifyStartIcon,
+  JustifyCenterIcon,
+  JustifyEndIcon,
+  JustifySpaceBetweenIcon,
+  JustifySpaceAroundIcon,
+  JustifySpaceEvenlyIcon,
+  JustifyStartColumnIcon,
+  JustifyCenterColumnIcon,
+  JustifyEndColumnIcon,
+  JustifySpaceBetweenColumnIcon,
+  JustifySpaceAroundColumnIcon,
+  JustifySpaceEvenlyColumnIcon,
+} from '../components/JustifyContentIcons';
+import {
+  AlignStartIcon,
+  AlignCenterIcon,
+  AlignEndIcon,
+  AlignStretchIcon,
+  AlignBaselineIcon,
+  AlignStartColumnIcon,
+  AlignCenterColumnIcon,
+  AlignEndColumnIcon,
+  AlignStretchColumnIcon,
+  AlignBaselineColumnIcon,
+} from '../components/AlignItemsIcons';
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -77,27 +110,6 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
 
       <div className="InspectorField">
         <InspectorRow
-          label={t('inspector.panels.layout.fields.display', {
-            defaultValue: 'Display',
-          })}
-          control={
-            <MdrSelect
-              size="Small"
-              value={display ?? ''}
-              options={[
-                { label: 'Flex', value: 'Flex' },
-                { label: 'Grid', value: 'Grid' },
-              ]}
-              onChange={(value) => {
-                updateNode((current) => withProps(current, { display: value }));
-              }}
-            />
-          }
-        />
-      </div>
-
-      <div className="InspectorField">
-        <InspectorRow
           label={t('inspector.panels.layout.fields.gap', {
             defaultValue: 'Gap',
           })}
@@ -129,18 +141,31 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
         <>
           <div className="InspectorField">
             <InspectorRow
+              layout="vertical"
               label={t('inspector.panels.layout.fields.flexDirection', {
                 defaultValue: 'Direction',
               })}
               control={
-                <MdrSelect
-                  size="Small"
+                <IconButtonGroup
                   value={flexDirection}
+                  layout="grid-2x2"
                   options={[
-                    { label: 'Row', value: 'Row' },
-                    { label: 'Column', value: 'Column' },
-                    { label: 'RowReverse', value: 'RowReverse' },
-                    { label: 'ColumnReverse', value: 'ColumnReverse' },
+                    { value: 'Row', icon: <FlexRowIcon />, label: 'Row' },
+                    {
+                      value: 'RowReverse',
+                      icon: <FlexRowReverseIcon />,
+                      label: 'Row Reverse',
+                    },
+                    {
+                      value: 'Column',
+                      icon: <FlexColumnIcon />,
+                      label: 'Column',
+                    },
+                    {
+                      value: 'ColumnReverse',
+                      icon: <FlexColumnReverseIcon />,
+                      label: 'Column Reverse',
+                    },
                   ]}
                   onChange={(value) =>
                     updateNode((current) =>
@@ -154,21 +179,85 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
 
           <div className="InspectorField">
             <InspectorRow
+              layout="vertical"
               label={t('inspector.panels.layout.fields.justifyContent', {
                 defaultValue: 'Justify',
               })}
               control={
-                <MdrSelect
-                  size="Small"
+                <IconButtonGroup
                   value={justifyContent}
-                  options={[
-                    { label: 'Start', value: 'Start' },
-                    { label: 'Center', value: 'Center' },
-                    { label: 'End', value: 'End' },
-                    { label: 'SpaceBetween', value: 'SpaceBetween' },
-                    { label: 'SpaceAround', value: 'SpaceAround' },
-                    { label: 'SpaceEvenly', value: 'SpaceEvenly' },
-                  ]}
+                  layout={
+                    flexDirection === 'Row' || flexDirection === 'RowReverse'
+                      ? 'horizontal'
+                      : 'grid'
+                  }
+                  options={
+                    flexDirection === 'Row' || flexDirection === 'RowReverse'
+                      ? [
+                          {
+                            value: 'Start',
+                            icon: <JustifyStartIcon />,
+                            label: 'Start',
+                          },
+                          {
+                            value: 'Center',
+                            icon: <JustifyCenterIcon />,
+                            label: 'Center',
+                          },
+                          {
+                            value: 'End',
+                            icon: <JustifyEndIcon />,
+                            label: 'End',
+                          },
+                          {
+                            value: 'SpaceBetween',
+                            icon: <JustifySpaceBetweenIcon />,
+                            label: 'Space Between',
+                          },
+                          {
+                            value: 'SpaceAround',
+                            icon: <JustifySpaceAroundIcon />,
+                            label: 'Space Around',
+                          },
+                          {
+                            value: 'SpaceEvenly',
+                            icon: <JustifySpaceEvenlyIcon />,
+                            label: 'Space Evenly',
+                          },
+                        ]
+                      : [
+                          {
+                            value: 'Start',
+                            icon: <JustifyStartColumnIcon />,
+                            label: 'Start',
+                          },
+                          {
+                            value: 'Center',
+                            icon: <JustifyCenterColumnIcon />,
+                            label: 'Center',
+                          },
+                          {
+                            value: 'End',
+                            icon: <JustifyEndColumnIcon />,
+                            label: 'End',
+                          },
+                          {
+                            value: 'SpaceBetween',
+                            icon: <JustifySpaceBetweenColumnIcon />,
+                            label: 'Space Between',
+                          },
+                          {
+                            value: 'SpaceAround',
+                            icon: <JustifySpaceAroundColumnIcon />,
+                            label: 'Space Around',
+                          },
+                          {
+                            value: 'SpaceEvenly',
+                            icon: <JustifySpaceEvenlyColumnIcon />,
+                            label: 'Space Evenly',
+                          },
+                        ]
+                  }
                   onChange={(value) =>
                     updateNode((current) =>
                       withProps(current, { justifyContent: value })
@@ -181,20 +270,75 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
 
           <div className="InspectorField">
             <InspectorRow
+              layout="vertical"
               label={t('inspector.panels.layout.fields.alignItems', {
                 defaultValue: 'Align',
               })}
               control={
-                <MdrSelect
-                  size="Small"
+                <IconButtonGroup
                   value={alignItems}
-                  options={[
-                    { label: 'Start', value: 'Start' },
-                    { label: 'Center', value: 'Center' },
-                    { label: 'End', value: 'End' },
-                    { label: 'Stretch', value: 'Stretch' },
-                    { label: 'Baseline', value: 'Baseline' },
-                  ]}
+                  layout={
+                    flexDirection === 'Row' || flexDirection === 'RowReverse'
+                      ? 'horizontal'
+                      : 'grid'
+                  }
+                  options={
+                    flexDirection === 'Row' || flexDirection === 'RowReverse'
+                      ? [
+                          {
+                            value: 'Start',
+                            icon: <AlignStartIcon />,
+                            label: 'Start',
+                          },
+                          {
+                            value: 'Center',
+                            icon: <AlignCenterIcon />,
+                            label: 'Center',
+                          },
+                          {
+                            value: 'End',
+                            icon: <AlignEndIcon />,
+                            label: 'End',
+                          },
+                          {
+                            value: 'Stretch',
+                            icon: <AlignStretchIcon />,
+                            label: 'Stretch',
+                          },
+                          {
+                            value: 'Baseline',
+                            icon: <AlignBaselineIcon />,
+                            label: 'Baseline',
+                          },
+                        ]
+                      : [
+                          {
+                            value: 'Start',
+                            icon: <AlignStartColumnIcon />,
+                            label: 'Start',
+                          },
+                          {
+                            value: 'Center',
+                            icon: <AlignCenterColumnIcon />,
+                            label: 'Center',
+                          },
+                          {
+                            value: 'End',
+                            icon: <AlignEndColumnIcon />,
+                            label: 'End',
+                          },
+                          {
+                            value: 'Stretch',
+                            icon: <AlignStretchColumnIcon />,
+                            label: 'Stretch',
+                          },
+                          {
+                            value: 'Baseline',
+                            icon: <AlignBaselineColumnIcon />,
+                            label: 'Baseline',
+                          },
+                        ]
+                  }
                   onChange={(value) =>
                     updateNode((current) =>
                       withProps(current, { alignItems: value })

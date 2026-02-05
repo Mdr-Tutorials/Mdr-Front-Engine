@@ -1528,6 +1528,10 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  min-height: 0;
 }
 
 .InspectorField {
@@ -1667,9 +1671,7 @@
 }
 
 .InspectorUnitInputUnitMenu {
-  position: absolute;
-  right: 0;
-  bottom: calc(100% + 6px);
+  position: fixed;
   width: 400px;
   max-height: 200px;
   overflow: auto;

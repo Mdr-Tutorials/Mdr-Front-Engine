@@ -234,12 +234,56 @@ export function UnitInput({
   const [draftAmount, setDraftAmount] = useState(parsed.amount);
   const [draftUnit, setDraftUnit] = useState(parsed.unit);
   const [isOpen, setIsOpen] = useState(false);
+  const [menuPosition, setMenuPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     setDraftAmount(parsed.amount);
     setDraftUnit(parsed.unit);
   }, [parsed.amount, parsed.unit]);
+
+  useEffect(() => {
+    if (!isOpen || !buttonRef.current) return;
+
+    const updatePosition = () => {
+      if (!buttonRef.current) return;
+
+      const rect = buttonRef.current.getBoundingClientRect();
+      const menuHeight = 200;
+      const menuWidth = 400;
+      const gap = 6;
+
+      let top = rect.top - menuHeight - gap;
+      let left = rect.right - menuWidth;
+
+      if (top < 0) {
+        top = rect.bottom + gap;
+      }
+
+      if (left < 0) {
+        left = 0;
+      }
+
+      if (left + menuWidth > window.innerWidth) {
+        left = window.innerWidth - menuWidth;
+      }
+
+      setMenuPosition({ top, left });
+    };
+
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    window.addEventListener('scroll', updatePosition, true);
+
+    return () => {
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition, true);
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -287,6 +331,7 @@ export function UnitInput({
         <span className="InspectorUnitInputDivider" aria-hidden="true" />
         <div className="InspectorUnitInputUnit">
           <button
+            ref={buttonRef}
             type="button"
             className="InspectorUnitInputUnitButton"
             disabled={disabled}
@@ -299,8 +344,15 @@ export function UnitInput({
           </button>
         </div>
       </div>
-      {isOpen && !disabled ? (
-        <div className="InspectorUnitInputUnitMenu" role="listbox">
+      {isOpen && !disabled && menuPosition ? (
+        <div
+          className="InspectorUnitInputUnitMenu"
+          role="listbox"
+          style={{
+            top: `${menuPosition.top}px`,
+            left: `${menuPosition.left}px`,
+          }}
+        >
           {(() => {
             const knownUnits = groups.flatMap((group) =>
               group.units.map((u) => u.unit)

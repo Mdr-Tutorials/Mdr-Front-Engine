@@ -62,14 +62,16 @@ function MdrDiv({
   const customStyle: React.CSSProperties = {
     ...(style as React.CSSProperties),
     ...(flexDirection && {
-      flexDirection:
-        flexDirection.toLowerCase() as React.CSSProperties['flexDirection'],
+      flexDirection: flexDirection
+        .replace(/([A-Z])/g, '-$1')
+        .toLowerCase()
+        .replace(/^-/, '') as React.CSSProperties['flexDirection'],
     }),
     ...(justifyContent && {
       justifyContent: justifyContent
-        .toLowerCase()
         .replace(/([A-Z])/g, '-$1')
-        .toLowerCase() as React.CSSProperties['justifyContent'],
+        .toLowerCase()
+        .replace(/^-/, '') as React.CSSProperties['justifyContent'],
     }),
     ...(alignItems && {
       alignItems: alignItems.toLowerCase() as React.CSSProperties['alignItems'],

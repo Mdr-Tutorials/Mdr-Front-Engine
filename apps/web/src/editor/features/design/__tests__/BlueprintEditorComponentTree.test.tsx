@@ -3,24 +3,31 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { BlueprintEditorComponentTree } from '../BlueprintEditorComponentTree';
 import { createMirDoc, resetEditorStore } from '@/test-utils/editorStore';
 
+let mockDraggableState = {
+  attributes: {},
+  listeners: {},
+  setNodeRef: () => {},
+  transform: null,
+  isDragging: false,
+};
+
+let mockDroppableState = {
+  setNodeRef: () => {},
+  isOver: false,
+};
+
 vi.mock('@dnd-kit/core', () => ({
-  useDraggable: () => ({
-    attributes: {},
-    listeners: {},
-    setNodeRef: () => {},
-    transform: null,
-    isDragging: false,
-  }),
-  useDroppable: () => ({
-    setNodeRef: () => {},
-    isOver: false,
-  }),
+  useDraggable: () => mockDraggableState,
+  useDroppable: () => mockDroppableState,
 }));
 
 vi.mock('@dnd-kit/utilities', () => ({
   CSS: {
     Transform: {
-      toString: () => '',
+      toString: (transform: any) => {
+        if (!transform) return '';
+        return `translate3d(${transform.x}px, ${transform.y}px, 0)`;
+      },
     },
   },
 }));
@@ -45,6 +52,18 @@ vi.mock('lucide-react', () => ({
 
 beforeEach(() => {
   resetEditorStore();
+  // Reset mock states
+  mockDraggableState = {
+    attributes: {},
+    listeners: {},
+    setNodeRef: () => {},
+    transform: null,
+    isDragging: false,
+  };
+  mockDroppableState = {
+    setNodeRef: () => {},
+    isOver: false,
+  };
 });
 
 describe('BlueprintEditorComponentTree', () => {
@@ -118,5 +137,265 @@ describe('BlueprintEditorComponentTree', () => {
     const moveUpButtons = screen.getAllByLabelText('Move up');
     fireEvent.click(moveUpButtons[1]);
     expect(onMoveNode).toHaveBeenCalledWith('child-1', 'up');
+  });
+
+  describe('Drag and Drop Behavior', () => {
+    it('applies isDragging state and reduces opacity when dragging', () => {
+      resetEditorStore({
+        mirDoc: createMirDoc([
+          { id: 'child-1', type: 'MdrText', text: 'Text' },
+        ]),
+      });
+
+      mockDraggableState.isDragging = true;
+
+      const { container } = render(
+        <BlueprintEditorComponentTree
+          isCollapsed={false}
+          selectedId={undefined}
+          onToggleCollapse={() => {}}
+          onSelectNode={() => {}}
+          onDeleteSelected={() => {}}
+          onDeleteNode={() => {}}
+          onCopyNode={() => {}}
+          onMoveNode={() => {}}
+        />
+      );
+
+      const treeItem = container.querySelector('.BlueprintEditorTreeItem');
+      expect(treeItem).toBeTruthy();
+      const style = window.getComputedStyle(treeItem!);
+      expect(treeItem?.getAttribute('style')).toContain('opacity');
+    });
+
+    it('applies isOver state with IsOver class when hovering', () => {
+      resetEditorStore({
+        mirDoc: createMirDoc([
+          { id: 'child-1', type: 'MdrText', text: 'Text' },
+        ]),
+      });
+
+      mockDroppableState.isOver = true;
+
+      const { container } = render(
+        <BlueprintEditorComponentTree
+          isCollapsed={false}
+          selectedId={undefined}
+          onToggleCollapse={() => {}}
+          onSelectNode={() => {}}
+          onDeleteSelected={() => {}}
+          onDeleteNode={() => {}}
+          onCopyNode={() => {}}
+          onMoveNode={() => {}}
+        />
+      );
+
+      const treeItem = container.querySelector('.BlueprintEditorTreeItem');
+      expect(treeItem?.classList.contains('IsOver')).toBe(true);
+    });
+
+    it('shows DropBefore class when dropHint placement is before', () => {
+      resetEditorStore({
+        mirDoc: createMirDoc([
+          { id: 'child-1', type: 'MdrText', text: 'Text' },
+        ]),
+      });
+
+      const { container } = render(
+        <BlueprintEditorComponentTree
+          isCollapsed={false}
+          selectedId={undefined}
+          dropHint={{ overNodeId: 'child-1', placement: 'before' }}
+          onToggleCollapse={() => {}}
+          onSelectNode={() => {}}
+          onDeleteSelected={() => {}}
+          onDeleteNode={() => {}}
+          onCopyNode={() => {}}
+          onMoveNode={() => {}}
+        />
+      );
+
+      const treeItems = container.querySelectorAll('.BlueprintEditorTreeItem');
+      const childItem = Array.from(treeItems).find((item) =>
+        item.getAttribute('title')?.includes('child-1')
+      );
+      expect(childItem?.classList.contains('DropBefore')).toBe(true);
+    });
+
+    it('shows DropAfter class when dropHint placement is after', () => {
+      resetEditorStore({
+        mirDoc: createMirDoc([
+          { id: 'child-1', type: 'MdrText', text: 'Text' },
+        ]),
+      });
+
+      const { container } = render(
+        <BlueprintEditorComponentTree
+          isCollapsed={false}
+          selectedId={undefined}
+          dropHint={{ overNodeId: 'child-1', placement: 'after' }}
+          onToggleCollapse={() => {}}
+          onSelectNode={() => {}}
+          onDeleteSelected={() => {}}
+          onDeleteNode={() => {}}
+          onCopyNode={() => {}}
+          onMoveNode={() => {}}
+        />
+      );
+
+      const treeItems = container.querySelectorAll('.BlueprintEditorTreeItem');
+      const childItem = Array.from(treeItems).find((item) =>
+        item.getAttribute('title')?.includes('child-1')
+      );
+      expect(childItem?.classList.contains('DropAfter')).toBe(true);
+    });
+
+    it('shows DropChild class when dropHint placement is child', () => {
+      resetEditorStore({
+        mirDoc: createMirDoc([{ id: 'child-1', type: 'MdrDiv', children: [] }]),
+      });
+
+      const { container } = render(
+        <BlueprintEditorComponentTree
+          isCollapsed={false}
+          selectedId={undefined}
+          dropHint={{ overNodeId: 'child-1', placement: 'child' }}
+          onToggleCollapse={() => {}}
+          onSelectNode={() => {}}
+          onDeleteSelected={() => {}}
+          onDeleteNode={() => {}}
+          onCopyNode={() => {}}
+          onMoveNode={() => {}}
+        />
+      );
+
+      const treeItems = container.querySelectorAll('.BlueprintEditorTreeItem');
+      const childItem = Array.from(treeItems).find((item) =>
+        item.getAttribute('title')?.includes('child-1')
+      );
+      expect(childItem?.classList.contains('DropChild')).toBe(true);
+    });
+
+    it('applies transform style when dragging with transform value', () => {
+      resetEditorStore({
+        mirDoc: createMirDoc([
+          { id: 'child-1', type: 'MdrText', text: 'Text' },
+        ]),
+      });
+
+      mockDraggableState.transform = { x: 10, y: 20, scaleX: 1, scaleY: 1 };
+
+      const { container } = render(
+        <BlueprintEditorComponentTree
+          isCollapsed={false}
+          selectedId={undefined}
+          onToggleCollapse={() => {}}
+          onSelectNode={() => {}}
+          onDeleteSelected={() => {}}
+          onDeleteNode={() => {}}
+          onCopyNode={() => {}}
+          onMoveNode={() => {}}
+        />
+      );
+
+      const treeItems = container.querySelectorAll('.BlueprintEditorTreeItem');
+      const childItem = Array.from(treeItems).find((item) =>
+        item.getAttribute('title')?.includes('child-1')
+      );
+      const style = childItem?.getAttribute('style');
+      expect(style).toBeTruthy();
+      expect(style).toContain('transform');
+    });
+
+    it('renders drag handle with proper attributes and listeners', () => {
+      resetEditorStore({
+        mirDoc: createMirDoc([
+          { id: 'child-1', type: 'MdrText', text: 'Text' },
+        ]),
+      });
+
+      const mockListeners = { onPointerDown: vi.fn() };
+      mockDraggableState.listeners = mockListeners;
+
+      const { container } = render(
+        <BlueprintEditorComponentTree
+          isCollapsed={false}
+          selectedId={undefined}
+          onToggleCollapse={() => {}}
+          onSelectNode={() => {}}
+          onDeleteSelected={() => {}}
+          onDeleteNode={() => {}}
+          onCopyNode={() => {}}
+          onMoveNode={() => {}}
+        />
+      );
+
+      const dragHandle = container.querySelector(
+        '.BlueprintEditorTreeDragHandle'
+      );
+      expect(dragHandle).toBeTruthy();
+      expect(dragHandle?.getAttribute('aria-label')).toBe('Drag to reorder');
+    });
+
+    it('disables drag handle for root node', () => {
+      resetEditorStore({
+        mirDoc: createMirDoc([
+          { id: 'child-1', type: 'MdrText', text: 'Text' },
+        ]),
+      });
+
+      const { container } = render(
+        <BlueprintEditorComponentTree
+          isCollapsed={false}
+          selectedId={undefined}
+          onToggleCollapse={() => {}}
+          onSelectNode={() => {}}
+          onDeleteSelected={() => {}}
+          onDeleteNode={() => {}}
+          onCopyNode={() => {}}
+          onMoveNode={() => {}}
+        />
+      );
+
+      const dragHandles = container.querySelectorAll(
+        '.BlueprintEditorTreeDragHandle'
+      );
+      const rootDragHandle = dragHandles[0];
+      expect(rootDragHandle?.hasAttribute('disabled')).toBe(true);
+    });
+
+    it('handles nested nodes with proper drag and drop states', () => {
+      resetEditorStore({
+        mirDoc: createMirDoc([
+          {
+            id: 'parent-1',
+            type: 'MdrDiv',
+            children: [{ id: 'child-1', type: 'MdrText', text: 'Nested Text' }],
+          },
+        ]),
+      });
+
+      const { container } = render(
+        <BlueprintEditorComponentTree
+          isCollapsed={false}
+          selectedId={undefined}
+          dropHint={{ overNodeId: 'child-1', placement: 'before' }}
+          onToggleCollapse={() => {}}
+          onSelectNode={() => {}}
+          onDeleteSelected={() => {}}
+          onDeleteNode={() => {}}
+          onCopyNode={() => {}}
+          onMoveNode={() => {}}
+        />
+      );
+
+      const treeItems = container.querySelectorAll('.BlueprintEditorTreeItem');
+      expect(treeItems.length).toBeGreaterThan(1);
+
+      const nestedItem = Array.from(treeItems).find((item) =>
+        item.getAttribute('title')?.includes('child-1')
+      );
+      expect(nestedItem?.classList.contains('DropBefore')).toBe(true);
+    });
   });
 });
