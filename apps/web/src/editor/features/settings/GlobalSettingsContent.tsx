@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   MdrCheckList,
@@ -26,17 +25,25 @@ export type GlobalSettingsContentProps = {
   mode?: SettingsMode;
   overrides?: OverrideState;
   onToggleOverride?: (key: keyof GlobalSettingsState) => void;
+  projectId?: string;
 };
 
 export const GlobalSettingsContent = ({
   mode = 'global',
   overrides = {},
   onToggleOverride,
+  projectId,
 }: GlobalSettingsContentProps) => {
   const { t } = useTranslation('editor');
   const globalValues = useSettingsStore((state) => state.global);
   const setGlobalValue = useSettingsStore((state) => state.setGlobalValue);
-  const [projectValues, setProjectValues] = useState(createProjectDefaults);
+  const setProjectGlobalValue = useSettingsStore(
+    (state) => state.setProjectGlobalValue
+  );
+  const projectValues = useSettingsStore((state) =>
+    projectId ? state.projectGlobalById[projectId]?.values : undefined
+  );
+  const projectFallback = createProjectDefaults();
 
   const isProjectMode = mode === 'project';
 
@@ -45,7 +52,8 @@ export const GlobalSettingsContent = ({
 
   const resolveValue = (key: keyof GlobalSettingsState) => {
     if (!isProjectMode) return globalValues[key];
-    return isOverrideEnabled(key) ? projectValues[key] : globalValues[key];
+    const projectValue = projectValues?.[key] ?? projectFallback[key];
+    return isOverrideEnabled(key) ? projectValue : globalValues[key];
   };
 
   const updateValue = <K extends keyof GlobalSettingsState>(
@@ -53,8 +61,8 @@ export const GlobalSettingsContent = ({
     value: GlobalSettingsState[K]
   ) => {
     if (isProjectMode) {
-      if (!isOverrideEnabled(key)) return;
-      setProjectValues((prev) => ({ ...prev, [key]: value }));
+      if (!projectId || !isOverrideEnabled(key)) return;
+      setProjectGlobalValue(projectId, key, value);
       return;
     }
     setGlobalValue(key, value);

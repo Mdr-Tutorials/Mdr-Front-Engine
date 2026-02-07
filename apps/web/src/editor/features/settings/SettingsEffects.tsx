@@ -1,12 +1,51 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
 
 export const SettingsEffects = () => {
   const { i18n } = useTranslation();
-  const { language, theme, density, fontScale } = useSettingsStore(
-    (state) => state.global
+  const { projectId } = useParams();
+  const language = useSettingsStore((state) => {
+    const projectSettings = projectId
+      ? state.projectGlobalById[projectId]
+      : undefined;
+    return projectSettings?.overrides.language
+      ? projectSettings.values.language
+      : state.global.language;
+  });
+  const theme = useSettingsStore((state) => {
+    const projectSettings = projectId
+      ? state.projectGlobalById[projectId]
+      : undefined;
+    return projectSettings?.overrides.theme
+      ? projectSettings.values.theme
+      : state.global.theme;
+  });
+  const density = useSettingsStore((state) => {
+    const projectSettings = projectId
+      ? state.projectGlobalById[projectId]
+      : undefined;
+    return projectSettings?.overrides.density
+      ? projectSettings.values.density
+      : state.global.density;
+  });
+  const fontScale = useSettingsStore((state) => {
+    const projectSettings = projectId
+      ? state.projectGlobalById[projectId]
+      : undefined;
+    return projectSettings?.overrides.fontScale
+      ? projectSettings.values.fontScale
+      : state.global.fontScale;
+  });
+  const ensureProjectGlobal = useSettingsStore(
+    (state) => state.ensureProjectGlobal
   );
+
+  useEffect(() => {
+    if (!projectId) return;
+    ensureProjectGlobal(projectId);
+  }, [ensureProjectGlobal, projectId]);
 
   useEffect(() => {
     if (!language) return;

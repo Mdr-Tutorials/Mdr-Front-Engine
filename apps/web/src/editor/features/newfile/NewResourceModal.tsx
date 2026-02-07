@@ -47,10 +47,14 @@ function NewResourceModal({
   const handleCreate = () => {
     const finalName = name.trim() || 'Untitled';
     const id = createId(type);
+    setProject({
+      id,
+      name: finalName,
+      description: description.trim() || undefined,
+      type,
+    });
 
     if (type === 'project') {
-      // Original NewProjectModal setProject logicdescription
-      setProject({ id, name: finalName, description: '' });
       onClose();
       navigate(`/editor/project/${id}/blueprint`);
     } else if (type === 'component') {

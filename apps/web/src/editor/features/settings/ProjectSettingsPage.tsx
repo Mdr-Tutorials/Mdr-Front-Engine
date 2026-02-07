@@ -1,29 +1,43 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { MdrButton, MdrHeading, MdrParagraph, MdrTabs } from '@mdr/ui';
 import { GlobalSettingsContent } from './GlobalSettingsContent';
 import { ProjectSettingsContent } from './ProjectSettingsContent';
-import { type OverrideState, createGlobalDefaults } from './SettingsDefaults';
+import { createGlobalDefaults } from './SettingsDefaults';
+import { useSettingsStore } from '@/editor/store/useSettingsStore';
 
-const createOverrideDefaults = (): OverrideState => {
+const createOverrideDefaults = () => {
   const defaults = createGlobalDefaults();
-  return Object.keys(defaults).reduce<OverrideState>((acc, key) => {
+  return Object.keys(defaults).reduce<Record<string, boolean>>((acc, key) => {
     acc[key] = false;
     return acc;
   }, {});
 };
+const DEFAULT_OVERRIDES = createOverrideDefaults();
 
 export const ProjectSettingsPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation('editor');
   const { projectId } = useParams();
-  const [overrides, setOverrides] = useState<OverrideState>(
-    createOverrideDefaults
+  const ensureProjectGlobal = useSettingsStore((state) => state.ensureProjectGlobal);
+  const toggleProjectOverride = useSettingsStore(
+    (state) => state.toggleProjectOverride
+  );
+  const overrides = useSettingsStore((state) =>
+    projectId
+      ? (state.projectGlobalById[projectId]?.overrides ?? DEFAULT_OVERRIDES)
+      : DEFAULT_OVERRIDES
   );
 
+  useEffect(() => {
+    if (!projectId) return;
+    ensureProjectGlobal(projectId);
+  }, [ensureProjectGlobal, projectId]);
+
   const handleToggleOverride = (key: keyof typeof overrides) => {
-    setOverrides((prev) => ({ ...prev, [key]: !prev[key] }));
+    if (!projectId) return;
+    toggleProjectOverride(projectId, key);
   };
 
   const basePath = projectId ? `/editor/project/${projectId}` : '/editor';
@@ -49,6 +63,7 @@ export const ProjectSettingsPage = () => {
           </div>
           <GlobalSettingsContent
             mode="project"
+            projectId={projectId}
             overrides={overrides}
             onToggleOverride={handleToggleOverride}
           />

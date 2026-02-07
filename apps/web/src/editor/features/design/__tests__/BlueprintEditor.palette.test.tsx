@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
+import { MdrIcon } from '@mdr/ui';
 import {
   createNodeFromPaletteItem,
   getTreeDropPlacement,
@@ -56,6 +57,19 @@ describe('createNodeFromPaletteItem', () => {
         expect(node.id).toBe(`${node.type}-1`);
       });
     });
+  });
+
+  it('creates icon nodes with default icon props', () => {
+    const createId = (type: string) => `${type}-1`;
+
+    const iconNode = createNodeFromPaletteItem('icon', createId);
+    expect(iconNode.type).toBe('MdrIcon');
+    expect(iconNode.props?.icon).toBeTruthy();
+
+    const iconLinkNode = createNodeFromPaletteItem('icon-link', createId);
+    expect(iconLinkNode.type).toBe('MdrIconLink');
+    expect(iconLinkNode.props?.icon).toBeTruthy();
+    expect(iconLinkNode.props?.to).toBe('/blueprint');
   });
 });
 
@@ -187,5 +201,19 @@ describe('palette drag rendering', () => {
         expect(renderError).toBeUndefined();
       });
     });
+  });
+
+  it('does not throw when MdrIcon receives an invalid icon prop at runtime', () => {
+    let renderError: unknown;
+    try {
+      const { unmount } = render(
+        <MdrIcon {...({ icon: undefined } as unknown as Parameters<typeof MdrIcon>[0])} />
+      );
+      unmount();
+    } catch (error) {
+      renderError = error;
+    }
+
+    expect(renderError).toBeUndefined();
   });
 });

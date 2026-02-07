@@ -300,13 +300,13 @@ export function UnitInput({
   return (
     <div
       ref={containerRef}
-      className={`InspectorUnitInput ${disabled ? 'Disabled' : ''}`.trim()}
+      className={`InspectorUnitInput relative w-full max-w-[100px] ${disabled ? 'Disabled opacity-60' : ''}`.trim()}
       onKeyDown={(event) => {
         if (event.key === 'Escape') setIsOpen(false);
       }}
     >
-      <div className="InspectorUnitInputFrame">
-        <div className="InspectorUnitInputAmount">
+      <div className="InspectorUnitInputFrame inline-flex h-8 w-full items-center justify-between overflow-hidden rounded-[10px] border border-black/12 bg-(--color-0)">
+        <div className="InspectorUnitInputAmount w-10 flex-none [&_.InspectorTextInput]:px-1.5 [&_.InspectorTextInput]:text-right [&_.InspectorTextInput]:tabular-nums">
           <InspectorTextInput
             value={draftAmount}
             onChange={(nextAmount) => {
@@ -328,12 +328,15 @@ export function UnitInput({
             inputMode="decimal"
           />
         </div>
-        <span className="InspectorUnitInputDivider" aria-hidden="true" />
-        <div className="InspectorUnitInputUnit">
+        <span
+          className="InspectorUnitInputDivider h-[18px] w-px flex-none bg-black/12"
+          aria-hidden="true"
+        />
+        <div className="InspectorUnitInputUnit flex h-full flex-none items-center justify-between">
           <button
             ref={buttonRef}
             type="button"
-            className="InspectorUnitInputUnitButton"
+            className="InspectorUnitInputUnitButton inline-flex h-full w-12 items-center justify-between gap-1.5 border-0 bg-transparent px-2 text-xs text-(--color-9) outline-none disabled:cursor-not-allowed"
             disabled={disabled}
             aria-label={draftUnit}
             aria-expanded={isOpen}
@@ -346,7 +349,7 @@ export function UnitInput({
       </div>
       {isOpen && !disabled && menuPosition ? (
         <div
-          className="InspectorUnitInputUnitMenu"
+          className="InspectorUnitInputUnitMenu fixed z-[8] max-h-[200px] w-[400px] overflow-auto rounded-xl border border-black/8 bg-(--color-0) p-2 shadow-[0_12px_26px_rgba(0,0,0,0.12)]"
           role="listbox"
           style={{
             top: `${menuPosition.top}px`,
@@ -370,16 +373,23 @@ export function UnitInput({
                 ];
             return [...currentGroup, ...groups];
           })().map((group) => (
-            <div key={group.label} className="InspectorUnitInputUnitGroup">
-              <div className="InspectorUnitInputUnitGroupLabel">
+            <div
+              key={group.label}
+              className="InspectorUnitInputUnitGroup flex flex-col gap-1.5 [&+&]:mt-2.5"
+            >
+              <div className="InspectorUnitInputUnitGroupLabel text-[10px] uppercase tracking-[0.06em] text-(--color-6)">
                 {group.label}
               </div>
-              <div className="InspectorUnitInputUnitGroupItems">
+              <div className="InspectorUnitInputUnitGroupItems grid gap-1.5 [grid-template-columns:repeat(auto-fit,minmax(44px,1fr))]">
                 {group.units.map((unitOption) => (
                   <button
                     key={unitOption.unit}
                     type="button"
-                    className={`InspectorUnitInputUnitOption ${unitOption.unit === draftUnit ? 'Active' : ''}`.trim()}
+                    className={`InspectorUnitInputUnitOption h-[26px] cursor-pointer rounded-[10px] border border-black/8 bg-transparent text-xs text-(--color-8) hover:border-black/18 hover:text-(--color-9) ${
+                      unitOption.unit === draftUnit
+                        ? 'Active border-black/18 bg-black/4 text-(--color-9)'
+                        : ''
+                    }`.trim()}
                     title={unitOption.title}
                     onClick={() => {
                       setDraftUnit(unitOption.unit);

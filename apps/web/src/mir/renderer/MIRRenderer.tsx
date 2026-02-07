@@ -8,6 +8,11 @@ import {
   type AdapterContext,
   type ComponentRegistry,
 } from './registry';
+import {
+  executeBuiltInAction,
+  isBuiltInActionName,
+  type BuiltInActionContext,
+} from '../actions/registry';
 
 const VOID_ELEMENTS = new Set(['input', 'img', 'br', 'hr', 'meta', 'link']);
 
@@ -28,6 +33,16 @@ type RenderContext = {
   state: RenderState;
   params: RenderParams;
   dispatchAction: (actionName?: string, payload?: unknown) => void;
+  dispatchBuiltInAction: (
+    actionName: string,
+    options: {
+      params?: Record<string, unknown>;
+      nodeId: string;
+      trigger: string;
+      eventKey: string;
+      payload?: unknown;
+    }
+  ) => boolean;
   onNodeSelect?: (nodeId: string, event: React.SyntheticEvent) => void;
   selectedId?: string;
   renderMode: 'strict' | 'tolerant';
@@ -102,6 +117,16 @@ interface MIRRendererProps {
   registry?: ComponentRegistry;
   renderMode?: 'strict' | 'tolerant';
   allowExternalProps?: boolean;
+  builtInActions?: Record<
+    string,
+    (options: {
+      params?: Record<string, unknown>;
+      nodeId: string;
+      trigger: string;
+      eventKey: string;
+      payload?: unknown;
+    }) => void
+  >;
 }
 
 const MIRNode: React.FC<{
@@ -161,6 +186,18 @@ const MIRNode: React.FC<{
       const reactEventName = toReactEventName(trigger);
       if (!reactEventName) return;
       const handler = (payload: unknown) => {
+        if (
+          eventDef.action &&
+          context.dispatchBuiltInAction(eventDef.action, {
+            params: eventDef.params,
+            nodeId: node.id,
+            trigger,
+            eventKey,
+            payload,
+          })
+        ) {
+          return;
+        }
         context.dispatchAction(eventDef.action, payload);
       };
       handlers[reactEventName] = mergeHandlers(
@@ -271,6 +308,7 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
   registry: registryProp,
   renderMode = 'tolerant',
   allowExternalProps = true,
+  builtInActions,
 }) => {
   const effectiveParams = useMemo(() => {
     const result: RenderParams = {};
@@ -342,11 +380,37 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
     [registryProp]
   );
 
+  const dispatchBuiltInAction = useCallback(
+    (
+      actionName: string,
+      options: {
+        params?: Record<string, unknown>;
+        nodeId: string;
+        trigger: string;
+        eventKey: string;
+        payload?: unknown;
+      }
+    ) => {
+      const action = builtInActions?.[actionName];
+      if (typeof action === 'function') {
+        action(options);
+        return true;
+      }
+      if (isBuiltInActionName(actionName)) {
+        executeBuiltInAction(actionName, options as BuiltInActionContext);
+        return true;
+      }
+      return false;
+    },
+    [builtInActions]
+  );
+
   const context = useMemo(
     () => ({
       state,
       params: effectiveParams,
       dispatchAction,
+      dispatchBuiltInAction,
       selectedId,
       onNodeSelect,
       renderMode,
@@ -355,6 +419,7 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
       state,
       effectiveParams,
       dispatchAction,
+      dispatchBuiltInAction,
       selectedId,
       onNodeSelect,
       renderMode,

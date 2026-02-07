@@ -17,9 +17,13 @@ export function InspectorRow({
     return (
       <div className="flex flex-col gap-2">
         <div>
-          <div className="InspectorLabel">{label}</div>
+          <div className="InspectorLabel text-[11px] font-semibold text-(--color-8)">
+            {label}
+          </div>
           {description ? (
-            <div className="InspectorDescription">{description}</div>
+            <div className="InspectorDescription text-[10px] text-(--color-6)">
+              {description}
+            </div>
           ) : null}
         </div>
         <div className="w-full">{control}</div>
@@ -27,12 +31,18 @@ export function InspectorRow({
     );
   }
 
+  const alignClass = description ? 'items-start' : 'items-center';
+
   return (
-    <div className="flex items-start justify-between gap-2.5">
-      <div className="min-w-30 pt-0.5">
-        <div className="InspectorLabel">{label}</div>
+    <div className={`flex ${alignClass} justify-between gap-2.5`}>
+      <div className="min-w-30">
+        <div className="InspectorLabel text-[11px] font-semibold text-(--color-8)">
+          {label}
+        </div>
         {description ? (
-          <div className="InspectorDescription">{description}</div>
+          <div className="InspectorDescription text-[10px] text-(--color-6)">
+            {description}
+          </div>
         ) : null}
       </div>
       <div className="min-w-0 flex-1">

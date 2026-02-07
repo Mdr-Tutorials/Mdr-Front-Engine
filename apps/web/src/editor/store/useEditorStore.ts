@@ -26,7 +26,12 @@ interface EditorStore {
   blueprintStateByProject: Record<string, BlueprintState>;
   projectsById: Record<
     string,
-    { id: string; name: string; description?: string }
+    {
+      id: string;
+      name: string;
+      description?: string;
+      type: 'project' | 'component' | 'nodegraph';
+    }
   >;
 
   setGeneratedCode: (code: string) => void;
@@ -39,6 +44,7 @@ interface EditorStore {
     id: string;
     name: string;
     description?: string;
+    type?: 'project' | 'component' | 'nodegraph';
   }) => void;
 }
 
@@ -80,7 +86,10 @@ export const useEditorStore = create<EditorStore>()((set) => ({
     set((state) => ({
       projectsById: {
         ...state.projectsById,
-        [project.id]: project,
+        [project.id]: {
+          ...project,
+          type: project.type ?? 'project',
+        },
       },
     })),
 }));

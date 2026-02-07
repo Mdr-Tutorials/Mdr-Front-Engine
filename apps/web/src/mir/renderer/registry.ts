@@ -163,6 +163,19 @@ export const mdrTextPropAdapter: ComponentAdapter = {
   },
 };
 
+export const mdrLinkAdapter: ComponentAdapter = {
+  kind: 'mdr',
+  supportsChildren: false,
+  applySelection: applyMdrSelection,
+  mapProps: ({ resolvedProps, resolvedText }) => {
+    const props = { ...resolvedProps };
+    if (resolvedText !== undefined && props.text === undefined) {
+      props.text = String(resolvedText);
+    }
+    return { props };
+  },
+};
+
 export const mdrInputAdapter: ComponentAdapter = {
   kind: 'mdr',
   supportsChildren: false,
@@ -218,7 +231,7 @@ const registerMdrComponents = (registry: ComponentRegistry) => {
     MdrTextarea: mdrInputAdapter,
     MdrSearch: mdrInputAdapter,
 
-    MdrLink: mdrTextPropAdapter,
+    MdrLink: mdrLinkAdapter,
   };
 
   Object.keys(MdrUi).forEach((type) => {

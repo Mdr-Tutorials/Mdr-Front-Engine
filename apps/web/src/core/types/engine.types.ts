@@ -22,6 +22,7 @@ export interface ComponentNode {
     {
       trigger: string;
       action?: string; // 关联到 logic.graphs 中的 id
+      params?: Record<string, unknown>;
     }
   >;
 }

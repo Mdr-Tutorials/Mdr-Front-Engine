@@ -1,5 +1,4 @@
-import { ReactNode } from 'react';
-import './IconButtonGroup.css';
+import { type ReactNode } from 'react';
 
 export type IconButtonOption<T extends string = string> = {
   value: T;
@@ -20,25 +19,32 @@ export function IconButtonGroup<T extends string = string>({
   onChange,
   layout = 'horizontal',
 }: IconButtonGroupProps<T>) {
-  const getLayoutClass = () => {
-    if (layout === 'grid') return 'Grid';
-    if (layout === 'grid-2x2') return 'Grid2x2';
-    return 'Horizontal';
-  };
+  const containerClass =
+    layout === 'horizontal'
+      ? 'flex flex-col gap-0.5'
+      : 'grid grid-cols-2 gap-0.5';
 
   return (
-    <div className={`IconButtonGroup ${getLayoutClass()}`}>
+    <div className={containerClass}>
       {options.map((option) => (
         <button
           key={option.value}
           type="button"
-          className={`IconButton ${value === option.value ? 'Active' : ''}`}
+          className={`flex w-full min-w-15 flex-row items-center justify-between gap-1 rounded px-2 py-1.5 text-(--color-6) transition-all ${
+            value === option.value
+              ? 'bg-(--color-2) font-medium text-(--color-9) hover:bg-(--color-3)'
+              : 'bg-transparent hover:bg-(--color-1) hover:text-(--color-8)'
+          }`}
           onClick={() => onChange(option.value)}
           title={option.label}
           aria-label={option.label}
         >
-          <span className="IconButtonIcon">{option.icon}</span>
-          <span className="IconButtonLabel">{option.label}</span>
+          <span className="flex items-center justify-center text-[20px]">
+            {option.icon}
+          </span>
+          <span className="text-center text-[11px] leading-[1.2] whitespace-nowrap">
+            {option.label}
+          </span>
         </button>
       ))}
     </div>

@@ -165,4 +165,98 @@ describe('BlueprintEditorInspector', () => {
 
     expect(input.value).toBe('child-1');
   });
+
+  it('creates and deletes a trigger entry', () => {
+    resetEditorStore({
+      mirDoc: createMirDoc([{ id: 'child-1', type: 'MdrButton', text: 'Button' }]),
+      blueprintStateByProject: {
+        [PROJECT_ID]: {
+          ...DEFAULT_BLUEPRINT_STATE,
+          selectedId: 'child-1',
+        },
+      },
+    });
+
+    render(
+      <BlueprintEditorInspector
+        isCollapsed={false}
+        onToggleCollapse={() => {}}
+      />
+    );
+
+    const addButton = screen.getByTestId('inspector-add-trigger');
+    fireEvent.click(addButton);
+
+    const created = screen.getByTestId('inspector-trigger-trigger-1');
+    expect(created).toBeTruthy();
+
+    const deleteButton = screen.getByTestId(
+      'inspector-delete-trigger-trigger-1'
+    );
+    fireEvent.click(deleteButton);
+
+    expect(screen.queryByTestId('inspector-trigger-trigger-1')).toBeNull();
+  });
+
+  it('creates navigate trigger with _blank as default target', () => {
+    resetEditorStore({
+      mirDoc: createMirDoc([{ id: 'child-1', type: 'MdrButton', text: 'Button' }]),
+      blueprintStateByProject: {
+        [PROJECT_ID]: {
+          ...DEFAULT_BLUEPRINT_STATE,
+          selectedId: 'child-1',
+        },
+      },
+    });
+
+    render(
+      <BlueprintEditorInspector
+        isCollapsed={false}
+        onToggleCollapse={() => {}}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('inspector-add-trigger'));
+
+    const node = useEditorStore
+      .getState()
+      .mirDoc.ui.root.children?.find((item) => item.id === 'child-1');
+    const params = node?.events?.['trigger-1']?.params;
+    expect(params?.target).toBe('_blank');
+  });
+
+  it('resets action params when switching trigger action type', () => {
+    resetEditorStore({
+      mirDoc: createMirDoc([{ id: 'child-1', type: 'MdrButton', text: 'Button' }]),
+      blueprintStateByProject: {
+        [PROJECT_ID]: {
+          ...DEFAULT_BLUEPRINT_STATE,
+          selectedId: 'child-1',
+        },
+      },
+    });
+
+    render(
+      <BlueprintEditorInspector
+        isCollapsed={false}
+        onToggleCollapse={() => {}}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('inspector-add-trigger'));
+    const triggerCard = screen.getByTestId('inspector-trigger-trigger-1');
+    const selects = triggerCard.querySelectorAll('select');
+    fireEvent.change(selects[1] as HTMLSelectElement, {
+      target: { value: 'executeGraph' },
+    });
+
+    const node = useEditorStore
+      .getState()
+      .mirDoc.ui.root.children?.find((item) => item.id === 'child-1');
+    const params = node?.events?.['trigger-1']?.params;
+    expect(params?.graphMode).toBe('new');
+    expect(params?.graphName).toBe('');
+    expect(params?.graphId).toBe('');
+    expect(params?.target).toBeUndefined();
+  });
 });

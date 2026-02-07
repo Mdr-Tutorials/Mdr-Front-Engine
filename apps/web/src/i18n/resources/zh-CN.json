@@ -1044,6 +1044,61 @@
       "title": "检查器",
       "toggle": "切换检查器",
       "placeholder": "选择组件以编辑。",
+      "groups": {
+        "basic": "基础信息",
+        "style": {
+          "title": "样式",
+          "empty": "当前组件没有可配置的样式项。"
+        },
+        "triggers": {
+          "title": "触发器",
+          "empty": "暂无触发器配置，事件绑定会显示在这里。",
+          "add": "新建触发器",
+          "delete": "删除触发器",
+          "eventLabel": "触发事件",
+          "eventHelp": "选择触发该动作的 DOM 事件。",
+          "actionLabel": "执行操作",
+          "actionHelp": "选择事件触发后要执行的操作。",
+          "toLabel": "目标地址",
+          "toPlaceholder": "https://example.com",
+          "toHelp": "外链使用 https:// 开头，内部预览路由使用 /path。",
+          "httpsOnly": "外链请使用 https:// 开头，内部链接请使用 /path。",
+          "replace": "替换历史",
+          "replaceHelp": "启用后会替换当前历史记录，而不是新增记录。",
+          "targetHelp": "导航动作使用的浏览器标签页目标。",
+          "statePlaceholder": "state（可选 JSON）",
+          "stateHelp": "可选的导航状态，支持普通文本或 JSON 字符串。",
+          "targets": {
+            "self": "_self",
+            "blank": "_blank"
+          },
+          "actions": {
+            "navigate": "跳转",
+            "executeGraph": "执行节点图"
+          },
+          "graph": {
+            "new": "新建节点图",
+            "newHelp": "创建并执行一个新的节点图。",
+            "select": "选择节点图",
+            "selectHelp": "运行一个已有的节点图。",
+            "namePlaceholder": "新节点图名称",
+            "nameHelp": "要创建的新节点图名称。",
+            "empty": "暂无可选节点图"
+          },
+          "navigation": {
+            "confirm": {
+              "title": "是否打开外部链接？",
+              "url": "URL: {{to}}",
+              "target": "打开目标: {{effectiveTarget}}",
+              "targetOverridden": "配置目标为 {{configuredTarget}}，为保护编辑器，蓝图预览将改用 {{effectiveTarget}} 打开。",
+              "replace": "替换历史: {{replace}}",
+              "source": "来源: {{nodeId}} · {{trigger}}",
+              "yes": "是",
+              "no": "否"
+            }
+          }
+        }
+      },
       "fields": {
         "id": {
           "label": "组件 ID",
@@ -1052,6 +1107,42 @@
         }
       },
       "panels": {
+        "layout": {
+          "title": "布局",
+          "description": "配置 Flex/Grid 布局行为。",
+          "fields": {
+            "gap": "间距",
+            "gapHint": "输入数字（px）或 CSS 尺寸值。",
+            "flexDirection": "方向",
+            "justifyContent": "主轴对齐",
+            "alignItems": "交叉轴对齐",
+            "gridColumns": "列数",
+            "gridColumnsHint": "用于设置 gridTemplateColumns。"
+          },
+          "options": {
+            "direction": {
+              "row": "横向",
+              "rowReverse": "横向反转",
+              "column": "纵向",
+              "columnReverse": "纵向反转"
+            },
+            "justify": {
+              "start": "起始",
+              "center": "居中",
+              "end": "末端",
+              "spaceBetween": "两端对齐",
+              "spaceAround": "环绕分布",
+              "spaceEvenly": "均匀分布"
+            },
+            "align": {
+              "start": "起始",
+              "center": "居中",
+              "end": "末端",
+              "stretch": "拉伸",
+              "baseline": "基线"
+            }
+          }
+        },
         "text": {
           "title": "文本",
           "description": "编辑组件显示的文本内容。",

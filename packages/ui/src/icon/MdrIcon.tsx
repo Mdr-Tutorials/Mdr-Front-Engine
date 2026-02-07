@@ -18,12 +18,40 @@ export interface MdrIconProps
   extends Omit<MdrComponent, 'as'>,
     IconSpecificProps {}
 
+const isComponentIcon = (
+  value: unknown
+): value is React.ComponentType<Record<string, unknown>> =>
+  typeof value === 'function' ||
+  (typeof value === 'object' && value !== null && '$$typeof' in value);
+
+const renderFallbackIcon = (
+  size?: number | string,
+  color = 'currentColor',
+  title?: string
+) => (
+  <svg
+    width={size ?? 24}
+    height={size ?? 24}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden={title ? undefined : true}
+    aria-label={title}
+  >
+    <circle cx="12" cy="12" r="8" stroke={color} strokeWidth="2" />
+  </svg>
+);
+
 function enhanceIcon(
-  icon: IconRenderable,
+  icon: IconRenderable | null | undefined,
   size?: number | string,
   color?: string,
   title?: string
 ) {
+  if (!icon) {
+    return renderFallbackIcon(size, color, title);
+  }
+
   // ------------ 1. 图标是 React Element ------------
   if (React.isValidElement(icon)) {
     const element = icon as React.ReactElement<any>;
@@ -71,7 +99,11 @@ function enhanceIcon(
   }
 
   // ------------ 2. 图标是组件类型（函数/类组件）------------
-  const IconComponent = icon as React.ComponentType<any>;
+  if (!isComponentIcon(icon)) {
+    return renderFallbackIcon(size, color, title);
+  }
+
+  const IconComponent = icon;
   const componentProps: Record<string, any> = {};
   if (size !== undefined) componentProps.size = size;
   if (color !== undefined) componentProps.color = color;

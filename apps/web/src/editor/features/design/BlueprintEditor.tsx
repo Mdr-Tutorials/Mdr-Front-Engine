@@ -5,7 +5,9 @@
   useRef,
   useState,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
+import { Sparkles } from 'lucide-react';
 import {
   DndContext,
   DragOverlay,
@@ -45,13 +47,18 @@ import { BlueprintEditorInspector } from './BlueprintEditorInspector';
 import { BlueprintEditorSidebar } from './BlueprintEditorSidebar';
 import { BlueprintEditorViewportBar } from './BlueprintEditorViewportBar';
 import type { RouteItem } from './BlueprintEditor.types';
+import { isNonNestableType } from './blueprint/nesting';
 import type { ComponentNode, MIRDocument } from '@/core/types/engine.types';
+import { defaultComponentRegistry } from '@/mir/renderer/registry';
+import {
+  getNavigateLinkKind,
+  resolveNavigateTarget,
+} from '@/mir/actions/registry';
 import {
   DEFAULT_BLUEPRINT_STATE,
   useEditorStore,
 } from '@/editor/store/useEditorStore';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
-import './BlueprintEditor.scss';
 
 export type TreeDropPlacement = 'before' | 'after' | 'child';
 
@@ -274,12 +281,6 @@ export const createNodeFromPaletteItem = (
     return {
       id: createId('MdrDiv'),
       type: 'MdrDiv',
-      props: {
-        padding: '14px',
-        border: '1px dashed rgba(0, 0, 0, 0.2)',
-        borderRadius: '14px',
-        backgroundColor: 'rgba(255, 255, 255, 0.75)',
-      },
     };
   }
   if (itemId === 'flex') {
@@ -288,11 +289,6 @@ export const createNodeFromPaletteItem = (
       type: 'MdrDiv',
       props: {
         display: 'Flex',
-        gap: '10px',
-        padding: '14px',
-        border: '1px dashed rgba(0, 0, 0, 0.2)',
-        borderRadius: '14px',
-        backgroundColor: 'rgba(255, 255, 255, 0.75)',
       },
     };
   }
@@ -302,13 +298,7 @@ export const createNodeFromPaletteItem = (
       type: 'MdrDiv',
       props: {
         display: 'Grid',
-        gap: '10px',
-        padding: '14px',
-        border: '1px dashed rgba(0, 0, 0, 0.2)',
-        borderRadius: '14px',
-        backgroundColor: 'rgba(255, 255, 255, 0.75)',
       },
-      style: { gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' },
     };
   }
   if (itemId === 'section') {
@@ -347,6 +337,29 @@ export const createNodeFromPaletteItem = (
       },
     };
   }
+  if (itemId === 'icon') {
+    return {
+      id: createId('MdrIcon'),
+      type: 'MdrIcon',
+      props: {
+        icon: Sparkles,
+        size: 20,
+        ...variantProps,
+      },
+    };
+  }
+  if (itemId === 'icon-link') {
+    return {
+      id: createId('MdrIconLink'),
+      type: 'MdrIconLink',
+      props: {
+        icon: Sparkles,
+        to: '/blueprint',
+        size: 18,
+        ...variantProps,
+      },
+    };
+  }
 
   const defaultNode = PALETTE_NODE_DEFAULTS[itemId];
   if (defaultNode) {
@@ -370,12 +383,6 @@ export const createNodeFromPaletteItem = (
       dataAttributes: { 'data-palette-item': itemId },
       ...(selectedSize ? { size: selectedSize } : {}),
       ...(variantProps ?? {}),
-    },
-    style: {
-      padding: '14px',
-      border: '1px dashed rgba(0, 0, 0, 0.2)',
-      borderRadius: '14px',
-      backgroundColor: 'rgba(255, 255, 255, 0.75)',
     },
   };
 };
@@ -647,17 +654,13 @@ const cloneNodeWithNewIds = (
 };
 
 const supportsChildrenForNode = (node: ComponentNode) => {
-  const type = node.type.toLowerCase();
-  if (
-    type === 'input' ||
-    type === 'mdrinput' ||
-    type === 'textarea' ||
-    type === 'mdrtextarea' ||
-    type === 'button' ||
-    type === 'mdrbutton' ||
-    type === 'mdrbuttonlink'
-  )
-    return false;
+  if (isNonNestableType(node.type)) return false;
+
+  // Reuse renderer adapter metadata so drop behavior expands with component registrations.
+  const registryEntry = defaultComponentRegistry.get(node.type);
+  if (registryEntry?.adapter.isVoid) return false;
+  if (registryEntry?.adapter.supportsChildren === false) return false;
+
   return true;
 };
 
@@ -721,6 +724,7 @@ function BlueprintEditor() {
   const [activePaletteItemId, setActivePaletteItemId] = useState<string | null>(
     null
   );
+  const { t } = useTranslation('blueprint');
   const { projectId } = useParams();
   const blueprintKey = projectId ?? 'global';
   const blueprintState = useEditorStore(
@@ -760,6 +764,98 @@ function BlueprintEditor() {
     setRoutes((prev) => [...prev, next]);
     setCurrentPath(value);
     setNewPath('');
+  };
+
+  const ensureRouteExists = (path: string) => {
+    setRoutes((prev) => {
+      if (prev.some((route) => route.path === path)) return prev;
+      return [...prev, { id: createRouteId(), path }];
+    });
+  };
+
+  const handleNavigateRequest = (options: {
+    params?: Record<string, unknown>;
+    nodeId: string;
+    trigger: string;
+    eventKey: string;
+  }) => {
+    const params = options.params ?? {};
+    const to = typeof params.to === 'string' ? params.to.trim() : '';
+    if (!to) return;
+    const linkKind = getNavigateLinkKind(to);
+    if (linkKind === 'external') {
+      if (typeof window === 'undefined') return;
+      const { configuredTarget, effectiveTarget, openedAsBlankForSafety } =
+        resolveNavigateTarget(params.target, {
+          forceBlankForExternalSafety: true,
+        });
+      const replace = Boolean(params.replace);
+      const targetLine = openedAsBlankForSafety
+        ? t('inspector.groups.triggers.navigation.confirm.targetOverridden', {
+            defaultValue:
+              'Configured target: {{configuredTarget}} (opened as {{effectiveTarget}} in Blueprint preview for safety).',
+            configuredTarget,
+            effectiveTarget,
+          })
+        : t('inspector.groups.triggers.navigation.confirm.target', {
+            defaultValue: 'Target: {{effectiveTarget}}',
+            effectiveTarget,
+          });
+      const confirmed = window.confirm(
+        [
+          t('inspector.groups.triggers.navigation.confirm.title', {
+            defaultValue: 'Open external link?',
+          }),
+          t('inspector.groups.triggers.navigation.confirm.url', {
+            defaultValue: 'URL: {{to}}',
+            to,
+          }),
+          targetLine,
+          t('inspector.groups.triggers.navigation.confirm.replace', {
+            defaultValue: 'Replace history: {{replace}}',
+            replace: replace
+              ? t('inspector.groups.triggers.navigation.confirm.yes', {
+                  defaultValue: 'Yes',
+                })
+              : t('inspector.groups.triggers.navigation.confirm.no', {
+                  defaultValue: 'No',
+                }),
+          }),
+          t('inspector.groups.triggers.navigation.confirm.source', {
+            defaultValue: 'Source: {{nodeId}} · {{trigger}}',
+            nodeId: options.nodeId,
+            trigger: options.trigger,
+          }),
+        ].join('\n')
+      );
+      if (!confirmed) return;
+      window.open(to, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    if (linkKind === 'internal') {
+      setCurrentPath(to);
+      ensureRouteExists(to);
+    }
+  };
+
+  const handleExecuteGraphRequest = (options: {
+    params?: Record<string, unknown>;
+    nodeId: string;
+    trigger: string;
+    eventKey: string;
+  }) => {
+    if (typeof window === 'undefined') return;
+    window.dispatchEvent(
+      new CustomEvent('mdr:execute-graph', {
+        detail: {
+          nodeId: options.nodeId,
+          trigger: options.trigger,
+          eventKey: options.eventKey,
+          ...(options.params ?? {}),
+        },
+      })
+    );
   };
 
   const toggleGroup = (groupId: string) => {
@@ -1196,7 +1292,7 @@ function BlueprintEditor() {
   };
 
   return (
-    <div className="BlueprintEditor">
+    <div className="flex h-full min-h-screen flex-col text-(--color-10)">
       <BlueprintEditorAddressBar
         currentPath={currentPath}
         newPath={newPath}
@@ -1213,10 +1309,11 @@ function BlueprintEditor() {
         onDragEnd={handleDragEnd}
       >
         <div
-          className={`BlueprintEditorBody ${isLibraryCollapsed ? 'SidebarCollapsed' : ''} ${isInspectorCollapsed ? 'InspectorCollapsed' : ''} ${isTreeCollapsed ? 'TreeCollapsed' : ''}`}
+          className={`BlueprintEditorBody relative flex min-h-0 flex-1 p-[14px_20px_20px] [--sidebar-width:400px] [--tree-width:400px] [--inspector-width:360px] [--collapsed-panel-width:36px] [--component-tree-height:450px] max-[1100px]:p-[12px_16px_16px] max-[1100px]:[--sidebar-width:220px] max-[1100px]:[--tree-width:220px] max-[1100px]:[--inspector-width:240px] max-[1100px]:[--component-tree-height:340px] ${isLibraryCollapsed ? '[--sidebar-width:var(--collapsed-panel-width)]' : ''} ${isInspectorCollapsed ? '[--inspector-width:var(--collapsed-panel-width)]' : ''} ${isTreeCollapsed ? '[--component-tree-height:0px]' : ''}`}
         >
           <BlueprintEditorSidebar
             isCollapsed={isLibraryCollapsed}
+            isTreeCollapsed={isTreeCollapsed}
             collapsedGroups={collapsedGroups}
             expandedPreviews={expandedPreviews}
             sizeSelections={sizeSelections}
@@ -1232,6 +1329,7 @@ function BlueprintEditor() {
           />
           <BlueprintEditorComponentTree
             isCollapsed={isTreeCollapsed}
+            isTreeCollapsed={isTreeCollapsed}
             selectedId={selectedId}
             dropHint={treeDropHint}
             onToggleCollapse={() => setTreeCollapsed((prev) => !prev)}
@@ -1250,6 +1348,8 @@ function BlueprintEditor() {
             onPanChange={handlePanChange}
             onZoomChange={handleZoomChange}
             onSelectNode={handleNodeSelect}
+            onNavigateRequest={handleNavigateRequest}
+            onExecuteGraphRequest={handleExecuteGraphRequest}
           />
           <BlueprintEditorInspector
             isCollapsed={isInspectorCollapsed}
@@ -1258,8 +1358,8 @@ function BlueprintEditor() {
         </div>
         <DragOverlay>
           {activePaletteItemId ? (
-            <div className="BlueprintEditorDragOverlay">
-              <div className="BlueprintEditorDragOverlayInner">
+            <div className="pointer-events-none">
+              <div className="inline-flex items-center justify-center rounded-xl border border-black/10 bg-white/92 px-2.5 py-2 text-xs font-bold tracking-[0.01em] text-(--color-9) shadow-[0_14px_30px_rgba(0,0,0,0.18)] dark:border-white/14 dark:bg-[rgba(10,10,10,0.92)]">
                 {activePaletteItemId}
               </div>
             </div>

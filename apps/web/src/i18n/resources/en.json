@@ -1044,6 +1044,61 @@
       "title": "Inspector",
       "toggle": "Toggle inspector",
       "placeholder": "Select a component to edit.",
+      "groups": {
+        "basic": "Basic Info",
+        "style": {
+          "title": "Style",
+          "empty": "No style settings for this component."
+        },
+        "triggers": {
+          "title": "Triggers",
+          "empty": "No triggers configured yet. Event bindings will appear here.",
+          "add": "Add trigger",
+          "delete": "Delete trigger",
+          "eventLabel": "Trigger Event",
+          "eventHelp": "Choose which DOM event will trigger this action.",
+          "actionLabel": "Run Action",
+          "actionHelp": "Choose what should run when the event is fired.",
+          "toLabel": "Destination",
+          "toPlaceholder": "https://example.com",
+          "toHelp": "Use https:// for external links, or /path for in-app preview routes.",
+          "httpsOnly": "Use https:// for external links or /path for internal links.",
+          "replace": "Replace",
+          "replaceHelp": "When enabled, this navigation replaces the current history entry.",
+          "targetHelp": "Browser tab target used by navigation actions.",
+          "statePlaceholder": "state (optional JSON)",
+          "stateHelp": "Optional navigation state. Plain text or JSON string.",
+          "targets": {
+            "self": "_self",
+            "blank": "_blank"
+          },
+          "actions": {
+            "navigate": "Navigate",
+            "executeGraph": "Execute Graph"
+          },
+          "graph": {
+            "new": "New Graph",
+            "newHelp": "Create and execute a new node graph.",
+            "select": "Select Graph",
+            "selectHelp": "Run one of the existing node graphs.",
+            "namePlaceholder": "New graph name",
+            "nameHelp": "Name for the new node graph to be created.",
+            "empty": "No graph available"
+          },
+          "navigation": {
+            "confirm": {
+              "title": "Open external link?",
+              "url": "URL: {{to}}",
+              "target": "Target: {{effectiveTarget}}",
+              "targetOverridden": "Configured target: {{configuredTarget}} (opened as {{effectiveTarget}} in Blueprint preview for safety).",
+              "replace": "Replace history: {{replace}}",
+              "source": "Source: {{nodeId}} · {{trigger}}",
+              "yes": "Yes",
+              "no": "No"
+            }
+          }
+        }
+      },
       "fields": {
         "id": {
           "label": "Component ID",
@@ -1052,6 +1107,42 @@
         }
       },
       "panels": {
+        "layout": {
+          "title": "Layout",
+          "description": "Configure Flex/Grid layout behavior.",
+          "fields": {
+            "gap": "Gap",
+            "gapHint": "Number (px) or CSS size.",
+            "flexDirection": "Direction",
+            "justifyContent": "Justify",
+            "alignItems": "Align",
+            "gridColumns": "Columns",
+            "gridColumnsHint": "Sets gridTemplateColumns."
+          },
+          "options": {
+            "direction": {
+              "row": "Row",
+              "rowReverse": "Row Reverse",
+              "column": "Column",
+              "columnReverse": "Column Reverse"
+            },
+            "justify": {
+              "start": "Start",
+              "center": "Center",
+              "end": "End",
+              "spaceBetween": "Space Between",
+              "spaceAround": "Space Around",
+              "spaceEvenly": "Space Evenly"
+            },
+            "align": {
+              "start": "Start",
+              "center": "Center",
+              "end": "End",
+              "stretch": "Stretch",
+              "baseline": "Baseline"
+            }
+          }
+        },
         "text": {
           "title": "Text",
           "description": "Edit the text displayed by this component.",

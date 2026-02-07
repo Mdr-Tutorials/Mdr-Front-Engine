@@ -1,46 +1,159 @@
-// Flex Direction 图标组件
+// Flex Direction 图标组件（与 Justify/Align 风格一致）
 export const FlexRowIcon = () => (
   <svg
-    width="32"
+    width="56"
     height="20"
-    viewBox="0 0 32 20"
+    viewBox="0 0 56 20"
     fill="none"
     stroke="currentColor"
   >
-    <rect x="2" y="6" width="6" height="8" strokeWidth="1.5" />
-    <rect x="13" y="6" width="6" height="8" strokeWidth="1.5" />
-    <rect x="24" y="6" width="6" height="8" strokeWidth="1.5" />
+    <rect
+      x="1"
+      y="1"
+      width="54"
+      height="18"
+      rx="2"
+      strokeWidth="1"
+      opacity="0.3"
+      strokeDasharray="2,2"
+    />
+    <line x1="8" y1="10" x2="47" y2="10" strokeWidth="1.4" opacity="0.65" />
+    <path d="M47 10 L44.5 8 M47 10 L44.5 12" strokeWidth="1.4" opacity="0.65" />
+    <rect
+      x="10"
+      y="7"
+      width="6"
+      height="6"
+      rx="1.2"
+      strokeWidth="1.2"
+      fill="currentColor"
+      fillOpacity="0.1"
+    />
+    <rect
+      x="21"
+      y="7"
+      width="6"
+      height="6"
+      rx="1.2"
+      strokeWidth="1.2"
+      fill="currentColor"
+      fillOpacity="0.1"
+    />
+    <rect
+      x="32"
+      y="7"
+      width="6"
+      height="6"
+      rx="1.2"
+      strokeWidth="1.2"
+      fill="currentColor"
+      fillOpacity="0.1"
+    />
   </svg>
 );
 
 export const FlexColumnIcon = () => (
   <svg
     width="20"
-    height="32"
-    viewBox="0 0 20 32"
+    height="56"
+    viewBox="0 0 20 56"
     fill="none"
     stroke="currentColor"
   >
-    <rect x="6" y="2" width="8" height="6" strokeWidth="1.5" />
-    <rect x="6" y="13" width="8" height="6" strokeWidth="1.5" />
-    <rect x="6" y="24" width="8" height="6" strokeWidth="1.5" />
+    <rect
+      x="1"
+      y="1"
+      width="18"
+      height="54"
+      rx="2"
+      strokeWidth="1"
+      opacity="0.3"
+      strokeDasharray="2,2"
+    />
+    <line x1="10" y1="8" x2="10" y2="47" strokeWidth="1.4" opacity="0.65" />
+    <path d="M10 47 L8 44.5 M10 47 L12 44.5" strokeWidth="1.4" opacity="0.65" />
+    <rect
+      x="6"
+      y="10"
+      width="8"
+      height="6"
+      rx="1"
+      strokeWidth="1.2"
+      fill="currentColor"
+      fillOpacity="0.1"
+    />
+    <rect
+      x="6"
+      y="22"
+      width="8"
+      height="6"
+      rx="1"
+      strokeWidth="1.2"
+      fill="currentColor"
+      fillOpacity="0.1"
+    />
+    <rect
+      x="6"
+      y="34"
+      width="8"
+      height="6"
+      rx="1"
+      strokeWidth="1.2"
+      fill="currentColor"
+      fillOpacity="0.1"
+    />
   </svg>
 );
 
 export const FlexRowReverseIcon = () => (
   <svg
-    width="32"
+    width="56"
     height="20"
-    viewBox="0 0 32 20"
+    viewBox="0 0 56 20"
     fill="none"
     stroke="currentColor"
   >
-    <rect x="24" y="6" width="6" height="8" strokeWidth="1.5" />
-    <rect x="13" y="6" width="6" height="8" strokeWidth="1.5" />
-    <rect x="2" y="6" width="6" height="8" strokeWidth="1.5" />
-    <path
-      d="M 28 10 L 30 10 M 30 10 L 28 8 M 30 10 L 28 12"
-      strokeWidth="1.5"
+    <rect
+      x="1"
+      y="1"
+      width="54"
+      height="18"
+      rx="2"
+      strokeWidth="1"
+      opacity="0.3"
+      strokeDasharray="2,2"
+    />
+    <line x1="47" y1="10" x2="8" y2="10" strokeWidth="1.4" opacity="0.65" />
+    <path d="M8 10 L10.5 8 M8 10 L10.5 12" strokeWidth="1.4" opacity="0.65" />
+    <rect
+      x="40"
+      y="7"
+      width="6"
+      height="6"
+      rx="1.2"
+      strokeWidth="1.2"
+      fill="currentColor"
+      fillOpacity="0.1"
+    />
+    <rect
+      x="29"
+      y="7"
+      width="6"
+      height="6"
+      rx="1.2"
+      strokeWidth="1.2"
+      fill="currentColor"
+      fillOpacity="0.1"
+    />
+    <rect
+      x="18"
+      y="7"
+      width="6"
+      height="6"
+      rx="1.2"
+      strokeWidth="1.2"
+      fill="currentColor"
+      fillOpacity="0.1"
     />
   </svg>
 );
@@ -48,17 +161,52 @@ export const FlexRowReverseIcon = () => (
 export const FlexColumnReverseIcon = () => (
   <svg
     width="20"
-    height="32"
-    viewBox="0 0 20 32"
+    height="56"
+    viewBox="0 0 20 56"
     fill="none"
     stroke="currentColor"
   >
-    <rect x="6" y="24" width="8" height="6" strokeWidth="1.5" />
-    <rect x="6" y="13" width="8" height="6" strokeWidth="1.5" />
-    <rect x="6" y="2" width="8" height="6" strokeWidth="1.5" />
-    <path
-      d="M 10 28 L 10 30 M 10 30 L 8 28 M 10 30 L 12 28"
-      strokeWidth="1.5"
+    <rect
+      x="1"
+      y="1"
+      width="18"
+      height="54"
+      rx="2"
+      strokeWidth="1"
+      opacity="0.3"
+      strokeDasharray="2,2"
+    />
+    <line x1="10" y1="47" x2="10" y2="6" strokeWidth="1.4" opacity="0.65" />
+    <path d="M10 6 L8 8.5 M10 6 L12 8.5" strokeWidth="1.4" opacity="0.65" />
+    <rect
+      x="6"
+      y="34"
+      width="8"
+      height="6"
+      rx="1"
+      strokeWidth="1.2"
+      fill="currentColor"
+      fillOpacity="0.1"
+    />
+    <rect
+      x="6"
+      y="22"
+      width="8"
+      height="6"
+      rx="1"
+      strokeWidth="1.2"
+      fill="currentColor"
+      fillOpacity="0.1"
+    />
+    <rect
+      x="6"
+      y="10"
+      width="8"
+      height="6"
+      rx="1"
+      strokeWidth="1.2"
+      fill="currentColor"
+      fillOpacity="0.1"
     />
   </svg>
 );

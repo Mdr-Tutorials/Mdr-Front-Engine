@@ -27,6 +27,20 @@ type BlueprintEditorCanvasProps = {
   onPanChange: (pan: { x: number; y: number }) => void;
   onZoomChange: (value: number) => void;
   onSelectNode: (nodeId: string) => void;
+  onNavigateRequest?: (options: {
+    params?: Record<string, unknown>;
+    nodeId: string;
+    trigger: string;
+    eventKey: string;
+    payload?: unknown;
+  }) => void;
+  onExecuteGraphRequest?: (options: {
+    params?: Record<string, unknown>;
+    nodeId: string;
+    trigger: string;
+    eventKey: string;
+    payload?: unknown;
+  }) => void;
 };
 
 type PanState = {
@@ -87,6 +101,8 @@ export function BlueprintEditorCanvas({
   onPanChange,
   onZoomChange,
   onSelectNode,
+  onNavigateRequest,
+  onExecuteGraphRequest,
 }: BlueprintEditorCanvasProps) {
   const { t } = useTranslation('blueprint');
   const assist = useSettingsStore((state) => state.global.assist);
@@ -342,10 +358,10 @@ export function BlueprintEditorCanvas({
 
   return (
     <section
-      className={`BlueprintEditorCanvas ${showSelectionDiagnostics ? '' : 'HideSelectionDiagnostics'}`}
+      className={`BlueprintEditorCanvas relative z-1 flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-[18px] border border-black/6 bg-(--color-1) dark:border-white/8 max-[1100px]:min-h-80 ${showSelectionDiagnostics ? '' : 'HideSelectionDiagnostics [&_.BlueprintEditorCanvasArtboard_[data-mir-selected=true]]:outline-none'}`}
     >
       <div
-        className={`BlueprintEditorCanvasSurface ${isPanning ? 'IsPanning' : ''} ${isCanvasOver ? 'IsOver' : ''}`}
+        className={`BlueprintEditorCanvasSurface relative min-h-0 flex-1 touch-none overflow-hidden ${isPanning ? 'IsPanning cursor-grabbing select-none' : 'cursor-grab'} ${isCanvasOver ? 'IsOver outline-2 outline-dashed outline-[rgba(0,0,0,0.18)] -outline-offset-2 dark:outline-[rgba(255,255,255,0.22)]' : ''}`}
         ref={setSurfaceNodeRef}
         tabIndex={0}
         onPointerDown={handlePointerDown}
@@ -355,17 +371,19 @@ export function BlueprintEditorCanvas({
         onPointerLeave={endPan}
         onKeyDown={handleKeyDown}
       >
-        {showGrid && <div className="BlueprintEditorCanvasGrid" />}
+        {showGrid && (
+          <div className="BlueprintEditorCanvasGrid pointer-events-none absolute inset-0 opacity-30 bg-[radial-gradient(rgba(0,0,0,0.12)_1px,transparent_1px)] bg-size-[20px_20px] dark:bg-[radial-gradient(rgba(255,255,255,0.18)_1px,transparent_1px)]" />
+        )}
         <div
-          className="BlueprintEditorCanvasPanLayer"
+          className="BlueprintEditorCanvasPanLayer absolute inset-0 origin-top-left"
           style={{ transform: `translate(${pan.x}px, ${pan.y}px)` }}
         >
           <div
-            className="BlueprintEditorCanvasZoomLayer"
+            className="BlueprintEditorCanvasZoomLayer h-full w-full origin-top-left"
             style={{ transform: `scale(${scale})` }}
           >
             <div
-              className="BlueprintEditorCanvasArtboard"
+              className="BlueprintEditorCanvasArtboard relative overflow-hidden border border-black/8 bg-(--color-0) shadow-[0_22px_45px_rgba(0,0,0,0.12)] dark:border-white/10 dark:shadow-[0_24px_46px_rgba(0,0,0,0.45)] **:data-[mir-selected=true]:outline-2 **:data-[mir-selected=true]:outline-offset-2 **:data-[mir-selected=true]:outline-(--color-primary,var(--color-9)) **:data-[mir-missing=true]:outline **:data-[mir-missing=true]:outline-dashed **:data-[mir-missing=true]:outline-[rgba(240,82,82,0.9)] **:data-[mir-missing=true]:outline-offset-2"
               style={{ width: canvasWidth, height: canvasHeight }}
             >
               {hasChildren ? (
@@ -377,11 +395,21 @@ export function BlueprintEditorCanvas({
                   registry={registry}
                   renderMode={renderMode}
                   allowExternalProps={allowExternalProps === 'enabled'}
+                  builtInActions={{
+                    ...(onNavigateRequest ? { navigate: onNavigateRequest } : {}),
+                    ...(onExecuteGraphRequest
+                      ? { executeGraph: onExecuteGraphRequest }
+                      : {}),
+                  }}
                 />
               ) : (
-                <div className="BlueprintEditorCanvasPlaceholder">
-                  <h3>{t('canvas.placeholderTitle')}</h3>
-                  <p>{t('canvas.placeholderDescription')}</p>
+                <div className="BlueprintEditorCanvasPlaceholder relative z-1 flex h-full flex-col items-center justify-center gap-1.5 p-10 text-center text-(--color-7)">
+                  <h3 className="m-0 text-base text-(--color-9)">
+                    {t('canvas.placeholderTitle')}
+                  </h3>
+                  <p className="m-0 max-w-80 text-xs">
+                    {t('canvas.placeholderDescription')}
+                  </p>
                 </div>
               )}
             </div>

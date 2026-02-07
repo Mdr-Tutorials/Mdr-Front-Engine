@@ -10,6 +10,8 @@ interface MdrPopoverSpecificProps {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
+  panelClassName?: string;
+  panelStyle?: React.CSSProperties;
   children: React.ReactNode;
 }
 
@@ -24,6 +26,8 @@ function MdrPopover({
   open,
   defaultOpen = false,
   onOpenChange,
+  panelClassName,
+  panelStyle,
   children,
   className,
   style,
@@ -72,7 +76,10 @@ function MdrPopover({
     >
       {children}
       {isOpen && (
-        <span className="MdrPopoverPanel">
+        <span
+          className={`MdrPopoverPanel ${panelClassName || ''}`.trim()}
+          style={panelStyle}
+        >
           {title && <div className="MdrPopoverTitle">{title}</div>}
           <div className="MdrPopoverContent">{content}</div>
         </span>

@@ -94,27 +94,11 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
   const gridColumnsDraft = gridColumnCount ? String(gridColumnCount) : '';
 
   return (
-    <div className="InspectorSection">
-      <div className="InspectorField">
-        <div className="InspectorFieldHeader">
-          <span className="InspectorLabel">
-            {t('inspector.panels.layout.title', { defaultValue: 'Layout' })}
-          </span>
-          <span className="InspectorDescription">
-            {t('inspector.panels.layout.description', {
-              defaultValue: 'Configure Flex/Grid layout behavior.',
-            })}
-          </span>
-        </div>
-      </div>
-
-      <div className="InspectorField">
+    <div className="InspectorSection flex flex-col gap-2">
+      <div className="InspectorField flex flex-col gap-1.5">
         <InspectorRow
           label={t('inspector.panels.layout.fields.gap', {
             defaultValue: 'Gap',
-          })}
-          description={t('inspector.panels.layout.fields.gapHint', {
-            defaultValue: 'Number (px) or CSS size.',
           })}
           control={
             <UnitInput
@@ -139,7 +123,7 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
 
       {display === 'Flex' && (
         <>
-          <div className="InspectorField">
+          <div className="InspectorField flex flex-col gap-1.5">
             <InspectorRow
               layout="vertical"
               label={t('inspector.panels.layout.fields.flexDirection', {
@@ -150,21 +134,42 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
                   value={flexDirection}
                   layout="grid-2x2"
                   options={[
-                    { value: 'Row', icon: <FlexRowIcon />, label: 'Row' },
+                    {
+                      value: 'Row',
+                      icon: <FlexRowIcon />,
+                      label: t('inspector.panels.layout.options.direction.row', {
+                        defaultValue: 'Row',
+                      }),
+                    },
                     {
                       value: 'RowReverse',
                       icon: <FlexRowReverseIcon />,
-                      label: 'Row Reverse',
+                      label: t(
+                        'inspector.panels.layout.options.direction.rowReverse',
+                        {
+                          defaultValue: 'Row Reverse',
+                        }
+                      ),
                     },
                     {
                       value: 'Column',
                       icon: <FlexColumnIcon />,
-                      label: 'Column',
+                      label: t(
+                        'inspector.panels.layout.options.direction.column',
+                        {
+                          defaultValue: 'Column',
+                        }
+                      ),
                     },
                     {
                       value: 'ColumnReverse',
                       icon: <FlexColumnReverseIcon />,
-                      label: 'Column Reverse',
+                      label: t(
+                        'inspector.panels.layout.options.direction.columnReverse',
+                        {
+                          defaultValue: 'Column Reverse',
+                        }
+                      ),
                     },
                   ]}
                   onChange={(value) =>
@@ -177,7 +182,7 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
             />
           </div>
 
-          <div className="InspectorField">
+          <div className="InspectorField flex flex-col gap-1.5">
             <InspectorRow
               layout="vertical"
               label={t('inspector.panels.layout.fields.justifyContent', {
@@ -197,64 +202,118 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
                           {
                             value: 'Start',
                             icon: <JustifyStartIcon />,
-                            label: 'Start',
+                            label: t(
+                              'inspector.panels.layout.options.justify.start',
+                              {
+                                defaultValue: 'Start',
+                              }
+                            ),
                           },
                           {
                             value: 'Center',
                             icon: <JustifyCenterIcon />,
-                            label: 'Center',
+                            label: t(
+                              'inspector.panels.layout.options.justify.center',
+                              {
+                                defaultValue: 'Center',
+                              }
+                            ),
                           },
                           {
                             value: 'End',
                             icon: <JustifyEndIcon />,
-                            label: 'End',
+                            label: t('inspector.panels.layout.options.justify.end', {
+                              defaultValue: 'End',
+                            }),
                           },
                           {
                             value: 'SpaceBetween',
                             icon: <JustifySpaceBetweenIcon />,
-                            label: 'Space Between',
+                            label: t(
+                              'inspector.panels.layout.options.justify.spaceBetween',
+                              {
+                                defaultValue: 'Space Between',
+                              }
+                            ),
                           },
                           {
                             value: 'SpaceAround',
                             icon: <JustifySpaceAroundIcon />,
-                            label: 'Space Around',
+                            label: t(
+                              'inspector.panels.layout.options.justify.spaceAround',
+                              {
+                                defaultValue: 'Space Around',
+                              }
+                            ),
                           },
                           {
                             value: 'SpaceEvenly',
                             icon: <JustifySpaceEvenlyIcon />,
-                            label: 'Space Evenly',
+                            label: t(
+                              'inspector.panels.layout.options.justify.spaceEvenly',
+                              {
+                                defaultValue: 'Space Evenly',
+                              }
+                            ),
                           },
                         ]
                       : [
                           {
                             value: 'Start',
                             icon: <JustifyStartColumnIcon />,
-                            label: 'Start',
+                            label: t(
+                              'inspector.panels.layout.options.justify.start',
+                              {
+                                defaultValue: 'Start',
+                              }
+                            ),
                           },
                           {
                             value: 'Center',
                             icon: <JustifyCenterColumnIcon />,
-                            label: 'Center',
+                            label: t(
+                              'inspector.panels.layout.options.justify.center',
+                              {
+                                defaultValue: 'Center',
+                              }
+                            ),
                           },
                           {
                             value: 'End',
                             icon: <JustifyEndColumnIcon />,
-                            label: 'End',
+                            label: t('inspector.panels.layout.options.justify.end', {
+                              defaultValue: 'End',
+                            }),
                           },
                           {
                             value: 'SpaceBetween',
                             icon: <JustifySpaceBetweenColumnIcon />,
-                            label: 'Space Between',
+                            label: t(
+                              'inspector.panels.layout.options.justify.spaceBetween',
+                              {
+                                defaultValue: 'Space Between',
+                              }
+                            ),
                           },
                           {
                             value: 'SpaceAround',
                             icon: <JustifySpaceAroundColumnIcon />,
-                            label: 'Space Around',
+                            label: t(
+                              'inspector.panels.layout.options.justify.spaceAround',
+                              {
+                                defaultValue: 'Space Around',
+                              }
+                            ),
                           },
                           {
                             value: 'SpaceEvenly',
                             icon: <JustifySpaceEvenlyColumnIcon />,
-                            label: 'Space Evenly',
+                            label: t(
+                              'inspector.panels.layout.options.justify.spaceEvenly',
+                              {
+                                defaultValue: 'Space Evenly',
+                              }
+                            ),
                           },
                         ]
                   }
@@ -268,7 +327,7 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
             />
           </div>
 
-          <div className="InspectorField">
+          <div className="InspectorField flex flex-col gap-1.5">
             <InspectorRow
               layout="vertical"
               label={t('inspector.panels.layout.fields.alignItems', {
@@ -288,54 +347,80 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
                           {
                             value: 'Start',
                             icon: <AlignStartIcon />,
-                            label: 'Start',
+                            label: t('inspector.panels.layout.options.align.start', {
+                              defaultValue: 'Start',
+                            }),
                           },
                           {
                             value: 'Center',
                             icon: <AlignCenterIcon />,
-                            label: 'Center',
+                            label: t('inspector.panels.layout.options.align.center', {
+                              defaultValue: 'Center',
+                            }),
                           },
                           {
                             value: 'End',
                             icon: <AlignEndIcon />,
-                            label: 'End',
+                            label: t('inspector.panels.layout.options.align.end', {
+                              defaultValue: 'End',
+                            }),
                           },
                           {
                             value: 'Stretch',
                             icon: <AlignStretchIcon />,
-                            label: 'Stretch',
+                            label: t('inspector.panels.layout.options.align.stretch', {
+                              defaultValue: 'Stretch',
+                            }),
                           },
                           {
                             value: 'Baseline',
                             icon: <AlignBaselineIcon />,
-                            label: 'Baseline',
+                            label: t(
+                              'inspector.panels.layout.options.align.baseline',
+                              {
+                                defaultValue: 'Baseline',
+                              }
+                            ),
                           },
                         ]
                       : [
                           {
                             value: 'Start',
                             icon: <AlignStartColumnIcon />,
-                            label: 'Start',
+                            label: t('inspector.panels.layout.options.align.start', {
+                              defaultValue: 'Start',
+                            }),
                           },
                           {
                             value: 'Center',
                             icon: <AlignCenterColumnIcon />,
-                            label: 'Center',
+                            label: t('inspector.panels.layout.options.align.center', {
+                              defaultValue: 'Center',
+                            }),
                           },
                           {
                             value: 'End',
                             icon: <AlignEndColumnIcon />,
-                            label: 'End',
+                            label: t('inspector.panels.layout.options.align.end', {
+                              defaultValue: 'End',
+                            }),
                           },
                           {
                             value: 'Stretch',
                             icon: <AlignStretchColumnIcon />,
-                            label: 'Stretch',
+                            label: t('inspector.panels.layout.options.align.stretch', {
+                              defaultValue: 'Stretch',
+                            }),
                           },
                           {
                             value: 'Baseline',
                             icon: <AlignBaselineColumnIcon />,
-                            label: 'Baseline',
+                            label: t(
+                              'inspector.panels.layout.options.align.baseline',
+                              {
+                                defaultValue: 'Baseline',
+                              }
+                            ),
                           },
                         ]
                   }
@@ -352,7 +437,7 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
       )}
 
       {display === 'Grid' && (
-        <div className="InspectorField">
+        <div className="InspectorField flex flex-col gap-1.5">
           <InspectorRow
             label={t('inspector.panels.layout.fields.gridColumns', {
               defaultValue: 'Columns',

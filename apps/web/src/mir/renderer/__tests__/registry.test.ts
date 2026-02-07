@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 vi.mock('@mdr/ui', () => ({
   MdrDiv: () => null,
   MdrButton: () => null,
+  MdrLink: () => null,
   MdrAvatar: () => null,
   // Should be ignored (not a valid React element type)
   MdrTokens: { colors: {} },
@@ -22,10 +23,21 @@ describe('mir renderer registry', () => {
   });
 
   it('keeps adapter overrides (e.g. MdrButton is non-children)', async () => {
-    const { createMdrRegistry } = await import('../registry');
+    const { createMdrRegistry, mdrLinkAdapter } = await import('../registry');
     const registry = createMdrRegistry();
     const resolved = registry.resolve('MdrButton');
+    const linkResolved = registry.resolve('MdrLink');
 
     expect(resolved.adapter.supportsChildren).toBe(false);
+    expect(linkResolved.adapter.supportsChildren).toBe(false);
+
+    const mapped = mdrLinkAdapter.mapProps?.({
+      node: { id: 'link-1', type: 'MdrLink', text: 'Link', props: { to: '/' } },
+      resolvedProps: { to: '/' },
+      resolvedStyle: {},
+      resolvedText: 'Link',
+    });
+
+    expect(mapped?.props?.text).toBe('Link');
   });
 });

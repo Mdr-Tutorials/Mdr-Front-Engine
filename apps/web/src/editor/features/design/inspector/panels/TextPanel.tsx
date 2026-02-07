@@ -38,34 +38,54 @@ function TextPanelView({ node, updateNode }: InspectorPanelRenderProps) {
 
   if (!shouldShowHeader && fields.length === 1) {
     const field = fields[0];
+    const isDefaultTextField = field.key === 'text';
     return (
-      <div className="InspectorSection">
-        <div className="InspectorField">
-          <div className="InspectorInputRow InspectorSingleInput">
-            <MdrInput
-              size="Small"
-              value={field.value}
-              onChange={(value) => {
-                updateNode((current) =>
-                  updateNodeTextField(current, field, value)
-                );
-              }}
+      <div className="InspectorSection flex flex-col gap-2">
+        <div className="InspectorField flex flex-col gap-1.5">
+          {isDefaultTextField ? (
+            <div className="InspectorInputRow InspectorSingleInput flex w-full items-center gap-1 [&>*]:flex-1">
+              <MdrInput
+                size="Small"
+                value={field.value}
+                onChange={(value) => {
+                  updateNode((current) =>
+                    updateNodeTextField(current, field, value)
+                  );
+                }}
+              />
+            </div>
+          ) : (
+            <InspectorRow
+              label={getFieldLabel(field.key, t)}
+              control={
+                <div className="InspectorInputRow InspectorSingleInput flex w-full items-center gap-1 [&>*]:flex-1">
+                  <MdrInput
+                    size="Small"
+                    value={field.value}
+                    onChange={(value) => {
+                      updateNode((current) =>
+                        updateNodeTextField(current, field, value)
+                      );
+                    }}
+                  />
+                </div>
+              }
             />
-          </div>
+          )}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="InspectorSection">
+    <div className="InspectorSection flex flex-col gap-2">
       {shouldShowHeader ? (
-        <div className="InspectorField">
-          <div className="InspectorFieldHeader">
-            <span className="InspectorLabel">
+        <div className="InspectorField flex flex-col gap-1.5">
+          <div className="InspectorFieldHeader flex items-center gap-1.5">
+            <span className="InspectorLabel text-[11px] font-semibold text-(--color-8)">
               {t('inspector.panels.text.title', { defaultValue: 'Text' })}
             </span>
-            <span className="InspectorDescription">
+            <span className="InspectorDescription text-[10px] text-(--color-6)">
               {t('inspector.panels.text.description', {
                 defaultValue: 'Edit the content shown by this component.',
               })}
@@ -75,7 +95,10 @@ function TextPanelView({ node, updateNode }: InspectorPanelRenderProps) {
       ) : null}
 
       {fields.map((field) => (
-        <div key={`${field.kind}-${field.key}`} className="InspectorField">
+        <div
+          key={`${field.kind}-${field.key}`}
+          className="InspectorField flex flex-col gap-1.5"
+        >
           <InspectorRow
             label={getFieldLabel(field.key, t)}
             control={

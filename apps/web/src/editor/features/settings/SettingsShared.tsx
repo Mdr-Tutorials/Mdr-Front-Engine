@@ -37,7 +37,7 @@ export const SettingsRow = ({
         {control}
       </div>
       {meta && (
-        <div className="ml-6 flex-col items-start gap-1.5 text-[11px] text-(--color-6) max-[1100px]:ml-0">
+        <div className="ml-6 flex flex-col items-start gap-1.5 text-[11px] text-(--color-6) max-[1100px]:ml-0">
           {meta}
         </div>
       )}

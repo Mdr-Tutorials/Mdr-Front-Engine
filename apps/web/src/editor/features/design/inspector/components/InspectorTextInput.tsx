@@ -15,7 +15,7 @@ export function InspectorTextInput({
 }: InspectorTextInputProps) {
   return (
     <input
-      className="InspectorTextInput"
+      className="InspectorTextInput h-[30px] w-full min-w-0 border-0 bg-transparent px-2.5 text-xs text-(--color-9) outline-none placeholder:text-(--color-4) disabled:cursor-not-allowed disabled:opacity-60"
       value={value}
       placeholder={placeholder}
       disabled={disabled}

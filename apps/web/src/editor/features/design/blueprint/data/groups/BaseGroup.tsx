@@ -141,7 +141,10 @@ export const BASE_GROUP: ComponentGroup = {
       variants: buildVariants(
         [12, 16, 20, 24] as const,
         (size) => <MdrIcon icon={Sparkles} size={size} />,
-        (size) => `${size}px`
+        (size) => `${size}px`,
+        undefined,
+        undefined,
+        (size) => ({ size })
       ),
     },
     {
@@ -151,7 +154,10 @@ export const BASE_GROUP: ComponentGroup = {
       variants: buildVariants(
         [14, 18, 22] as const,
         (size) => <MdrIconLink icon={Sparkles} to="/blueprint" size={size} />,
-        (size) => `${size}px`
+        (size) => `${size}px`,
+        undefined,
+        undefined,
+        (size) => ({ size })
       ),
     },
     {

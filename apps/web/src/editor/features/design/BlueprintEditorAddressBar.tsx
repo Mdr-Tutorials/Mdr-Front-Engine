@@ -23,32 +23,36 @@ export function BlueprintEditorAddressBar({
   const { t } = useTranslation('blueprint');
 
   return (
-    <section className="BlueprintEditorAddressBar">
-      <div className="AddressInlineGroup">
-        <span className="AddressLabelInline">
+    <section className="flex flex-nowrap items-center gap-3 overflow-x-auto border-b border-black/6 bg-(--color-0) px-3 py-1.5 dark:border-white/8">
+      <div className="inline-flex items-center gap-2 whitespace-nowrap">
+        <span className="inline-flex items-center gap-1.5 text-[11px] text-(--color-7)">
           <Link2 size={14} />
           {t('address.current')}
         </span>
-        <MdrInput
-          placeholder={t('address.currentPlaceholder')}
-          value={currentPath}
-          size="Small"
-          className="AddressInput AddressCurrentInput"
-          onChange={onCurrentPathChange}
-        />
+        <div className="w-60 max-w-60">
+          <MdrInput
+            placeholder={t('address.currentPlaceholder')}
+            value={currentPath}
+            size="Small"
+            className="AddressInput AddressCurrentInput"
+            onChange={onCurrentPathChange}
+          />
+        </div>
       </div>
-      <div className="AddressInlineGroup">
-        <span className="AddressLabelInline">
+      <div className="inline-flex items-center gap-2 whitespace-nowrap">
+        <span className="inline-flex items-center gap-1.5 text-[11px] text-(--color-7)">
           <Plus size={14} />
           {t('address.new')}
         </span>
-        <MdrInput
-          placeholder={t('address.newPlaceholder')}
-          value={newPath}
-          size="Small"
-          className="AddressInput AddressNewInput"
-          onChange={onNewPathChange}
-        />
+        <div className="w-50">
+          <MdrInput
+            placeholder={t('address.newPlaceholder')}
+            value={newPath}
+            size="Small"
+            className="AddressInput AddressNewInput"
+            onChange={onNewPathChange}
+          />
+        </div>
         <MdrButton
           text={t('address.add')}
           size="Tiny"
@@ -56,10 +60,12 @@ export function BlueprintEditorAddressBar({
           onClick={onAddRoute}
         />
       </div>
-      <div className="AddressInlineGroup AddressSelect">
-        <span className="AddressLabelInline">{t('address.list')}</span>
+      <div className="ml-auto inline-flex items-center gap-2 whitespace-nowrap">
+        <span className="inline-flex items-center gap-1.5 text-[11px] text-(--color-7)">
+          {t('address.list')}
+        </span>
         <select
-          className="AddressSelectControl"
+          className="h-7 rounded-full border border-black/8 bg-(--color-0) px-2 text-[11px] text-(--color-8) dark:border-white/12"
           value={currentPath}
           onChange={(event) => onCurrentPathChange(event.target.value)}
         >
