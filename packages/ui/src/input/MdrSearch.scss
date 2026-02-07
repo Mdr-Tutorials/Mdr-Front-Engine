@@ -120,11 +120,3 @@
         }
     }
 }
-
-[data-theme="dark"] {
-    .MdrSearch {
-        &:focus-within {
-            box-shadow: 0 0 0 3px rgba(var(--color-1-rgb), 0.1);
-        }
-    }
-}

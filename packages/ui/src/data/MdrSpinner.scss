@@ -35,14 +35,3 @@
         transform: rotate(360deg);
     }
 }
-
-[data-theme="dark"] {
-    .MdrSpinner {
-        color: var(--color-5);
-    }
-
-    .MdrSpinnerCircle {
-        border-color: var(--color-7);
-        border-top-color: var(--color-2);
-    }
-}

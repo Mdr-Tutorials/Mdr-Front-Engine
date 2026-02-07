@@ -71,21 +71,3 @@
     margin-left: 12px;
 }
 
-[data-theme="dark"] {
-    .MdrSteps {
-        color: var(--color-2);
-    }
-
-    .MdrStepDescription {
-        color: var(--color-5);
-    }
-
-    .MdrStepConnector {
-        background-color: var(--color-7);
-    }
-
-    .MdrStepIndicator {
-        background-color: var(--color-10);
-        border-color: var(--color-6);
-    }
-}

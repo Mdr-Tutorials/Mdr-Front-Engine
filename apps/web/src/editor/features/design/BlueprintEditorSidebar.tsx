@@ -235,7 +235,7 @@ export function BlueprintEditorSidebar({
 
   return (
     <aside
-      className={`BlueprintEditorSidebar absolute left-0 top-0 z-[3] flex min-h-0 w-[var(--sidebar-width)] flex-col rounded-[14px] border border-black/6 bg-(--color-0) shadow-[0_12px_26px_rgba(0,0,0,0.08)] dark:border-transparent [bottom:var(--component-tree-height)] ${!isCollapsed && !isTreeCollapsed ? 'rounded-b-none border-b-0' : ''} ${isCollapsed ? 'Collapsed bottom-auto h-9 items-center justify-center border-none bg-transparent p-0 shadow-none' : ''}`}
+      className={`BlueprintEditorSidebar absolute left-0 top-0 z-[3] flex min-h-0 w-[var(--sidebar-width)] flex-col rounded-[14px] border border-black/6 bg-(--color-0) shadow-[0_12px_26px_rgba(0,0,0,0.08)] dark:border-transparent ${!isCollapsed && !isTreeCollapsed ? '[bottom:var(--component-tree-height)] rounded-b-none border-b-0' : 'bottom-0'} ${isCollapsed ? 'Collapsed bottom-auto h-9 items-center justify-center border-none bg-transparent p-0 shadow-none' : ''}`}
     >
       <div
         className={`BlueprintEditorSidebarHeader flex items-center justify-between gap-2.5 border-b border-black/6 px-3 py-2.5 text-[13px] font-semibold dark:border-white/8 ${isCollapsed ? 'w-full items-center justify-center border-b-0 p-0' : ''}`}
@@ -315,7 +315,7 @@ export function BlueprintEditorSidebar({
             return (
               <div key={group.id} className="ComponentGroup grid gap-2.5">
                 <button
-                  className="ComponentGroupHeader sticky top-0 z-[2] flex w-full cursor-pointer items-center justify-between border-0 bg-white/52 py-1 backdrop-blur-[6px]"
+                  className="ComponentGroupHeader sticky top-0 z-[2] flex w-full cursor-pointer items-center justify-between border-0 bg-white/52 py-1 backdrop-blur-[6px] in-data-[theme='dark']:bg-[rgba(12,12,12,0.72)]"
                   onClick={() => onToggleGroup(group.id)}
                 >
                   <span className="ComponentGroupTitle text-[11px] uppercase tracking-[0.06em] text-(--color-6)">

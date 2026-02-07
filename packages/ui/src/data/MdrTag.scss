@@ -70,14 +70,3 @@
     background-color: var(--color-2);
     color: var(--color-8);
 }
-
-[data-theme="dark"] {
-    .MdrTag {
-        background-color: var(--color-9);
-        color: var(--color-2);
-    }
-
-    .MdrTag.Outline {
-        border-color: var(--color-6);
-    }
-}

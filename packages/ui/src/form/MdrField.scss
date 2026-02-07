@@ -42,14 +42,3 @@
 .MdrFieldMessage.Success {
     color: var(--color-success);
 }
-
-[data-theme="dark"] {
-    .MdrFieldLabel {
-        color: var(--color-2);
-    }
-
-    .MdrFieldDescription,
-    .MdrFieldMessage {
-        color: var(--color-5);
-    }
-}

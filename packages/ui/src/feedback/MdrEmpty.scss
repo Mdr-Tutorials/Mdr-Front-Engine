@@ -21,13 +21,3 @@
 .MdrEmptyDescription {
     font-size: 13px;
 }
-
-[data-theme="dark"] {
-    .MdrEmpty {
-        color: var(--color-5);
-    }
-
-    .MdrEmptyTitle {
-        color: var(--color-2);
-    }
-}

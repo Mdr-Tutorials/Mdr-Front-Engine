@@ -58,18 +58,10 @@
 
 [data-theme="dark"] {
     .MdrEmbed>div {
-        background-color: var(--color-7);
         box-shadow: var(--shadow-sm);
     }
 
     .MdrEmbed:hover>div {
         box-shadow: var(--shadow-md);
-    }
-
-    .MdrEmbed.YouTube,
-    .MdrEmbed.Vimeo {
-        >div {
-            background-color: var(--color-10);
-        }
     }
 }

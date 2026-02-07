@@ -96,22 +96,6 @@
 [data-theme="dark"] {
     .MdrTextarea {
 
-        &:focus {
-            box-shadow: 0 0 0 3px rgba(var(--color-1-rgb), 0.1);
-        }
-
-        &.Error {
-            &:focus {
-                box-shadow: 0 0 0 3px rgba(var(--color-danger-rgb), 0.2);
-            }
-        }
-
-        &.Warning {
-            &:focus {
-                box-shadow: 0 0 0 3px rgba(var(--color-warning-rgb), 0.2);
-            }
-        }
-
         &.Success {
             &:focus {
                 box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);

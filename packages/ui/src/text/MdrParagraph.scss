@@ -71,23 +71,3 @@
         color: var(--color-success, #10b981);
     }
 }
-
-[data-theme="dark"] {
-    .MdrParagraph {
-        &.Default {
-            color: var(--color-0);
-        }
-
-        &.Muted {
-            color: var(--color-5);
-        }
-
-        &.Primary {
-            color: var(--color-1);
-        }
-
-        &.Secondary {
-            color: var(--color-3);
-        }
-    }
-}

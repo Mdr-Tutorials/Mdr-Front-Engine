@@ -40,15 +40,3 @@
     font-size: 14px;
     color: var(--color-6);
 }
-
-[data-theme="dark"] {
-    .MdrStatistic {
-        color: var(--color-2);
-    }
-
-    .MdrStatisticTitle,
-    .MdrStatisticPrefix,
-    .MdrStatisticSuffix {
-        color: var(--color-5);
-    }
-}

@@ -45,10 +45,3 @@
     top: 50%;
     transform: translate(6px, -50%);
 }
-
-[data-theme="dark"] {
-    .MdrTooltipContent {
-        background-color: var(--color-2);
-        color: var(--color-10);
-    }
-}

@@ -69,12 +69,3 @@
 .MdrVerificationCode.Success .MdrVerificationCodeInput {
     border-color: var(--color-success);
 }
-
-[data-theme="dark"] {
-    .MdrVerificationCodeInput {
-        background-color: var(--color-10);
-        color: var(--color-0);
-        border-color: var(--color-5);
-    }
-}
-

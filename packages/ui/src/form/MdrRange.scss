@@ -60,19 +60,9 @@
 }
 
 [data-theme="dark"] {
-    .MdrRangeValue {
-        color: var(--color-5);
-    }
-
     .MdrRangeTrack {
         background: linear-gradient(
             to right,
-            var(--color-7) 0%,
-            var(--color-7) var(--range-start),
-            var(--color-2) var(--range-start),
-            var(--color-2) var(--range-end),
-            var(--color-7) var(--range-end),
-            var(--color-7) 100%
         );
     }
 }

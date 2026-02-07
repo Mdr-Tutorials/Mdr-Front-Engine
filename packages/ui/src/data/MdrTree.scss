@@ -46,18 +46,3 @@
         cursor: not-allowed;
     }
 }
-
-[data-theme="dark"] {
-    .MdrTree {
-        color: var(--color-2);
-    }
-
-    .MdrTreeLabel.Selected {
-        background-color: var(--color-8);
-        color: var(--color-1);
-    }
-
-    .MdrTreeToggle {
-        color: var(--color-5);
-    }
-}

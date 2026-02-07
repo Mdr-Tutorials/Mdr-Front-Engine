@@ -75,38 +75,3 @@
 .AlignRight {
     text-align: right;
 }
-
-[data-theme="dark"] {
-    .MdrTableTitle {
-        color: var(--color-2);
-    }
-
-    .MdrTable {
-        color: var(--color-2);
-
-        thead th {
-            background-color: var(--color-9);
-        }
-
-        th,
-        td {
-            border-color: var(--color-7);
-        }
-
-        &.Striped tbody tr:nth-child(even) {
-            background-color: var(--color-9);
-        }
-
-        &.Hoverable tbody tr:hover {
-            background-color: var(--color-8);
-        }
-    }
-
-    .MdrTable caption {
-        color: var(--color-5);
-    }
-
-    .MdrTableEmpty {
-        color: var(--color-5);
-    }
-}

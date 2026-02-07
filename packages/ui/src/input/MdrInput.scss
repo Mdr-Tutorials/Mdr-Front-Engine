@@ -140,35 +140,6 @@
     }
 }
 
-[data-theme="dark"] {
-    .MdrInput input {
-
-        &:focus {
-            border-color: var(--color-primary, var(--color-1));
-            box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, var(--color-1-rgb)), 0.1);
-        }
-    }
-
-    .MdrInput.Error {
-        &:focus {
-            box-shadow: 0 0 0 3px rgba(var(--color-danger-rgb), 0.2);
-        }
-    }
-
-    .MdrInput.Warning {
-        &:focus {
-            box-shadow: 0 0 0 3px rgba(var(--color-warning-rgb), 0.2);
-        }
-    }
-
-    .MdrInput.Success {
-        &:focus {
-            box-shadow: 0 0 0 3px rgba(var(--color-success-rgb), 0.2);
-        }
-    }
-
-}
-
 .MdrInput-wrapper {
     display: flex;
     flex-direction: row;

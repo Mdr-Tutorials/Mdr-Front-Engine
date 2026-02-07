@@ -49,26 +49,3 @@
     background-color: var(--color-2);
     cursor: not-allowed;
 }
-
-[data-theme="dark"] {
-    .MdrRichTextEditorToolbar button {
-        background-color: var(--color-10);
-        color: var(--color-2);
-        border-color: var(--color-5);
-
-        &:hover {
-            background-color: var(--color-9);
-        }
-    }
-
-    .MdrRichTextEditorContent {
-        background-color: var(--color-10);
-        color: var(--color-0);
-        border-color: var(--color-5);
-
-        &:empty:before {
-            color: var(--color-5);
-        }
-    }
-}
-

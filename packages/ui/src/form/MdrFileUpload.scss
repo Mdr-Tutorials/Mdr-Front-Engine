@@ -62,29 +62,3 @@
     opacity: 0.6;
     cursor: not-allowed;
 }
-
-[data-theme="dark"] {
-    .MdrFileUploadDropzone {
-        background-color: var(--color-10);
-        border-color: var(--color-5);
-
-        &:hover {
-            border-color: var(--color-4);
-            background-color: var(--color-9);
-        }
-    }
-
-    .MdrFileUploadText {
-        color: var(--color-2);
-    }
-
-    .MdrFileUploadHint {
-        color: var(--color-5);
-    }
-
-    .MdrFileUploadItem {
-        background-color: var(--color-9);
-        color: var(--color-2);
-    }
-}
-

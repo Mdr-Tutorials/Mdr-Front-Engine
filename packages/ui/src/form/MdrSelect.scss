@@ -44,11 +44,3 @@
 .MdrSelect.Disabled {
     opacity: 0.6;
 }
-
-[data-theme="dark"] {
-    .MdrSelectControl {
-        background-color: var(--color-10);
-        color: var(--color-0);
-        border-color: var(--color-5);
-    }
-}

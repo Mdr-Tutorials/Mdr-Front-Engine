@@ -44,18 +44,3 @@
     font-size: 13px;
     color: var(--color-7);
 }
-
-[data-theme="dark"] {
-    .MdrTimeline {
-        color: var(--color-2);
-    }
-
-    .MdrTimelineTime,
-    .MdrTimelineDescription {
-        color: var(--color-5);
-    }
-
-    .MdrTimelineDot {
-        background-color: var(--color-6);
-    }
-}

@@ -43,13 +43,3 @@
 .MdrProgress.Danger .MdrProgressBar {
     background-color: var(--color-danger);
 }
-
-[data-theme="dark"] {
-    .MdrProgressHeader {
-        color: var(--color-5);
-    }
-
-    .MdrProgressTrack {
-        background-color: var(--color-8);
-    }
-}

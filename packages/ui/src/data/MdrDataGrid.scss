@@ -60,34 +60,3 @@
 .AlignRight {
     text-align: right;
 }
-
-[data-theme="dark"] {
-    .MdrDataGrid {
-        color: var(--color-2);
-    }
-
-    .MdrDataGridHeader {
-        background-color: var(--color-9);
-        border-bottom: 1px solid var(--color-7);
-    }
-
-    .MdrDataGridRow {
-        border-bottom: 1px solid var(--color-7);
-    }
-
-    .MdrDataGrid.Striped .MdrDataGridRow:nth-child(even) {
-        background-color: var(--color-9);
-    }
-
-    .MdrDataGrid.Hoverable .MdrDataGridRow:hover {
-        background-color: var(--color-8);
-    }
-
-    .MdrDataGrid.Bordered .MdrDataGridCell {
-        border-right: 1px solid var(--color-7);
-    }
-
-    .MdrDataGridEmpty {
-        color: var(--color-5);
-    }
-}

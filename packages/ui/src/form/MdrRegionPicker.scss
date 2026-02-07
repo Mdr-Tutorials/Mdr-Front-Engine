@@ -55,14 +55,6 @@
     border-color: var(--color-success);
 }
 
-[data-theme="dark"] {
-    .MdrRegionPickerSelect {
-        background-color: var(--color-10);
-        color: var(--color-0);
-        border-color: var(--color-5);
-    }
-}
-
 @media (max-width: 640px) {
     .MdrRegionPickerControls {
         grid-template-columns: 1fr;

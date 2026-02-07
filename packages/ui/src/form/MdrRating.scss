@@ -43,13 +43,4 @@
     height: 28px;
 }
 
-[data-theme="dark"] {
-    .MdrRatingStar {
-        color: var(--color-6);
-
-        &.Active {
-            color: var(--color-warning);
-        }
-    }
-}
 

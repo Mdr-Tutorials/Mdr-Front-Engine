@@ -51,26 +51,3 @@
     padding: var(--spacing-md) var(--spacing-lg);
     font-size: 15px;
 }
-
-[data-theme="dark"] {
-    .MdrList {
-        color: var(--color-2);
-    }
-
-    .MdrListItem {
-        background-color: var(--color-10);
-    }
-
-    .MdrList.Split .MdrListItem {
-        border-bottom: 1px solid var(--color-7);
-    }
-
-    .MdrList.Bordered {
-        border-color: var(--color-7);
-    }
-
-    .MdrListDescription,
-    .MdrListExtra {
-        color: var(--color-5);
-    }
-}

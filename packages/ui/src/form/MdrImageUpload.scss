@@ -52,25 +52,3 @@
     opacity: 0.6;
     cursor: not-allowed;
 }
-
-[data-theme="dark"] {
-    .MdrImageUploadDropzone {
-        background-color: var(--color-10);
-        border-color: var(--color-5);
-
-        &:hover {
-            border-color: var(--color-4);
-            background-color: var(--color-9);
-        }
-    }
-
-    .MdrImageUploadText {
-        color: var(--color-5);
-    }
-
-    .MdrImageUploadItem {
-        background-color: var(--color-9);
-        border-color: var(--color-7);
-    }
-}
-

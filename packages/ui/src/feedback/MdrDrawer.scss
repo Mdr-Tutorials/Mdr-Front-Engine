@@ -57,19 +57,3 @@
     justify-content: flex-end;
     gap: var(--spacing-sm);
 }
-
-[data-theme="dark"] {
-    .MdrDrawer {
-        background-color: var(--color-10);
-        color: var(--color-0);
-    }
-
-    .MdrDrawerHeader,
-    .MdrDrawerFooter {
-        border-color: var(--color-8);
-    }
-
-    .MdrDrawerBody {
-        color: var(--color-5);
-    }
-}

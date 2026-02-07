@@ -38,10 +38,3 @@
     align-items: center;
     justify-content: center;
 }
-
-[data-theme="dark"] {
-    .MdrMessage {
-        background-color: var(--color-9);
-        color: var(--color-2);
-    }
-}

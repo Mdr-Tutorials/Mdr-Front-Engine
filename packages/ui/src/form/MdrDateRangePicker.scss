@@ -77,11 +77,3 @@
         box-shadow: 0 0 0 3px rgba(var(--color-success-rgb), 0.1);
     }
 }
-
-[data-theme="dark"] {
-    .MdrDateRangePickerInput {
-        &:focus {
-            box-shadow: 0 0 0 3px rgba(var(--color-1-rgb, 255, 255, 255), 0.1);
-        }
-    }
-}

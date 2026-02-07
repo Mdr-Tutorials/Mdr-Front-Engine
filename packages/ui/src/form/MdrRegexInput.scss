@@ -48,12 +48,3 @@
 .MdrRegexInput.Success .MdrRegexInputControl {
     border-color: var(--color-success);
 }
-
-[data-theme="dark"] {
-    .MdrRegexInputControl {
-        background-color: var(--color-10);
-        color: var(--color-0);
-        border-color: var(--color-5);
-    }
-}
-
