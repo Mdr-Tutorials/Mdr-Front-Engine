@@ -63,6 +63,7 @@ build/
 .next/
 .nuxt/
 .cache/
+*.exe
 
 # =========================
 # Turborepo 特定
