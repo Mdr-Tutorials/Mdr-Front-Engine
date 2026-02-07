@@ -51,11 +51,81 @@
       "placeholder": "一起走在前端路上。"
     }
   },
+  "community": {
+    "backHome": "返回首页",
+    "badge": "社区",
+    "title": "公开 MIR 展示",
+    "subtitle": "探索创作者分享的项目、组件与节点图。",
+    "count": "条结果",
+    "countNone": "无结果",
+    "error": {
+      "load": "加载社区项目失败。"
+    },
+    "search": {
+      "placeholder": "按标题、作者、描述搜索..."
+    },
+    "filter": {
+      "all": "全部类型",
+      "project": "项目",
+      "component": "组件",
+      "nodegraph": "节点图"
+    },
+    "sort": {
+      "latest": "最新",
+      "popular": "最热"
+    },
+    "card": {
+      "untitled": "未命名",
+      "emptyDesc": "暂无描述。",
+      "unknown": "未知"
+    },
+    "empty": {
+      "title": "没有找到公开项目",
+      "body": "试试其他关键词、切换类型筛选，或按最新排序。"
+    },
+    "pagination": {
+      "prev": "上一页",
+      "page": "第",
+      "next": "下一页"
+    },
+    "detail": {
+      "back": "返回社区",
+      "author": "作者",
+      "updated": "更新于",
+      "preview": "只读预览",
+      "mir": "MIR 文档",
+      "clone": "克隆到我的工作区",
+      "cloning": "克隆中...",
+      "error": {
+        "title": "无法加载该项目",
+        "missing": "缺少项目 ID。",
+        "load": "加载项目详情失败。",
+        "clone": "克隆项目失败。",
+        "cloneSelf": "不能从社区克隆你自己的项目。"
+      }
+    }
+  },
   "editor": {
     "home": {
       "welcomeTitle": "欢迎回来",
       "actions": {
         "newProject": "新建项目"
+      },
+      "card": {
+        "untitled": "未命名",
+        "noDescription": "暂无描述",
+        "actions": "功能",
+        "moreActions": "更多操作",
+        "publish": "发布到社区",
+        "publishDisabled": "副本项目不可发布",
+        "publishDisabledReason": "克隆得到的项目不能发布到社区。",
+        "publishing": "发布中...",
+        "openCommunity": "打开社区",
+        "delete": "删除项目",
+        "deleting": "删除中...",
+        "deleteConfirm": "确定要永久删除这个项目吗？",
+        "publishFailed": "发布项目失败。",
+        "deleteFailed": "删除项目失败。"
       }
     },
     "projectHome": {
@@ -64,7 +134,8 @@
       "untitled": "未命名项目 {{id}}",
       "fields": {
         "id": "项目 ID",
-        "name": "项目名称"
+        "name": "项目名称",
+        "visibility": "可见性"
       },
       "actions": {
         "projectInfo": "项目信息",
@@ -104,6 +175,13 @@
           "label": "项目设置",
           "description": "管理项目配置。"
         }
+      },
+      "visibility": {
+        "public": "公开",
+        "private": "私有",
+        "openCommunity": "打开社区",
+        "published": "已发布到社区",
+        "publish": "发布"
       }
     },
     "bar": {
@@ -125,7 +203,8 @@
         "title": "新建资源",
         "subtitle": "选择一种类型并开始构建",
         "typeLabel": "类型",
-        "nameLabel": "名称"
+        "nameLabel": "名称",
+        "publicLabel": "创建后发布到社区"
       },
       "newProject": {
         "title": "新建项目",

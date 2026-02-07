@@ -59,6 +59,8 @@ import {
   useEditorStore,
 } from '@/editor/store/useEditorStore';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
+import { useAuthStore } from '@/auth/useAuthStore';
+import { editorApi } from '@/editor/editorApi';
 
 export type TreeDropPlacement = 'before' | 'after' | 'child';
 
@@ -733,6 +735,7 @@ function BlueprintEditor() {
   const setBlueprintState = useEditorStore((state) => state.setBlueprintState);
   const mirDoc = useEditorStore((state) => state.mirDoc);
   const updateMirDoc = useEditorStore((state) => state.updateMirDoc);
+  const token = useAuthStore((state) => state.token);
   const zoomStep = useSettingsStore((state) => state.global.zoomStep);
   const defaultViewportWidth = useSettingsStore(
     (state) => state.global.viewportWidth
@@ -756,6 +759,16 @@ function BlueprintEditor() {
       activationConstraint: { distance: 6 },
     })
   );
+
+  useEffect(() => {
+    if (!projectId || !token) return;
+
+    const timeoutId = window.setTimeout(() => {
+      editorApi.saveProjectMir(token, projectId, mirDoc).catch(() => {});
+    }, 700);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [mirDoc, projectId, token]);
 
   const handleAddRoute = () => {
     const value = newPath.trim();

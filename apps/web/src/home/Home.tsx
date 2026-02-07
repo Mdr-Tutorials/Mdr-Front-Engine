@@ -9,7 +9,7 @@ import {
   Sun,
 } from 'lucide-react';
 import { MdrAvatar, MdrButtonLink, MdrLink, MdrNav } from '@mdr/ui';
-import { IconMdr } from '../components/icons/IconMdr';
+import { IconMdr } from '@/components/icons/IconMdr';
 import { ExportModal } from '@/editor/features/export/ExportModal';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
@@ -74,9 +74,17 @@ function Home() {
         </MdrNav.Left>
         <MdrNav.Right>
           <div className="flex items-center gap-2">
-            <p>{t('nav.community')}</p>
-            <p>{t('nav.tutorials')}</p>
-            <p>{t('nav.docs')}</p>
+            <div className="flex items-center gap-8 pr-4">
+              <MdrLink to="/community">
+                {t('nav.community')}
+              </MdrLink>
+              <MdrLink to="http://localhost:5174/guide/getting-started">
+                {t('nav.tutorials')}
+              </MdrLink>
+              <MdrLink to="http://localhost:5174/guide/introduction">
+                {t('nav.docs')}
+              </MdrLink>
+            </div>
             <a
               className={navIconClassName}
               href="https://github.com/Mdr-Tutorials/Mdr-Front-Engine"

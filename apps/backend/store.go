@@ -1,28 +1,27 @@
 package main
 
 import (
+	"context"
 	"crypto/rand"
+	"database/sql"
 	"encoding/hex"
 	"errors"
+	"strconv"
 	"strings"
-	"sync"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 var errEmailExists = errors.New("email already exists")
 var errUserNotFound = errors.New("user not found")
 
 type UserStore struct {
-	mu      sync.RWMutex
-	byID    map[string]*User
-	byEmail map[string]string
+	db *sql.DB
 }
 
-func NewUserStore() *UserStore {
-	return &UserStore{
-		byID:    make(map[string]*User),
-		byEmail: make(map[string]string),
-	}
+func NewUserStore(db *sql.DB) *UserStore {
+	return &UserStore{db: db}
 }
 
 func (store *UserStore) Create(email, name, description string, passwordHash []byte) (*User, error) {
@@ -30,11 +29,7 @@ func (store *UserStore) Create(email, name, description string, passwordHash []b
 	if normalized == "" {
 		return nil, errors.New("invalid email")
 	}
-	store.mu.Lock()
-	defer store.mu.Unlock()
-	if _, exists := store.byEmail[normalized]; exists {
-		return nil, errEmailExists
-	}
+
 	user := &User{
 		ID:           newID("usr"),
 		Email:        normalized,
@@ -43,8 +38,20 @@ func (store *UserStore) Create(email, name, description string, passwordHash []b
 		PasswordHash: passwordHash,
 		CreatedAt:    time.Now().UTC(),
 	}
-	store.byID[user.ID] = user
-	store.byEmail[normalized] = user.ID
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	const query = `INSERT INTO users (id, email, name, description, password_hash, created_at)
+VALUES ($1, $2, $3, $4, $5, $6)`
+	_, err := store.db.ExecContext(ctx, query, user.ID, user.Email, user.Name, user.Description, user.PasswordHash, user.CreatedAt)
+	if err != nil {
+		if isUniqueViolation(err) {
+			return nil, errEmailExists
+		}
+		return nil, err
+	}
+
 	return user, nil
 }
 
@@ -53,90 +60,160 @@ func (store *UserStore) GetByEmail(email string) (*User, bool) {
 	if normalized == "" {
 		return nil, false
 	}
-	store.mu.RLock()
-	defer store.mu.RUnlock()
-	id, ok := store.byEmail[normalized]
-	if !ok {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	const query = `SELECT id, email, name, description, password_hash, created_at
+FROM users
+WHERE email = $1`
+
+	row := store.db.QueryRowContext(ctx, query, normalized)
+	user, err := scanUser(row)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, false
+		}
 		return nil, false
 	}
-	user, ok := store.byID[id]
-	return user, ok
+	return user, true
 }
 
 func (store *UserStore) GetByID(id string) (*User, bool) {
-	store.mu.RLock()
-	defer store.mu.RUnlock()
-	user, ok := store.byID[id]
-	return user, ok
+	if strings.TrimSpace(id) == "" {
+		return nil, false
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	const query = `SELECT id, email, name, description, password_hash, created_at
+FROM users
+WHERE id = $1`
+	row := store.db.QueryRowContext(ctx, query, id)
+	user, err := scanUser(row)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, false
+		}
+		return nil, false
+	}
+	return user, true
 }
 
 func (store *UserStore) Update(userID string, name, description *string) (*User, error) {
-	store.mu.Lock()
-	defer store.mu.Unlock()
-	user, ok := store.byID[userID]
-	if !ok {
+	if strings.TrimSpace(userID) == "" {
 		return nil, errUserNotFound
 	}
+
+	updateParts := make([]string, 0, 2)
+	args := make([]any, 0, 3)
+	argPos := 1
+
 	if name != nil {
-		user.Name = strings.TrimSpace(*name)
+		updateParts = append(updateParts, "name = $1")
+		args = append(args, strings.TrimSpace(*name))
+		argPos++
 	}
 	if description != nil {
-		user.Description = strings.TrimSpace(*description)
+		updateParts = append(updateParts, "description = $"+strconv.Itoa(argPos))
+		args = append(args, strings.TrimSpace(*description))
+		argPos++
+	}
+
+	if len(updateParts) == 0 {
+		user, ok := store.GetByID(userID)
+		if !ok {
+			return nil, errUserNotFound
+		}
+		return user, nil
+	}
+
+	args = append(args, userID)
+	query := `UPDATE users SET ` + strings.Join(updateParts, ", ") + ` WHERE id = $` + strconv.Itoa(argPos) + `
+RETURNING id, email, name, description, password_hash, created_at`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	row := store.db.QueryRowContext(ctx, query, args...)
+	user, err := scanUser(row)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errUserNotFound
+		}
+		return nil, err
 	}
 	return user, nil
 }
 
 type SessionStore struct {
-	mu       sync.RWMutex
-	sessions map[string]*Session
+	db *sql.DB
 }
 
-func NewSessionStore() *SessionStore {
-	return &SessionStore{
-		sessions: make(map[string]*Session),
-	}
+func NewSessionStore(db *sql.DB) *SessionStore {
+	return &SessionStore{db: db}
 }
 
 func (store *SessionStore) Create(userID string, ttl time.Duration) *Session {
 	if ttl <= 0 {
 		ttl = 24 * time.Hour
 	}
+	createdAt := time.Now().UTC()
 	session := &Session{
 		Token:     newToken(),
 		UserID:    userID,
-		CreatedAt: time.Now().UTC(),
-		ExpiresAt: time.Now().UTC().Add(ttl),
+		CreatedAt: createdAt,
+		ExpiresAt: createdAt.Add(ttl),
 	}
-	store.mu.Lock()
-	store.sessions[session.Token] = session
-	store.mu.Unlock()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	const query = `INSERT INTO sessions (token, user_id, created_at, expires_at)
+VALUES ($1, $2, $3, $4)`
+	_, err := store.db.ExecContext(ctx, query, session.Token, session.UserID, session.CreatedAt, session.ExpiresAt)
+	if err != nil {
+		return nil
+	}
 	return session
 }
 
 func (store *SessionStore) Get(token string) (*Session, bool) {
+	token = strings.TrimSpace(token)
 	if token == "" {
 		return nil, false
 	}
-	store.mu.RLock()
-	session, ok := store.sessions[token]
-	store.mu.RUnlock()
-	if !ok {
-		return nil, false
-	}
-	if session.ExpiresAt.Before(time.Now().UTC()) {
-		store.Delete(token)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	const query = `SELECT token, user_id, created_at, expires_at
+FROM sessions
+WHERE token = $1 AND expires_at > NOW()`
+	row := store.db.QueryRowContext(ctx, query, token)
+	session := &Session{}
+	err := row.Scan(&session.Token, &session.UserID, &session.CreatedAt, &session.ExpiresAt)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, false
+		}
 		return nil, false
 	}
 	return session, true
 }
 
 func (store *SessionStore) Delete(token string) {
+	token = strings.TrimSpace(token)
 	if token == "" {
 		return
 	}
-	store.mu.Lock()
-	delete(store.sessions, token)
-	store.mu.Unlock()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	const query = `DELETE FROM sessions WHERE token = $1`
+	_, _ = store.db.ExecContext(ctx, query, token)
 }
 
 func normalizeEmail(email string) string {
@@ -162,4 +239,21 @@ func newRandomHex(size int) string {
 		return hex.EncodeToString([]byte(time.Now().Format("20060102150405.000")))
 	}
 	return hex.EncodeToString(buffer)
+}
+
+func scanUser(scanner interface{ Scan(dest ...any) error }) (*User, error) {
+	user := &User{}
+	err := scanner.Scan(&user.ID, &user.Email, &user.Name, &user.Description, &user.PasswordHash, &user.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func isUniqueViolation(err error) bool {
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) {
+		return pgErr.Code == "23505"
+	}
+	return false
 }

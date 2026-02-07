@@ -51,11 +51,81 @@
       "placeholder": "Walk with the front-end."
     }
   },
+  "community": {
+    "backHome": "Back to Home",
+    "badge": "Community",
+    "title": "Public MIR Showcase",
+    "subtitle": "Explore projects, components, and node graphs shared by creators.",
+    "count": "results",
+    "countNone": "No results",
+    "error": {
+      "load": "Could not load community projects."
+    },
+    "search": {
+      "placeholder": "Search by title, author, description..."
+    },
+    "filter": {
+      "all": "All types",
+      "project": "Projects",
+      "component": "Components",
+      "nodegraph": "Node Graphs"
+    },
+    "sort": {
+      "latest": "Latest",
+      "popular": "Popular"
+    },
+    "card": {
+      "untitled": "Untitled",
+      "emptyDesc": "No description provided yet.",
+      "unknown": "Unknown"
+    },
+    "empty": {
+      "title": "No public projects found",
+      "body": "Try another keyword, switch the type filter, or sort by latest."
+    },
+    "pagination": {
+      "prev": "Prev",
+      "page": "Page",
+      "next": "Next"
+    },
+    "detail": {
+      "back": "Back to Community",
+      "author": "Author",
+      "updated": "Updated",
+      "preview": "Read-only Preview",
+      "mir": "MIR Document",
+      "clone": "Clone to My Workspace",
+      "cloning": "Cloning...",
+      "error": {
+        "title": "Unable to load this project",
+        "missing": "Project ID is missing.",
+        "load": "Could not load project detail.",
+        "clone": "Could not clone this project.",
+        "cloneSelf": "You cannot clone your own project from community."
+      }
+    }
+  },
   "editor": {
     "home": {
       "welcomeTitle": "Welcome back",
       "actions": {
         "newProject": "New Project"
+      },
+      "card": {
+        "untitled": "Untitled",
+        "noDescription": "No description",
+        "actions": "Actions",
+        "moreActions": "More actions",
+        "publish": "Publish to Community",
+        "publishDisabled": "Publish disabled for copies",
+        "publishDisabledReason": "Cloned projects cannot be published.",
+        "publishing": "Publishing...",
+        "openCommunity": "Open Community",
+        "delete": "Delete Project",
+        "deleting": "Deleting...",
+        "deleteConfirm": "Delete this project permanently?",
+        "publishFailed": "Failed to publish project.",
+        "deleteFailed": "Failed to delete project."
       }
     },
     "projectHome": {
@@ -64,7 +134,8 @@
       "untitled": "Untitled project {{id}}",
       "fields": {
         "id": "Project ID",
-        "name": "Project name"
+        "name": "Project name",
+        "visibility": "Visibility"
       },
       "actions": {
         "projectInfo": "Project details",
@@ -104,6 +175,13 @@
           "label": "Project settings",
           "description": "Manage project configuration."
         }
+      },
+      "visibility": {
+        "public": "Public",
+        "private": "Private",
+        "openCommunity": "Open Community",
+        "published": "Published to Community",
+        "publish": "Publish"
       }
     },
     "bar": {
@@ -125,7 +203,8 @@
         "title": "Create New",
         "subtitle": "Select a type and start building",
         "typeLabel": "Type",
-        "nameLabel": "Name"
+        "nameLabel": "Name",
+        "publicLabel": "Publish to community after creation"
       },
       "newProject": {
         "title": "Create Project",

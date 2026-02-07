@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import {
@@ -12,8 +12,11 @@ import {
   ServerCog,
   Settings,
   Sparkles,
+  Globe,
 } from 'lucide-react';
 import { useEditorStore } from '@/editor/store/useEditorStore';
+import { useAuthStore } from '@/auth/useAuthStore';
+import { editorApi } from './editorApi';
 
 type ProjectAction = {
   key: string;
@@ -25,14 +28,19 @@ function ProjectHome() {
   const { t } = useTranslation('editor');
   const { projectId } = useParams();
   const navigate = useNavigate();
+  const token = useAuthStore((state) => state.token);
+  const setProject = useEditorStore((state) => state.setProject);
   const resolvedProjectId = projectId ?? '-';
   const isValidProject = Boolean(projectId);
+  const [isPublishing, setPublishing] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
   const project = useEditorStore((state) =>
     projectId ? state.projectsById[projectId] : undefined
   );
   const projectName =
     project?.name?.trim() ||
     t('projectHome.untitled', { id: resolvedProjectId });
+  const projectIsPublic = Boolean(project?.isPublic);
 
   const actions = useMemo<ProjectAction[]>(
     () => [
@@ -84,6 +92,32 @@ function ProjectHome() {
     ],
     [resolvedProjectId]
   );
+
+  const handlePublish = async () => {
+    if (!token || !projectId || projectIsPublic || isPublishing) return;
+    setPublishing(true);
+    setPublishError(null);
+    try {
+      const { project: publishedProject } = await editorApi.publishProject(
+        token,
+        projectId
+      );
+      setProject({
+        id: publishedProject.id,
+        name: publishedProject.name,
+        description: publishedProject.description,
+        type: publishedProject.resourceType,
+        isPublic: publishedProject.isPublic,
+        starsCount: publishedProject.starsCount,
+      });
+    } catch (error) {
+      setPublishError(
+        error instanceof Error ? error.message : 'Could not publish project.'
+      );
+    } finally {
+      setPublishing(false);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-[16px] p-[18px_20px] text-[var(--color-10)]">
@@ -141,6 +175,40 @@ function ProjectHome() {
             {projectName}
           </span>
         </div>
+        <div className="inline-flex items-center gap-[8px] text-[12px]">
+          <span className="text-[var(--color-6)]">
+            {t('projectHome.fields.visibility', 'Visibility')}
+          </span>
+          <span className="font-semibold text-[var(--color-9)]">
+            {projectIsPublic
+              ? t('projectHome.visibility.public', 'Public')
+              : t('projectHome.visibility.private', 'Private')}
+          </span>
+          {projectIsPublic && (
+            <a
+              href="/community"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-[8px] border border-[rgba(0,0,0,0.12)] px-[8px] py-[2px] text-[11px] text-[var(--color-8)] transition-colors duration-[150ms] ease-[ease] hover:text-[var(--color-10)]"
+            >
+              {t('projectHome.visibility.openCommunity', 'Open Community')}
+            </a>
+          )}
+          <button
+            type="button"
+            onClick={handlePublish}
+            disabled={!isValidProject || projectIsPublic || !token || isPublishing}
+            className="inline-flex items-center gap-[4px] rounded-[8px] border border-[rgba(0,0,0,0.12)] bg-transparent px-[8px] py-[2px] text-[11px] text-[var(--color-8)] transition-colors duration-[150ms] ease-[ease] hover:text-[var(--color-10)] disabled:cursor-not-allowed disabled:opacity-[0.45]"
+          >
+            <Globe size={12} />
+            {projectIsPublic
+              ? t('projectHome.visibility.published', 'Published to Community')
+              : t('projectHome.visibility.publish', 'Publish')}
+          </button>
+        </div>
+        {publishError && (
+          <p className="m-0 text-[11px] text-[var(--color-6)]">{publishError}</p>
+        )}
       </section>
 
       <section className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-[10px]">

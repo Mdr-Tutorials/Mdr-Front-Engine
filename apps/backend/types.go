@@ -1,6 +1,9 @@
 package main
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type User struct {
 	ID           string    `json:"id"`
@@ -37,4 +40,53 @@ type Session struct {
 	UserID    string    `json:"userId"`
 	CreatedAt time.Time `json:"createdAt"`
 	ExpiresAt time.Time `json:"expiresAt"`
+}
+
+type ResourceType string
+
+const (
+	ResourceTypeProject   ResourceType = "project"
+	ResourceTypeComponent ResourceType = "component"
+	ResourceTypeNodeGraph ResourceType = "nodegraph"
+)
+
+type Project struct {
+	ID           string          `json:"id"`
+	OwnerID      string          `json:"ownerId"`
+	ResourceType ResourceType    `json:"resourceType"`
+	Name         string          `json:"name"`
+	Description  string          `json:"description"`
+	MIR          json.RawMessage `json:"mir"`
+	IsPublic     bool            `json:"isPublic"`
+	StarsCount   int             `json:"starsCount"`
+	CreatedAt    time.Time       `json:"createdAt"`
+	UpdatedAt    time.Time       `json:"updatedAt"`
+}
+
+type ProjectSummary struct {
+	ID           string       `json:"id"`
+	ResourceType ResourceType `json:"resourceType"`
+	Name         string       `json:"name"`
+	Description  string       `json:"description"`
+	IsPublic     bool         `json:"isPublic"`
+	StarsCount   int          `json:"starsCount"`
+	CreatedAt    time.Time    `json:"createdAt"`
+	UpdatedAt    time.Time    `json:"updatedAt"`
+}
+
+type CommunityProjectSummary struct {
+	ID           string       `json:"id"`
+	ResourceType ResourceType `json:"resourceType"`
+	Name         string       `json:"name"`
+	Description  string       `json:"description"`
+	AuthorID     string       `json:"authorId"`
+	AuthorName   string       `json:"authorName"`
+	StarsCount   int          `json:"starsCount"`
+	CreatedAt    time.Time    `json:"createdAt"`
+	UpdatedAt    time.Time    `json:"updatedAt"`
+}
+
+type CommunityProjectDetail struct {
+	Project
+	AuthorName string `json:"authorName"`
 }

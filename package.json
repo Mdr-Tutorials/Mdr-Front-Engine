@@ -12,7 +12,8 @@
     "scripts": {
         "dev": "turbo run dev",
         "dev:web": "turbo run dev --filter=@mdr/web",
-        "dev:backend": "cd apps/backend && go run .",
+        "dev:backend": "cd apps/backend && (air -c .air.toml || go run .)",
+        "dev:backend:hot": "cd apps/backend && air -c .air.toml",
         "dev:docs": "turbo run dev --filter=@mdr/docs",
         "dev:cli": "turbo run dev --filter=@mdr/cli",
         "dev:vscode": "turbo run dev --filter=@mdr/vscode",

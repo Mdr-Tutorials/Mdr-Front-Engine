@@ -11,6 +11,8 @@ import { ProjectSettingsPage } from './editor/features/settings/ProjectSettingsP
 import { ExportMirPage } from './editor/features/export/ExportMirPage';
 import { AuthPage } from './auth/AuthPage';
 import { ProfilePage } from './auth/ProfilePage';
+import { CommunityPage } from './community/CommunityPage';
+import { CommunityDetailPage } from './community/CommunityDetailPage';
 
 export const createRoutes = (t: TFunction) => [
   {
@@ -70,7 +72,11 @@ export const createRoutes = (t: TFunction) => [
   },
   {
     path: 'community',
-    element: <div>{t('communityPage', { ns: 'routes' })}</div>,
+    element: <CommunityPage />,
+  },
+  {
+    path: 'community/:projectId',
+    element: <CommunityDetailPage />,
   },
   { path: 'about', element: <div>{t('aboutPage', { ns: 'routes' })}</div> },
 ];

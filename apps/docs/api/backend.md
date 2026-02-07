@@ -6,7 +6,7 @@ MdrFrontEngine 后端服务提供用户认证和数据管理 API。
 
 - **技术栈**: Go + Gin Web Framework
 - **认证方式**: Session-based Token 认证
-- **存储**: 内存存储（开发阶段）
+- **存储**: PostgreSQL（自动建表）
 - **默认地址**: `http://localhost:8080`
 
 ## 基础信息
@@ -242,6 +242,96 @@ GET /api/users/:id
 
 ---
 
+### 项目 API
+
+#### 创建项目
+
+```http
+POST /api/projects
+```
+
+**请求头**: 需要认证
+
+**请求体**:
+
+```json
+{
+  "name": "My Project",
+  "description": "optional",
+  "resourceType": "project",
+  "isPublic": true,
+  "mir": {
+    "version": "1.0",
+    "ui": { "root": { "id": "root", "type": "container" } }
+  }
+}
+```
+
+`resourceType` 支持三类：`project` / `component` / `nodegraph`。  
+`isPublic=true` 时会公开到社区列表。
+
+#### 发布已有项目到社区
+
+```http
+POST /api/projects/:id/publish
+```
+
+**请求头**: 需要认证  
+将当前用户的私有项目改为公开项目。
+
+---
+
+### 社区 API
+
+#### 获取公开项目列表
+
+```http
+GET /api/community/projects
+```
+
+**查询参数**:
+
+| 参数 | 类型 | 必填 | 默认值 | 描述 |
+| --- | --- | --- | --- | --- |
+| `keyword` | string | 否 | - | 名称/描述/作者模糊搜索 |
+| `resourceType` | string | 否 | - | 资源类型：`project` / `component` / `nodegraph` |
+| `sort` | string | 否 | `latest` | 排序方式：`latest` 或 `popular` |
+| `page` | number | 否 | `1` | 页码 |
+| `pageSize` | number | 否 | `20` | 每页条数（最大 100） |
+
+**成功响应**:
+
+```json
+{
+  "projects": [
+    {
+      "id": "prj_xxx",
+      "resourceType": "project",
+      "name": "SaaS Dashboard",
+      "description": "Public template",
+      "authorId": "usr_xxx",
+      "authorName": "Alice",
+      "starsCount": 12,
+      "createdAt": "2026-02-07T09:30:00Z",
+      "updatedAt": "2026-02-07T10:00:00Z"
+    }
+  ],
+  "page": 1,
+  "pageSize": 20,
+  "sort": "latest"
+}
+```
+
+#### 获取公开项目详情（含 MIR）
+
+```http
+GET /api/community/projects/:id
+```
+
+仅返回已发布（`isPublic=true`）项目。
+
+---
+
 #### 更新当前用户
 
 更新当前登录用户的信息。
@@ -311,6 +401,17 @@ interface Session {
   createdAt: string;   // 创建时间
   expiresAt: string;   // 过期时间
 }
+
+interface ProjectSummary {
+  id: string;
+  resourceType: 'project' | 'component' | 'nodegraph';
+  name: string;
+  description: string;
+  isPublic: boolean;
+  starsCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
 ```
 
 ## 配置
@@ -322,6 +423,10 @@ interface Session {
 | `BACKEND_ADDR` | `:8080` | 服务监听地址 |
 | `BACKEND_TOKEN_TTL` | `24h` | Token 有效期（支持 Go duration 格式或秒数） |
 | `BACKEND_ALLOWED_ORIGINS` | `http://localhost:5173,http://localhost:5174` | 允许的 CORS 来源（逗号分隔） |
+| `BACKEND_DB_URL` | `postgres://postgres:postgres@localhost:5432/mdr_front_engine?sslmode=disable` | PostgreSQL 连接字符串 |
+| `BACKEND_DB_MAX_OPEN_CONNS` | `10` | 最大打开连接数 |
+| `BACKEND_DB_MAX_IDLE_CONNS` | `5` | 最大空闲连接数 |
+| `BACKEND_DB_MAX_LIFETIME` | `30m` | 连接最大生命周期 |
 
 **示例**:
 
@@ -329,6 +434,7 @@ interface Session {
 export BACKEND_ADDR=":3000"
 export BACKEND_TOKEN_TTL="48h"
 export BACKEND_ALLOWED_ORIGINS="http://localhost:5173,https://myapp.com"
+export BACKEND_DB_URL="postgres://postgres:postgres@localhost:5432/mdr_front_engine?sslmode=disable"
 ```
 
 ## CORS
@@ -405,19 +511,33 @@ curl -X PATCH http://localhost:8080/api/users/me \
 ### 启动后端服务
 
 ```bash
-cd apps/backend
-go run .
+pnpm dev:backend
 ```
+
+### 热重载启动（可选）
+
+```bash
+go install github.com/air-verse/air@latest
+pnpm dev:backend
+```
+
+说明：`pnpm dev:backend` 默认优先使用 Air 热重载；如果本机未安装 Air，会自动回退到 `go run .`。
+
+### 本地 PostgreSQL（Docker）
+
+```bash
+cd apps/backend
+docker compose up -d
+```
+
+服务启动时会自动初始化 `users` 和 `sessions` 表。
 
 ### 当前限制
 
-- 使用内存存储，重启后数据丢失
-- 暂无数据库持久化
 - 暂无项目管理 API
 
 ### 计划功能
 
-- [ ] 数据库持久化（PostgreSQL/SQLite）
 - [ ] 项目 CRUD API
 - [ ] 文件上传 API
 - [ ] OAuth 第三方登录

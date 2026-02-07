@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { MdrButton, MdrInput, MdrTextarea } from '@mdr/ui';
 import { Box, Layers, Workflow } from 'lucide-react';
-import { useEditorStore } from '@/editor/store/useEditorStore';
+import { useEditorStore, createDefaultMirDoc } from '@/editor/store/useEditorStore';
+import { useAuthStore } from '@/auth/useAuthStore';
+import { editorApi } from '@/editor/editorApi';
 
 export type ResourceType = 'project' | 'component' | 'nodegraph';
 
@@ -13,20 +15,6 @@ interface NewResourceModalProps {
   defaultType?: ResourceType;
 }
 
-const createId = (type: ResourceType) => {
-  const prefixMap = {
-    project: 'proj',
-    component: 'cmp',
-    nodegraph: 'graph',
-  };
-  const prefix = prefixMap[type];
-
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return crypto.randomUUID();
-  }
-  return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-};
-
 function NewResourceModal({
   open,
   onClose,
@@ -34,35 +22,61 @@ function NewResourceModal({
 }: NewResourceModalProps) {
   const { t } = useTranslation('editor');
   const navigate = useNavigate();
+  const token = useAuthStore((state) => state.token);
   const setProject = useEditorStore((state) => state.setProject);
+  const setMirDoc = useEditorStore((state) => state.setMirDoc);
 
   // State
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [isPublic, setIsPublic] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setSubmitting] = useState(false);
 
   const [type, setType] = useState<ResourceType>(defaultType);
 
   if (!open) return null;
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
+    if (!token) {
+      setError('Please sign in first.');
+      return;
+    }
+    setSubmitting(true);
+    setError(null);
     const finalName = name.trim() || 'Untitled';
-    const id = createId(type);
-    setProject({
-      id,
-      name: finalName,
-      description: description.trim() || undefined,
-      type,
-    });
+    const initialMir = createDefaultMirDoc();
 
-    if (type === 'project') {
+    try {
+      const { project } = await editorApi.createProject(token, {
+        name: finalName,
+        description: description.trim() || undefined,
+        resourceType: type,
+        isPublic,
+        mir: initialMir,
+      });
+      setProject({
+        id: project.id,
+        name: project.name,
+        description: project.description,
+        type: project.resourceType,
+        isPublic: project.isPublic,
+        starsCount: project.starsCount,
+      });
+      setMirDoc(initialMir);
+
       onClose();
-      navigate(`/editor/project/${id}/blueprint`);
-    } else if (type === 'component') {
-      onClose();
-      navigate(`/editor/project/${id}/component`);
-    } else if (type === 'nodegraph') {
-      onClose();
-      navigate(`/editor/project/${id}/nodegraph`);
+      if (type === 'project') {
+        navigate(`/editor/project/${project.id}/blueprint`);
+      } else if (type === 'component') {
+        navigate(`/editor/project/${project.id}/component`);
+      } else {
+        navigate(`/editor/project/${project.id}/nodegraph`);
+      }
+    } catch (apiError) {
+      setError(apiError instanceof Error ? apiError.message : 'Create failed.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -97,6 +111,11 @@ function NewResourceModal({
         </header>
 
         <div className="flex flex-col gap-[22px] p-[28px]">
+          {error && (
+            <p className="m-0 rounded-[10px] border border-[var(--color-3)] bg-[var(--color-1)] p-[10px] text-[12px] text-[var(--color-7)]">
+              {error}
+            </p>
+          )}
           <div className="flex flex-col gap-[10px]">
             <label className="flex items-center gap-[4px] text-[13px] font-semibold text-[var(--color-8)]">
               {t('modals.newResource.typeLabel', 'Type')}
@@ -181,6 +200,21 @@ function NewResourceModal({
               onChange={setDescription}
             />
           </div>
+
+          <label className="inline-flex cursor-pointer items-center justify-between rounded-[12px] border border-[var(--color-3)] bg-[var(--color-1)] px-[12px] py-[10px]">
+            <span className="text-[13px] font-semibold text-[var(--color-8)]">
+              {t(
+                'modals.newResource.publicLabel',
+                'Publish to community after creation'
+              )}
+            </span>
+            <input
+              type="checkbox"
+              checked={isPublic}
+              onChange={(event) => setIsPublic(event.target.checked)}
+              className="h-[16px] w-[16px] cursor-pointer accent-black"
+            />
+          </label>
         </div>
 
         <footer className="flex items-center justify-end gap-[12px] border-t border-t-[rgba(0,0,0,0.06)] bg-[var(--color-1)] px-[22px] py-[18px]">
@@ -193,6 +227,7 @@ function NewResourceModal({
             text={t('modals.actions.create', 'Create')}
             category="Primary"
             onClick={handleCreate}
+            disabled={isSubmitting}
           />
         </footer>
       </div>
