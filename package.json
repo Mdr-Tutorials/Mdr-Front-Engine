@@ -30,7 +30,11 @@
         "test:web:watch": "pnpm --filter @mdr/web test:watch",
         "test:web:coverage": "pnpm --filter @mdr/web test:coverage",
         "lint": "turbo run lint",
-        "format": "prettier --write \"**/*.{ts,tsx}\"",
+        "format": "pnpm run format:all",
+        "prettier": "pnpm run format:all",
+        "format:all": "pnpm run format:prettier && pnpm run format:go",
+        "format:prettier": "prettier --write \"{apps,packages,specs,scripts}/**/*.{ts,tsx,js,jsx,json,md,yml,yaml,scss,css,html}\" \"*.{json,md,yml,yaml}\"",
+        "format:go": "cd apps/backend && go fmt ./...",
         "clean": "turbo run clean && rm -rf node_modules",
         "cli": "node apps/cli/bin/mdr.js",
         "prepare": "husky install"
