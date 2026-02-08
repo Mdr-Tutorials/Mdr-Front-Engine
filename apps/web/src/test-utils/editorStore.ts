@@ -1,7 +1,7 @@
 import type { ComponentNode, MIRDocument } from '@/core/types/engine.types';
 import {
-  createGlobalDefaults,
-  type GlobalSettingsState,
+    createGlobalDefaults,
+    type GlobalSettingsState,
 } from '@/editor/features/settings/SettingsDefaults';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
@@ -9,39 +9,45 @@ import { useSettingsStore } from '@/editor/store/useSettingsStore';
 type EditorState = ReturnType<typeof useEditorStore.getState>;
 
 export const createMirDoc = (children: ComponentNode[] = []): MIRDocument => ({
-  version: '1.0',
-  ui: {
-    root: {
-      id: 'root',
-      type: 'container',
-      ...(children.length ? { children } : {}),
+    version: '1.0',
+    ui: {
+        root: {
+            id: 'root',
+            type: 'container',
+            ...(children.length ? { children } : {}),
+        },
     },
-  },
 });
 
 export const resetEditorStore = (overrides: Partial<EditorState> = {}) => {
-  const state = useEditorStore.getState();
-  useEditorStore.setState(
-    {
-      ...state,
-      mirDoc: createMirDoc(),
-      blueprintStateByProject: {},
-      projectsById: {},
-      ...overrides,
-    },
-    true
-  );
+    const state = useEditorStore.getState();
+    useEditorStore.setState(
+        {
+            ...state,
+            mirDoc: createMirDoc(),
+            workspaceId: undefined,
+            workspaceRev: undefined,
+            routeRev: undefined,
+            opSeq: undefined,
+            activeDocumentId: undefined,
+            workspaceDocumentsById: {},
+            blueprintStateByProject: {},
+            projectsById: {},
+            ...overrides,
+        },
+        true
+    );
 };
 
 export const resetSettingsStore = (
-  overrides: Partial<GlobalSettingsState> = {}
+    overrides: Partial<GlobalSettingsState> = {}
 ) => {
-  const state = useSettingsStore.getState();
-  useSettingsStore.setState(
-    {
-      ...state,
-      global: { ...createGlobalDefaults(), ...overrides },
-    },
-    true
-  );
+    const state = useSettingsStore.getState();
+    useSettingsStore.setState(
+        {
+            ...state,
+            global: { ...createGlobalDefaults(), ...overrides },
+        },
+        true
+    );
 };
