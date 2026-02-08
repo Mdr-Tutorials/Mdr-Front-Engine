@@ -100,6 +100,7 @@ type TreeNodeProps = {
 };
 
 const INDENT_PX = 14;
+const NODE_SELECT_DELAY_MS = 220;
 
 function BlueprintTreeNode({
   node,
@@ -147,6 +148,17 @@ function BlueprintTreeNode({
     transform: CSS.Transform.toString(transform),
     opacity: isDragging ? 0.6 : undefined,
   };
+  const selectTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (typeof window === 'undefined') return;
+      if (selectTimer.current) {
+        window.clearTimeout(selectTimer.current);
+        selectTimer.current = null;
+      }
+    };
+  }, []);
 
   return (
     <div className="BlueprintEditorTreeNode flex flex-col gap-0.5">
@@ -190,7 +202,33 @@ function BlueprintTreeNode({
           tabIndex={0}
           className={`BlueprintEditorTreeItem relative flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-[10px] border-0 bg-transparent px-0 py-0.5 text-left text-(--color-8) transition-[color,opacity] duration-150 hover:text-(--color-9) [&.Selected_.BlueprintEditorTreeCount]:text-(--color-8) [&.Selected_.BlueprintEditorTreeIcon]:text-(--color-9) [&.Selected_.BlueprintEditorTreeId]:text-(--color-7) [&.Selected]:text-(--color-9) [&.IsOver]:text-(--color-9) [&:focus-within_.BlueprintEditorTreeActions]:opacity-100 [&:hover_.BlueprintEditorTreeActions]:opacity-100 [&:hover_.BlueprintEditorTreeIcon]:text-(--color-9) [&:hover_.BlueprintEditorTreeId]:text-(--color-7) ${selectedId === node.id ? 'Selected' : ''} ${isOver ? 'IsOver' : ''} ${dropPlacement === 'before' ? 'DropBefore' : ''} ${dropPlacement === 'after' ? 'DropAfter' : ''} ${dropPlacement === 'child' ? 'DropChild bg-[rgba(0,0,0,0.03)] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.18)]' : ''}`.trim()}
           style={style}
-          onClick={() => onSelect(node.id)}
+          onClick={(event) => {
+            // For collapsed parent nodes, defer selection briefly so double-click can expand only.
+            if (hasChildren && !isExpanded) {
+              if (typeof window !== 'undefined') {
+                if (selectTimer.current) {
+                  window.clearTimeout(selectTimer.current);
+                }
+                if (event.detail > 1) return;
+                selectTimer.current = window.setTimeout(() => {
+                  onSelect(node.id);
+                  selectTimer.current = null;
+                }, NODE_SELECT_DELAY_MS);
+              }
+              return;
+            }
+            onSelect(node.id);
+          }}
+          onDoubleClick={(event) => {
+            if (!hasChildren || isExpanded) return;
+            event.preventDefault();
+            event.stopPropagation();
+            if (typeof window !== 'undefined' && selectTimer.current) {
+              window.clearTimeout(selectTimer.current);
+              selectTimer.current = null;
+            }
+            onToggle(node.id);
+          }}
           onKeyDown={(event) => {
             if (event.key === 'Enter' || event.key === ' ') {
               event.preventDefault();

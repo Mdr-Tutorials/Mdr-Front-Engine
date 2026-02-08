@@ -1,7 +1,7 @@
 import {
   type ChangeEvent,
   type KeyboardEvent,
-  ReactNode,
+  type ReactNode,
   useEffect,
   useMemo,
   useRef,
@@ -240,7 +240,9 @@ export function BlueprintEditorSidebar({
       <div
         className={`BlueprintEditorSidebarHeader flex items-center justify-between gap-2.5 border-b border-black/6 px-3 py-2.5 text-[13px] font-semibold dark:border-white/8 ${isCollapsed ? 'w-full items-center justify-center border-b-0 p-0' : ''}`}
       >
-        <span className={`BlueprintEditorSidebarTitle min-w-0 ${isCollapsed ? 'hidden' : ''}`}>
+        <span
+          className={`BlueprintEditorSidebarTitle min-w-0 ${isCollapsed ? 'hidden' : ''}`}
+        >
           {t('sidebar.title')}
         </span>
         <div className="BlueprintEditorSidebarHeaderRight inline-flex min-w-0 items-center justify-end gap-2">

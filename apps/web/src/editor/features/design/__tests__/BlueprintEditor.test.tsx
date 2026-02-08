@@ -472,6 +472,25 @@ describe('BlueprintEditor', () => {
     );
   });
 
+  it('opens inspector when selecting a component while collapsed', async () => {
+    resetSettingsStore({ panelLayout: 'focus' });
+    render(<BlueprintEditor />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('inspector').getAttribute('data-collapsed')).toBe(
+        'true'
+      );
+    });
+
+    fireEvent.click(screen.getByTestId('select-node'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('inspector').getAttribute('data-collapsed')).toBe(
+        'false'
+      );
+    });
+  });
+
   it('toggles preview and group state from the sidebar', () => {
     render(<BlueprintEditor />);
 

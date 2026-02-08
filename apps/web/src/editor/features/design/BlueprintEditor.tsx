@@ -7,7 +7,6 @@
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
-import { Sparkles } from 'lucide-react';
 import {
   DndContext,
   DragOverlay,
@@ -246,7 +245,7 @@ export const createNodeFromPaletteItem = (
       type: 'MdrButtonLink',
       text: 'Link',
       props: {
-        to: '/blueprint',
+        to: '',
         size: selectedSize ?? 'Medium',
         category: 'Secondary',
         ...variantProps,
@@ -258,7 +257,7 @@ export const createNodeFromPaletteItem = (
       id: createId('MdrLink'),
       type: 'MdrLink',
       text: 'Link',
-      props: { to: '/blueprint' },
+      props: { to: '' },
     };
   }
   if (itemId === 'input') {
@@ -344,7 +343,10 @@ export const createNodeFromPaletteItem = (
       id: createId('MdrIcon'),
       type: 'MdrIcon',
       props: {
-        icon: Sparkles,
+        iconRef: {
+          provider: 'lucide',
+          name: 'Sparkles',
+        },
         size: 20,
         ...variantProps,
       },
@@ -355,8 +357,11 @@ export const createNodeFromPaletteItem = (
       id: createId('MdrIconLink'),
       type: 'MdrIconLink',
       props: {
-        icon: Sparkles,
-        to: '/blueprint',
+        iconRef: {
+          provider: 'lucide',
+          name: 'Sparkles',
+        },
+        to: '',
         size: 18,
         ...variantProps,
       },
@@ -964,6 +969,7 @@ function BlueprintEditor() {
   };
 
   const handleNodeSelect = (nodeId: string) => {
+    setInspectorCollapsed(false);
     setBlueprintState(blueprintKey, { selectedId: nodeId });
   };
 

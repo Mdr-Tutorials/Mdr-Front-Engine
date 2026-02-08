@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { MdrInput } from '@mdr/ui';
 import type { ComponentNode } from '@/core/types/engine.types';
+import type { IconRef } from '@/mir/renderer/iconRegistry';
 import {
   BUILT_IN_ACTION_OPTIONS,
   DOM_EVENT_TRIGGERS,
@@ -20,9 +21,16 @@ import {
   normalizeBuiltInAction,
   type BuiltInActionName,
 } from '@/mir/actions/registry';
+import {
+  isIconRef,
+  resolveIconRef,
+} from '@/mir/renderer/iconRegistry';
 import { useEditorStore } from '@/editor/store/useEditorStore';
+import { resolveLinkCapability } from '@/mir/renderer/capabilities';
 import { INSPECTOR_PANELS } from './inspector/panels/registry';
 import { InspectorRow } from './inspector/components/InspectorRow';
+import { IconPickerModal } from './inspector/components/IconPickerModal';
+import { LinkBasicsFields } from './inspector/components/LinkBasicsFields';
 import {
   getPrimaryTextField,
   updateNodeTextField,
@@ -147,6 +155,7 @@ export function BlueprintEditorInspector({
   const [expandedPanels, setExpandedPanels] = useState<Record<string, boolean>>(
     {}
   );
+  const [isIconPickerOpen, setIconPickerOpen] = useState(false);
   const allIds = useMemo(() => collectIds(mirDoc.ui.root), [mirDoc.ui.root]);
 
   useEffect(() => {
@@ -167,6 +176,53 @@ export function BlueprintEditorInspector({
       return changed ? next : current;
     });
   }, [matchedPanels]);
+
+  useEffect(() => {
+    setIconPickerOpen(false);
+  }, [selectedNode?.id]);
+
+  const selectedIconRef = useMemo<IconRef | null>(() => {
+    if (!selectedNode) return null;
+    const props = selectedNode.props as Record<string, unknown> | undefined;
+    const directRef = props?.iconRef;
+    if (isIconRef(directRef)) return directRef;
+    if (typeof props?.iconName === 'string') {
+      return {
+        provider:
+          typeof props?.iconProvider === 'string' ? props.iconProvider : 'lucide',
+        name: props.iconName,
+      };
+    }
+    return null;
+  }, [selectedNode]);
+  const selectedIconComponent = useMemo(
+    () => (selectedIconRef ? resolveIconRef(selectedIconRef) : null),
+    [selectedIconRef]
+  );
+  const isIconNode =
+    selectedNode?.type === 'MdrIcon' || selectedNode?.type === 'MdrIconLink';
+  const SelectedIconComponent = selectedIconComponent;
+  const linkCapability = useMemo(() => resolveLinkCapability(selectedNode), [selectedNode]);
+  const linkPropKey = linkCapability?.destinationProp ?? null;
+  const linkProps = (selectedNode?.props ?? {}) as Record<string, unknown>;
+  const linkDestination =
+    linkPropKey && typeof linkProps[linkPropKey] === 'string'
+      ? linkProps[linkPropKey]
+      : '';
+  const targetPropKey = linkCapability?.targetProp ?? 'target';
+  const relPropKey = linkCapability?.relProp ?? 'rel';
+  const titlePropKey = linkCapability?.titleProp ?? 'title';
+  const linkTarget =
+    typeof linkProps[targetPropKey] === 'string' &&
+    (linkProps[targetPropKey] === '_self' || linkProps[targetPropKey] === '_blank')
+      ? (linkProps[targetPropKey] as '_self' | '_blank')
+      : '_self';
+  const linkRel =
+    typeof linkProps[relPropKey] === 'string' ? (linkProps[relPropKey] as string) : '';
+  const linkTitle =
+    typeof linkProps[titlePropKey] === 'string'
+      ? (linkProps[titlePropKey] as string)
+      : '';
 
   const trimmedDraftId = draftId.trim();
   const isDuplicate =
@@ -231,6 +287,19 @@ export function BlueprintEditorInspector({
       })),
     [selectedNode?.events]
   );
+  const hasOnClickTrigger = useMemo(
+    () =>
+      triggerEntries.some((entry) => {
+        const normalized = entry.trigger.trim().toLowerCase();
+        return normalized === 'onclick' || normalized === 'click';
+      }),
+    [triggerEntries]
+  );
+  const hasLinkTriggerConflict =
+    Boolean(linkCapability) &&
+    Boolean(linkDestination.trim()) &&
+    hasOnClickTrigger &&
+    linkCapability.triggerPolicy?.onClickWithDestination === 'warn';
 
   const addTrigger = () => {
     updateSelectedNode((current) => {
@@ -298,6 +367,19 @@ export function BlueprintEditorInspector({
         ...current,
         events: Object.keys(nextEvents).length ? nextEvents : undefined,
       };
+    });
+  };
+
+  const applyIconRef = (iconRef: IconRef) => {
+    updateSelectedNode((current) => {
+      const nextProps: Record<string, unknown> = {
+        ...(current.props ?? {}),
+        iconRef,
+      };
+      delete nextProps.icon;
+      delete nextProps.iconName;
+      delete nextProps.iconProvider;
+      return { ...current, props: nextProps };
     });
   };
 
@@ -421,6 +503,83 @@ export function BlueprintEditorInspector({
                         />
                       </div>
                     ) : null}
+                    {isIconNode && (
+                      <div className="InspectorField flex flex-col gap-1.5">
+                        <InspectorRow
+                          label={t('inspector.fields.icon.label', {
+                            defaultValue: 'Icon',
+                          })}
+                          control={
+                            <div className="flex w-full items-center gap-2">
+                              <button
+                                type="button"
+                                className="inline-flex h-7 min-w-0 flex-1 cursor-pointer items-center justify-start gap-2 rounded-md border border-black/10 bg-transparent px-2 text-left text-xs text-(--color-8) dark:border-white/16"
+                                onClick={() => setIconPickerOpen(true)}
+                                data-testid="inspector-open-icon-picker"
+                              >
+                                <span className="inline-flex h-4 w-4 items-center justify-center text-(--color-9)">
+                                  {SelectedIconComponent ? (
+                                    <SelectedIconComponent size={14} />
+                                  ) : null}
+                                </span>
+                                <span className="truncate">
+                                  {selectedIconRef
+                                    ? `${selectedIconRef.provider}:${selectedIconRef.name}`
+                                    : t('inspector.fields.icon.empty', {
+                                        defaultValue: 'No icon selected',
+                                      })}
+                                </span>
+                              </button>
+                            </div>
+                          }
+                        />
+                      </div>
+                    )}
+                    {linkPropKey ? (
+                      <LinkBasicsFields
+                        destination={linkDestination}
+                        target={linkTarget as '_self' | '_blank'}
+                        rel={linkRel}
+                        title={linkTitle}
+                        t={t}
+                        onChangeDestination={(value) => {
+                          updateSelectedNode((current) => ({
+                            ...current,
+                            props: {
+                              ...(current.props ?? {}),
+                              [linkPropKey]: value,
+                            },
+                          }));
+                        }}
+                        onChangeTarget={(value) => {
+                          updateSelectedNode((current) => ({
+                            ...current,
+                            props: {
+                              ...(current.props ?? {}),
+                              [targetPropKey]: value,
+                            },
+                          }));
+                        }}
+                        onChangeRel={(value) => {
+                          updateSelectedNode((current) => ({
+                            ...current,
+                            props: {
+                              ...(current.props ?? {}),
+                              [relPropKey]: value,
+                            },
+                          }));
+                        }}
+                        onChangeTitle={(value) => {
+                          updateSelectedNode((current) => ({
+                            ...current,
+                            props: {
+                              ...(current.props ?? {}),
+                              [titlePropKey]: value,
+                            },
+                          }));
+                        }}
+                      />
+                    ) : null}
                   </div>
                 )}
               </section>
@@ -490,46 +649,55 @@ export function BlueprintEditorInspector({
               </section>
 
               <section className="pt-1">
-                <button
-                  type="button"
-                  className="flex w-full cursor-pointer items-center justify-between border-0 bg-transparent px-0 py-1 text-left"
-                  onClick={() => toggleSection('triggers')}
-                >
-                  <span className="text-[13px] font-semibold tracking-[0.01em] text-(--color-9)">
-                    {t('inspector.groups.triggers.title', {
-                      defaultValue: 'Triggers',
-                    })}
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <button
-                      type="button"
-                      className="inline-flex h-5 w-5 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
-                      data-testid="inspector-add-trigger"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        addTrigger();
-                        if (!expandedSections.triggers) {
-                          toggleSection('triggers');
-                        }
-                      }}
-                      aria-label={t('inspector.groups.triggers.add', {
-                        defaultValue: 'Add trigger',
+                <div className="flex w-full items-center justify-between gap-1 px-0 py-1">
+                  <button
+                    type="button"
+                    className="flex min-w-0 flex-1 cursor-pointer items-center justify-between border-0 bg-transparent p-0 text-left"
+                    onClick={() => toggleSection('triggers')}
+                  >
+                    <span className="text-[13px] font-semibold tracking-[0.01em] text-(--color-9)">
+                      {t('inspector.groups.triggers.title', {
+                        defaultValue: 'Triggers',
                       })}
-                      title={t('inspector.groups.triggers.add', {
-                        defaultValue: 'Add trigger',
-                      })}
-                    >
-                      <Plus size={14} />
-                    </button>
+                    </span>
                     <ChevronDown
                       size={14}
                       className={`${expandedSections.triggers ? 'rotate-0' : '-rotate-90'} text-(--color-6) transition-transform`}
                     />
-                  </span>
-                </button>
+                  </button>
+                  <button
+                    type="button"
+                    className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
+                    data-testid="inspector-add-trigger"
+                    onClick={() => {
+                      addTrigger();
+                      if (!expandedSections.triggers) {
+                        toggleSection('triggers');
+                      }
+                    }}
+                    aria-label={t('inspector.groups.triggers.add', {
+                      defaultValue: 'Add trigger',
+                    })}
+                    title={t('inspector.groups.triggers.add', {
+                      defaultValue: 'Add trigger',
+                    })}
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
                 {expandedSections.triggers && (
                   <div className="flex flex-col gap-2 pb-1 pt-1">
+                    {hasLinkTriggerConflict ? (
+                      <div
+                        className="rounded-md border border-[rgba(220,74,74,0.35)] bg-[rgba(220,74,74,0.08)] px-2 py-1.5 text-[10px] text-[rgba(190,60,60,0.95)]"
+                        role="alert"
+                      >
+                        {t('inspector.groups.triggers.linkConflict', {
+                          defaultValue:
+                            'This component has a destination and an onClick trigger. Click may run both.',
+                        })}
+                      </div>
+                    ) : null}
                     {triggerEntries.length ? (
                       triggerEntries.map((item) => {
                         const toValue =
@@ -916,6 +1084,12 @@ export function BlueprintEditorInspector({
           )}
         </>
       )}
+      <IconPickerModal
+        open={isIconPickerOpen}
+        initialIconRef={selectedIconRef}
+        onClose={() => setIconPickerOpen(false)}
+        onSelect={applyIconRef}
+      />
     </aside>
   );
 }

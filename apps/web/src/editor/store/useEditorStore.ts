@@ -31,8 +31,6 @@ interface EditorStore {
   mirDoc: MIRDocument;
   setMirDoc: (doc: MIRDocument) => void;
   updateMirDoc: (updater: (doc: MIRDocument) => MIRDocument) => void;
-  generatedCode: string;
-  isExportModalOpen: boolean;
   blueprintStateByProject: Record<string, BlueprintState>;
   projectsById: Record<
     string,
@@ -46,8 +44,6 @@ interface EditorStore {
     }
   >;
 
-  setGeneratedCode: (code: string) => void;
-  setExportModalOpen: (open: boolean) => void;
   setBlueprintState: (
     projectId: string,
     partial: Partial<BlueprintState>
@@ -78,13 +74,9 @@ export const useEditorStore = create<EditorStore>()((set) => ({
   setMirDoc: (doc) => set({ mirDoc: doc }),
   updateMirDoc: (updater) =>
     set((state) => ({ mirDoc: updater(state.mirDoc) })),
-  generatedCode: '',
-  isExportModalOpen: false,
   blueprintStateByProject: {},
   projectsById: {},
 
-  setGeneratedCode: (code) => set({ generatedCode: code }),
-  setExportModalOpen: (open) => set({ isExportModalOpen: open }),
   setBlueprintState: (projectId, partial) =>
     set((state) => {
       const previous =

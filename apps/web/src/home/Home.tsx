@@ -1,34 +1,18 @@
-﻿import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import {
-  Download,
-  Footprints,
-  Github,
-  Languages,
-  Moon,
-  Sun,
-} from 'lucide-react';
+﻿import { useTranslation } from 'react-i18next';
+import { Footprints, Github, Languages, Moon, Sun } from 'lucide-react';
 import { MdrAvatar, MdrButtonLink, MdrLink, MdrNav } from '@mdr/ui';
 import { IconMdr } from '@/components/icons/IconMdr';
-import { ExportModal } from '@/editor/features/export/ExportModal';
-import { useEditorStore } from '@/editor/store/useEditorStore';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
 import { useAuthStore } from '@/auth/useAuthStore';
-import { generateReactCode } from '@/mir/generator/mirToReact';
-import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
-import { testDoc } from '@/mock/pagaData';
 
 function Home() {
   const { t, i18n } = useTranslation('home');
-  const [count, setCount] = useState(0);
 
   // Theme is now managed by Policy/GlobalStore
   const themeMode = useSettingsStore((state) => state.global.theme);
   const setGlobalValue = useSettingsStore((state) => state.setGlobalValue);
 
-  const { setGeneratedCode, setExportModalOpen } = useEditorStore();
   const user = useAuthStore((state) => state.user);
-  const handleIncrement = () => setCount((prev) => prev + 1);
   const toggleLanguage = () => {
     const nextLanguage = i18n.language?.startsWith('zh') ? 'en' : 'zh-CN';
     i18n.changeLanguage(nextLanguage);
@@ -45,15 +29,6 @@ function Home() {
     'inline-flex h-[36px] w-[36px] cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-[var(--color-7)] no-underline transition-colors duration-200 ease-[ease] hover:bg-[var(--color-1)] hover:text-[var(--color-10)]';
   const profileLinkClassName =
     'inline-flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[var(--color-1)] no-underline transition-[box-shadow,transform] duration-200 ease-[ease] hover:-translate-y-px hover:shadow-[0_10px_18px_rgba(0,0,0,0.12)]';
-
-  const handleQuickExport = () => {
-    // 1. 生成代码（默认生成 React，弹窗内可以再切换）
-    const code = generateReactCode(testDoc);
-    // 2. 存入 Store
-    setGeneratedCode(code);
-    // 3. 打开弹窗
-    setExportModalOpen(true);
-  };
 
   const initials =
     user?.name
@@ -75,9 +50,7 @@ function Home() {
         <MdrNav.Right>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-8 pr-4">
-              <MdrLink to="/community">
-                {t('nav.community')}
-              </MdrLink>
+              <MdrLink to="/community">{t('nav.community')}</MdrLink>
               <MdrLink to="http://localhost:5174/guide/getting-started">
                 {t('nav.tutorials')}
               </MdrLink>
@@ -165,29 +138,7 @@ function Home() {
             to="http://localhost:5174"
           />
         </div>
-
-        <section className="mt-[30vh]">
-          <h2 className={secondaryHeadingClassName}>{t('mirTest.title')}</h2>
-
-          <MIRRenderer
-            node={testDoc.ui.root}
-            mirDoc={testDoc}
-            overrides={{
-              count,
-              onAction: handleIncrement,
-            }}
-          />
-          <button
-            onClick={handleQuickExport}
-            className="my-5 inline-flex items-center gap-2 rounded-md border-0 bg-[#4f46e5] px-4 py-2 text-[14px] font-medium text-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] transition-all duration-200 ease-in-out hover:bg-[#4338ca] active:scale-[0.95] [&_svg]:shrink-0"
-          >
-            <Download size={16} />
-            <span>{t('mirTest.exportButton')}</span>
-          </button>
-        </section>
       </div>
-
-      <ExportModal />
 
       <footer className="mt-auto flex w-full flex-row items-center justify-between px-10 py-4">
         <div className="flex items-center gap-2 text-[1em] text-(--color-7)">

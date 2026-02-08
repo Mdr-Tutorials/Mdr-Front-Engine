@@ -1,6 +1,7 @@
 import type React from 'react';
 import * as MdrUi from '@mdr/ui';
 import type { ComponentNode } from '@/core/types/engine.types';
+import { isIconRef, resolveIconRef } from './iconRegistry';
 
 export type ComponentKind = 'html' | 'mdr' | 'custom';
 export type RegistryGroup = 'custom' | 'mdr' | 'native';
@@ -189,6 +190,51 @@ export const mdrInputAdapter: ComponentAdapter = {
   },
 };
 
+const resolveIconProps = (resolvedProps: Record<string, any>) => {
+  const props = { ...resolvedProps };
+  const iconRef =
+    props.iconRef ??
+    (typeof props.iconName === 'string'
+      ? {
+          provider:
+            typeof props.iconProvider === 'string'
+              ? props.iconProvider
+              : 'lucide',
+          name: props.iconName,
+        }
+      : null);
+
+  if (isIconRef(iconRef)) {
+    const resolvedIcon = resolveIconRef(iconRef);
+    if (resolvedIcon) {
+      props.icon = resolvedIcon;
+    }
+  }
+
+  delete props.iconRef;
+  delete props.iconName;
+  delete props.iconProvider;
+  return props;
+};
+
+export const mdrIconAdapter: ComponentAdapter = {
+  kind: 'mdr',
+  supportsChildren: false,
+  applySelection: applyMdrSelection,
+  mapProps: ({ resolvedProps }) => ({
+    props: resolveIconProps(resolvedProps),
+  }),
+};
+
+export const mdrIconLinkAdapter: ComponentAdapter = {
+  kind: 'mdr',
+  supportsChildren: false,
+  applySelection: applyMdrSelection,
+  mapProps: ({ resolvedProps }) => ({
+    props: resolveIconProps(resolvedProps),
+  }),
+};
+
 const DEFAULT_RESOLVER_ORDER: RegistryGroup[] = ['custom', 'mdr', 'native'];
 
 const registerNativeComponents = (registry: ComponentRegistry) => {
@@ -230,6 +276,8 @@ const registerMdrComponents = (registry: ComponentRegistry) => {
     MdrInput: mdrInputAdapter,
     MdrTextarea: mdrInputAdapter,
     MdrSearch: mdrInputAdapter,
+    MdrIcon: mdrIconAdapter,
+    MdrIconLink: mdrIconLinkAdapter,
 
     MdrLink: mdrLinkAdapter,
   };

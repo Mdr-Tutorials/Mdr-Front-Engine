@@ -75,6 +75,11 @@ const isInteractiveTarget = (target: HTMLElement | null) => {
   );
 };
 
+const isNodeTarget = (target: HTMLElement | null) => {
+  if (!target) return false;
+  return Boolean(target.closest('[data-mir-id], [data-mir-node-id]'));
+};
+
 const normalizeWheelDelta = (event: WheelEvent) => {
   if (event.deltaMode === 1) {
     return {
@@ -238,7 +243,8 @@ export function BlueprintEditorCanvas({
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (event.button !== 0) return;
-    if (isInteractiveTarget(event.target as HTMLElement)) return;
+    const target = event.target as HTMLElement;
+    if (isInteractiveTarget(target) || isNodeTarget(target)) return;
     event.currentTarget.focus();
     stopInertia();
     panState.current = {

@@ -22,13 +22,15 @@ vi.mock('@/mir/renderer/MIRRenderer', () => ({
     node: any;
     onNodeSelect: (id: string) => void;
   }) => (
-    <button
-      type="button"
-      data-testid="mir-node"
-      onClick={() => onNodeSelect(node.children?.[0]?.id ?? node.id)}
-    >
-      Select
-    </button>
+    <div data-mir-node-id={node.children?.[0]?.id ?? node.id}>
+      <button
+        type="button"
+        data-testid="mir-node"
+        onClick={() => onNodeSelect(node.children?.[0]?.id ?? node.id)}
+      >
+        Select
+      </button>
+    </div>
   ),
 }));
 
@@ -165,5 +167,40 @@ describe('BlueprintEditorCanvas', () => {
 
     fireEvent.keyDown(surface, { key: '+', ctrlKey: true });
     expect(onZoomChange).toHaveBeenCalled();
+  });
+
+  it('does not start panning when pointer down happens on a MIR node', () => {
+    resetEditorStore({
+      mirDoc: createMirDoc([{ id: 'child-1', type: 'MdrText', text: 'Hello' }]),
+    });
+    const onPanChange = vi.fn();
+
+    render(
+      <BlueprintEditorCanvas
+        viewportWidth="1440"
+        viewportHeight="900"
+        zoom={100}
+        pan={{ x: 0, y: 0 }}
+        selectedId={undefined}
+        onPanChange={onPanChange}
+        onZoomChange={() => {}}
+        onSelectNode={() => {}}
+      />
+    );
+
+    fireEvent.pointerDown(screen.getByTestId('mir-node'), {
+      pointerId: 1,
+      clientX: 0,
+      clientY: 0,
+      button: 0,
+    });
+    fireEvent.pointerMove(screen.getByTestId('mir-node'), {
+      pointerId: 1,
+      clientX: 16,
+      clientY: 0,
+    });
+    fireEvent.pointerUp(screen.getByTestId('mir-node'), { pointerId: 1 });
+
+    expect(onPanChange).not.toHaveBeenCalled();
   });
 });

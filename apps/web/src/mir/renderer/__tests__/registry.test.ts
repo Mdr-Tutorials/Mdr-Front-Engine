@@ -23,7 +23,9 @@ describe('mir renderer registry', () => {
   });
 
   it('keeps adapter overrides (e.g. MdrButton is non-children)', async () => {
-    const { createMdrRegistry, mdrLinkAdapter } = await import('../registry');
+    const { createMdrRegistry, mdrIconAdapter, mdrLinkAdapter } = await import(
+      '../registry'
+    );
     const registry = createMdrRegistry();
     const resolved = registry.resolve('MdrButton');
     const linkResolved = registry.resolve('MdrLink');
@@ -39,5 +41,18 @@ describe('mir renderer registry', () => {
     });
 
     expect(mapped?.props?.text).toBe('Link');
+
+    const mappedIcon = mdrIconAdapter.mapProps?.({
+      node: { id: 'icon-1', type: 'MdrIcon', props: {} },
+      resolvedProps: {
+        iconRef: { provider: 'lucide', name: 'Sparkles' },
+        size: 18,
+      },
+      resolvedStyle: {},
+      resolvedText: undefined,
+    });
+
+    expect(mappedIcon?.props?.icon).toBeTruthy();
+    expect(mappedIcon?.props?.iconRef).toBeUndefined();
   });
 });

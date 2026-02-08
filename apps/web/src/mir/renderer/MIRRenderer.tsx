@@ -13,6 +13,7 @@ import {
   isBuiltInActionName,
   type BuiltInActionContext,
 } from '../actions/registry';
+import { resolveLinkCapability } from './capabilities';
 
 const VOID_ELEMENTS = new Set(['input', 'img', 'br', 'hr', 'meta', 'link']);
 
@@ -107,6 +108,42 @@ const isSyntheticEvent = (value: unknown): value is React.SyntheticEvent => {
   return typeof value === 'object' && value !== null && 'nativeEvent' in value;
 };
 
+const isClickTrigger = (trigger: string) => toReactEventName(trigger) === 'onClick';
+
+const collectNodeEvents = (
+  node: ComponentNode,
+  map: Record<string, ComponentNode['events']> = {}
+) => {
+  if (node.events && Object.keys(node.events).length > 0) {
+    map[node.id] = node.events;
+  }
+  node.children?.forEach((child) => collectNodeEvents(child, map));
+  return map;
+};
+
+const collectNodesById = (
+  node: ComponentNode,
+  map: Record<string, ComponentNode> = {}
+) => {
+  map[node.id] = node;
+  node.children?.forEach((child) => collectNodesById(child, map));
+  return map;
+};
+
+const isSelectionDebugEnabled = () =>
+  typeof window !== 'undefined' &&
+  Boolean((window as unknown as { __MDR_DEBUG_SELECTION__?: boolean }).__MDR_DEBUG_SELECTION__);
+
+const emitSelectionDebug = (detail: Record<string, unknown>) => {
+  if (!isSelectionDebugEnabled() || typeof window === 'undefined') return;
+  window.dispatchEvent(
+    new CustomEvent('mdr:selection-debug', {
+      detail,
+    })
+  );
+  console.debug('[mdr-selection]', detail);
+};
+
 interface MIRRendererProps {
   node: ComponentNode;
   mirDoc: MIRDocument;
@@ -185,6 +222,7 @@ const MIRNode: React.FC<{
       const trigger = eventDef.trigger || eventKey;
       const reactEventName = toReactEventName(trigger);
       if (!reactEventName) return;
+      if (isClickTrigger(trigger)) return;
       const handler = (payload: unknown) => {
         if (
           eventDef.action &&
@@ -206,7 +244,7 @@ const MIRNode: React.FC<{
       );
     });
     return handlers;
-  }, [node.events, context.dispatchAction]);
+  }, [node.events, context.dispatchAction, context.dispatchBuiltInAction, node.id]);
 
   const mergedProps = useMemo(() => {
     const combined = { ...(adapterResult.props ?? resolvedProps) } as Record<
@@ -219,13 +257,6 @@ const MIRNode: React.FC<{
     return combined;
   }, [adapterResult.props, resolvedProps, eventProps]);
 
-  const selectionHandler = context.onNodeSelect
-    ? (event: React.SyntheticEvent) => {
-        event.stopPropagation();
-        context.onNodeSelect?.(node.id, event);
-      }
-    : undefined;
-
   const selectionData = context.onNodeSelect
     ? {
         'data-mir-id': node.id,
@@ -234,14 +265,7 @@ const MIRNode: React.FC<{
           : {}),
       }
     : {};
-
-  const selectionClick = context.onNodeSelect
-    ? {
-        onClick: mergeHandlers(mergedProps.onClick, selectionHandler),
-      }
-    : {};
-
-  let finalProps: Record<string, any> = { ...mergedProps, ...selectionClick };
+  let finalProps: Record<string, any> = { ...mergedProps };
 
   if (resolvedComponent.missing && context.renderMode === 'strict') {
     finalProps = {
@@ -280,21 +304,27 @@ const MIRNode: React.FC<{
     : resolvedStyle;
 
   if (!supportsChildren) {
-    return <Component {...restProps} style={mergedStyle} />;
+    return (
+      <span style={{ display: 'contents' }} data-mir-node-id={node.id}>
+        <Component {...restProps} style={mergedStyle} />
+      </span>
+    );
   }
 
   return (
-    <Component {...restProps} style={mergedStyle}>
-      {adapterResult.children}
-      {node.children?.map((child) => (
-        <MIRNode
-          key={child.id}
-          node={child}
-          context={context}
-          registry={registry}
-        />
-      ))}
-    </Component>
+    <span style={{ display: 'contents' }} data-mir-node-id={node.id}>
+      <Component {...restProps} style={mergedStyle}>
+        {adapterResult.children}
+        {node.children?.map((child) => (
+          <MIRNode
+            key={child.id}
+            node={child}
+            context={context}
+            registry={registry}
+          />
+        ))}
+      </Component>
+    </span>
   );
 };
 
@@ -379,6 +409,8 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
     () => registryProp ?? createDefaultComponentRegistry(),
     [registryProp]
   );
+  const nodeEventsById = useMemo(() => collectNodeEvents(node), [node]);
+  const nodesById = useMemo(() => collectNodesById(node), [node]);
 
   const dispatchBuiltInAction = useCallback(
     (
@@ -405,6 +437,96 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
     [builtInActions]
   );
 
+  const handleDelegatedClickCapture = useCallback(
+    (event: React.SyntheticEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      emitSelectionDebug({
+        stage: 'capture',
+        targetTag: target.tagName,
+        targetClass: target.className,
+      });
+      const matched = target.closest('[data-mir-node-id], [data-mir-id]');
+      if (!matched) {
+        emitSelectionDebug({
+          stage: 'no-match',
+        });
+        return;
+      }
+      const nodeId =
+        matched.getAttribute('data-mir-node-id') ??
+        matched.getAttribute('data-mir-id');
+      if (!nodeId) {
+        emitSelectionDebug({
+          stage: 'empty-node-id',
+        });
+        return;
+      }
+      const matchedNode = nodesById[nodeId];
+      if (onNodeSelect && resolveLinkCapability(matchedNode)) {
+        event.preventDefault();
+      }
+
+      onNodeSelect?.(nodeId, event);
+      emitSelectionDebug({
+        stage: 'selected',
+        nodeId,
+      });
+
+      const events = nodeEventsById[nodeId];
+      if (!events) {
+        emitSelectionDebug({
+          stage: 'no-events',
+          nodeId,
+        });
+        return;
+      }
+      Object.entries(events).forEach(([eventKey, eventDef]) => {
+        const trigger = eventDef.trigger || eventKey;
+        if (!isClickTrigger(trigger)) return;
+        emitSelectionDebug({
+          stage: 'click-trigger',
+          nodeId,
+          eventKey,
+          trigger,
+          action: eventDef.action,
+        });
+        if (
+          eventDef.action &&
+          dispatchBuiltInAction(eventDef.action, {
+            params: eventDef.params,
+            nodeId,
+            trigger,
+            eventKey,
+            payload: event,
+          })
+        ) {
+          emitSelectionDebug({
+            stage: 'built-in-dispatched',
+            nodeId,
+            eventKey,
+            action: eventDef.action,
+          });
+          return;
+        }
+        dispatchAction(eventDef.action, event);
+        emitSelectionDebug({
+          stage: 'action-dispatched',
+          nodeId,
+          eventKey,
+          action: eventDef.action,
+        });
+      });
+    },
+    [
+      dispatchAction,
+      dispatchBuiltInAction,
+      nodeEventsById,
+      nodesById,
+      onNodeSelect,
+    ]
+  );
+
   const context = useMemo(
     () => ({
       state,
@@ -426,5 +548,9 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
     ]
   );
 
-  return <MIRNode node={node} context={context} registry={registry} />;
+  return (
+    <div style={{ display: 'contents' }} onClickCapture={handleDelegatedClickCapture}>
+      <MIRNode node={node} context={context} registry={registry} />
+    </div>
+  );
 };

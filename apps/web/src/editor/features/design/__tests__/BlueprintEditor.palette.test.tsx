@@ -64,12 +64,18 @@ describe('createNodeFromPaletteItem', () => {
 
     const iconNode = createNodeFromPaletteItem('icon', createId);
     expect(iconNode.type).toBe('MdrIcon');
-    expect(iconNode.props?.icon).toBeTruthy();
+    expect(iconNode.props?.iconRef).toEqual({
+      provider: 'lucide',
+      name: 'Sparkles',
+    });
 
     const iconLinkNode = createNodeFromPaletteItem('icon-link', createId);
     expect(iconLinkNode.type).toBe('MdrIconLink');
-    expect(iconLinkNode.props?.icon).toBeTruthy();
-    expect(iconLinkNode.props?.to).toBe('/blueprint');
+    expect(iconLinkNode.props?.iconRef).toEqual({
+      provider: 'lucide',
+      name: 'Sparkles',
+    });
+    expect(iconLinkNode.props?.to).toBe('');
   });
 });
 

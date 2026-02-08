@@ -13,12 +13,13 @@ import (
 )
 
 type Server struct {
-	cfg      Config
-	db       *sql.DB
-	router   *gin.Engine
-	users    *UserStore
-	sessions *SessionStore
-	projects *ProjectStore
+	cfg        Config
+	db         *sql.DB
+	router     *gin.Engine
+	users      *UserStore
+	sessions   *SessionStore
+	projects   *ProjectStore
+	workspaces *WorkspaceStore
 }
 
 func NewServer(cfg Config) (*Server, error) {
@@ -29,12 +30,13 @@ func NewServer(cfg Config) (*Server, error) {
 
 	router := gin.Default()
 	server := &Server{
-		cfg:      cfg,
-		db:       db,
-		router:   router,
-		users:    NewUserStore(db),
-		sessions: NewSessionStore(db),
-		projects: NewProjectStore(db),
+		cfg:        cfg,
+		db:         db,
+		router:     router,
+		users:      NewUserStore(db),
+		sessions:   NewSessionStore(db),
+		projects:   NewProjectStore(db),
+		workspaces: NewWorkspaceStore(db),
 	}
 	router.Use(corsMiddleware(cfg.AllowedOrigins))
 	server.registerRoutes()

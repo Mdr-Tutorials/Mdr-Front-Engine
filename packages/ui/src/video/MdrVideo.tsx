@@ -51,6 +51,8 @@ function MdrVideo({
     `MdrVideo ${aspectRatio.replace(':', '-')} ${className || ''}`.trim();
 
   const dataProps = { ...dataAttributes };
+  const normalizedSrc = src?.trim() ? src : undefined;
+  const normalizedPoster = poster?.trim() ? poster : undefined;
 
   const containerStyle = {
     ...style,
@@ -94,8 +96,8 @@ function MdrVideo({
       <div style={videoContainerStyle as React.CSSProperties}>
         <video
           style={videoStyle as React.CSSProperties}
-          src={src}
-          poster={poster}
+          src={normalizedSrc}
+          poster={normalizedPoster}
           autoPlay={autoplay}
           controls={controls}
           loop={loop}

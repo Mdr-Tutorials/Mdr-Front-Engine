@@ -40,6 +40,7 @@ function MdrAudio({
   const fullClassName = `MdrAudio ${className || ''}`.trim();
 
   const dataProps = { ...dataAttributes };
+  const normalizedSrc = src?.trim() ? src : undefined;
 
   const containerStyle = {
     ...style,
@@ -56,7 +57,7 @@ function MdrAudio({
       {...dataProps}
     >
       <audio
-        src={src}
+        src={normalizedSrc}
         autoPlay={autoplay}
         controls={controls}
         loop={loop}

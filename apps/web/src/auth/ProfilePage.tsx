@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import {
-  MdrAvatar,
   MdrButton,
   MdrHeading,
   MdrIcon,
@@ -15,7 +14,6 @@ import {
 import { Calendar, Copy, Mail, Pencil, UserRound } from 'lucide-react';
 import { authApi, ApiError } from './authApi';
 import { useAuthStore } from './useAuthStore';
-import './ProfilePage.scss';
 
 type Flash = { type: 'Info' | 'Success' | 'Warning' | 'Danger'; text: string };
 
@@ -48,20 +46,6 @@ const buildUuidMatrix = (value?: string | null) => {
   return clean.split('').map((char) => hexToBits(char));
 };
 
-const getInitials = (name?: string | null, email?: string | null) => {
-  const safeName = name?.trim();
-  if (safeName) {
-    const parts = safeName.split(/\s+/).filter(Boolean);
-    return parts
-      .slice(0, 2)
-      .map((part) => part.charAt(0).toUpperCase())
-      .join('');
-  }
-  const safeEmail = email?.trim();
-  if (safeEmail) return safeEmail.charAt(0).toUpperCase();
-  return undefined;
-};
-
 export const ProfilePage = () => {
   const { t } = useTranslation('profile');
   const navigate = useNavigate();
@@ -76,10 +60,6 @@ export const ProfilePage = () => {
   const [draft, setDraft] = useState({ name: '', description: '' });
 
   const uuidMatrix = useMemo(() => buildUuidMatrix(user?.id), [user?.id]);
-  const initials = useMemo(
-    () => getInitials(user?.name, user?.email),
-    [user?.name, user?.email]
-  );
   const displayName = user?.name?.trim() || user?.email || t('empty.title');
   const displayBio = user?.description?.trim() || t('description.empty');
 
@@ -162,8 +142,8 @@ export const ProfilePage = () => {
 
   if (!token) {
     return (
-      <div className="ProfilePage">
-        <header className="ProfileTopBar">
+      <div className="min-h-screen bg-white text-[#101010]">
+        <header className="flex items-center justify-between gap-4 bg-white px-5 py-4 md:px-7 md:py-[18px]">
           <MdrButton
             text={t('actions.backHome')}
             size="Small"
@@ -177,10 +157,12 @@ export const ProfilePage = () => {
             onClick={() => navigate('/auth')}
           />
         </header>
-        <main className="ProfileMain">
-          <div className="ProfileEmpty">
+        <main className="mx-auto grid max-w-[980px] gap-[18px] px-5 pb-10 md:px-7 md:pb-12">
+          <div className="grid min-h-[calc(100vh-140px)] place-content-center gap-2.5 text-center text-[#2b2b2b]">
             <MdrIcon icon={<UserRound />} size={34} />
-            <MdrHeading level={2}>{t('empty.title')}</MdrHeading>
+            <MdrHeading level={2} className="m-0 text-[88px]">
+              {t('empty.title')}
+            </MdrHeading>
             <MdrParagraph color="Muted">{t('empty.subtitle')}</MdrParagraph>
           </div>
         </main>
@@ -189,15 +171,15 @@ export const ProfilePage = () => {
   }
 
   return (
-    <div className="ProfilePage">
-      <header className="ProfileTopBar">
+    <div className="min-h-screen bg-white text-[#101010]">
+      <header className="flex items-center justify-between gap-4 bg-white px-5 py-4 md:px-7 md:py-[18px]">
         <MdrButton
           text={t('actions.backHome')}
           size="Small"
           category="Ghost"
           onClick={() => navigate('/')}
         />
-        <div className="ProfileTopBarActions">
+        <div className="flex flex-wrap gap-2.5">
           <MdrButton
             text={t('actions.edit')}
             size="Small"
@@ -227,14 +209,14 @@ export const ProfilePage = () => {
         </div>
       </header>
 
-      <main className="ProfileMain">
+      <main className="mx-auto grid max-w-[980px] gap-[18px] px-5 pb-10 md:px-7 md:pb-12">
         {flash && (
-          <div className="ProfileFlash">
+          <div className="max-w-[620px]">
             <MdrMessage type={flash.type} text={flash.text} />
           </div>
         )}
         {error && (
-          <div className="ProfileFlash">
+          <div className="max-w-[620px]">
             <MdrMessage
               type="Danger"
               text={error}
@@ -244,61 +226,65 @@ export const ProfilePage = () => {
           </div>
         )}
 
-        <section className="ProfileHero">
-          {/* <div className="ProfileHeroAvatar">
-            <MdrAvatar size="ExtraLarge" initials={initials} alt={displayName} />
-          </div> */}
-          <div className="ProfileHeroBody">
-            <MdrHeading level={1} className="ProfileName">
+        <section className="mt-2 grid items-start gap-[18px] md:grid-cols-[auto_1fr]">
+          <div className="grid min-w-0 gap-2.5">
+            <MdrHeading
+              level={1}
+              className="m-0 text-[56px] md:text-[96px] lg:text-[108px] [font-family:'JetBrains_Mono','SFMono-Regular','Menlo',monospace]"
+            >
               {displayName}
             </MdrHeading>
-            <MdrParagraph className="ProfileBio">{displayBio}</MdrParagraph>
+            <MdrParagraph className="m-0 max-w-[58ch] text-[13px] leading-[1.5] text-[#2b2b2b]">
+              {displayBio}
+            </MdrParagraph>
             <button
               type="button"
-              className="ProfileFingerprint"
+              className="-translate-x-2.5 inline-flex max-w-full cursor-pointer items-center gap-3 rounded-2xl border-0 bg-(--color-0) px-3 py-2.5 transition-colors duration-150 hover:bg-black/[0.02]"
               onClick={() => copyText(user?.id, t('messages.copiedId'))}
               aria-label={t('actions.copyId')}
               title={t('actions.copyId')}
             >
               {uuidMatrix.length > 0 ? (
-                <div className="ProfileUuidGrid" aria-hidden="true">
+                <div className="flex flex-wrap items-start gap-1" aria-hidden="true">
                   {uuidMatrix.map((bits, columnIndex) => (
                     <div
                       key={`${columnIndex}-${bits.join('')}`}
-                      className="ProfileUuidColumn"
+                      className="grid gap-px"
                     >
                       {bits.map((bit, bitIndex) => (
                         <span
                           key={`${columnIndex}-${bitIndex}`}
-                          className={`UuidDot ${bit ? 'Active' : 'Empty'}`}
+                          className={`h-0.5 w-0.5 rounded-full ${bit ? 'bg-[#101010]' : 'invisible bg-black/12 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12)]'}`}
                         />
                       ))}
                     </div>
                   ))}
                 </div>
               ) : (
-                <span className="ProfileFallbackId">{user?.id}</span>
+                <span className="[font-family:'JetBrains_Mono','SFMono-Regular','Menlo',monospace] text-xs tracking-[0.12em] break-all text-[#101010]">
+                  {user?.id}
+                </span>
               )}
-              <span className="ProfileFingerprintHint">
+              <span className="inline-flex opacity-60 transition-opacity hover:opacity-100">
                 <MdrIcon icon={<Copy />} size={14} />
               </span>
             </button>
           </div>
         </section>
 
-        <section className="ProfileMeta">
+        <section className="mt-0.5 flex flex-wrap items-center gap-2.5">
           <button
             type="button"
-            className="ProfileMetaItem"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-full border-0 bg-black/[0.04] px-3 py-2 text-xs text-[#101010] transition-colors duration-150 hover:bg-black/[0.06]"
             onClick={() => copyText(user?.email, t('messages.copiedEmail'))}
           >
             <MdrIcon icon={<Mail />} size={16} />
             <span>{user?.email}</span>
-            <span className="ProfileMetaHint">
+            <span className="ml-0.5 inline-flex opacity-60 transition-opacity hover:opacity-100">
               <MdrIcon icon={<Copy />} size={14} />
             </span>
           </button>
-          <div className="ProfileMetaItem Static">
+          <div className="inline-flex cursor-default items-center gap-2 rounded-full border-0 bg-black/[0.04] px-3 py-2 text-xs text-[#101010]">
             <MdrIcon icon={<Calendar />} size={16} />
             <span>{formatDate(user?.createdAt)}</span>
           </div>
@@ -311,7 +297,7 @@ export const ProfilePage = () => {
         onClose={() => setEditOpen(false)}
         closeOnOverlayClick={!isLoading}
         footer={
-          <div className="ProfileEditFooter">
+          <div className="flex justify-end gap-2.5">
             <MdrButton
               text={t('actions.cancel')}
               size="Small"
@@ -337,8 +323,8 @@ export const ProfilePage = () => {
             onClose={() => setError(null)}
           />
         )}
-        <div className="ProfileEditForm">
-          <label className="ProfileEditField">
+        <div className="grid gap-3.5">
+          <label className="grid gap-1.5 text-xs text-[#5c5c5c]">
             <span>{t('labels.name')}</span>
             <MdrInput
               size="Small"
@@ -346,7 +332,7 @@ export const ProfilePage = () => {
               onChange={(value) => setDraft((p) => ({ ...p, name: value }))}
             />
           </label>
-          <label className="ProfileEditField">
+          <label className="grid gap-1.5 text-xs text-[#5c5c5c]">
             <span>{t('labels.description')}</span>
             <MdrTextarea
               size="Small"

@@ -259,4 +259,46 @@ describe('BlueprintEditorInspector', () => {
     expect(params?.graphId).toBe('');
     expect(params?.target).toBeUndefined();
   });
+
+  it('updates iconRef after selecting icon from picker', async () => {
+    resetEditorStore({
+      mirDoc: createMirDoc([
+        {
+          id: 'icon-1',
+          type: 'MdrIcon',
+          props: { iconRef: { provider: 'lucide', name: 'Circle' }, size: 20 },
+        },
+      ]),
+      blueprintStateByProject: {
+        [PROJECT_ID]: {
+          ...DEFAULT_BLUEPRINT_STATE,
+          selectedId: 'icon-1',
+        },
+      },
+    });
+
+    render(
+      <BlueprintEditorInspector
+        isCollapsed={false}
+        onToggleCollapse={() => {}}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('inspector-open-icon-picker'));
+    fireEvent.change(screen.getByTestId('icon-picker-search'), {
+      target: { value: 'sparkles' },
+    });
+    fireEvent.click(screen.getByTestId('icon-picker-option-Sparkles'));
+    fireEvent.click(screen.getByTestId('icon-picker-apply'));
+
+    await waitFor(() => {
+      const node = useEditorStore
+        .getState()
+        .mirDoc.ui.root.children?.find((item) => item.id === 'icon-1');
+      expect(node?.props?.iconRef).toEqual({
+        provider: 'lucide',
+        name: 'Sparkles',
+      });
+    });
+  });
 });

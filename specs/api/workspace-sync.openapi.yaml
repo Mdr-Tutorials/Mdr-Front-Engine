@@ -1,0 +1,489 @@
+openapi: 3.1.0
+info:
+  title: MDR Workspace Sync API (Draft)
+  version: 0.1.0
+  description: >
+    Draft API for workspace-first editing. The virtual document tree is internal
+    and system-managed. Clients send user-level intents from Blueprint actions.
+    Status: Draft-Frozen (API-003), Date: 2026-02-08.
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/workspaces/{workspaceId}:
+    get:
+      summary: Get workspace snapshot
+      operationId: getWorkspace
+      parameters:
+        - in: path
+          name: workspaceId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Workspace snapshot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetWorkspaceResponse"
+  /api/workspaces/{workspaceId}/capabilities:
+    get:
+      summary: Get supported intent and command capabilities
+      operationId: getWorkspaceCapabilities
+      parameters:
+        - in: path
+          name: workspaceId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Capability map
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetCapabilitiesResponse"
+  /api/workspaces/{workspaceId}/documents/{documentId}:
+    put:
+      summary: Save one document
+      operationId: saveDocument
+      parameters:
+        - in: path
+          name: workspaceId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveDocumentRequest"
+      responses:
+        "200":
+          description: Saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationSuccessResponse"
+        "422":
+          description: Invalid document content or schema validation failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Revision conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConflictResponse"
+  /api/workspaces/{workspaceId}/intents:
+    post:
+      summary: Apply one user intent
+      operationId: applyWorkspaceIntent
+      parameters:
+        - in: path
+          name: workspaceId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplyIntentRequest"
+      responses:
+        "200":
+          description: Applied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationSuccessResponse"
+        "422":
+          description: Unsupported or invalid intent envelope
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Revision conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConflictResponse"
+  /api/workspaces/{workspaceId}/batch:
+    post:
+      summary: Apply a batch of document saves and intents
+      operationId: applyWorkspaceBatch
+      parameters:
+        - in: path
+          name: workspaceId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplyBatchRequest"
+      responses:
+        "200":
+          description: Applied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationSuccessResponse"
+        "422":
+          description: Unsupported operation or invalid envelope in batch
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Revision conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConflictResponse"
+components:
+  schemas:
+    GetWorkspaceResponse:
+      type: object
+      required: [workspace]
+      properties:
+        workspace:
+          $ref: "#/components/schemas/WorkspaceSnapshot"
+    GetCapabilitiesResponse:
+      type: object
+      required: [workspaceId, capabilities]
+      properties:
+        workspaceId:
+          type: string
+        capabilities:
+          type: object
+          description: >
+            Key format namespace.type@version. Includes both intent and command
+            capabilities. Reserved domains (e.g. core.nodegraph.*,
+            core.animation.*) may appear as false before corresponding editors
+            are implemented.
+          additionalProperties:
+            type: boolean
+    WorkspaceSnapshot:
+      type: object
+      required: [id, workspaceRev, routeRev, opSeq, tree, documents, routeManifest]
+      properties:
+        id:
+          type: string
+        workspaceRev:
+          type: integer
+          minimum: 1
+        routeRev:
+          type: integer
+          minimum: 1
+        opSeq:
+          type: integer
+          minimum: 1
+        tree:
+          $ref: "#/components/schemas/WorkspaceTree"
+        documents:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkspaceDocument"
+        routeManifest:
+          type: object
+          additionalProperties: true
+    WorkspaceTree:
+      type: object
+      required: [rootId, nodes]
+      properties:
+        rootId:
+          type: string
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkspaceTreeNode"
+    WorkspaceTreeNode:
+      type: object
+      required: [id, kind, name, parentId]
+      properties:
+        id:
+          type: string
+        kind:
+          type: string
+          enum: [dir, doc]
+        name:
+          type: string
+        parentId:
+          type: [string, "null"]
+        children:
+          type: array
+          items:
+            type: string
+        docId:
+          type: string
+    WorkspaceDocument:
+      type: object
+      required: [id, type, path, contentRev, metaRev, content]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [mir-page, mir-layout, mir-component, mir-graph, mir-animation]
+        path:
+          type: string
+        contentRev:
+          type: integer
+          minimum: 1
+        metaRev:
+          type: integer
+          minimum: 1
+        content:
+          type: object
+          additionalProperties: true
+        updatedAt:
+          type: string
+          format: date-time
+    SaveDocumentRequest:
+      type: object
+      required: [expectedContentRev, content]
+      properties:
+        expectedContentRev:
+          type: integer
+          minimum: 1
+        expectedWorkspaceRev:
+          type: integer
+          minimum: 1
+        expectedRouteRev:
+          type: integer
+          minimum: 1
+        content:
+          type: object
+          additionalProperties: true
+        clientMutationId:
+          type: string
+    ApplyIntentRequest:
+      type: object
+      required: [expectedWorkspaceRev, intent]
+      properties:
+        expectedWorkspaceRev:
+          type: integer
+          minimum: 1
+        expectedRouteRev:
+          type: integer
+          minimum: 1
+        intent:
+          $ref: "#/components/schemas/IntentEnvelope"
+        clientMutationId:
+          type: string
+    IntentEnvelope:
+      type: object
+      required: [id, namespace, type, version, payload, issuedAt]
+      properties:
+        id:
+          type: string
+        namespace:
+          type: string
+          description: core | plugin.<vendor> | custom.<vendor> | core.nodegraph | core.animation
+        type:
+          type: string
+        version:
+          type: string
+          description: semantic version string, e.g. 1.0
+        payload:
+          type: object
+          additionalProperties: true
+        idempotencyKey:
+          type: string
+        actor:
+          type: object
+          properties:
+            userId:
+              type: string
+            clientId:
+              type: string
+          additionalProperties: false
+        issuedAt:
+          type: string
+          format: date-time
+    PatchOp:
+      type: object
+      required: [op, path]
+      properties:
+        op:
+          type: string
+          enum: [add, remove, replace, move, copy, test]
+        path:
+          type: string
+        from:
+          type: string
+        value:
+          description: Operation payload
+      additionalProperties: false
+    CommandEnvelope:
+      type: object
+      required: [id, namespace, type, version, issuedAt, forwardOps, reverseOps, target]
+      properties:
+        id:
+          type: string
+        namespace:
+          type: string
+        type:
+          type: string
+        version:
+          type: string
+          description: semantic version string, e.g. 1.0
+        issuedAt:
+          type: string
+          format: date-time
+        forwardOps:
+          type: array
+          items:
+            $ref: "#/components/schemas/PatchOp"
+        reverseOps:
+          type: array
+          items:
+            $ref: "#/components/schemas/PatchOp"
+        target:
+          type: object
+          required: [workspaceId]
+          properties:
+            workspaceId:
+              type: string
+            documentId:
+              type: string
+          additionalProperties: false
+        mergeKey:
+          type: string
+    ApplyBatchRequest:
+      type: object
+      required: [expectedWorkspaceRev, operations]
+      properties:
+        expectedWorkspaceRev:
+          type: integer
+          minimum: 1
+        expectedRouteRev:
+          type: integer
+          minimum: 1
+        operations:
+          type: array
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/BatchSaveDocumentOperation"
+              - $ref: "#/components/schemas/BatchIntentOperation"
+        clientBatchId:
+          type: string
+    BatchSaveDocumentOperation:
+      type: object
+      required: [op, documentId, expectedContentRev, content]
+      properties:
+        op:
+          type: string
+          const: saveDocument
+        documentId:
+          type: string
+        expectedContentRev:
+          type: integer
+          minimum: 1
+        content:
+          type: object
+          additionalProperties: true
+    BatchIntentOperation:
+      type: object
+      required: [op, intent]
+      properties:
+        op:
+          type: string
+          const: intent
+        intent:
+          $ref: "#/components/schemas/IntentEnvelope"
+    MutationSuccessResponse:
+      type: object
+      required: [workspaceId, workspaceRev, routeRev, opSeq]
+      properties:
+        workspaceId:
+          type: string
+        workspaceRev:
+          type: integer
+        routeRev:
+          type: integer
+        updatedDocuments:
+          type: array
+          items:
+            type: object
+            required: [id, contentRev, metaRev]
+            properties:
+              id:
+                type: string
+              contentRev:
+                type: integer
+              metaRev:
+                type: integer
+            additionalProperties: false
+        opSeq:
+          type: integer
+        acceptedMutationId:
+          type: string
+    ConflictResponse:
+      type: object
+      required: [error, conflictType, workspaceId, serverWorkspaceRev]
+      properties:
+        error:
+          type: string
+          const: revision_conflict
+        conflictType:
+          type: string
+          enum:
+            - DOCUMENT_CONFLICT
+            - WORKSPACE_CONFLICT
+            - ROUTE_CONFLICT
+            - HYBRID_CONFLICT
+        workspaceId:
+          type: string
+        serverWorkspaceRev:
+          type: integer
+        serverRouteRev:
+          type: integer
+        serverDocument:
+          type: object
+          properties:
+            id:
+              type: string
+            contentRev:
+              type: integer
+            metaRev:
+              type: integer
+          additionalProperties: false
+        opSeq:
+          type: integer
+        latestWorkspace:
+          $ref: "#/components/schemas/WorkspaceSnapshot"
+    ErrorResponse:
+      type: object
+      required: [error, code, message]
+      properties:
+        error:
+          type: string
+          const: request_error
+        code:
+          type: string
+          enum:
+            - UNSUPPORTED_INTENT
+            - UNSUPPORTED_COMMAND
+            - RESERVED_DOMAIN_DISABLED
+            - INVALID_ENVELOPE_VERSION
+            - INVALID_ENVELOPE_PAYLOAD
+            - MIR_VALIDATION_FAILED
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true

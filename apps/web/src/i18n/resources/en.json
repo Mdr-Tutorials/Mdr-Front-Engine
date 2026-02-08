@@ -1132,6 +1132,7 @@
         "triggers": {
           "title": "Triggers",
           "empty": "No triggers configured yet. Event bindings will appear here.",
+          "linkConflict": "This component has a destination and an onClick trigger. Click may run both.",
           "add": "Add trigger",
           "delete": "Delete trigger",
           "eventLabel": "Trigger Event",
@@ -1183,6 +1184,18 @@
           "label": "Component ID",
           "description": "Unique within the blueprint.",
           "duplicate": "ID already exists."
+        },
+        "icon": {
+          "label": "Icon",
+          "empty": "No icon selected"
+        },
+        "link": {
+          "destination": "Destination",
+          "destinationPlaceholder": "/path or https://example.com",
+          "target": "Target",
+          "rel": "Rel",
+          "title": "Title",
+          "titlePlaceholder": "Open docs"
         }
       },
       "panels": {
@@ -1235,6 +1248,26 @@
       },
       "actions": {
         "apply": "Apply"
+      },
+      "iconPicker": {
+        "title": "Select icon",
+        "subtitle": "Source + search. Ready for multiple icon providers.",
+        "close": "Close icon picker",
+        "source": "Source",
+        "search": "Search",
+        "searchPlaceholder": "Type icon name, e.g. sparkles",
+        "matched": "{{count}} matched",
+        "showingRange": "showing {{from}}-{{to}} / {{total}}",
+        "showingEmpty": "showing 0/0",
+        "empty": "No icons found.",
+        "page": "Page {{current}}/{{total}}",
+        "prev": "Prev",
+        "next": "Next",
+        "go": "Go",
+        "preview": "Preview",
+        "noIcon": "No icon",
+        "cancel": "Cancel",
+        "apply": "Use icon"
       }
     },
     "sidebar": {

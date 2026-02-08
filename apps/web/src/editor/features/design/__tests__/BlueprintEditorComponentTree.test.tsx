@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { BlueprintEditorComponentTree } from '../BlueprintEditorComponentTree';
 import { createMirDoc, resetEditorStore } from '@/test-utils/editorStore';
@@ -137,6 +137,47 @@ describe('BlueprintEditorComponentTree', () => {
     const moveUpButtons = screen.getAllByLabelText('Move up');
     fireEvent.click(moveUpButtons[1]);
     expect(onMoveNode).toHaveBeenCalledWith('child-1', 'up');
+  });
+
+  it('double-clicks a collapsed node to expand it without selecting', () => {
+    vi.useFakeTimers();
+    resetEditorStore({
+      mirDoc: createMirDoc([
+        {
+          id: 'child-2',
+          type: 'MdrDiv',
+          children: [{ id: 'child-2a', type: 'MdrText', text: 'Nested' }],
+        },
+      ]),
+    });
+
+    const onSelectNode = vi.fn();
+
+    render(
+      <BlueprintEditorComponentTree
+        isCollapsed={false}
+        selectedId={undefined}
+        onToggleCollapse={() => {}}
+        onSelectNode={onSelectNode}
+        onDeleteSelected={() => {}}
+        onDeleteNode={() => {}}
+        onCopyNode={() => {}}
+        onMoveNode={() => {}}
+      />
+    );
+
+    const collapseButtons = screen.getAllByRole('button', { name: 'Collapse' });
+    fireEvent.click(collapseButtons[1]);
+    expect(screen.queryByTitle('MdrText (child-2a)')).toBeNull();
+
+    fireEvent.doubleClick(screen.getByTitle('MdrDiv (child-2)'));
+    act(() => {
+      vi.advanceTimersByTime(240);
+    });
+
+    expect(onSelectNode).not.toHaveBeenCalled();
+    expect(screen.getByTitle('MdrText (child-2a)')).toBeTruthy();
+    vi.useRealTimers();
   });
 
   describe('Drag and Drop Behavior', () => {

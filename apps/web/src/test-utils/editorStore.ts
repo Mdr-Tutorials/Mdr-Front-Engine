@@ -25,8 +25,6 @@ export const resetEditorStore = (overrides: Partial<EditorState> = {}) => {
     {
       ...state,
       mirDoc: createMirDoc(),
-      generatedCode: '',
-      isExportModalOpen: false,
       blueprintStateByProject: {},
       projectsById: {},
       ...overrides,
