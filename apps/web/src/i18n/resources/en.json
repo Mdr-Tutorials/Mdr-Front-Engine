@@ -1115,6 +1115,24 @@
       "new": "New URL",
       "newPlaceholder": "Paste or type a URL"
     },
+    "autosave": {
+      "capabilities": {
+        "loading": "Checking workspace capabilities…"
+      },
+      "status": {
+        "saving": "Saving…",
+        "error": "Save failed. Retrying on next change.",
+        "workspaceSaved": "Saved to workspace.",
+        "projectSaved": "Saved to project.",
+        "saved": "Saved.",
+        "idle": "Ready"
+      },
+      "messages": {
+        "workspaceRetry": "Workspace save failed. Retrying on next change.",
+        "projectRetry": "Project save failed. Retrying on next change.",
+        "workspaceUnavailableUsingProject": "Workspace document save unavailable. Using project save."
+      }
+    },
     "canvas": {
       "placeholderTitle": "Drop a component",
       "placeholderDescription": "Drag from the library to start building."

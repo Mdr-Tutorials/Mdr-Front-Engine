@@ -31,6 +31,8 @@ export const resetEditorStore = (overrides: Partial<EditorState> = {}) => {
             opSeq: undefined,
             activeDocumentId: undefined,
             workspaceDocumentsById: {},
+            workspaceCapabilities: {},
+            workspaceCapabilitiesLoaded: false,
             blueprintStateByProject: {},
             projectsById: {},
             ...overrides,

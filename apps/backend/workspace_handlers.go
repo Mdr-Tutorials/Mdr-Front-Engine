@@ -103,7 +103,19 @@ type workspaceRequestFailure struct {
 
 func (server *Server) handleGetWorkspace(c *gin.Context) {
 	workspaceID := strings.TrimSpace(c.Param("workspaceId"))
-	snapshot, err := server.workspaces.GetSnapshot(c.Request.Context(), workspaceID)
+	user := getAuthUser(c)
+	if user == nil {
+		sendWorkspaceFailure(c, &workspaceRequestFailure{
+			status: http.StatusUnauthorized,
+			payload: gin.H{
+				"error":   "unauthorized",
+				"message": "Authentication required.",
+			},
+		})
+		return
+	}
+
+	snapshot, err := server.getWorkspaceSnapshotForUser(c.Request.Context(), user.ID, workspaceID)
 	if err != nil {
 		sendWorkspaceFailure(c, mapWorkspaceStoreError(err))
 		return
@@ -137,7 +149,19 @@ func (server *Server) handleGetWorkspace(c *gin.Context) {
 
 func (server *Server) handleGetWorkspaceCapabilities(c *gin.Context) {
 	workspaceID := strings.TrimSpace(c.Param("workspaceId"))
-	if _, err := server.workspaces.GetSnapshot(c.Request.Context(), workspaceID); err != nil {
+	user := getAuthUser(c)
+	if user == nil {
+		sendWorkspaceFailure(c, &workspaceRequestFailure{
+			status: http.StatusUnauthorized,
+			payload: gin.H{
+				"error":   "unauthorized",
+				"message": "Authentication required.",
+			},
+		})
+		return
+	}
+
+	if _, err := server.getWorkspaceSnapshotForUser(c.Request.Context(), user.ID, workspaceID); err != nil {
 		sendWorkspaceFailure(c, mapWorkspaceStoreError(err))
 		return
 	}
@@ -146,6 +170,33 @@ func (server *Server) handleGetWorkspaceCapabilities(c *gin.Context) {
 		"workspaceId":  workspaceID,
 		"capabilities": defaultWorkspaceCapabilities(),
 	})
+}
+
+func (server *Server) getWorkspaceSnapshotForUser(
+	ctx context.Context,
+	userID string,
+	workspaceID string,
+) (*WorkspaceSnapshot, error) {
+	normalizedWorkspaceID := strings.TrimSpace(workspaceID)
+	snapshot, err := server.workspaces.GetSnapshot(ctx, normalizedWorkspaceID)
+	if err == nil {
+		return snapshot, nil
+	}
+	if !errors.Is(err, errWorkspaceNotFound) {
+		return nil, err
+	}
+
+	project, projectErr := server.projects.GetByID(strings.TrimSpace(userID), normalizedWorkspaceID)
+	if projectErr != nil {
+		if errors.Is(projectErr, errProjectNotFound) {
+			return nil, errWorkspaceNotFound
+		}
+		return nil, projectErr
+	}
+	if bootstrapErr := server.bootstrapProjectWorkspace(ctx, project); bootstrapErr != nil {
+		return nil, bootstrapErr
+	}
+	return server.workspaces.GetSnapshot(ctx, normalizedWorkspaceID)
 }
 
 func (server *Server) handleSaveWorkspaceDocument(c *gin.Context) {

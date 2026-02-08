@@ -1,4 +1,5 @@
-﻿import { MdrButton, MdrInput } from '@mdr/ui';
+﻿import type { ReactNode } from 'react';
+import { MdrButton, MdrInput } from '@mdr/ui';
 import { Link2, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { RouteItem } from './BlueprintEditor.types';
@@ -10,6 +11,7 @@ type BlueprintEditorAddressBarProps = {
   onCurrentPathChange: (value: string) => void;
   onNewPathChange: (value: string) => void;
   onAddRoute: () => void;
+  statusIndicator?: ReactNode;
 };
 
 export function BlueprintEditorAddressBar({
@@ -19,6 +21,7 @@ export function BlueprintEditorAddressBar({
   onCurrentPathChange,
   onNewPathChange,
   onAddRoute,
+  statusIndicator,
 }: BlueprintEditorAddressBarProps) {
   const { t } = useTranslation('blueprint');
 
@@ -75,6 +78,9 @@ export function BlueprintEditorAddressBar({
             </option>
           ))}
         </select>
+        {statusIndicator ? (
+          <div className="inline-flex shrink-0 items-center">{statusIndicator}</div>
+        ) : null}
       </div>
     </section>
   );

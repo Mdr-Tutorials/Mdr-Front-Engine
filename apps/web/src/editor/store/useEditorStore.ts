@@ -52,6 +52,26 @@ const normalizeWorkspaceDocument = (
     content: normalizeMirContent(document.content),
 });
 
+const resolveCanonicalWorkspaceDocumentId = (
+    documents: WorkspaceDocumentRecord[]
+): string | undefined => {
+    if (!documents.length) return undefined;
+
+    const rootPage = documents.find(
+        (document) =>
+            document.type === 'mir-page' &&
+            (document.path.trim() === '/' || document.path.trim() === '')
+    );
+    if (rootPage) return rootPage.id;
+
+    const firstPage = documents.find(
+        (document) => document.type === 'mir-page'
+    );
+    if (firstPage) return firstPage.id;
+
+    return documents[0]?.id;
+};
+
 interface EditorStore {
     mirDoc: MIRDocument;
     setMirDoc: (doc: MIRDocument) => void;
@@ -62,7 +82,13 @@ interface EditorStore {
     opSeq?: number;
     activeDocumentId?: string;
     workspaceDocumentsById: Record<string, WorkspaceDocumentRecord>;
+    workspaceCapabilities: Record<string, boolean>;
+    workspaceCapabilitiesLoaded: boolean;
     setWorkspaceSnapshot: (workspace: WorkspaceSnapshot) => void;
+    setWorkspaceCapabilities: (
+        workspaceId: string,
+        capabilities: Record<string, boolean>
+    ) => void;
     clearWorkspaceState: () => void;
     setActiveDocumentId: (documentId: string | undefined) => void;
     applyWorkspaceMutation: (mutation: WorkspaceMutationResponse) => void;
@@ -157,8 +183,11 @@ export const useEditorStore = create<EditorStore>()((set) => ({
     opSeq: undefined,
     activeDocumentId: undefined,
     workspaceDocumentsById: {},
+    workspaceCapabilities: {},
+    workspaceCapabilitiesLoaded: false,
     setWorkspaceSnapshot: (workspace) =>
         set((state) => {
+            const isSameWorkspace = state.workspaceId === workspace.id;
             const nextDocumentsById: Record<string, WorkspaceDocumentRecord> =
                 {};
             workspace.documents.forEach((document) => {
@@ -170,7 +199,7 @@ export const useEditorStore = create<EditorStore>()((set) => ({
                 state.activeDocumentId &&
                 nextDocumentsById[state.activeDocumentId]
                     ? state.activeDocumentId
-                    : workspace.documents[0]?.id;
+                    : resolveCanonicalWorkspaceDocumentId(workspace.documents);
             const activeDocument = nextActiveDocumentId
                 ? nextDocumentsById[nextActiveDocumentId]
                 : undefined;
@@ -181,8 +210,28 @@ export const useEditorStore = create<EditorStore>()((set) => ({
                 routeRev: workspace.routeRev,
                 opSeq: workspace.opSeq,
                 workspaceDocumentsById: nextDocumentsById,
+                workspaceCapabilities: isSameWorkspace
+                    ? state.workspaceCapabilities
+                    : {},
+                workspaceCapabilitiesLoaded: isSameWorkspace
+                    ? state.workspaceCapabilitiesLoaded
+                    : false,
                 activeDocumentId: nextActiveDocumentId,
                 mirDoc: activeDocument?.content ?? state.mirDoc,
+            };
+        }),
+    setWorkspaceCapabilities: (workspaceId, capabilities) =>
+        set((state) => {
+            const normalizedWorkspaceId = workspaceId.trim();
+            if (
+                !normalizedWorkspaceId ||
+                normalizedWorkspaceId !== state.workspaceId
+            ) {
+                return state;
+            }
+            return {
+                workspaceCapabilities: { ...capabilities },
+                workspaceCapabilitiesLoaded: true,
             };
         }),
     clearWorkspaceState: () =>
@@ -193,6 +242,8 @@ export const useEditorStore = create<EditorStore>()((set) => ({
             opSeq: undefined,
             activeDocumentId: undefined,
             workspaceDocumentsById: {},
+            workspaceCapabilities: {},
+            workspaceCapabilitiesLoaded: false,
         }),
     setActiveDocumentId: (documentId) =>
         set((state) => {

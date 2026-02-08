@@ -14,6 +14,9 @@ function Editor() {
     const setWorkspaceSnapshot = useEditorStore(
         (state) => state.setWorkspaceSnapshot
     );
+    const setWorkspaceCapabilities = useEditorStore(
+        (state) => state.setWorkspaceCapabilities
+    );
     const clearWorkspaceState = useEditorStore(
         (state) => state.clearWorkspaceState
     );
@@ -44,6 +47,19 @@ function Editor() {
                             return;
                         }
                         setWorkspaceSnapshot(workspace);
+                        editorApi
+                            .getWorkspaceCapabilities(token, workspace.id)
+                            .then((response) => {
+                                if (cancelled) return;
+                                setWorkspaceCapabilities(
+                                    response.workspaceId,
+                                    response.capabilities
+                                );
+                            })
+                            .catch(() => {
+                                if (cancelled) return;
+                                setWorkspaceCapabilities(workspace.id, {});
+                            });
                     })
                     .catch(() => {
                         if (cancelled) return;
@@ -65,6 +81,7 @@ function Editor() {
         clearWorkspaceState,
         setMirDoc,
         setProject,
+        setWorkspaceCapabilities,
         setWorkspaceSnapshot,
     ]);
 

@@ -1115,6 +1115,24 @@
       "new": "新地址",
       "newPlaceholder": "输入或粘贴地址"
     },
+    "autosave": {
+      "capabilities": {
+        "loading": "正在检查工作区能力…"
+      },
+      "status": {
+        "saving": "正在保存…",
+        "error": "保存失败，将在下次变更时重试。",
+        "workspaceSaved": "已保存到工作区。",
+        "projectSaved": "已保存到项目。",
+        "saved": "已保存。",
+        "idle": "就绪"
+      },
+      "messages": {
+        "workspaceRetry": "工作区保存失败，将在下次变更时重试。",
+        "projectRetry": "项目保存失败，将在下次变更时重试。",
+        "workspaceUnavailableUsingProject": "工作区文档保存不可用，已切换为项目保存。"
+      }
+    },
     "canvas": {
       "placeholderTitle": "拖拽组件到画布",
       "placeholderDescription": "从组件库拖拽开始搭建。"

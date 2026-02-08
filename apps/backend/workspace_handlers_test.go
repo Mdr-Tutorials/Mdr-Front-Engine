@@ -57,6 +57,10 @@ FROM workspaces w
 LEFT JOIN workspace_routes r ON r.workspace_id = w.id
 WHERE w.id = $1`)
 	mock.ExpectQuery(workspaceQuery).WithArgs("ws_missing").WillReturnError(sql.ErrNoRows)
+	projectQuery := regexp.QuoteMeta(`SELECT id, owner_id, resource_type, name, description, mir_json, is_public, stars_count, created_at, updated_at
+FROM projects
+WHERE owner_id = $1 AND id = $2`)
+	mock.ExpectQuery(projectQuery).WithArgs("user_1", "ws_missing").WillReturnError(sql.ErrNoRows)
 
 	context, response := newWorkspaceHandlerContext(
 		http.MethodGet,
@@ -76,6 +80,138 @@ WHERE w.id = $1`)
 	}
 	if payload["error"] != "not_found" {
 		t.Fatalf("unexpected error payload: %v", payload)
+	}
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Fatalf("sql expectations: %v", err)
+	}
+}
+
+func TestHandleGetWorkspaceBootstrapsFromProjectWhenMissing(t *testing.T) {
+	server, mock, cleanup := newWorkspaceHandlerTestServer(t)
+	defer cleanup()
+
+	now := time.Date(2026, time.February, 8, 9, 0, 0, 0, time.UTC)
+
+	workspaceQuery := regexp.QuoteMeta(`SELECT w.id, w.project_id, w.owner_id, w.name, w.workspace_rev, w.route_rev, w.op_seq, w.tree_root_id, w.tree_json, w.created_at, w.updated_at, r.manifest_json
+FROM workspaces w
+LEFT JOIN workspace_routes r ON r.workspace_id = w.id
+WHERE w.id = $1`)
+	projectQuery := regexp.QuoteMeta(`SELECT id, owner_id, resource_type, name, description, mir_json, is_public, stars_count, created_at, updated_at
+FROM projects
+WHERE owner_id = $1 AND id = $2`)
+	insertWorkspace := regexp.QuoteMeta(`INSERT INTO workspaces (
+	id, project_id, owner_id, name, workspace_rev, route_rev, op_seq, tree_root_id, tree_json, created_at, updated_at
+) VALUES ($1, $2, $3, $4, 1, 1, 1, $5, $6::jsonb, $7, $8)`)
+	insertRoute := regexp.QuoteMeta(`INSERT INTO workspace_routes (workspace_id, manifest_json, updated_at)
+VALUES ($1, $2::jsonb, $3)`)
+	insertDocument := regexp.QuoteMeta(`INSERT INTO workspace_documents (
+	workspace_id, id, doc_type, name, path, content_rev, meta_rev, content_json, updated_at
+) VALUES ($1, $2, $3, $4, $5, 1, 1, $6::jsonb, NOW())
+RETURNING workspace_id, id, doc_type, name, path, content_rev, meta_rev, content_json, updated_at`)
+	documentQuery := regexp.QuoteMeta(`SELECT workspace_id, id, doc_type, name, path, content_rev, meta_rev, content_json, updated_at
+FROM workspace_documents
+WHERE workspace_id = $1
+ORDER BY path ASC`)
+
+	mock.ExpectQuery(workspaceQuery).WithArgs("prj_bootstrap").WillReturnError(sql.ErrNoRows)
+	mock.ExpectQuery(projectQuery).
+		WithArgs("user_1", "prj_bootstrap").
+		WillReturnRows(sqlmock.NewRows([]string{
+			"id", "owner_id", "resource_type", "name", "description", "mir_json", "is_public", "stars_count", "created_at", "updated_at",
+		}).AddRow(
+			"prj_bootstrap",
+			"user_1",
+			"project",
+			"Bootstrap Project",
+			"",
+			[]byte(`{"version":"1.0","ui":{"root":{"id":"root","type":"container"}}}`),
+			false,
+			0,
+			now,
+			now,
+		))
+	mock.ExpectBegin()
+	mock.ExpectExec(insertWorkspace).WithArgs(
+		"prj_bootstrap",
+		"prj_bootstrap",
+		"user_1",
+		"Bootstrap Project",
+		"root",
+		`{"rootId":"root","nodes":[]}`,
+		sqlmock.AnyArg(),
+		sqlmock.AnyArg(),
+	).WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectExec(insertRoute).WithArgs(
+		"prj_bootstrap",
+		`{"version":"1","root":{"id":"root"}}`,
+		sqlmock.AnyArg(),
+	).WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+	mock.ExpectQuery(insertDocument).WithArgs(
+		"prj_bootstrap",
+		"doc_root",
+		"mir-page",
+		"Root",
+		"/",
+		`{"ui":{"root":{"id":"root","type":"container"}},"version":"1.0"}`,
+	).WillReturnRows(sqlmock.NewRows([]string{
+		"workspace_id", "id", "doc_type", "name", "path", "content_rev", "meta_rev", "content_json", "updated_at",
+	}).AddRow(
+		"prj_bootstrap",
+		"doc_root",
+		"mir-page",
+		"Root",
+		"/",
+		1,
+		1,
+		[]byte(`{"version":"1.0","ui":{"root":{"id":"root","type":"container"}}}`),
+		now,
+	))
+	mock.ExpectQuery(workspaceQuery).
+		WithArgs("prj_bootstrap").
+		WillReturnRows(sqlmock.NewRows([]string{
+			"id", "project_id", "owner_id", "name", "workspace_rev", "route_rev", "op_seq", "tree_root_id", "tree_json", "created_at", "updated_at", "manifest_json",
+		}).AddRow(
+			"prj_bootstrap",
+			"prj_bootstrap",
+			"user_1",
+			"Bootstrap Project",
+			1,
+			1,
+			1,
+			"root",
+			[]byte(`{"rootId":"root","nodes":[]}`),
+			now,
+			now,
+			[]byte(`{"version":"1","root":{"id":"root"}}`),
+		))
+	mock.ExpectQuery(documentQuery).
+		WithArgs("prj_bootstrap").
+		WillReturnRows(sqlmock.NewRows([]string{
+			"workspace_id", "id", "doc_type", "name", "path", "content_rev", "meta_rev", "content_json", "updated_at",
+		}).AddRow(
+			"prj_bootstrap",
+			"doc_root",
+			"mir-page",
+			"Root",
+			"/",
+			1,
+			1,
+			[]byte(`{"version":"1.0","ui":{"root":{"id":"root","type":"container"}}}`),
+			now,
+		))
+
+	context, response := newWorkspaceHandlerContext(
+		http.MethodGet,
+		"/api/workspaces/prj_bootstrap",
+		"",
+		gin.Params{{Key: "workspaceId", Value: "prj_bootstrap"}},
+	)
+
+	server.handleGetWorkspace(context)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", response.Code, response.Body.String())
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Fatalf("sql expectations: %v", err)
@@ -330,6 +466,7 @@ func newWorkspaceHandlerTestServer(t *testing.T) (*Server, sqlmock.Sqlmock, func
 
 	server := &Server{
 		workspaces: NewWorkspaceStore(db),
+		projects:   NewProjectStore(db),
 	}
 	return server, mock, func() {
 		_ = db.Close()
@@ -352,6 +489,7 @@ func newWorkspaceHandlerContext(method, path, body string, params gin.Params) (*
 	}
 	context.Request = request
 	context.Params = params
+	context.Set("authUser", &User{ID: "user_1"})
 	return context, response
 }
 

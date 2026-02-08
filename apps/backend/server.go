@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -292,6 +293,11 @@ func (server *Server) handleCreateProject(c *gin.Context) {
 		respondError(c, http.StatusInternalServerError, "project_create_failed", "Could not create project.")
 		return
 	}
+	if err := server.bootstrapProjectWorkspace(c.Request.Context(), project); err != nil {
+		_ = server.projects.Delete(user.ID, project.ID)
+		respondError(c, http.StatusInternalServerError, "project_create_failed", "Could not create project.")
+		return
+	}
 	c.JSON(http.StatusCreated, gin.H{"project": toProjectSummary(project)})
 }
 
@@ -499,6 +505,39 @@ func getAuthUser(c *gin.Context) *User {
 		return nil
 	}
 	return user
+}
+
+func (server *Server) bootstrapProjectWorkspace(ctx context.Context, project *Project) error {
+	if server == nil || server.workspaces == nil || project == nil {
+		return errors.New("workspace bootstrap requires server and project")
+	}
+
+	workspaceID := strings.TrimSpace(project.ID)
+	if workspaceID == "" {
+		return errors.New("project id is required to bootstrap workspace")
+	}
+
+	if _, err := server.workspaces.CreateWorkspace(ctx, CreateWorkspaceParams{
+		WorkspaceID: workspaceID,
+		ProjectID:   project.ID,
+		OwnerID:     project.OwnerID,
+		Name:        project.Name,
+	}); err != nil && !isUniqueViolation(err) {
+		return err
+	}
+
+	if _, err := server.workspaces.CreateDocument(ctx, CreateWorkspaceDocumentParams{
+		WorkspaceID: workspaceID,
+		DocumentID:  "doc_root",
+		Type:        WorkspaceDocumentTypeMIRPage,
+		Name:        "Root",
+		Path:        "/",
+		Content:     project.MIR,
+	}); err != nil && !isUniqueViolation(err) {
+		return err
+	}
+
+	return nil
 }
 
 func corsMiddleware(allowed []string) gin.HandlerFunc {

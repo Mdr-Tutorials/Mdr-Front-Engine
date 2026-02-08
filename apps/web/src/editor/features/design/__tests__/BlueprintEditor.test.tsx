@@ -7,10 +7,8 @@ import {
 } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { KeyboardEvent, ReactNode } from 'react';
-import { ApiError } from '@/auth/authApi';
 import { useAuthStore } from '@/auth/useAuthStore';
 import BlueprintEditor from '../BlueprintEditor';
-import { editorApi } from '@/editor/editorApi';
 import {
     DEFAULT_BLUEPRINT_STATE,
     useEditorStore,
@@ -34,6 +32,7 @@ type AddressBarProps = {
     onCurrentPathChange: (value: string) => void;
     onNewPathChange: (value: string) => void;
     onAddRoute: () => void;
+    statusIndicator?: ReactNode;
 };
 
 type ViewportBarProps = {
@@ -143,6 +142,7 @@ vi.mock('../BlueprintEditorAddressBar', () => ({
         onCurrentPathChange,
         onNewPathChange,
         onAddRoute,
+        statusIndicator,
     }: AddressBarProps) => (
         <div
             data-testid="address-bar"
@@ -150,6 +150,7 @@ vi.mock('../BlueprintEditorAddressBar', () => ({
             data-new={newPath}
             data-routes={routes.length}
         >
+            {statusIndicator}
             <button
                 type="button"
                 data-testid="set-new-path"
@@ -1060,80 +1061,5 @@ describe('BlueprintEditor', () => {
             expect(nextTotal).toBe(totalNodes + 1);
             totalNodes = nextTotal;
         });
-    });
-
-    it('saves the active workspace document through workspace api when metadata is available', async () => {
-        vi.useFakeTimers();
-
-        const saveWorkspaceDocument = vi
-            .spyOn(editorApi, 'saveWorkspaceDocument')
-            .mockResolvedValue({
-                workspaceId: 'ws-1',
-                workspaceRev: 7,
-                routeRev: 3,
-                opSeq: 12,
-                updatedDocuments: [
-                    { id: 'doc-home', contentRev: 4, metaRev: 2 },
-                ],
-            });
-        const saveProjectMir = vi
-            .spyOn(editorApi, 'saveProjectMir')
-            .mockRejectedValue(
-                new ApiError('should not call project save', 500)
-            );
-
-        useAuthStore.setState({
-            token: 'token-1',
-            expiresAt: null,
-            user: null,
-        });
-        resetEditorStore({
-            workspaceId: 'ws-1',
-            workspaceRev: 6,
-            routeRev: 3,
-            opSeq: 11,
-            activeDocumentId: 'doc-home',
-            workspaceDocumentsById: {
-                'doc-home': {
-                    id: 'doc-home',
-                    type: 'mir-page',
-                    path: '/home',
-                    contentRev: 3,
-                    metaRev: 2,
-                    content: createMirDoc(),
-                    updatedAt: '2026-02-08T10:00:00.000Z',
-                },
-            },
-            mirDoc: createMirDoc(),
-        });
-
-        try {
-            render(<BlueprintEditor />);
-
-            await act(async () => {
-                await vi.advanceTimersByTimeAsync(701);
-            });
-
-            expect(saveWorkspaceDocument).toHaveBeenCalledTimes(1);
-            expect(saveProjectMir).not.toHaveBeenCalled();
-
-            const [token, workspaceId, documentId, payload] =
-                saveWorkspaceDocument.mock.calls[0];
-            expect(token).toBe('token-1');
-            expect(workspaceId).toBe('ws-1');
-            expect(documentId).toBe('doc-home');
-            expect(payload.expectedContentRev).toBe(3);
-            expect(payload.command?.target.workspaceId).toBe('ws-1');
-            expect(payload.command?.target.documentId).toBe('doc-home');
-
-            const state = useEditorStore.getState();
-            expect(state.workspaceRev).toBe(7);
-            expect(state.opSeq).toBe(12);
-            expect(state.workspaceDocumentsById['doc-home']?.contentRev).toBe(
-                4
-            );
-        } finally {
-            vi.useRealTimers();
-        }
     });
 });

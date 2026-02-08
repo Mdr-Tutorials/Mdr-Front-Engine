@@ -85,4 +85,20 @@ describe('BlueprintEditorAddressBar', () => {
       '/about',
     ]);
   });
+
+  it('renders a trailing status indicator', () => {
+    render(
+      <BlueprintEditorAddressBar
+        currentPath="/"
+        newPath=""
+        routes={[{ id: 'home', path: '/' }]}
+        onCurrentPathChange={() => {}}
+        onNewPathChange={() => {}}
+        onAddRoute={() => {}}
+        statusIndicator={<span data-testid="status-indicator">saved</span>}
+      />
+    );
+
+    expect(screen.getByTestId('status-indicator')).not.toBeNull();
+  });
 });
