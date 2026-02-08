@@ -1,5 +1,10 @@
 .MdrSkeleton {
-    background: linear-gradient(90deg, var(--color-2) 25%, var(--color-3) 50%, var(--color-2) 75%);
+    background: linear-gradient(
+        90deg,
+        var(--color-2) 25%,
+        var(--color-3) 50%,
+        var(--color-2) 75%
+    );
     background-size: 200% 100%;
     animation: mdr-skeleton 1.4s ease infinite;
     border-radius: var(--radius-sm);
@@ -32,7 +37,7 @@
     }
 }
 
-[data-theme="dark"] {
+[data-theme='dark'] {
     .MdrSkeleton {
         background-size: 200% 100%;
     }

@@ -55,24 +55,29 @@ import { Container, Text, Button } from '@mdr/ui';
 import styles from './Home.module.css';
 
 export function Home() {
-  const [count, setCount] = useState(0);
+    const [count, setCount] = useState(0);
 
-  const handleClick = useCallback(() => {
-    setCount(prev => prev + 1);
-  }, []);
+    const handleClick = useCallback(() => {
+        setCount((prev) => prev + 1);
+    }, []);
 
-  return (
-    <Container className={styles.container} layout="flex" direction="column">
-      <Text variant="h1">计数器: {count}</Text>
-      <Button variant="primary" onClick={handleClick}>
-        增加
-      </Button>
-    </Container>
-  );
+    return (
+        <Container
+            className={styles.container}
+            layout="flex"
+            direction="column"
+        >
+            <Text variant="h1">计数器: {count}</Text>
+            <Button variant="primary" onClick={handleClick}>
+                增加
+            </Button>
+        </Container>
+    );
 }
 ```
 
 **输出结构**:
+
 ```
 dist/
 ├── src/
@@ -94,12 +99,10 @@ dist/
 ```vue
 <!-- pages/Home.vue -->
 <template>
-  <MdrContainer class="container" layout="flex" direction="column">
-    <MdrText variant="h1">计数器: {{ count }}</MdrText>
-    <MdrButton variant="primary" @click="handleClick">
-      增加
-    </MdrButton>
-  </MdrContainer>
+    <MdrContainer class="container" layout="flex" direction="column">
+        <MdrText variant="h1">计数器: {{ count }}</MdrText>
+        <MdrButton variant="primary" @click="handleClick"> 增加 </MdrButton>
+    </MdrContainer>
 </template>
 
 <script setup lang="ts">
@@ -109,18 +112,19 @@ import { MdrContainer, MdrText, MdrButton } from '@mdr/ui-vue';
 const count = ref(0);
 
 const handleClick = () => {
-  count.value++;
+    count.value++;
 };
 </script>
 
 <style scoped>
 .container {
-  /* 样式 */
+    /* 样式 */
 }
 </style>
 ```
 
 **输出结构**:
+
 ```
 dist/
 ├── src/
@@ -142,31 +146,38 @@ dist/
 // pages/home/home.component.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MdrContainerComponent, MdrTextComponent, MdrButtonComponent } from '@mdr/ui-angular';
+import {
+    MdrContainerComponent,
+    MdrTextComponent,
+    MdrButtonComponent,
+} from '@mdr/ui-angular';
 
 @Component({
-  selector: 'app-home',
-  standalone: true,
-  imports: [CommonModule, MdrContainerComponent, MdrTextComponent, MdrButtonComponent],
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+    selector: 'app-home',
+    standalone: true,
+    imports: [
+        CommonModule,
+        MdrContainerComponent,
+        MdrTextComponent,
+        MdrButtonComponent,
+    ],
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.css'],
 })
 export class HomeComponent {
-  count = 0;
+    count = 0;
 
-  handleClick() {
-    this.count++;
-  }
+    handleClick() {
+        this.count++;
+    }
 }
 ```
 
 ```html
 <!-- pages/home/home.component.html -->
 <mdr-container layout="flex" direction="column">
-  <mdr-text variant="h1">计数器: {{ count }}</mdr-text>
-  <mdr-button variant="primary" (click)="handleClick()">
-    增加
-  </mdr-button>
+    <mdr-text variant="h1">计数器: {{ count }}</mdr-text>
+    <mdr-button variant="primary" (click)="handleClick()"> 增加 </mdr-button>
 </mdr-container>
 ```
 
@@ -180,20 +191,20 @@ import { createSignal } from 'solid-js';
 import { Container, Text, Button } from '@mdr/ui-solid';
 
 export function Home() {
-  const [count, setCount] = createSignal(0);
+    const [count, setCount] = createSignal(0);
 
-  const handleClick = () => {
-    setCount(prev => prev + 1);
-  };
+    const handleClick = () => {
+        setCount((prev) => prev + 1);
+    };
 
-  return (
-    <Container layout="flex" direction="column">
-      <Text variant="h1">计数器: {count()}</Text>
-      <Button variant="primary" onClick={handleClick}>
-        增加
-      </Button>
-    </Container>
-  );
+    return (
+        <Container layout="flex" direction="column">
+            <Text variant="h1">计数器: {count()}</Text>
+            <Button variant="primary" onClick={handleClick}>
+                增加
+            </Button>
+        </Container>
+    );
 }
 ```
 
@@ -205,22 +216,27 @@ export function Home() {
 <!-- pages/home.html -->
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <title>首页</title>
-  <link rel="stylesheet" href="../styles/global.css">
-  <link rel="stylesheet" href="./home.css">
-</head>
-<body>
-  <div class="mdr-container" data-layout="flex" data-direction="column">
-    <h1 class="mdr-text" data-variant="h1">计数器: <span id="count">0</span></h1>
-    <button class="mdr-button mdr-button--primary" onclick="handleClick()">
-      增加
-    </button>
-  </div>
+    <head>
+        <meta charset="UTF-8" />
+        <title>首页</title>
+        <link rel="stylesheet" href="../styles/global.css" />
+        <link rel="stylesheet" href="./home.css" />
+    </head>
+    <body>
+        <div class="mdr-container" data-layout="flex" data-direction="column">
+            <h1 class="mdr-text" data-variant="h1">
+                计数器: <span id="count">0</span>
+            </h1>
+            <button
+                class="mdr-button mdr-button--primary"
+                onclick="handleClick()"
+            >
+                增加
+            </button>
+        </div>
 
-  <script src="./home.js"></script>
-</body>
+        <script src="./home.js"></script>
+    </body>
 </html>
 ```
 
@@ -229,8 +245,8 @@ export function Home() {
 let count = 0;
 
 function handleClick() {
-  count++;
-  document.getElementById('count').textContent = count;
+    count++;
+    document.getElementById('count').textContent = count;
 }
 ```
 
@@ -238,24 +254,24 @@ function handleClick() {
 
 ### 样式处理
 
-| 选项 | 说明 |
-| --- | --- |
-| CSS Modules | 组件级样式隔离（React/Vue 默认） |
-| CSS-in-JS | 内联样式（Styled Components） |
-| Tailwind CSS | 使用 Tailwind 工具类 |
-| 纯 CSS | 传统 CSS 文件 |
-| SCSS/Sass | 预处理器语法 |
+| 选项         | 说明                             |
+| ------------ | -------------------------------- |
+| CSS Modules  | 组件级样式隔离（React/Vue 默认） |
+| CSS-in-JS    | 内联样式（Styled Components）    |
+| Tailwind CSS | 使用 Tailwind 工具类             |
+| 纯 CSS       | 传统 CSS 文件                    |
+| SCSS/Sass    | 预处理器语法                     |
 
 ### 状态管理
 
 根据项目复杂度，自动选择或手动指定：
 
-| 方案 | 适用场景 |
-| --- | --- |
-| 组件状态 | 简单页面，状态不跨组件 |
-| Context/Provide | 中等复杂度，局部状态共享 |
-| Zustand/Pinia | 复杂应用，全局状态管理 |
-| Redux/Vuex | 大型应用，需要时间旅行等功能 |
+| 方案            | 适用场景                     |
+| --------------- | ---------------------------- |
+| 组件状态        | 简单页面，状态不跨组件       |
+| Context/Provide | 中等复杂度，局部状态共享     |
+| Zustand/Pinia   | 复杂应用，全局状态管理       |
+| Redux/Vuex      | 大型应用，需要时间旅行等功能 |
 
 ### 路由配置
 
@@ -284,35 +300,38 @@ const routes = [
 ### 示例：HTTP 请求 + 状态更新
 
 **节点图**:
+
 ```
 onClick → SetLoading(true) → HTTP GET → SetState(data) → SetLoading(false)
 ```
 
 **React 输出**:
+
 ```typescript
 const handleClick = useCallback(async () => {
-  setLoading(true);
-  try {
-    const response = await fetch('/api/users');
-    const data = await response.json();
-    setUsers(data);
-  } finally {
-    setLoading(false);
-  }
+    setLoading(true);
+    try {
+        const response = await fetch('/api/users');
+        const data = await response.json();
+        setUsers(data);
+    } finally {
+        setLoading(false);
+    }
 }, []);
 ```
 
 **Vue 输出**:
+
 ```typescript
 const handleClick = async () => {
-  loading.value = true;
-  try {
-    const response = await fetch('/api/users');
-    const data = await response.json();
-    users.value = data;
-  } finally {
-    loading.value = false;
-  }
+    loading.value = true;
+    try {
+        const response = await fetch('/api/users');
+        const data = await response.json();
+        users.value = data;
+    } finally {
+        loading.value = false;
+    }
 };
 ```
 

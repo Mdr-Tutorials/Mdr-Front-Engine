@@ -298,11 +298,7 @@ packages/ui/
 ```tsx
 import { MdrButton } from '@mdr/ui';
 
-<MdrButton 
-  text="提交" 
-  size="Big" 
-  category="Primary" 
-/>
+<MdrButton text="提交" size="Big" category="Primary" />;
 ```
 
 ---
@@ -327,12 +323,12 @@ packages/shared/
 
 ```typescript
 export interface MdrComponent {
-  className?: string;
-  style?: React.CSSProperties;
-  id?: string;
-  dataAttributes?: Record<string, string>;
-  onClick?: (e: React.MouseEvent) => void;
-  as?: React.ElementType;
+    className?: string;
+    style?: React.CSSProperties;
+    id?: string;
+    dataAttributes?: Record<string, string>;
+    onClick?: (e: React.MouseEvent) => void;
+    as?: React.ElementType;
 }
 ```
 
@@ -390,10 +386,10 @@ packages/eslint-plugin-mdr/
 
 ```json
 {
-  "plugins": ["@mdr/eslint"],
-  "rules": {
-    "@mdr/no-circular": "error"
-  }
+    "plugins": ["@mdr/eslint"],
+    "rules": {
+        "@mdr/no-circular": "error"
+    }
 }
 ```
 
@@ -508,10 +504,10 @@ pnpm test:e2e
 
 ```json
 {
-  "dependencies": {
-    "@mdr/shared": "workspace:*",
-    "@mdr/ui": "workspace:*"
-  }
+    "dependencies": {
+        "@mdr/shared": "workspace:*",
+        "@mdr/ui": "workspace:*"
+    }
 }
 ```
 
@@ -662,7 +658,6 @@ import { MdrButton } from '../../../packages/ui';
 #### 组件库扩展
 
 - 第三方组件导入：Ant Design / Material UI 适配器, Element Plus / Chakra UI 适配器, Shadcn/ui 集成, Headless UI 支持, Radix UI 支持
-  
 - Figma 集成：导入 Figma 设计稿, 自动识别组件与样式, 双向同步（修改反向更新到 Figma）
 
 - 自定义组件：React/Vue 组件开发, 注册为可拖拽组件, 组件商店上传与分享
@@ -755,7 +750,7 @@ import { MdrButton } from '../../../packages/ui';
 
 输入/输出：事件节点（触发器）, 参数输入, 返回值输出, 全局事件监听（Window/Document 事件）
 
-数据操作：变量读取/写入, 数据转换（JSON.parse/stringify）, 数组操作（map/filter/reduce）, 对象操作（merge/pick/omit）, 日期时间处理, 字符串处理（正则匹配/替换）, 数学运算（Math.*）
+数据操作：变量读取/写入, 数据转换（JSON.parse/stringify）, 数组操作（map/filter/reduce）, 对象操作（merge/pick/omit）, 日期时间处理, 字符串处理（正则匹配/替换）, 数学运算（Math.\*）
 
 控制流：条件判断（If/Else）, 循环（For/While/ForEach）, 延迟（Delay/Timeout）, Switch 多分支, Try/Catch 错误处理, 并行执行（Promise.all）
 

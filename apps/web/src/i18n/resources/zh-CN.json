@@ -1,1525 +1,1525 @@
 {
-  "routes": {
-    "nodeGraphEditor": "节点图",
-    "componentEditor": "组件",
-    "animationEditor": "动画",
-    "resourceManager": "资源管理",
-    "testing": "测试",
-    "exportSettings": "导出",
-    "deploymentSettings": "部署",
-    "editorSettings": "设置",
-    "projectSettings": "项目设置",
-    "communityPage": "社区",
-    "aboutPage": "关于"
-  },
-  "home": {
-    "brand": {
-      "name": "MdrFrontEngine"
+    "routes": {
+        "nodeGraphEditor": "节点图",
+        "componentEditor": "组件",
+        "animationEditor": "动画",
+        "resourceManager": "资源管理",
+        "testing": "测试",
+        "exportSettings": "导出",
+        "deploymentSettings": "部署",
+        "editorSettings": "设置",
+        "projectSettings": "项目设置",
+        "communityPage": "社区",
+        "aboutPage": "关于"
     },
-    "nav": {
-      "community": "社区",
-      "tutorials": "教程",
-      "docs": "文档",
-      "signIn": "登录",
-      "github": "GitHub",
-      "languageSwitch": "切换语言"
-    },
-    "hero": {
-      "line1": {
-        "highlight": "Mdr"
-      },
-      "line2": {
-        "before": "前端",
-        "highlight": "梭哈"
-      },
-      "line3": {
-        "before": "灵感顷刻",
-        "highlight": "炼化"
-      },
-      "subtitle": "可视化设计与代码生成的一体化平台。"
-    },
-    "actions": {
-      "enterEditor": "进入编辑器",
-      "viewDocs": "查看文档"
-    },
-    "mirTest": {
-      "title": "MIR 预览",
-      "exportButton": "快速导出"
-    },
-    "footer": {
-      "copy": "(c) 2026 Mdr Front Engine",
-      "placeholder": "一起走在前端路上。"
-    }
-  },
-  "community": {
-    "backHome": "返回首页",
-    "badge": "社区",
-    "title": "公开 MIR 展示",
-    "subtitle": "探索创作者分享的项目、组件与节点图。",
-    "count": "条结果",
-    "countNone": "无结果",
-    "error": {
-      "load": "加载社区项目失败。"
-    },
-    "search": {
-      "placeholder": "按标题、作者、描述搜索..."
-    },
-    "filter": {
-      "all": "全部类型",
-      "project": "项目",
-      "component": "组件",
-      "nodegraph": "节点图"
-    },
-    "sort": {
-      "latest": "最新",
-      "popular": "最热"
-    },
-    "card": {
-      "untitled": "未命名",
-      "emptyDesc": "暂无描述。",
-      "unknown": "未知"
-    },
-    "empty": {
-      "title": "没有找到公开项目",
-      "body": "试试其他关键词、切换类型筛选，或按最新排序。"
-    },
-    "pagination": {
-      "prev": "上一页",
-      "page": "第",
-      "next": "下一页"
-    },
-    "detail": {
-      "back": "返回社区",
-      "author": "作者",
-      "updated": "更新于",
-      "preview": "只读预览",
-      "mir": "MIR 文档",
-      "clone": "克隆到我的工作区",
-      "cloning": "克隆中...",
-      "error": {
-        "title": "无法加载该项目",
-        "missing": "缺少项目 ID。",
-        "load": "加载项目详情失败。",
-        "clone": "克隆项目失败。",
-        "cloneSelf": "不能从社区克隆你自己的项目。"
-      }
-    }
-  },
-  "editor": {
     "home": {
-      "welcomeTitle": "欢迎回来",
-      "actions": {
-        "newProject": "新建项目"
-      },
-      "card": {
-        "untitled": "未命名",
-        "noDescription": "暂无描述",
-        "actions": "功能",
-        "moreActions": "更多操作",
-        "publish": "发布到社区",
-        "publishDisabled": "副本项目不可发布",
-        "publishDisabledReason": "克隆得到的项目不能发布到社区。",
-        "publishing": "发布中...",
-        "openCommunity": "打开社区",
-        "delete": "删除项目",
-        "deleting": "删除中...",
-        "deleteConfirm": "确定要永久删除这个项目吗？",
-        "publishFailed": "发布项目失败。",
-        "deleteFailed": "删除项目失败。"
-      }
-    },
-    "projectHome": {
-      "title": "{{name}}",
-      "subtitle": "此项目的概览与常用入口。",
-      "untitled": "未命名项目 {{id}}",
-      "fields": {
-        "id": "项目 ID",
-        "name": "项目名称",
-        "visibility": "可见性"
-      },
-      "actions": {
-        "projectInfo": "项目信息",
-        "blueprint": {
-          "label": "蓝图",
-          "description": "设计界面与布局结构。"
-        },
-        "component": {
-          "label": "组件",
-          "description": "管理可复用组件。"
-        },
-        "resources": {
-          "label": "资源",
-          "description": "管理素材与资源库。"
-        },
-        "nodegraph": {
-          "label": "节点图",
-          "description": "构建逻辑与数据流。"
-        },
-        "animation": {
-          "label": "动画",
-          "description": "打造动效与过渡。"
-        },
-        "testing": {
-          "label": "测试",
-          "description": "验证交互与流程。"
-        },
-        "export": {
-          "label": "导出",
-          "description": "生成并分享产物。"
-        },
-        "deployment": {
-          "label": "部署",
-          "description": "配置发布环境。"
-        },
-        "settings": {
-          "label": "项目设置",
-          "description": "管理项目配置。"
-        }
-      },
-      "visibility": {
-        "public": "公开",
-        "private": "私有",
-        "openCommunity": "打开社区",
-        "published": "已发布到社区",
-        "publish": "发布"
-      }
-    },
-    "bar": {
-      "cancel": "取消",
-      "exit": "退出",
-      "exitAria": "退出编辑器",
-      "exitTitle": "退出编辑器？",
-      "projectHome": "项目主页",
-      "exitToEditor": "返回编辑器首页",
-      "exitToHome": "返回首页"
-    },
-    "modals": {
-      "close": "关闭",
-      "actions": {
-        "cancel": "取消",
-        "create": "创建"
-      },
-      "newResource": {
-        "title": "新建资源",
-        "subtitle": "选择一种类型并开始构建",
-        "typeLabel": "类型",
-        "nameLabel": "名称",
-        "publicLabel": "创建后发布到社区"
-      },
-      "newProject": {
-        "title": "新建项目",
-        "subtitle": "开始一个新工作区。",
-        "nameLabel": "项目名称",
-        "required": "必填",
-        "namePlaceholder": "例如：营销网站",
-        "nameRequired": "项目名称为必填项。",
-        "descriptionLabel": "描述",
-        "descriptionPlaceholder": "你在构建什么？",
-        "create": "创建"
-      },
-      "newComponent": {
-        "title": "新建组件",
-        "subtitle": "定义可复用的组件。",
-        "nameLabel": "组件名称",
-        "required": "必填",
-        "namePlaceholder": "例如：PricingCard",
-        "nameRequired": "组件名称为必填项。",
-        "descriptionLabel": "描述",
-        "descriptionPlaceholder": "这个组件做什么？",
-        "create": "创建"
-      },
-      "newNodeGraph": {
-        "title": "新建节点图",
-        "subtitle": "开始一个新的逻辑流程。",
-        "nameLabel": "节点图名称",
-        "required": "必填",
-        "namePlaceholder": "例如：用户引导",
-        "nameRequired": "节点图名称为必填项。",
-        "descriptionLabel": "描述",
-        "descriptionPlaceholder": "这个流程用于什么？",
-        "create": "创建"
-      }
-    },
-    "tips": {
-      "prefix": "Tips:",
-      "items": {
-        "ux01": {
-          "title": "先写清用户故事",
-          "body": "在画蓝图前，先用一句话说清这个界面要帮用户完成什么。"
-        },
-        "ux02": {
-          "title": "蓝图别太大",
-          "body": "一个蓝图只负责一件事，复杂流程拆成几个小蓝图，画面就不会一眼看花。"
-        },
-        "ux03": {
-          "title": "流程从结果倒推",
-          "body": "先想清用户完成操作后的画面，再往前推每一步要发生什么。"
-        },
-        "ux04": {
-          "title": "节点命名说人话",
-          "body": "节点名字写成用户能懂的动作，比如“提交表单”，少用缩写。"
-        },
-        "ux05": {
-          "title": "少拖一点线",
-          "body": "能用分组、别名减少交叉连线的地方，就不要让画布变成“意大利面”。"
-        },
-        "ux06": {
-          "title": "状态统一放一边",
-          "body": "把页面状态节点尽量聚在一起，方便一眼看出有什么会变。"
-        },
-        "ux07": {
-          "title": "常用操作放手边",
-          "body": "把常用组件和蓝图收藏在左侧顶端，减少来回滚动找东西。"
-        },
-        "ux08": {
-          "title": "组件预览要清晰",
-          "body": "给自定义组件配一张好认的缩略图，下次拖拽时不会选错。"
-        },
-        "ux09": {
-          "title": "占位文案也认真写",
-          "body": "即便是占位文字，也用接近真实的文案，才能看出交互是不是顺畅。"
-        },
-        "ux10": {
-          "title": "一步一保存",
-          "body": "做完一个小修改就点一下保存或 commit，方便以后回滚。"
-        },
-        "ux11": {
-          "title": "用颜色区分模块",
-          "body": "给不同功能区域的节点上色，比如数据、视图、交互，用颜色帮自己记路。"
-        },
-        "ux12": {
-          "title": "错误提示要具体",
-          "body": "校验失败时别只写“出错了”，要告诉用户哪里错、怎么改。"
-        },
-        "ux13": {
-          "title": "拖拽时给对齐感",
-          "body": "开启对齐辅助线，让组件自动贴边，界面看起来更稳。"
-        },
-        "ux14": {
-          "title": "多用布局组件",
-          "body": "先用栅格、Flex 容器搭框架，再填细节，响应式会简单很多。"
-        },
-        "ux15": {
-          "title": "移动端先试一次",
-          "body": "预览时至少切一次手机尺寸，早一点发现“点不到”“挤在一起”的问题。"
-        },
-        "ux16": {
-          "title": "按钮状态要完整",
-          "body": "别只设计正常态，还要试一下悬停、按下、禁用，看是否一致。"
-        },
-        "ux17": {
-          "title": "列表别一次塞满",
-          "body": "有长列表就加分页或懒加载，别让用户滚到怀疑人生。"
-        },
-        "ux18": {
-          "title": "加载时给点反馈",
-          "body": "任何超过一秒的操作，都给一个明显的 loading 状态。"
-        },
-        "ux19": {
-          "title": "表单别吓人",
-          "body": "多段表单拆成步骤，顶部显示进度，让用户知道还差几步。"
-        },
-        "ux20": {
-          "title": "用真实数据演练",
-          "body": "调试时尽量连上真实结构的 mock 数据，才能发现字段命名的问题。"
-        },
-        "ux21": {
-          "title": "复用逻辑别复制",
-          "body": "常用逻辑抽成蓝图片段或函数节点，下次直接引用而不是复制一坨。"
-        },
-        "ux22": {
-          "title": "边画边写备注",
-          "body": "在关键节点旁加一条简短注释，下个月的你会感谢现在的自己。"
-        },
-        "ux23": {
-          "title": "交互路径别绕远",
-          "body": "从蓝图入口到结果，尽量保证用户只需要 3～5 步操作。"
-        },
-        "ux24": {
-          "title": "空状态也要好看",
-          "body": "列表为空时配一句温柔的提示和引导，而不是一片空白。"
-        },
-        "ux25": {
-          "title": "默认值帮用户偷懒",
-          "body": "给常见选项设置合理的默认值，让用户少选一步。"
-        },
-        "ux26": {
-          "title": "危险操作要二次确认",
-          "body": "删除、重置这类操作加个确认弹窗，并说明会带来什么后果。"
-        },
-        "ux27": {
-          "title": "结果页面要有回路",
-          "body": "成功页面给出“返回上一页”或“继续下一步”的按钮，别让用户只剩个关闭。"
-        },
-        "ux28": {
-          "title": "自测一遍任务流程",
-          "body": "发布前自己用这个界面完成一次真实任务，体验不顺的地方都记下来。"
-        },
-        "ux29": {
-          "title": "键盘操作也要通",
-          "body": "给常用操作配快捷键，让熟练用户不用总是去点鼠标。"
-        },
-        "ux30": {
-          "title": "错误信息可复制",
-          "body": "设计错误提示时考虑能不能一键复制，方便用户贴给开发排查。"
-        },
-        "ux31": {
-          "title": "提示别挡内容",
-          "body": "悬浮提示尽量出现在不会挡住主要信息的位置。"
-        },
-        "ux32": {
-          "title": "滚动位置帮用户记",
-          "body": "列表返回时尽量记住滚动位置，让用户回来的时候还在原来的地方。"
-        },
-        "ux33": {
-          "title": "别用纯颜色当区分",
-          "body": "颜色差异不明显时，加上图标或文字标记照顾色弱用户。"
-        },
-        "ux34": {
-          "title": "组件命名看用途",
-          "body": "组件名字多用“用途+场景”，比如“主按钮/对话框确认”。"
-        },
-        "ux35": {
-          "title": "保持侧边栏干净",
-          "body": "不常用的高级配置折叠起来，别一开始就把人吓跑。"
-        },
-        "ux36": {
-          "title": "先做一条黄金路径",
-          "body": "先把最典型用户的那条路径做顺，再补其他分支。"
-        },
-        "ux37": {
-          "title": "节点顺序贴近思维",
-          "body": "让节点从左到右按真实思考顺序排放，降低未来阅读成本。"
-        },
-        "ux38": {
-          "title": "用分组讲故事",
-          "body": "按“获取数据→处理数据→展示数据”的顺序分组，让蓝图像一条故事线。"
-        },
-        "ux39": {
-          "title": "善用模板起步",
-          "body": "类似的页面优先从模板开始改，而不是每次从空白画布开始受苦。"
-        },
-        "ux40": {
-          "title": "设计时多问“然后呢”",
-          "body": "每个页面都问一句，用户下一步最自然会做什么，再给他那条路。"
-        },
-        "ux41": {
-          "title": "渐进暴露高级选项",
-          "body": "初始界面只露出必填项，其他高级配置用“展开更多”承载。"
-        },
-        "ux42": {
-          "title": "别让 loading 卡死",
-          "body": "需要长时间计算的节点尽量异步，避免拖垮整个界面。"
-        },
-        "ux43": {
-          "title": "预览环境要贴近线上",
-          "body": "预览用的配置尽量跟线上一致，避免“上线才发现不对”。"
-        },
-        "ux44": {
-          "title": "组件文档离画布近一点",
-          "body": "在属性面板里直接放文档链接，让使用者不用到处翻。"
-        },
-        "ux45": {
-          "title": "用空白引导视线",
-          "body": "别害怕留白，让关键按钮周围多一点呼吸空间。"
-        },
-        "ux46": {
-          "title": "默认主题别太花",
-          "body": "主题色控制在两三种以内，让内容而不是配色成为主角。"
-        },
-        "ux47": {
-          "title": "对齐规则要统一",
-          "body": "一个页面里标题、正文、按钮尽量对齐在同一条基线。"
-        },
-        "ux48": {
-          "title": "表格支持逐列操作",
-          "body": "长表格提供按列排序和筛选，帮助用户快速找到关键数据。"
-        },
-        "ux49": {
-          "title": "表单校验即时反馈",
-          "body": "优先在输入时提示错误，而不是提交后一次性红一片。"
-        },
-        "ux50": {
-          "title": "多语言预留空间",
-          "body": "设计文案时适当预留长度，避免切换语言后布局炸裂。"
-        },
-        "ux51": {
-          "title": "节点错误醒目但不吓人",
-          "body": "出错节点标红即可，提示语更建议用对话式，而不是“严重错误”。"
-        },
-        "ux52": {
-          "title": "历史版本说人话",
-          "body": "版本备注写清“改了什么给谁用”，而不是只写“fix”。"
-        },
-        "ux53": {
-          "title": "协作时先约命名规范",
-          "body": "团队共用项目前先约定节点和组件命名，减少误会。"
-        },
-        "ux54": {
-          "title": "实时协作要有存在感",
-          "body": "在画布上显示其他协作者的光标和操作，避免互相覆盖。"
-        },
-        "ux55": {
-          "title": "冲突解决可视化",
-          "body": "合并改动时尽量用可视化 diff，而不是只丢一堆 JSON。"
-        },
-        "ux56": {
-          "title": "新手看得到“下一步”",
-          "body": "界面里总要有一个下一步建议按钮，引导新手往前走。"
-        },
-        "ux57": {
-          "title": "减少无意义的确认框",
-          "body": "能自动恢复的操作就别弹确认框，节省用户点击。"
-        },
-        "ux58": {
-          "title": "常用蓝图做成库",
-          "body": "把通用业务流程整理成蓝图库，团队共享提升速度。"
-        },
-        "ux59": {
-          "title": "样式命名思考重用",
-          "body": "样式命名多按语义而非颜色，比如“主操作色”，方便统一调整。"
-        },
-        "ux60": {
-          "title": "按场景组织页面",
-          "body": "侧边导航按“任务场景”而非“技术模块”分类，让非技术同事也能找到。"
-        },
-        "ux61": {
-          "title": "节点配置避免长滚动",
-          "body": "参数多时按小节折叠，别把属性面板做成新一条“长表单”。"
-        },
-        "ux62": {
-          "title": "拖拽目标要有磁性",
-          "body": "在可放置区域加轻微吸附感，让新手更容易放对位置。"
-        },
-        "ux63": {
-          "title": "预览入口永远可见",
-          "body": "保证预览按钮在任何面板展开时都能找到，减少“找按钮”时间。"
-        },
-        "ux64": {
-          "title": "保持回退足够细",
-          "body": "撤销粒度以“一个有意义动作”为单位，而不是几十步打包。"
-        },
-        "ux65": {
-          "title": "导出代码前先跑一遍",
-          "body": "导出前在编辑器里点一遍关键按钮，确认没有明显交互坑。"
-        },
-        "ux66": {
-          "title": "接口失败也优雅",
-          "body": "请求失败时保持原有数据，不要突然清空整页。"
-        },
-        "ux67": {
-          "title": "加载骨架优于空白",
-          "body": "列表和卡片加载时用骨架屏占位，比纯白屏更安心。"
-        },
-        "ux68": {
-          "title": "提示语少用专业术语",
-          "body": "能用“保存失败，请检查网络”就别说“请求超时”。"
-        },
-        "ux69": {
-          "title": "按设备分组断点",
-          "body": "响应式断点按“手机/平板/桌面”思考，而不是死记宽度数字。"
-        },
-        "ux70": {
-          "title": "覆盖路径要可撤回",
-          "body": "任何覆盖已有配置的操作，都提供一键回滚入口。"
-        },
-        "ux71": {
-          "title": "默认布局照顾鼠标轨迹",
-          "body": "把“保存”和“发布”放在常用移动路径上，让手少走弯路。"
-        },
-        "ux72": {
-          "title": "预置几个好用的空状态",
-          "body": "为常见场景准备空状态模板，拖上去稍微改文案就能用。"
-        },
-        "ux73": {
-          "title": "列表操作集中在右侧",
-          "body": "表格操作按钮统一放在一列，别散落在各个单元格。"
-        },
-        "ux74": {
-          "title": "避免多重滚动条",
-          "body": "尽量避免一个屏幕上出现两个以上可独立滚动的区域。"
-        },
-        "ux75": {
-          "title": "蓝图入口位置固定",
-          "body": "让主要入口节点始终在画布左上固定区域，方便一眼找到。"
-        },
-        "ux76": {
-          "title": "用图标辅助理解",
-          "body": "给重要节点类别配统一图标，久了不用看字也能分辨。"
-        },
-        "ux77": {
-          "title": "属性面板记住上次折叠",
-          "body": "让面板记住用户习惯折叠哪些区块，下次打开更干净。"
-        },
-        "ux78": {
-          "title": "跳出编辑也要保存提示",
-          "body": "用户关闭页面时若有未保存更改，温柔地提醒一声。"
-        },
-        "ux79": {
-          "title": "用例驱动节点设计",
-          "body": "添加新节点前先写一两个典型用例，避免配置项越堆越多。"
-        },
-        "ux80": {
-          "title": "插件权限清晰可见",
-          "body": "安装插件时明确说明会访问哪些数据，给用户足够安全感。"
-        },
-        "ux81": {
-          "title": "调试面板与画布并排",
-          "body": "调试信息尽量与画布同屏出现，避免来回切换视角。"
-        },
-        "ux82": {
-          "title": "日志按用户任务过滤",
-          "body": "调试日志支持按用户会话或操作链路过滤，快速定位问题。"
-        },
-        "ux83": {
-          "title": "Mock 数据别太完美",
-          "body": "测试数据故意放一点异常值，看看界面是否还能稳住。"
-        },
-        "ux84": {
-          "title": "慢接口提前标记",
-          "body": "对已知耗时长的节点加标识，提醒设计时尽量别串太多在一起。"
-        },
-        "ux85": {
-          "title": "动画只为强化反馈",
-          "body": "动画只用来说明状态变化，避免为了好看而让操作拖沓。"
-        },
-        "ux86": {
-          "title": "颜色含义保持一致",
-          "body": "一个项目里，绿色永远代表成功，红色永远代表危险，不要混用。"
-        },
-        "ux87": {
-          "title": "导航层级控制在三层内",
-          "body": "菜单层级超过三层时考虑重构信息架构。"
-        },
-        "ux88": {
-          "title": "搜索支持模糊匹配",
-          "body": "节点和组件搜索支持拼音、别名或模糊匹配，照顾不同习惯。"
-        },
-        "ux89": {
-          "title": "帮助入口就近放",
-          "body": "复杂面板旁放一个“小问号”，跳到对应文档，不用用户自己去找。"
-        },
-        "ux90": {
-          "title": "导出配置可分享",
-          "body": "导出的构建配置允许一键分享给同事，减少口头对齐。"
-        },
-        "ux91": {
-          "title": "首屏只做一件事",
-          "body": "用户进入编辑器后，优先引导完成一个简单但完整的小任务。"
-        },
-        "ux92": {
-          "title": "默认项目给出参考",
-          "body": "新建工作区时附带一个可删除的示例项目，帮新手快速上手。"
-        },
-        "ux93": {
-          "title": "操作历史可搜索",
-          "body": "在复杂调试场景中，让用户能按关键字搜到曾经做过的操作。"
-        },
-        "ux94": {
-          "title": "蓝图大小随内容自适应",
-          "body": "自动调整画布缩放，让整体结构一开始就能看全。"
-        },
-        "ux95": {
-          "title": "导出代码含注释",
-          "body": "生成的代码里适当保留和蓝图对应的注释，方便开发者二次修改。"
-        },
-        "ux96": {
-          "title": "失败案例也写进文档",
-          "body": "在文档里写清“不要这样用”的例子，少踩重复的坑。"
-        },
-        "ux97": {
-          "title": "保持一条安全回路",
-          "body": "无论设计多复杂，都确保用户有办法“回到主页”或“撤销操作”。"
-        },
-        "ux98": {
-          "title": "表单默认按回车提交",
-          "body": "对常见表单开启回车提交，让键盘用户更顺手。"
-        },
-        "ux99": {
-          "title": "节点面板可按角色切换",
-          "body": "给设计、开发、运营不同角色提供不同视图，减少信息噪音。"
-        },
-        "ux100": {
-          "title": "尊重用户已有习惯",
-          "body": "布局和交互尽量贴近用户熟悉的模式，让迁移成本更低。"
-        }
-      }
-    },
-    "settings": {
-      "actions": {
-        "exit": "退出设置"
-      },
-      "editorPage": {
-        "title": "编辑器设置",
-        "subtitle": "对每个项目和新工作区生效的全局默认值。"
-      },
-      "projectPage": {
-        "title": "项目设置",
-        "subtitle": "项目专属配置，并可选覆盖全局默认值。",
-        "tabs": {
-          "project": "项目设置",
-          "global": "全局默认值"
-        },
-        "overrides": {
-          "title": "覆盖",
-          "body": "切换某一行即可为此项目覆盖对应的全局默认值。"
-        }
-      },
-      "overrides": {
-        "toggle": {
-          "on": "项目覆盖",
-          "off": "使用全局"
-        },
-        "labels": {
-          "global": "全局：{{value}}",
-          "effective": "生效：{{value}}"
-        }
-      },
-      "global": {
-        "panels": {
-          "appearance": {
-            "title": "外观与语言",
-            "description": "影响所有工作区编辑器外观与体验的默认设置。"
-          },
-          "behavior": {
-            "title": "编辑器行为",
-            "description": "控制保存、确认提示和工作管理方式。"
-          },
-          "blueprint": {
-            "title": "蓝图默认值",
-            "description": "创建或打开新蓝图时应用的默认设置。"
-          },
-          "components": {
-            "title": "组件与渲染",
-            "description": "控制 MIR 解析与渲染组件的方式。"
-          },
-          "codegen": {
-            "title": "代码生成",
-            "description": "导出代码与构建产物的默认设置。"
-          },
-          "shortcuts": {
-            "title": "快捷键与诊断",
-            "description": "提升效率的设置与调试叠加层。"
-          }
-        },
-        "rows": {
-          "language": {
-            "label": "界面语言",
-            "description": "用于菜单、面板和提示的主语言。",
-            "options": {
-              "en": "English",
-              "zhCN": "简体中文"
-            }
-          },
-          "theme": {
-            "label": "主题偏好",
-            "description": "选择编辑器默认的颜色模式。",
-            "options": {
-              "home": "跟随主页",
-              "light": "浅色",
-              "dark": "深色"
-            }
-          },
-          "density": {
-            "label": "密度",
-            "description": "调整工作区的间距与紧凑程度。",
-            "options": {
-              "comfortable": "舒适",
-              "compact": "紧凑"
-            }
-          },
-          "fontScale": {
-            "label": "字体缩放",
-            "description": "缩放整个编辑器界面的文字大小。"
-          },
-          "autosaveInterval": {
-            "label": "自动保存间隔（秒）",
-            "description": "自动保存更改的时间间隔。"
-          },
-          "undoSteps": {
-            "label": "撤销步数",
-            "description": "撤销栈中保存的最大步数。"
-          },
-          "confirmPrompts": {
-            "label": "确认提示",
-            "description": "何时显示确认对话框。",
-            "options": {
-              "delete": "删除",
-              "reset": "重置",
-              "leave": "离开"
-            }
-          },
-          "panelLayout": {
-            "label": "默认面板布局",
-            "description": "选择编辑器面板的基础布局。",
-            "options": {
-              "balanced": "均衡",
-              "focus": "专注",
-              "wide": "宽屏"
-            }
-          },
-          "viewportSize": {
-            "label": "视口尺寸",
-            "description": "新页面的默认画板尺寸。"
-          },
-          "zoomStep": {
-            "label": "缩放步长",
-            "description": "滚轮或快捷键缩放时的增量。"
-          },
-          "assist": {
-            "label": "辅助覆盖层",
-            "description": "网格、对齐参考与吸附的默认设置。",
-            "options": {
-              "grid": "网格",
-              "alignment": "对齐",
-              "snap": "吸附"
-            }
-          },
-          "panInertia": {
-            "label": "平移惯性",
-            "description": "画布拖拽后的惯性效果。"
-          },
-          "resolverOrder": {
-            "label": "解析顺序",
-            "description": "存在多个注册表时的查找优先级。",
-            "options": {
-              "customMdrNative": "自定义 → MDR → 原生",
-              "mdrNative": "MDR → 原生",
-              "nativeOnly": "仅原生"
-            }
-          },
-          "customNamespaces": {
-            "label": "自定义命名空间",
-            "description": "项目组件允许使用的命名空间。"
-          },
-          "renderMode": {
-            "label": "渲染模式",
-            "description": "选择严格校验或宽松渲染。",
-            "options": {
-              "strict": "严格",
-              "tolerant": "宽松"
-            }
-          },
-          "externalProps": {
-            "label": "外部 Props",
-            "description": "允许在预览时注入运行时 Props。",
-            "options": {
-              "allow": "允许",
-              "disable": "禁用"
-            }
-          },
-          "defaultFramework": {
-            "label": "默认框架",
-            "description": "生成 UI 代码的主要目标框架。",
-            "options": {
-              "react": "React",
-              "vue": "Vue",
-              "html": "HTML"
-            }
-          },
-          "formatting": {
-            "label": "格式化",
-            "description": "代码风格与格式化偏好。",
-            "options": {
-              "prettier": "Prettier",
-              "none": "无"
-            }
-          },
-          "outputPath": {
-            "label": "输出路径",
-            "description": "生成代码保存的位置。"
-          },
-          "importStyle": {
-            "label": "导入风格",
-            "description": "生成的 import 如何组织。",
-            "options": {
-              "auto": "自动",
-              "grouped": "分组",
-              "single": "单条"
-            }
-          },
-          "metadata": {
-            "label": "元数据注释",
-            "description": "在输出中包含 MIR 元数据注释。",
-            "options": {
-              "include": "包含元数据",
-              "skip": "跳过元数据"
-            }
-          },
-          "shortcutPreset": {
-            "label": "快捷键预设",
-            "description": "默认的键盘快捷键方案。",
-            "options": {
-              "default": "默认",
-              "vim": "Vim 风格",
-              "vscode": "VS Code"
-            }
-          },
-          "diagnostics": {
-            "label": "诊断叠加层",
-            "description": "在画布上显示可视化调试提示。",
-            "options": {
-              "selectionBounds": "选区边界",
-              "perfHints": "性能提示",
-              "eventsLog": "事件日志"
-            }
-          },
-          "logLevel": {
-            "label": "日志级别",
-            "description": "控制调试日志的详细程度。",
-            "options": {
-              "error": "错误",
-              "warn": "警告",
-              "info": "信息"
-            }
-          },
-          "telemetry": {
-            "label": "遥测",
-            "description": "分享匿名使用数据。",
-            "options": {
-              "allow": "允许",
-              "disable": "禁用"
-            }
-          }
-        }
-      },
-      "project": {
-        "panels": {
-          "basics": {
-            "title": "项目基础",
-            "description": "此项目独有的标识与默认设置。"
-          },
-          "collaboration": {
-            "title": "协作",
-            "description": "访问、权限与团队工作流的默认设置。"
-          },
-          "designSystem": {
-            "title": "设计系统",
-            "description": "项目专属的 UI Token 与资源库设置。"
-          },
-          "integrations": {
-            "title": "集成与环境",
-            "description": "数据源、认证与环境相关设置。"
-          },
-          "mir": {
-            "title": "MIR 与校验",
-            "description": "Schema 约束与节点策略。"
-          },
-          "build": {
-            "title": "构建与导出",
-            "description": "项目导出配置与构建选项。"
-          }
-        },
-        "rows": {
-          "name": {
-            "label": "项目名称",
-            "description": "在导航与导出中显示的名称。"
-          },
-          "description": {
-            "label": "描述",
-            "description": "面向协作者的高层简介。"
-          },
-          "defaultRoute": {
-            "label": "默认路由",
-            "description": "打开项目时的默认入口路径。"
-          },
-          "timezone": {
-            "label": "时区",
-            "description": "用于日志、调度与时间戳。",
-            "options": {
-              "utc": "UTC",
-              "utcMinus5": "UTC-5（纽约）",
-              "utcPlus1": "UTC+1（柏林）",
-              "utcPlus8": "UTC+8（上海）"
-            }
-          },
-          "defaultRole": {
-            "label": "默认角色",
-            "description": "新协作者默认授予的角色。",
-            "options": {
-              "viewer": "查看者",
-              "editor": "编辑者",
-              "admin": "管理员"
-            }
-          },
-          "previewAccess": {
-            "label": "预览访问",
-            "description": "谁可以打开预览链接。",
-            "options": {
-              "restricted": "受限",
-              "public": "任何拥有链接的人"
-            }
-          },
-          "auditRetention": {
-            "label": "审计保留（天）",
-            "description": "审计事件的保留时长。"
-          },
-          "notifications": {
-            "label": "通知",
-            "description": "默认的通知渠道。",
-            "options": {
-              "mentions": "提及",
-              "builds": "构建",
-              "deployments": "部署"
-            }
-          },
-          "themeTokenSet": {
-            "label": "主题 Token 集",
-            "description": "用于渲染颜色和间距的 Token 包。",
-            "options": {
-              "mdrDefault": "MDR 默认",
-              "mdrMidnight": "MDR 午夜",
-              "mdrSunrise": "MDR 日出"
-            }
-          },
-          "componentLibraryVersion": {
-            "label": "组件库版本",
-            "description": "固定使用的 MDR 共享组件版本。",
-            "options": {
-              "v142Stable": "v1.4.2（稳定）",
-              "v150Beta": "v1.5.0（Beta）"
-            }
-          },
-          "assetHost": {
-            "label": "资源 Host",
-            "description": "主要 CDN 或资源桶的 URL。"
-          },
-          "fontPack": {
-            "label": "字体包",
-            "description": "设计系统可用的字体族。"
-          },
-          "iconSet": {
-            "label": "图标集",
-            "description": "UI 模板的默认图标库。"
-          },
-          "apiBase": {
-            "label": "API 基础 URL",
-            "description": "数据请求的主要 API 端点。"
-          },
-          "authMode": {
-            "label": "认证模式",
-            "description": "预览使用的认证流程。",
-            "options": {
-              "oauth": "OAuth",
-              "apiKey": "API 密钥",
-              "none": "无"
-            }
-          },
-          "envPrefix": {
-            "label": "环境变量前缀",
-            "description": "注入环境变量时使用的前缀。"
-          },
-          "deploymentTarget": {
-            "label": "部署目标",
-            "description": "发布构建的默认环境。",
-            "options": {
-              "staging": "预发布",
-              "production": "生产",
-              "preview": "预览"
-            }
-          },
-          "schemaVersion": {
-            "label": "Schema 版本",
-            "description": "此项目固定使用的 MIR Schema 版本。",
-            "options": {
-              "v10Stable": "1.0（稳定）",
-              "v11Preview": "1.1（预览）"
-            }
-          },
-          "strictness": {
-            "label": "校验严格度",
-            "description": "数值越高，约束规则越严格。"
-          },
-          "customNodes": {
-            "label": "自定义节点",
-            "description": "节点图中允许的自定义节点类型。",
-            "options": {
-              "http": "HTTP",
-              "transform": "转换",
-              "condition": "条件",
-              "loop": "循环"
-            }
-          },
-          "autoMigrate": {
-            "label": "自动迁移",
-            "description": "Schema 更新时自动迁移 MIR。",
-            "options": {
-              "enable": "启用自动迁移",
-              "disable": "禁用自动迁移"
-            }
-          },
-          "buildTarget": {
-            "label": "构建目标",
-            "description": "构建产物的主要运行环境。",
-            "options": {
-              "web": "Web",
-              "mobile": "移动端",
-              "desktop": "桌面端"
-            }
-          },
-          "outputDir": {
-            "label": "输出目录",
-            "description": "构建产物的默认输出目录。"
-          },
-          "minify": {
-            "label": "压缩",
-            "description": "导出时压缩资源。",
-            "options": {
-              "enable": "启用压缩",
-              "disable": "禁用压缩"
-            }
-          },
-          "sourceMaps": {
-            "label": "Source Map",
-            "description": "生成 Source Map 以便调试。",
-            "options": {
-              "enable": "生成 Source Map",
-              "disable": "禁用 Source Map"
-            }
-          }
-        }
-      }
-    }
-  },
-  "export": {
-    "title": "导出代码",
-    "mir": {
-      "title": "MIR",
-      "description": "当前项目的 MIR JSON（临时页）",
-      "empty": "暂无 MIR（先进入蓝图编辑器创建组件）"
-    },
-    "react": {
-      "title": "React",
-      "description": "基于当前 MIR 生成的 React 组件代码",
-      "empty": "暂无 React 代码（先生成 MIR）",
-      "error": "React 代码生成失败"
-    },
-    "close": "关闭",
-    "copy": "复制",
-    "copySuccess": "已复制",
-    "footer": {
-      "generator": "由 Mdr Front Engine 生成"
-    },
-    "tabs": {
-      "mir": "MIR",
-      "react": "React",
-      "vue": "Vue"
-    }
-  },
-  "blueprint": {
-    "address": {
-      "add": "添加",
-      "current": "当前地址",
-      "currentPlaceholder": "https://example.com",
-      "list": "已保存地址",
-      "new": "新地址",
-      "newPlaceholder": "输入或粘贴地址"
-    },
-    "autosave": {
-      "capabilities": {
-        "loading": "正在检查工作区能力…"
-      },
-      "status": {
-        "saving": "正在保存…",
-        "error": "保存失败，将在下次变更时重试。",
-        "workspaceSaved": "已保存到工作区。",
-        "projectSaved": "已保存到项目。",
-        "saved": "已保存。",
-        "idle": "就绪"
-      },
-      "messages": {
-        "workspaceRetry": "工作区保存失败，将在下次变更时重试。",
-        "projectRetry": "项目保存失败，将在下次变更时重试。",
-        "workspaceUnavailableUsingProject": "工作区文档保存不可用，已切换为项目保存。"
-      }
-    },
-    "canvas": {
-      "placeholderTitle": "拖拽组件到画布",
-      "placeholderDescription": "从组件库拖拽开始搭建。"
-    },
-    "inspector": {
-      "title": "检查器",
-      "toggle": "切换检查器",
-      "placeholder": "选择组件以编辑。",
-      "groups": {
-        "basic": "基础信息",
-        "style": {
-          "title": "样式",
-          "empty": "当前组件没有可配置的样式项。"
-        },
-        "triggers": {
-          "title": "触发器",
-          "empty": "暂无触发器配置，事件绑定会显示在这里。",
-          "linkConflict": "该组件同时配置了目标地址和 onClick 触发器，点击时可能会同时执行。",
-          "add": "新建触发器",
-          "delete": "删除触发器",
-          "eventLabel": "触发事件",
-          "eventHelp": "选择触发该动作的 DOM 事件。",
-          "actionLabel": "执行操作",
-          "actionHelp": "选择事件触发后要执行的操作。",
-          "toLabel": "目标地址",
-          "toPlaceholder": "https://example.com",
-          "toHelp": "外链使用 https:// 开头，内部预览路由使用 /path。",
-          "httpsOnly": "外链请使用 https:// 开头，内部链接请使用 /path。",
-          "replace": "替换历史",
-          "replaceHelp": "启用后会替换当前历史记录，而不是新增记录。",
-          "targetHelp": "导航动作使用的浏览器标签页目标。",
-          "statePlaceholder": "state（可选 JSON）",
-          "stateHelp": "可选的导航状态，支持普通文本或 JSON 字符串。",
-          "targets": {
-            "self": "_self",
-            "blank": "_blank"
-          },
-          "actions": {
-            "navigate": "跳转",
-            "executeGraph": "执行节点图"
-          },
-          "graph": {
-            "new": "新建节点图",
-            "newHelp": "创建并执行一个新的节点图。",
-            "select": "选择节点图",
-            "selectHelp": "运行一个已有的节点图。",
-            "namePlaceholder": "新节点图名称",
-            "nameHelp": "要创建的新节点图名称。",
-            "empty": "暂无可选节点图"
-          },
-          "navigation": {
-            "confirm": {
-              "title": "是否打开外部链接？",
-              "url": "URL: {{to}}",
-              "target": "打开目标: {{effectiveTarget}}",
-              "targetOverridden": "配置目标为 {{configuredTarget}}，为保护编辑器，蓝图预览将改用 {{effectiveTarget}} 打开。",
-              "replace": "替换历史: {{replace}}",
-              "source": "来源: {{nodeId}} · {{trigger}}",
-              "yes": "是",
-              "no": "否"
-            }
-          }
-        }
-      },
-      "fields": {
-        "id": {
-          "label": "组件 ID",
-          "description": "在当前蓝图中保持唯一。",
-          "duplicate": "ID 已存在。"
-        },
-        "icon": {
-          "label": "图标",
-          "empty": "未选择图标"
-        },
-        "link": {
-          "destination": "目标地址",
-          "destinationPlaceholder": "/path 或 https://example.com",
-          "target": "打开目标",
-          "rel": "Rel",
-          "title": "标题",
-          "titlePlaceholder": "打开文档"
-        }
-      },
-      "panels": {
-        "layout": {
-          "title": "布局",
-          "description": "配置 Flex/Grid 布局行为。",
-          "fields": {
-            "gap": "间距",
-            "gapHint": "输入数字（px）或 CSS 尺寸值。",
-            "flexDirection": "方向",
-            "justifyContent": "主轴对齐",
-            "alignItems": "交叉轴对齐",
-            "gridColumns": "列数",
-            "gridColumnsHint": "用于设置 gridTemplateColumns。"
-          },
-          "options": {
-            "direction": {
-              "row": "横向",
-              "rowReverse": "横向反转",
-              "column": "纵向",
-              "columnReverse": "纵向反转"
-            },
-            "justify": {
-              "start": "起始",
-              "center": "居中",
-              "end": "末端",
-              "spaceBetween": "两端对齐",
-              "spaceAround": "环绕分布",
-              "spaceEvenly": "均匀分布"
-            },
-            "align": {
-              "start": "起始",
-              "center": "居中",
-              "end": "末端",
-              "stretch": "拉伸",
-              "baseline": "基线"
-            }
-          }
-        },
-        "text": {
-          "title": "文本",
-          "description": "编辑组件显示的文本内容。",
-          "fields": {
-            "text": "文本",
-            "title": "标题",
-            "label": "标签",
-            "description": "描述"
-          }
-        }
-      },
-      "actions": {
-        "apply": "应用"
-      },
-      "iconPicker": {
-        "title": "选择图标",
-        "subtitle": "按来源与关键词筛选，后续可扩展更多图标库。",
-        "close": "关闭图标选择器",
-        "source": "来源",
-        "search": "搜索",
-        "searchPlaceholder": "输入图标名，例如 sparkles",
-        "matched": "匹配 {{count}} 个",
-        "showingRange": "显示 {{from}}-{{to}} / {{total}}",
-        "showingEmpty": "显示 0/0",
-        "empty": "未找到图标。",
-        "page": "第 {{current}}/{{total}} 页",
-        "prev": "上一页",
-        "next": "下一页",
-        "go": "跳转",
-        "preview": "预览",
-        "noIcon": "无图标",
-        "cancel": "取消",
-        "apply": "使用图标"
-      }
-    },
-    "sidebar": {
-      "title": "组件库",
-      "toggleLibrary": "切换组件库",
-      "openSearch": "搜索组件",
-      "searchPlaceholder": "搜索组件...",
-      "clearSearch": "清空搜索",
-      "collapseVariants": "收起变体",
-      "expandVariants": "展开变体"
-    },
-    "tree": {
-      "title": "组件树",
-      "collapse": "收起组件树",
-      "expand": "展开组件树",
-      "deleteSelected": "删除选中组件",
-      "empty": "暂无组件"
-    },
-    "viewport": {
-      "label": "视口",
-      "zoom": "缩放",
-      "reset": "重置视图",
-      "quickPresetMenu": "预设",
-      "size": "{{width}}x{{height}}",
-      "moreDevices": "更多设备",
-      "quickPresets": {
-        "desktop": "桌面",
-        "hd": "高清",
-        "ipad": "iPad",
-        "iphone": "iPhone",
-        "se": "iPhone SE"
-      }
-    },
-    "componentLibrary": {
-      "groups": {
-        "base": {
-          "title": "基础组件"
-        },
-        "layout": {
-          "title": "布局组件"
-        },
-        "form": {
-          "title": "表单组件"
+        "brand": {
+            "name": "MdrFrontEngine"
         },
         "nav": {
-          "title": "导航组件"
+            "community": "社区",
+            "tutorials": "教程",
+            "docs": "文档",
+            "signIn": "登录",
+            "github": "GitHub",
+            "languageSwitch": "切换语言"
         },
-        "media": {
-          "title": "媒体与嵌入"
+        "hero": {
+            "line1": {
+                "highlight": "Mdr"
+            },
+            "line2": {
+                "before": "前端",
+                "highlight": "梭哈"
+            },
+            "line3": {
+                "before": "灵感顷刻",
+                "highlight": "炼化"
+            },
+            "subtitle": "可视化设计与代码生成的一体化平台。"
         },
-        "data": {
-          "title": "数据展示"
+        "actions": {
+            "enterEditor": "进入编辑器",
+            "viewDocs": "查看文档"
         },
-        "feedback": {
-          "title": "反馈组件"
+        "mirTest": {
+            "title": "MIR 预览",
+            "exportButton": "快速导出"
+        },
+        "footer": {
+            "copy": "(c) 2026 Mdr Front Engine",
+            "placeholder": "一起走在前端路上。"
         }
-      },
-      "items": {}
     },
-    "devices": {
-      "desktopFhd": "桌面（FHD）",
-      "desktopHd": "桌面（HD）",
-      "macbookAir13": "MacBook Air 13\"",
-      "macbookPro14": "MacBook Pro 14\"",
-      "ipadPro11": "iPad Pro 11\"",
-      "ipadMini": "iPad mini",
-      "pixel8": "Pixel 8",
-      "iphone15Pro": "iPhone 15 Pro",
-      "iphone13": "iPhone 13",
-      "iphoneSe": "iPhone SE",
-      "watch41": "Apple Watch 41mm",
-      "kinds": {
-        "desktop": "桌面",
-        "laptop": "笔记本",
-        "tablet": "平板",
-        "phone": "手机",
-        "watch": "手表"
-      }
+    "community": {
+        "backHome": "返回首页",
+        "badge": "社区",
+        "title": "公开 MIR 展示",
+        "subtitle": "探索创作者分享的项目、组件与节点图。",
+        "count": "条结果",
+        "countNone": "无结果",
+        "error": {
+            "load": "加载社区项目失败。"
+        },
+        "search": {
+            "placeholder": "按标题、作者、描述搜索..."
+        },
+        "filter": {
+            "all": "全部类型",
+            "project": "项目",
+            "component": "组件",
+            "nodegraph": "节点图"
+        },
+        "sort": {
+            "latest": "最新",
+            "popular": "最热"
+        },
+        "card": {
+            "untitled": "未命名",
+            "emptyDesc": "暂无描述。",
+            "unknown": "未知"
+        },
+        "empty": {
+            "title": "没有找到公开项目",
+            "body": "试试其他关键词、切换类型筛选，或按最新排序。"
+        },
+        "pagination": {
+            "prev": "上一页",
+            "page": "第",
+            "next": "下一页"
+        },
+        "detail": {
+            "back": "返回社区",
+            "author": "作者",
+            "updated": "更新于",
+            "preview": "只读预览",
+            "mir": "MIR 文档",
+            "clone": "克隆到我的工作区",
+            "cloning": "克隆中...",
+            "error": {
+                "title": "无法加载该项目",
+                "missing": "缺少项目 ID。",
+                "load": "加载项目详情失败。",
+                "clone": "克隆项目失败。",
+                "cloneSelf": "不能从社区克隆你自己的项目。"
+            }
+        }
     },
-    "unitInput": {
-      "groups": {
-        "absoluteLength": "绝对长度",
-        "fontRelative": "字体相对长度",
-        "viewport": "视口长度",
-        "container": "容器长度",
-        "percentage": "百分比",
-        "angle": "角度",
-        "time": "时间",
-        "frequency": "频率",
-        "resolution": "分辨率",
-        "current": "当前"
-      },
-      "units": {
-        "px": "像素（CSS px，通常 1px = 1/96in）",
-        "cm": "厘米",
-        "mm": "毫米",
-        "Q": "四分之一毫米（1Q = 1/40cm）",
-        "in": "英寸",
-        "pt": "点（1pt = 1/72in）",
-        "pc": "派卡（1pc = 12pt）",
-        "em": "相对当前元素字体大小",
-        "rem": "相对根元素字体大小",
-        "ex": "相对 x-height（依字体而异）",
-        "rex": "相对根元素 x-height",
-        "cap": "相对大写字母高度（cap-height）",
-        "rcap": "相对根元素大写字母高度",
-        "ch": "相对 \"0\" 的宽度（依字体而异）",
-        "rch": "相对根元素 \"0\" 的宽度",
-        "ic": "相对全角字符宽度（依字体而异）",
-        "ric": "相对根元素全角字符宽度",
-        "lh": "相对当前元素行高",
-        "rlh": "相对根元素行高",
-        "vw": "视口宽度的 1%",
-        "vh": "视口高度的 1%",
-        "vi": "视口 inline 方向的 1%",
-        "vb": "视口 block 方向的 1%",
-        "vmin": "视口较小边的 1%",
-        "vmax": "视口较大边的 1%",
-        "svw": "Small viewport 宽度的 1%",
-        "svh": "Small viewport 高度的 1%",
-        "svi": "Small viewport inline 的 1%",
-        "svb": "Small viewport block 的 1%",
-        "lvw": "Large viewport 宽度的 1%",
-        "lvh": "Large viewport 高度的 1%",
-        "lvi": "Large viewport inline 的 1%",
-        "lvb": "Large viewport block 的 1%",
-        "dvw": "Dynamic viewport 宽度的 1%",
-        "dvh": "Dynamic viewport 高度的 1%",
-        "dvi": "Dynamic viewport inline 的 1%",
-        "dvb": "Dynamic viewport block 的 1%",
-        "cqw": "容器查询宽度的 1%",
-        "cqh": "容器查询高度的 1%",
-        "cqi": "容器查询 inline 的 1%",
-        "cqb": "容器查询 block 的 1%",
-        "cqmin": "容器较小边的 1%",
-        "cqmax": "容器较大边的 1%",
-        "%": "百分比（相对父/上下文，具体取决于属性）",
-        "deg": "角度（度）",
-        "grad": "角度（百分度）",
-        "rad": "角度（弧度）",
-        "turn": "角度（圈，1turn = 360deg）",
-        "s": "时间（秒）",
-        "ms": "时间（毫秒）",
-        "Hz": "频率（赫兹）",
-        "kHz": "频率（千赫兹）",
-        "dpi": "分辨率（每英寸点数）",
-        "dpcm": "分辨率（每厘米点数）",
-        "dppx": "分辨率（每像素点数）"
-      }
+    "editor": {
+        "home": {
+            "welcomeTitle": "欢迎回来",
+            "actions": {
+                "newProject": "新建项目"
+            },
+            "card": {
+                "untitled": "未命名",
+                "noDescription": "暂无描述",
+                "actions": "功能",
+                "moreActions": "更多操作",
+                "publish": "发布到社区",
+                "publishDisabled": "副本项目不可发布",
+                "publishDisabledReason": "克隆得到的项目不能发布到社区。",
+                "publishing": "发布中...",
+                "openCommunity": "打开社区",
+                "delete": "删除项目",
+                "deleting": "删除中...",
+                "deleteConfirm": "确定要永久删除这个项目吗？",
+                "publishFailed": "发布项目失败。",
+                "deleteFailed": "删除项目失败。"
+            }
+        },
+        "projectHome": {
+            "title": "{{name}}",
+            "subtitle": "此项目的概览与常用入口。",
+            "untitled": "未命名项目 {{id}}",
+            "fields": {
+                "id": "项目 ID",
+                "name": "项目名称",
+                "visibility": "可见性"
+            },
+            "actions": {
+                "projectInfo": "项目信息",
+                "blueprint": {
+                    "label": "蓝图",
+                    "description": "设计界面与布局结构。"
+                },
+                "component": {
+                    "label": "组件",
+                    "description": "管理可复用组件。"
+                },
+                "resources": {
+                    "label": "资源",
+                    "description": "管理素材与资源库。"
+                },
+                "nodegraph": {
+                    "label": "节点图",
+                    "description": "构建逻辑与数据流。"
+                },
+                "animation": {
+                    "label": "动画",
+                    "description": "打造动效与过渡。"
+                },
+                "testing": {
+                    "label": "测试",
+                    "description": "验证交互与流程。"
+                },
+                "export": {
+                    "label": "导出",
+                    "description": "生成并分享产物。"
+                },
+                "deployment": {
+                    "label": "部署",
+                    "description": "配置发布环境。"
+                },
+                "settings": {
+                    "label": "项目设置",
+                    "description": "管理项目配置。"
+                }
+            },
+            "visibility": {
+                "public": "公开",
+                "private": "私有",
+                "openCommunity": "打开社区",
+                "published": "已发布到社区",
+                "publish": "发布"
+            }
+        },
+        "bar": {
+            "cancel": "取消",
+            "exit": "退出",
+            "exitAria": "退出编辑器",
+            "exitTitle": "退出编辑器？",
+            "projectHome": "项目主页",
+            "exitToEditor": "返回编辑器首页",
+            "exitToHome": "返回首页"
+        },
+        "modals": {
+            "close": "关闭",
+            "actions": {
+                "cancel": "取消",
+                "create": "创建"
+            },
+            "newResource": {
+                "title": "新建资源",
+                "subtitle": "选择一种类型并开始构建",
+                "typeLabel": "类型",
+                "nameLabel": "名称",
+                "publicLabel": "创建后发布到社区"
+            },
+            "newProject": {
+                "title": "新建项目",
+                "subtitle": "开始一个新工作区。",
+                "nameLabel": "项目名称",
+                "required": "必填",
+                "namePlaceholder": "例如：营销网站",
+                "nameRequired": "项目名称为必填项。",
+                "descriptionLabel": "描述",
+                "descriptionPlaceholder": "你在构建什么？",
+                "create": "创建"
+            },
+            "newComponent": {
+                "title": "新建组件",
+                "subtitle": "定义可复用的组件。",
+                "nameLabel": "组件名称",
+                "required": "必填",
+                "namePlaceholder": "例如：PricingCard",
+                "nameRequired": "组件名称为必填项。",
+                "descriptionLabel": "描述",
+                "descriptionPlaceholder": "这个组件做什么？",
+                "create": "创建"
+            },
+            "newNodeGraph": {
+                "title": "新建节点图",
+                "subtitle": "开始一个新的逻辑流程。",
+                "nameLabel": "节点图名称",
+                "required": "必填",
+                "namePlaceholder": "例如：用户引导",
+                "nameRequired": "节点图名称为必填项。",
+                "descriptionLabel": "描述",
+                "descriptionPlaceholder": "这个流程用于什么？",
+                "create": "创建"
+            }
+        },
+        "tips": {
+            "prefix": "Tips:",
+            "items": {
+                "ux01": {
+                    "title": "先写清用户故事",
+                    "body": "在画蓝图前，先用一句话说清这个界面要帮用户完成什么。"
+                },
+                "ux02": {
+                    "title": "蓝图别太大",
+                    "body": "一个蓝图只负责一件事，复杂流程拆成几个小蓝图，画面就不会一眼看花。"
+                },
+                "ux03": {
+                    "title": "流程从结果倒推",
+                    "body": "先想清用户完成操作后的画面，再往前推每一步要发生什么。"
+                },
+                "ux04": {
+                    "title": "节点命名说人话",
+                    "body": "节点名字写成用户能懂的动作，比如“提交表单”，少用缩写。"
+                },
+                "ux05": {
+                    "title": "少拖一点线",
+                    "body": "能用分组、别名减少交叉连线的地方，就不要让画布变成“意大利面”。"
+                },
+                "ux06": {
+                    "title": "状态统一放一边",
+                    "body": "把页面状态节点尽量聚在一起，方便一眼看出有什么会变。"
+                },
+                "ux07": {
+                    "title": "常用操作放手边",
+                    "body": "把常用组件和蓝图收藏在左侧顶端，减少来回滚动找东西。"
+                },
+                "ux08": {
+                    "title": "组件预览要清晰",
+                    "body": "给自定义组件配一张好认的缩略图，下次拖拽时不会选错。"
+                },
+                "ux09": {
+                    "title": "占位文案也认真写",
+                    "body": "即便是占位文字，也用接近真实的文案，才能看出交互是不是顺畅。"
+                },
+                "ux10": {
+                    "title": "一步一保存",
+                    "body": "做完一个小修改就点一下保存或 commit，方便以后回滚。"
+                },
+                "ux11": {
+                    "title": "用颜色区分模块",
+                    "body": "给不同功能区域的节点上色，比如数据、视图、交互，用颜色帮自己记路。"
+                },
+                "ux12": {
+                    "title": "错误提示要具体",
+                    "body": "校验失败时别只写“出错了”，要告诉用户哪里错、怎么改。"
+                },
+                "ux13": {
+                    "title": "拖拽时给对齐感",
+                    "body": "开启对齐辅助线，让组件自动贴边，界面看起来更稳。"
+                },
+                "ux14": {
+                    "title": "多用布局组件",
+                    "body": "先用栅格、Flex 容器搭框架，再填细节，响应式会简单很多。"
+                },
+                "ux15": {
+                    "title": "移动端先试一次",
+                    "body": "预览时至少切一次手机尺寸，早一点发现“点不到”“挤在一起”的问题。"
+                },
+                "ux16": {
+                    "title": "按钮状态要完整",
+                    "body": "别只设计正常态，还要试一下悬停、按下、禁用，看是否一致。"
+                },
+                "ux17": {
+                    "title": "列表别一次塞满",
+                    "body": "有长列表就加分页或懒加载，别让用户滚到怀疑人生。"
+                },
+                "ux18": {
+                    "title": "加载时给点反馈",
+                    "body": "任何超过一秒的操作，都给一个明显的 loading 状态。"
+                },
+                "ux19": {
+                    "title": "表单别吓人",
+                    "body": "多段表单拆成步骤，顶部显示进度，让用户知道还差几步。"
+                },
+                "ux20": {
+                    "title": "用真实数据演练",
+                    "body": "调试时尽量连上真实结构的 mock 数据，才能发现字段命名的问题。"
+                },
+                "ux21": {
+                    "title": "复用逻辑别复制",
+                    "body": "常用逻辑抽成蓝图片段或函数节点，下次直接引用而不是复制一坨。"
+                },
+                "ux22": {
+                    "title": "边画边写备注",
+                    "body": "在关键节点旁加一条简短注释，下个月的你会感谢现在的自己。"
+                },
+                "ux23": {
+                    "title": "交互路径别绕远",
+                    "body": "从蓝图入口到结果，尽量保证用户只需要 3～5 步操作。"
+                },
+                "ux24": {
+                    "title": "空状态也要好看",
+                    "body": "列表为空时配一句温柔的提示和引导，而不是一片空白。"
+                },
+                "ux25": {
+                    "title": "默认值帮用户偷懒",
+                    "body": "给常见选项设置合理的默认值，让用户少选一步。"
+                },
+                "ux26": {
+                    "title": "危险操作要二次确认",
+                    "body": "删除、重置这类操作加个确认弹窗，并说明会带来什么后果。"
+                },
+                "ux27": {
+                    "title": "结果页面要有回路",
+                    "body": "成功页面给出“返回上一页”或“继续下一步”的按钮，别让用户只剩个关闭。"
+                },
+                "ux28": {
+                    "title": "自测一遍任务流程",
+                    "body": "发布前自己用这个界面完成一次真实任务，体验不顺的地方都记下来。"
+                },
+                "ux29": {
+                    "title": "键盘操作也要通",
+                    "body": "给常用操作配快捷键，让熟练用户不用总是去点鼠标。"
+                },
+                "ux30": {
+                    "title": "错误信息可复制",
+                    "body": "设计错误提示时考虑能不能一键复制，方便用户贴给开发排查。"
+                },
+                "ux31": {
+                    "title": "提示别挡内容",
+                    "body": "悬浮提示尽量出现在不会挡住主要信息的位置。"
+                },
+                "ux32": {
+                    "title": "滚动位置帮用户记",
+                    "body": "列表返回时尽量记住滚动位置，让用户回来的时候还在原来的地方。"
+                },
+                "ux33": {
+                    "title": "别用纯颜色当区分",
+                    "body": "颜色差异不明显时，加上图标或文字标记照顾色弱用户。"
+                },
+                "ux34": {
+                    "title": "组件命名看用途",
+                    "body": "组件名字多用“用途+场景”，比如“主按钮/对话框确认”。"
+                },
+                "ux35": {
+                    "title": "保持侧边栏干净",
+                    "body": "不常用的高级配置折叠起来，别一开始就把人吓跑。"
+                },
+                "ux36": {
+                    "title": "先做一条黄金路径",
+                    "body": "先把最典型用户的那条路径做顺，再补其他分支。"
+                },
+                "ux37": {
+                    "title": "节点顺序贴近思维",
+                    "body": "让节点从左到右按真实思考顺序排放，降低未来阅读成本。"
+                },
+                "ux38": {
+                    "title": "用分组讲故事",
+                    "body": "按“获取数据→处理数据→展示数据”的顺序分组，让蓝图像一条故事线。"
+                },
+                "ux39": {
+                    "title": "善用模板起步",
+                    "body": "类似的页面优先从模板开始改，而不是每次从空白画布开始受苦。"
+                },
+                "ux40": {
+                    "title": "设计时多问“然后呢”",
+                    "body": "每个页面都问一句，用户下一步最自然会做什么，再给他那条路。"
+                },
+                "ux41": {
+                    "title": "渐进暴露高级选项",
+                    "body": "初始界面只露出必填项，其他高级配置用“展开更多”承载。"
+                },
+                "ux42": {
+                    "title": "别让 loading 卡死",
+                    "body": "需要长时间计算的节点尽量异步，避免拖垮整个界面。"
+                },
+                "ux43": {
+                    "title": "预览环境要贴近线上",
+                    "body": "预览用的配置尽量跟线上一致，避免“上线才发现不对”。"
+                },
+                "ux44": {
+                    "title": "组件文档离画布近一点",
+                    "body": "在属性面板里直接放文档链接，让使用者不用到处翻。"
+                },
+                "ux45": {
+                    "title": "用空白引导视线",
+                    "body": "别害怕留白，让关键按钮周围多一点呼吸空间。"
+                },
+                "ux46": {
+                    "title": "默认主题别太花",
+                    "body": "主题色控制在两三种以内，让内容而不是配色成为主角。"
+                },
+                "ux47": {
+                    "title": "对齐规则要统一",
+                    "body": "一个页面里标题、正文、按钮尽量对齐在同一条基线。"
+                },
+                "ux48": {
+                    "title": "表格支持逐列操作",
+                    "body": "长表格提供按列排序和筛选，帮助用户快速找到关键数据。"
+                },
+                "ux49": {
+                    "title": "表单校验即时反馈",
+                    "body": "优先在输入时提示错误，而不是提交后一次性红一片。"
+                },
+                "ux50": {
+                    "title": "多语言预留空间",
+                    "body": "设计文案时适当预留长度，避免切换语言后布局炸裂。"
+                },
+                "ux51": {
+                    "title": "节点错误醒目但不吓人",
+                    "body": "出错节点标红即可，提示语更建议用对话式，而不是“严重错误”。"
+                },
+                "ux52": {
+                    "title": "历史版本说人话",
+                    "body": "版本备注写清“改了什么给谁用”，而不是只写“fix”。"
+                },
+                "ux53": {
+                    "title": "协作时先约命名规范",
+                    "body": "团队共用项目前先约定节点和组件命名，减少误会。"
+                },
+                "ux54": {
+                    "title": "实时协作要有存在感",
+                    "body": "在画布上显示其他协作者的光标和操作，避免互相覆盖。"
+                },
+                "ux55": {
+                    "title": "冲突解决可视化",
+                    "body": "合并改动时尽量用可视化 diff，而不是只丢一堆 JSON。"
+                },
+                "ux56": {
+                    "title": "新手看得到“下一步”",
+                    "body": "界面里总要有一个下一步建议按钮，引导新手往前走。"
+                },
+                "ux57": {
+                    "title": "减少无意义的确认框",
+                    "body": "能自动恢复的操作就别弹确认框，节省用户点击。"
+                },
+                "ux58": {
+                    "title": "常用蓝图做成库",
+                    "body": "把通用业务流程整理成蓝图库，团队共享提升速度。"
+                },
+                "ux59": {
+                    "title": "样式命名思考重用",
+                    "body": "样式命名多按语义而非颜色，比如“主操作色”，方便统一调整。"
+                },
+                "ux60": {
+                    "title": "按场景组织页面",
+                    "body": "侧边导航按“任务场景”而非“技术模块”分类，让非技术同事也能找到。"
+                },
+                "ux61": {
+                    "title": "节点配置避免长滚动",
+                    "body": "参数多时按小节折叠，别把属性面板做成新一条“长表单”。"
+                },
+                "ux62": {
+                    "title": "拖拽目标要有磁性",
+                    "body": "在可放置区域加轻微吸附感，让新手更容易放对位置。"
+                },
+                "ux63": {
+                    "title": "预览入口永远可见",
+                    "body": "保证预览按钮在任何面板展开时都能找到，减少“找按钮”时间。"
+                },
+                "ux64": {
+                    "title": "保持回退足够细",
+                    "body": "撤销粒度以“一个有意义动作”为单位，而不是几十步打包。"
+                },
+                "ux65": {
+                    "title": "导出代码前先跑一遍",
+                    "body": "导出前在编辑器里点一遍关键按钮，确认没有明显交互坑。"
+                },
+                "ux66": {
+                    "title": "接口失败也优雅",
+                    "body": "请求失败时保持原有数据，不要突然清空整页。"
+                },
+                "ux67": {
+                    "title": "加载骨架优于空白",
+                    "body": "列表和卡片加载时用骨架屏占位，比纯白屏更安心。"
+                },
+                "ux68": {
+                    "title": "提示语少用专业术语",
+                    "body": "能用“保存失败，请检查网络”就别说“请求超时”。"
+                },
+                "ux69": {
+                    "title": "按设备分组断点",
+                    "body": "响应式断点按“手机/平板/桌面”思考，而不是死记宽度数字。"
+                },
+                "ux70": {
+                    "title": "覆盖路径要可撤回",
+                    "body": "任何覆盖已有配置的操作，都提供一键回滚入口。"
+                },
+                "ux71": {
+                    "title": "默认布局照顾鼠标轨迹",
+                    "body": "把“保存”和“发布”放在常用移动路径上，让手少走弯路。"
+                },
+                "ux72": {
+                    "title": "预置几个好用的空状态",
+                    "body": "为常见场景准备空状态模板，拖上去稍微改文案就能用。"
+                },
+                "ux73": {
+                    "title": "列表操作集中在右侧",
+                    "body": "表格操作按钮统一放在一列，别散落在各个单元格。"
+                },
+                "ux74": {
+                    "title": "避免多重滚动条",
+                    "body": "尽量避免一个屏幕上出现两个以上可独立滚动的区域。"
+                },
+                "ux75": {
+                    "title": "蓝图入口位置固定",
+                    "body": "让主要入口节点始终在画布左上固定区域，方便一眼找到。"
+                },
+                "ux76": {
+                    "title": "用图标辅助理解",
+                    "body": "给重要节点类别配统一图标，久了不用看字也能分辨。"
+                },
+                "ux77": {
+                    "title": "属性面板记住上次折叠",
+                    "body": "让面板记住用户习惯折叠哪些区块，下次打开更干净。"
+                },
+                "ux78": {
+                    "title": "跳出编辑也要保存提示",
+                    "body": "用户关闭页面时若有未保存更改，温柔地提醒一声。"
+                },
+                "ux79": {
+                    "title": "用例驱动节点设计",
+                    "body": "添加新节点前先写一两个典型用例，避免配置项越堆越多。"
+                },
+                "ux80": {
+                    "title": "插件权限清晰可见",
+                    "body": "安装插件时明确说明会访问哪些数据，给用户足够安全感。"
+                },
+                "ux81": {
+                    "title": "调试面板与画布并排",
+                    "body": "调试信息尽量与画布同屏出现，避免来回切换视角。"
+                },
+                "ux82": {
+                    "title": "日志按用户任务过滤",
+                    "body": "调试日志支持按用户会话或操作链路过滤，快速定位问题。"
+                },
+                "ux83": {
+                    "title": "Mock 数据别太完美",
+                    "body": "测试数据故意放一点异常值，看看界面是否还能稳住。"
+                },
+                "ux84": {
+                    "title": "慢接口提前标记",
+                    "body": "对已知耗时长的节点加标识，提醒设计时尽量别串太多在一起。"
+                },
+                "ux85": {
+                    "title": "动画只为强化反馈",
+                    "body": "动画只用来说明状态变化，避免为了好看而让操作拖沓。"
+                },
+                "ux86": {
+                    "title": "颜色含义保持一致",
+                    "body": "一个项目里，绿色永远代表成功，红色永远代表危险，不要混用。"
+                },
+                "ux87": {
+                    "title": "导航层级控制在三层内",
+                    "body": "菜单层级超过三层时考虑重构信息架构。"
+                },
+                "ux88": {
+                    "title": "搜索支持模糊匹配",
+                    "body": "节点和组件搜索支持拼音、别名或模糊匹配，照顾不同习惯。"
+                },
+                "ux89": {
+                    "title": "帮助入口就近放",
+                    "body": "复杂面板旁放一个“小问号”，跳到对应文档，不用用户自己去找。"
+                },
+                "ux90": {
+                    "title": "导出配置可分享",
+                    "body": "导出的构建配置允许一键分享给同事，减少口头对齐。"
+                },
+                "ux91": {
+                    "title": "首屏只做一件事",
+                    "body": "用户进入编辑器后，优先引导完成一个简单但完整的小任务。"
+                },
+                "ux92": {
+                    "title": "默认项目给出参考",
+                    "body": "新建工作区时附带一个可删除的示例项目，帮新手快速上手。"
+                },
+                "ux93": {
+                    "title": "操作历史可搜索",
+                    "body": "在复杂调试场景中，让用户能按关键字搜到曾经做过的操作。"
+                },
+                "ux94": {
+                    "title": "蓝图大小随内容自适应",
+                    "body": "自动调整画布缩放，让整体结构一开始就能看全。"
+                },
+                "ux95": {
+                    "title": "导出代码含注释",
+                    "body": "生成的代码里适当保留和蓝图对应的注释，方便开发者二次修改。"
+                },
+                "ux96": {
+                    "title": "失败案例也写进文档",
+                    "body": "在文档里写清“不要这样用”的例子，少踩重复的坑。"
+                },
+                "ux97": {
+                    "title": "保持一条安全回路",
+                    "body": "无论设计多复杂，都确保用户有办法“回到主页”或“撤销操作”。"
+                },
+                "ux98": {
+                    "title": "表单默认按回车提交",
+                    "body": "对常见表单开启回车提交，让键盘用户更顺手。"
+                },
+                "ux99": {
+                    "title": "节点面板可按角色切换",
+                    "body": "给设计、开发、运营不同角色提供不同视图，减少信息噪音。"
+                },
+                "ux100": {
+                    "title": "尊重用户已有习惯",
+                    "body": "布局和交互尽量贴近用户熟悉的模式，让迁移成本更低。"
+                }
+            }
+        },
+        "settings": {
+            "actions": {
+                "exit": "退出设置"
+            },
+            "editorPage": {
+                "title": "编辑器设置",
+                "subtitle": "对每个项目和新工作区生效的全局默认值。"
+            },
+            "projectPage": {
+                "title": "项目设置",
+                "subtitle": "项目专属配置，并可选覆盖全局默认值。",
+                "tabs": {
+                    "project": "项目设置",
+                    "global": "全局默认值"
+                },
+                "overrides": {
+                    "title": "覆盖",
+                    "body": "切换某一行即可为此项目覆盖对应的全局默认值。"
+                }
+            },
+            "overrides": {
+                "toggle": {
+                    "on": "项目覆盖",
+                    "off": "使用全局"
+                },
+                "labels": {
+                    "global": "全局：{{value}}",
+                    "effective": "生效：{{value}}"
+                }
+            },
+            "global": {
+                "panels": {
+                    "appearance": {
+                        "title": "外观与语言",
+                        "description": "影响所有工作区编辑器外观与体验的默认设置。"
+                    },
+                    "behavior": {
+                        "title": "编辑器行为",
+                        "description": "控制保存、确认提示和工作管理方式。"
+                    },
+                    "blueprint": {
+                        "title": "蓝图默认值",
+                        "description": "创建或打开新蓝图时应用的默认设置。"
+                    },
+                    "components": {
+                        "title": "组件与渲染",
+                        "description": "控制 MIR 解析与渲染组件的方式。"
+                    },
+                    "codegen": {
+                        "title": "代码生成",
+                        "description": "导出代码与构建产物的默认设置。"
+                    },
+                    "shortcuts": {
+                        "title": "快捷键与诊断",
+                        "description": "提升效率的设置与调试叠加层。"
+                    }
+                },
+                "rows": {
+                    "language": {
+                        "label": "界面语言",
+                        "description": "用于菜单、面板和提示的主语言。",
+                        "options": {
+                            "en": "English",
+                            "zhCN": "简体中文"
+                        }
+                    },
+                    "theme": {
+                        "label": "主题偏好",
+                        "description": "选择编辑器默认的颜色模式。",
+                        "options": {
+                            "home": "跟随主页",
+                            "light": "浅色",
+                            "dark": "深色"
+                        }
+                    },
+                    "density": {
+                        "label": "密度",
+                        "description": "调整工作区的间距与紧凑程度。",
+                        "options": {
+                            "comfortable": "舒适",
+                            "compact": "紧凑"
+                        }
+                    },
+                    "fontScale": {
+                        "label": "字体缩放",
+                        "description": "缩放整个编辑器界面的文字大小。"
+                    },
+                    "autosaveInterval": {
+                        "label": "自动保存间隔（秒）",
+                        "description": "自动保存更改的时间间隔。"
+                    },
+                    "undoSteps": {
+                        "label": "撤销步数",
+                        "description": "撤销栈中保存的最大步数。"
+                    },
+                    "confirmPrompts": {
+                        "label": "确认提示",
+                        "description": "何时显示确认对话框。",
+                        "options": {
+                            "delete": "删除",
+                            "reset": "重置",
+                            "leave": "离开"
+                        }
+                    },
+                    "panelLayout": {
+                        "label": "默认面板布局",
+                        "description": "选择编辑器面板的基础布局。",
+                        "options": {
+                            "balanced": "均衡",
+                            "focus": "专注",
+                            "wide": "宽屏"
+                        }
+                    },
+                    "viewportSize": {
+                        "label": "视口尺寸",
+                        "description": "新页面的默认画板尺寸。"
+                    },
+                    "zoomStep": {
+                        "label": "缩放步长",
+                        "description": "滚轮或快捷键缩放时的增量。"
+                    },
+                    "assist": {
+                        "label": "辅助覆盖层",
+                        "description": "网格、对齐参考与吸附的默认设置。",
+                        "options": {
+                            "grid": "网格",
+                            "alignment": "对齐",
+                            "snap": "吸附"
+                        }
+                    },
+                    "panInertia": {
+                        "label": "平移惯性",
+                        "description": "画布拖拽后的惯性效果。"
+                    },
+                    "resolverOrder": {
+                        "label": "解析顺序",
+                        "description": "存在多个注册表时的查找优先级。",
+                        "options": {
+                            "customMdrNative": "自定义 → MDR → 原生",
+                            "mdrNative": "MDR → 原生",
+                            "nativeOnly": "仅原生"
+                        }
+                    },
+                    "customNamespaces": {
+                        "label": "自定义命名空间",
+                        "description": "项目组件允许使用的命名空间。"
+                    },
+                    "renderMode": {
+                        "label": "渲染模式",
+                        "description": "选择严格校验或宽松渲染。",
+                        "options": {
+                            "strict": "严格",
+                            "tolerant": "宽松"
+                        }
+                    },
+                    "externalProps": {
+                        "label": "外部 Props",
+                        "description": "允许在预览时注入运行时 Props。",
+                        "options": {
+                            "allow": "允许",
+                            "disable": "禁用"
+                        }
+                    },
+                    "defaultFramework": {
+                        "label": "默认框架",
+                        "description": "生成 UI 代码的主要目标框架。",
+                        "options": {
+                            "react": "React",
+                            "vue": "Vue",
+                            "html": "HTML"
+                        }
+                    },
+                    "formatting": {
+                        "label": "格式化",
+                        "description": "代码风格与格式化偏好。",
+                        "options": {
+                            "prettier": "Prettier",
+                            "none": "无"
+                        }
+                    },
+                    "outputPath": {
+                        "label": "输出路径",
+                        "description": "生成代码保存的位置。"
+                    },
+                    "importStyle": {
+                        "label": "导入风格",
+                        "description": "生成的 import 如何组织。",
+                        "options": {
+                            "auto": "自动",
+                            "grouped": "分组",
+                            "single": "单条"
+                        }
+                    },
+                    "metadata": {
+                        "label": "元数据注释",
+                        "description": "在输出中包含 MIR 元数据注释。",
+                        "options": {
+                            "include": "包含元数据",
+                            "skip": "跳过元数据"
+                        }
+                    },
+                    "shortcutPreset": {
+                        "label": "快捷键预设",
+                        "description": "默认的键盘快捷键方案。",
+                        "options": {
+                            "default": "默认",
+                            "vim": "Vim 风格",
+                            "vscode": "VS Code"
+                        }
+                    },
+                    "diagnostics": {
+                        "label": "诊断叠加层",
+                        "description": "在画布上显示可视化调试提示。",
+                        "options": {
+                            "selectionBounds": "选区边界",
+                            "perfHints": "性能提示",
+                            "eventsLog": "事件日志"
+                        }
+                    },
+                    "logLevel": {
+                        "label": "日志级别",
+                        "description": "控制调试日志的详细程度。",
+                        "options": {
+                            "error": "错误",
+                            "warn": "警告",
+                            "info": "信息"
+                        }
+                    },
+                    "telemetry": {
+                        "label": "遥测",
+                        "description": "分享匿名使用数据。",
+                        "options": {
+                            "allow": "允许",
+                            "disable": "禁用"
+                        }
+                    }
+                }
+            },
+            "project": {
+                "panels": {
+                    "basics": {
+                        "title": "项目基础",
+                        "description": "此项目独有的标识与默认设置。"
+                    },
+                    "collaboration": {
+                        "title": "协作",
+                        "description": "访问、权限与团队工作流的默认设置。"
+                    },
+                    "designSystem": {
+                        "title": "设计系统",
+                        "description": "项目专属的 UI Token 与资源库设置。"
+                    },
+                    "integrations": {
+                        "title": "集成与环境",
+                        "description": "数据源、认证与环境相关设置。"
+                    },
+                    "mir": {
+                        "title": "MIR 与校验",
+                        "description": "Schema 约束与节点策略。"
+                    },
+                    "build": {
+                        "title": "构建与导出",
+                        "description": "项目导出配置与构建选项。"
+                    }
+                },
+                "rows": {
+                    "name": {
+                        "label": "项目名称",
+                        "description": "在导航与导出中显示的名称。"
+                    },
+                    "description": {
+                        "label": "描述",
+                        "description": "面向协作者的高层简介。"
+                    },
+                    "defaultRoute": {
+                        "label": "默认路由",
+                        "description": "打开项目时的默认入口路径。"
+                    },
+                    "timezone": {
+                        "label": "时区",
+                        "description": "用于日志、调度与时间戳。",
+                        "options": {
+                            "utc": "UTC",
+                            "utcMinus5": "UTC-5（纽约）",
+                            "utcPlus1": "UTC+1（柏林）",
+                            "utcPlus8": "UTC+8（上海）"
+                        }
+                    },
+                    "defaultRole": {
+                        "label": "默认角色",
+                        "description": "新协作者默认授予的角色。",
+                        "options": {
+                            "viewer": "查看者",
+                            "editor": "编辑者",
+                            "admin": "管理员"
+                        }
+                    },
+                    "previewAccess": {
+                        "label": "预览访问",
+                        "description": "谁可以打开预览链接。",
+                        "options": {
+                            "restricted": "受限",
+                            "public": "任何拥有链接的人"
+                        }
+                    },
+                    "auditRetention": {
+                        "label": "审计保留（天）",
+                        "description": "审计事件的保留时长。"
+                    },
+                    "notifications": {
+                        "label": "通知",
+                        "description": "默认的通知渠道。",
+                        "options": {
+                            "mentions": "提及",
+                            "builds": "构建",
+                            "deployments": "部署"
+                        }
+                    },
+                    "themeTokenSet": {
+                        "label": "主题 Token 集",
+                        "description": "用于渲染颜色和间距的 Token 包。",
+                        "options": {
+                            "mdrDefault": "MDR 默认",
+                            "mdrMidnight": "MDR 午夜",
+                            "mdrSunrise": "MDR 日出"
+                        }
+                    },
+                    "componentLibraryVersion": {
+                        "label": "组件库版本",
+                        "description": "固定使用的 MDR 共享组件版本。",
+                        "options": {
+                            "v142Stable": "v1.4.2（稳定）",
+                            "v150Beta": "v1.5.0（Beta）"
+                        }
+                    },
+                    "assetHost": {
+                        "label": "资源 Host",
+                        "description": "主要 CDN 或资源桶的 URL。"
+                    },
+                    "fontPack": {
+                        "label": "字体包",
+                        "description": "设计系统可用的字体族。"
+                    },
+                    "iconSet": {
+                        "label": "图标集",
+                        "description": "UI 模板的默认图标库。"
+                    },
+                    "apiBase": {
+                        "label": "API 基础 URL",
+                        "description": "数据请求的主要 API 端点。"
+                    },
+                    "authMode": {
+                        "label": "认证模式",
+                        "description": "预览使用的认证流程。",
+                        "options": {
+                            "oauth": "OAuth",
+                            "apiKey": "API 密钥",
+                            "none": "无"
+                        }
+                    },
+                    "envPrefix": {
+                        "label": "环境变量前缀",
+                        "description": "注入环境变量时使用的前缀。"
+                    },
+                    "deploymentTarget": {
+                        "label": "部署目标",
+                        "description": "发布构建的默认环境。",
+                        "options": {
+                            "staging": "预发布",
+                            "production": "生产",
+                            "preview": "预览"
+                        }
+                    },
+                    "schemaVersion": {
+                        "label": "Schema 版本",
+                        "description": "此项目固定使用的 MIR Schema 版本。",
+                        "options": {
+                            "v10Stable": "1.0（稳定）",
+                            "v11Preview": "1.1（预览）"
+                        }
+                    },
+                    "strictness": {
+                        "label": "校验严格度",
+                        "description": "数值越高，约束规则越严格。"
+                    },
+                    "customNodes": {
+                        "label": "自定义节点",
+                        "description": "节点图中允许的自定义节点类型。",
+                        "options": {
+                            "http": "HTTP",
+                            "transform": "转换",
+                            "condition": "条件",
+                            "loop": "循环"
+                        }
+                    },
+                    "autoMigrate": {
+                        "label": "自动迁移",
+                        "description": "Schema 更新时自动迁移 MIR。",
+                        "options": {
+                            "enable": "启用自动迁移",
+                            "disable": "禁用自动迁移"
+                        }
+                    },
+                    "buildTarget": {
+                        "label": "构建目标",
+                        "description": "构建产物的主要运行环境。",
+                        "options": {
+                            "web": "Web",
+                            "mobile": "移动端",
+                            "desktop": "桌面端"
+                        }
+                    },
+                    "outputDir": {
+                        "label": "输出目录",
+                        "description": "构建产物的默认输出目录。"
+                    },
+                    "minify": {
+                        "label": "压缩",
+                        "description": "导出时压缩资源。",
+                        "options": {
+                            "enable": "启用压缩",
+                            "disable": "禁用压缩"
+                        }
+                    },
+                    "sourceMaps": {
+                        "label": "Source Map",
+                        "description": "生成 Source Map 以便调试。",
+                        "options": {
+                            "enable": "生成 Source Map",
+                            "disable": "禁用 Source Map"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "export": {
+        "title": "导出代码",
+        "mir": {
+            "title": "MIR",
+            "description": "当前项目的 MIR JSON（临时页）",
+            "empty": "暂无 MIR（先进入蓝图编辑器创建组件）"
+        },
+        "react": {
+            "title": "React",
+            "description": "基于当前 MIR 生成的 React 组件代码",
+            "empty": "暂无 React 代码（先生成 MIR）",
+            "error": "React 代码生成失败"
+        },
+        "close": "关闭",
+        "copy": "复制",
+        "copySuccess": "已复制",
+        "footer": {
+            "generator": "由 Mdr Front Engine 生成"
+        },
+        "tabs": {
+            "mir": "MIR",
+            "react": "React",
+            "vue": "Vue"
+        }
+    },
+    "blueprint": {
+        "address": {
+            "add": "添加",
+            "current": "当前地址",
+            "currentPlaceholder": "https://example.com",
+            "list": "已保存地址",
+            "new": "新地址",
+            "newPlaceholder": "输入或粘贴地址"
+        },
+        "autosave": {
+            "capabilities": {
+                "loading": "正在检查工作区能力…"
+            },
+            "status": {
+                "saving": "正在保存…",
+                "error": "保存失败，将在下次变更时重试。",
+                "workspaceSaved": "已保存到工作区。",
+                "projectSaved": "已保存到项目。",
+                "saved": "已保存。",
+                "idle": "就绪"
+            },
+            "messages": {
+                "workspaceRetry": "工作区保存失败，将在下次变更时重试。",
+                "projectRetry": "项目保存失败，将在下次变更时重试。",
+                "workspaceUnavailableUsingProject": "工作区文档保存不可用，已切换为项目保存。"
+            }
+        },
+        "canvas": {
+            "placeholderTitle": "拖拽组件到画布",
+            "placeholderDescription": "从组件库拖拽开始搭建。"
+        },
+        "inspector": {
+            "title": "检查器",
+            "toggle": "切换检查器",
+            "placeholder": "选择组件以编辑。",
+            "groups": {
+                "basic": "基础信息",
+                "style": {
+                    "title": "样式",
+                    "empty": "当前组件没有可配置的样式项。"
+                },
+                "triggers": {
+                    "title": "触发器",
+                    "empty": "暂无触发器配置，事件绑定会显示在这里。",
+                    "linkConflict": "该组件同时配置了目标地址和 onClick 触发器，点击时可能会同时执行。",
+                    "add": "新建触发器",
+                    "delete": "删除触发器",
+                    "eventLabel": "触发事件",
+                    "eventHelp": "选择触发该动作的 DOM 事件。",
+                    "actionLabel": "执行操作",
+                    "actionHelp": "选择事件触发后要执行的操作。",
+                    "toLabel": "目标地址",
+                    "toPlaceholder": "https://example.com",
+                    "toHelp": "外链使用 https:// 开头，内部预览路由使用 /path。",
+                    "httpsOnly": "外链请使用 https:// 开头，内部链接请使用 /path。",
+                    "replace": "替换历史",
+                    "replaceHelp": "启用后会替换当前历史记录，而不是新增记录。",
+                    "targetHelp": "导航动作使用的浏览器标签页目标。",
+                    "statePlaceholder": "state（可选 JSON）",
+                    "stateHelp": "可选的导航状态，支持普通文本或 JSON 字符串。",
+                    "targets": {
+                        "self": "_self",
+                        "blank": "_blank"
+                    },
+                    "actions": {
+                        "navigate": "跳转",
+                        "executeGraph": "执行节点图"
+                    },
+                    "graph": {
+                        "new": "新建节点图",
+                        "newHelp": "创建并执行一个新的节点图。",
+                        "select": "选择节点图",
+                        "selectHelp": "运行一个已有的节点图。",
+                        "namePlaceholder": "新节点图名称",
+                        "nameHelp": "要创建的新节点图名称。",
+                        "empty": "暂无可选节点图"
+                    },
+                    "navigation": {
+                        "confirm": {
+                            "title": "是否打开外部链接？",
+                            "url": "URL: {{to}}",
+                            "target": "打开目标: {{effectiveTarget}}",
+                            "targetOverridden": "配置目标为 {{configuredTarget}}，为保护编辑器，蓝图预览将改用 {{effectiveTarget}} 打开。",
+                            "replace": "替换历史: {{replace}}",
+                            "source": "来源: {{nodeId}} · {{trigger}}",
+                            "yes": "是",
+                            "no": "否"
+                        }
+                    }
+                }
+            },
+            "fields": {
+                "id": {
+                    "label": "组件 ID",
+                    "description": "在当前蓝图中保持唯一。",
+                    "duplicate": "ID 已存在。"
+                },
+                "icon": {
+                    "label": "图标",
+                    "empty": "未选择图标"
+                },
+                "link": {
+                    "destination": "目标地址",
+                    "destinationPlaceholder": "/path 或 https://example.com",
+                    "target": "打开目标",
+                    "rel": "Rel",
+                    "title": "标题",
+                    "titlePlaceholder": "打开文档"
+                }
+            },
+            "panels": {
+                "layout": {
+                    "title": "布局",
+                    "description": "配置 Flex/Grid 布局行为。",
+                    "fields": {
+                        "gap": "间距",
+                        "gapHint": "输入数字（px）或 CSS 尺寸值。",
+                        "flexDirection": "方向",
+                        "justifyContent": "主轴对齐",
+                        "alignItems": "交叉轴对齐",
+                        "gridColumns": "列数",
+                        "gridColumnsHint": "用于设置 gridTemplateColumns。"
+                    },
+                    "options": {
+                        "direction": {
+                            "row": "横向",
+                            "rowReverse": "横向反转",
+                            "column": "纵向",
+                            "columnReverse": "纵向反转"
+                        },
+                        "justify": {
+                            "start": "起始",
+                            "center": "居中",
+                            "end": "末端",
+                            "spaceBetween": "两端对齐",
+                            "spaceAround": "环绕分布",
+                            "spaceEvenly": "均匀分布"
+                        },
+                        "align": {
+                            "start": "起始",
+                            "center": "居中",
+                            "end": "末端",
+                            "stretch": "拉伸",
+                            "baseline": "基线"
+                        }
+                    }
+                },
+                "text": {
+                    "title": "文本",
+                    "description": "编辑组件显示的文本内容。",
+                    "fields": {
+                        "text": "文本",
+                        "title": "标题",
+                        "label": "标签",
+                        "description": "描述"
+                    }
+                }
+            },
+            "actions": {
+                "apply": "应用"
+            },
+            "iconPicker": {
+                "title": "选择图标",
+                "subtitle": "按来源与关键词筛选，后续可扩展更多图标库。",
+                "close": "关闭图标选择器",
+                "source": "来源",
+                "search": "搜索",
+                "searchPlaceholder": "输入图标名，例如 sparkles",
+                "matched": "匹配 {{count}} 个",
+                "showingRange": "显示 {{from}}-{{to}} / {{total}}",
+                "showingEmpty": "显示 0/0",
+                "empty": "未找到图标。",
+                "page": "第 {{current}}/{{total}} 页",
+                "prev": "上一页",
+                "next": "下一页",
+                "go": "跳转",
+                "preview": "预览",
+                "noIcon": "无图标",
+                "cancel": "取消",
+                "apply": "使用图标"
+            }
+        },
+        "sidebar": {
+            "title": "组件库",
+            "toggleLibrary": "切换组件库",
+            "openSearch": "搜索组件",
+            "searchPlaceholder": "搜索组件...",
+            "clearSearch": "清空搜索",
+            "collapseVariants": "收起变体",
+            "expandVariants": "展开变体"
+        },
+        "tree": {
+            "title": "组件树",
+            "collapse": "收起组件树",
+            "expand": "展开组件树",
+            "deleteSelected": "删除选中组件",
+            "empty": "暂无组件"
+        },
+        "viewport": {
+            "label": "视口",
+            "zoom": "缩放",
+            "reset": "重置视图",
+            "quickPresetMenu": "预设",
+            "size": "{{width}}x{{height}}",
+            "moreDevices": "更多设备",
+            "quickPresets": {
+                "desktop": "桌面",
+                "hd": "高清",
+                "ipad": "iPad",
+                "iphone": "iPhone",
+                "se": "iPhone SE"
+            }
+        },
+        "componentLibrary": {
+            "groups": {
+                "base": {
+                    "title": "基础组件"
+                },
+                "layout": {
+                    "title": "布局组件"
+                },
+                "form": {
+                    "title": "表单组件"
+                },
+                "nav": {
+                    "title": "导航组件"
+                },
+                "media": {
+                    "title": "媒体与嵌入"
+                },
+                "data": {
+                    "title": "数据展示"
+                },
+                "feedback": {
+                    "title": "反馈组件"
+                }
+            },
+            "items": {}
+        },
+        "devices": {
+            "desktopFhd": "桌面（FHD）",
+            "desktopHd": "桌面（HD）",
+            "macbookAir13": "MacBook Air 13\"",
+            "macbookPro14": "MacBook Pro 14\"",
+            "ipadPro11": "iPad Pro 11\"",
+            "ipadMini": "iPad mini",
+            "pixel8": "Pixel 8",
+            "iphone15Pro": "iPhone 15 Pro",
+            "iphone13": "iPhone 13",
+            "iphoneSe": "iPhone SE",
+            "watch41": "Apple Watch 41mm",
+            "kinds": {
+                "desktop": "桌面",
+                "laptop": "笔记本",
+                "tablet": "平板",
+                "phone": "手机",
+                "watch": "手表"
+            }
+        },
+        "unitInput": {
+            "groups": {
+                "absoluteLength": "绝对长度",
+                "fontRelative": "字体相对长度",
+                "viewport": "视口长度",
+                "container": "容器长度",
+                "percentage": "百分比",
+                "angle": "角度",
+                "time": "时间",
+                "frequency": "频率",
+                "resolution": "分辨率",
+                "current": "当前"
+            },
+            "units": {
+                "px": "像素（CSS px，通常 1px = 1/96in）",
+                "cm": "厘米",
+                "mm": "毫米",
+                "Q": "四分之一毫米（1Q = 1/40cm）",
+                "in": "英寸",
+                "pt": "点（1pt = 1/72in）",
+                "pc": "派卡（1pc = 12pt）",
+                "em": "相对当前元素字体大小",
+                "rem": "相对根元素字体大小",
+                "ex": "相对 x-height（依字体而异）",
+                "rex": "相对根元素 x-height",
+                "cap": "相对大写字母高度（cap-height）",
+                "rcap": "相对根元素大写字母高度",
+                "ch": "相对 \"0\" 的宽度（依字体而异）",
+                "rch": "相对根元素 \"0\" 的宽度",
+                "ic": "相对全角字符宽度（依字体而异）",
+                "ric": "相对根元素全角字符宽度",
+                "lh": "相对当前元素行高",
+                "rlh": "相对根元素行高",
+                "vw": "视口宽度的 1%",
+                "vh": "视口高度的 1%",
+                "vi": "视口 inline 方向的 1%",
+                "vb": "视口 block 方向的 1%",
+                "vmin": "视口较小边的 1%",
+                "vmax": "视口较大边的 1%",
+                "svw": "Small viewport 宽度的 1%",
+                "svh": "Small viewport 高度的 1%",
+                "svi": "Small viewport inline 的 1%",
+                "svb": "Small viewport block 的 1%",
+                "lvw": "Large viewport 宽度的 1%",
+                "lvh": "Large viewport 高度的 1%",
+                "lvi": "Large viewport inline 的 1%",
+                "lvb": "Large viewport block 的 1%",
+                "dvw": "Dynamic viewport 宽度的 1%",
+                "dvh": "Dynamic viewport 高度的 1%",
+                "dvi": "Dynamic viewport inline 的 1%",
+                "dvb": "Dynamic viewport block 的 1%",
+                "cqw": "容器查询宽度的 1%",
+                "cqh": "容器查询高度的 1%",
+                "cqi": "容器查询 inline 的 1%",
+                "cqb": "容器查询 block 的 1%",
+                "cqmin": "容器较小边的 1%",
+                "cqmax": "容器较大边的 1%",
+                "%": "百分比（相对父/上下文，具体取决于属性）",
+                "deg": "角度（度）",
+                "grad": "角度（百分度）",
+                "rad": "角度（弧度）",
+                "turn": "角度（圈，1turn = 360deg）",
+                "s": "时间（秒）",
+                "ms": "时间（毫秒）",
+                "Hz": "频率（赫兹）",
+                "kHz": "频率（千赫兹）",
+                "dpi": "分辨率（每英寸点数）",
+                "dpcm": "分辨率（每厘米点数）",
+                "dppx": "分辨率（每像素点数）"
+            }
+        }
+    },
+    "auth": {
+        "title": "账号访问",
+        "subtitle": "登录后管理你的工作区设置与资源。",
+        "tabs": {
+            "login": "登录",
+            "register": "注册"
+        },
+        "fields": {
+            "name": "姓名",
+            "email": "邮箱",
+            "password": "密码",
+            "description": "描述"
+        },
+        "placeholders": {
+            "name": "例如：陈晓",
+            "email": "name@company.com",
+            "password": "至少 8 位字符",
+            "description": "介绍你的职责或方向"
+        },
+        "hints": {
+            "password": "建议至少 8 位，包含字母与数字。"
+        },
+        "actions": {
+            "login": "登录",
+            "register": "注册"
+        },
+        "panel": {
+            "title": "工作区登录",
+            "subtitle": "使用账号继续编辑。"
+        },
+        "highlights": {
+            "speedTitle": "高效协作",
+            "speedBody": "集中管理页面、实验与导出。",
+            "workspaceTitle": "有序管理",
+            "workspaceBody": "将个人与团队项目统一在同一账号下。"
+        },
+        "footer": {
+            "hint": "需要灵感？返回首页浏览。",
+            "backHome": "返回首页"
+        }
+    },
+    "profile": {
+        "subtitle": "管理你的个人信息。",
+        "sections": {
+            "identity": "身份信息",
+            "session": "会话"
+        },
+        "labels": {
+            "name": "姓名",
+            "email": "邮箱",
+            "id": "用户 ID",
+            "created": "创建时间",
+            "description": "描述",
+            "token": "Token",
+            "expires": "过期时间"
+        },
+        "actions": {
+            "refresh": "刷新",
+            "logout": "退出登录",
+            "login": "去登录",
+            "backHome": "返回首页",
+            "copyId": "复制 ID",
+            "edit": "编辑",
+            "save": "保存",
+            "cancel": "取消"
+        },
+        "edit": {
+            "title": "编辑个人信息"
+        },
+        "messages": {
+            "saved": "已保存。",
+            "copiedId": "已复制用户 ID。",
+            "copiedEmail": "已复制邮箱。",
+            "copyFailed": "复制失败。"
+        },
+        "empty": {
+            "title": "未登录",
+            "subtitle": "登录后查看个人信息。",
+            "panelTitle": "需要登录",
+            "panelBody": "登录后可查看账号信息与会话状态。"
+        },
+        "description": {
+            "empty": "暂未填写描述。"
+        }
     }
-  },
-  "auth": {
-    "title": "账号访问",
-    "subtitle": "登录后管理你的工作区设置与资源。",
-    "tabs": {
-      "login": "登录",
-      "register": "注册"
-    },
-    "fields": {
-      "name": "姓名",
-      "email": "邮箱",
-      "password": "密码",
-      "description": "描述"
-    },
-    "placeholders": {
-      "name": "例如：陈晓",
-      "email": "name@company.com",
-      "password": "至少 8 位字符",
-      "description": "介绍你的职责或方向"
-    },
-    "hints": {
-      "password": "建议至少 8 位，包含字母与数字。"
-    },
-    "actions": {
-      "login": "登录",
-      "register": "注册"
-    },
-    "panel": {
-      "title": "工作区登录",
-      "subtitle": "使用账号继续编辑。"
-    },
-    "highlights": {
-      "speedTitle": "高效协作",
-      "speedBody": "集中管理页面、实验与导出。",
-      "workspaceTitle": "有序管理",
-      "workspaceBody": "将个人与团队项目统一在同一账号下。"
-    },
-    "footer": {
-      "hint": "需要灵感？返回首页浏览。",
-      "backHome": "返回首页"
-    }
-  },
-  "profile": {
-    "subtitle": "管理你的个人信息。",
-    "sections": {
-      "identity": "身份信息",
-      "session": "会话"
-    },
-    "labels": {
-      "name": "姓名",
-      "email": "邮箱",
-      "id": "用户 ID",
-      "created": "创建时间",
-      "description": "描述",
-      "token": "Token",
-      "expires": "过期时间"
-    },
-    "actions": {
-      "refresh": "刷新",
-      "logout": "退出登录",
-      "login": "去登录",
-      "backHome": "返回首页",
-      "copyId": "复制 ID",
-      "edit": "编辑",
-      "save": "保存",
-      "cancel": "取消"
-    },
-    "edit": {
-      "title": "编辑个人信息"
-    },
-    "messages": {
-      "saved": "已保存。",
-      "copiedId": "已复制用户 ID。",
-      "copiedEmail": "已复制邮箱。",
-      "copyFailed": "复制失败。"
-    },
-    "empty": {
-      "title": "未登录",
-      "subtitle": "登录后查看个人信息。",
-      "panelTitle": "需要登录",
-      "panelBody": "登录后可查看账号信息与会话状态。"
-    },
-    "description": {
-      "empty": "暂未填写描述。"
-    }
-  }
 }

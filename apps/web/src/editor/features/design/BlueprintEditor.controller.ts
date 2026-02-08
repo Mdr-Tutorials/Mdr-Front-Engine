@@ -68,9 +68,9 @@ export const useBlueprintEditorController = () => {
     const [expandedPreviews, setExpandedPreviews] = useState<
         Record<string, boolean>
     >({});
-    const [sizeSelections, setSizeSelections] = useState<Record<string, string>>(
-        {}
-    );
+    const [sizeSelections, setSizeSelections] = useState<
+        Record<string, string>
+    >({});
     const [statusSelections, setStatusSelections] = useState<
         Record<string, number>
     >({});
@@ -81,7 +81,9 @@ export const useBlueprintEditorController = () => {
     const blueprintState = useEditorStore(
         (state) => state.blueprintStateByProject[blueprintKey]
     );
-    const setBlueprintState = useEditorStore((state) => state.setBlueprintState);
+    const setBlueprintState = useEditorStore(
+        (state) => state.setBlueprintState
+    );
     const mirDoc = useEditorStore((state) => state.mirDoc);
     const updateMirDoc = useEditorStore((state) => state.updateMirDoc);
     const workspaceId = useEditorStore((state) => state.workspaceId);
@@ -166,10 +168,13 @@ export const useBlueprintEditorController = () => {
         const linkKind = getNavigateLinkKind(to);
         if (linkKind === 'external') {
             if (typeof window === 'undefined') return;
-            const { configuredTarget, effectiveTarget, openedAsBlankForSafety } =
-                resolveNavigateTarget(params.target, {
-                    forceBlankForExternalSafety: true,
-                });
+            const {
+                configuredTarget,
+                effectiveTarget,
+                openedAsBlankForSafety,
+            } = resolveNavigateTarget(params.target, {
+                forceBlankForExternalSafety: true,
+            });
             const replace = Boolean(params.replace);
             const targetLine = openedAsBlankForSafety
                 ? t(
@@ -416,7 +421,11 @@ export const useBlueprintEditorController = () => {
             const createId = createNodeIdFactory(doc);
             const cloned = cloneNodeWithNewIds(source, createId);
             nextNodeId = cloned.id;
-            const insertedSibling = insertAfterById(doc.ui.root, nodeId, cloned);
+            const insertedSibling = insertAfterById(
+                doc.ui.root,
+                nodeId,
+                cloned
+            );
             if (insertedSibling.inserted) {
                 return {
                     ...doc,

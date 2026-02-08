@@ -8,39 +8,39 @@ MIR 是一种 JSON 格式的组件描述语言，它抽象了不同前端框架�
 
 ```json
 {
-  "$schema": "https://mdr.dev/schemas/mir/1.0.json",
-  "version": "1.0",
-  "type": "page",
-  "root": {
-    "type": "MdrContainer",
-    "props": {
-      "layout": "flex",
-      "direction": "column"
-    },
-    "children": [
-      {
-        "type": "MdrText",
+    "$schema": "https://mdr.dev/schemas/mir/1.0.json",
+    "version": "1.0",
+    "type": "page",
+    "root": {
+        "type": "MdrContainer",
         "props": {
-          "content": "Hello, MdrFrontEngine!",
-          "variant": "h1"
-        }
-      },
-      {
-        "type": "MdrButton",
-        "props": {
-          "variant": "primary",
-          "size": "medium"
+            "layout": "flex",
+            "direction": "column"
         },
-        "children": ["点击我"],
-        "events": {
-          "onClick": {
-            "type": "graph",
-            "ref": "click-handler"
-          }
-        }
-      }
-    ]
-  }
+        "children": [
+            {
+                "type": "MdrText",
+                "props": {
+                    "content": "Hello, MdrFrontEngine!",
+                    "variant": "h1"
+                }
+            },
+            {
+                "type": "MdrButton",
+                "props": {
+                    "variant": "primary",
+                    "size": "medium"
+                },
+                "children": ["点击我"],
+                "events": {
+                    "onClick": {
+                        "type": "graph",
+                        "ref": "click-handler"
+                    }
+                }
+            }
+        ]
+    }
 }
 ```
 
@@ -71,14 +71,14 @@ MIR 是一种 JSON 格式的组件描述语言，它抽象了不同前端框架�
 
 ```json
 {
-  "meta": {
-    "name": "HomePage",
-    "title": "首页",
-    "description": "应用首页",
-    "author": "MFE Team",
-    "created": "2024-01-01T00:00:00Z",
-    "modified": "2024-01-15T12:30:00Z"
-  }
+    "meta": {
+        "name": "HomePage",
+        "title": "首页",
+        "description": "应用首页",
+        "author": "MFE Team",
+        "created": "2024-01-01T00:00:00Z",
+        "modified": "2024-01-15T12:30:00Z"
+    }
 }
 ```
 
@@ -86,20 +86,20 @@ MIR 是一种 JSON 格式的组件描述语言，它抽象了不同前端框架�
 
 ```json
 {
-  "imports": [
-    {
-      "from": "@mdr/ui",
-      "components": ["MdrButton", "MdrInput"]
-    },
-    {
-      "from": "./components/CustomCard",
-      "components": ["CustomCard"]
-    },
-    {
-      "from": "antd",
-      "components": ["Table", "Modal"]
-    }
-  ]
+    "imports": [
+        {
+            "from": "@mdr/ui",
+            "components": ["MdrButton", "MdrInput"]
+        },
+        {
+            "from": "./components/CustomCard",
+            "components": ["CustomCard"]
+        },
+        {
+            "from": "antd",
+            "components": ["Table", "Modal"]
+        }
+    ]
 }
 ```
 
@@ -126,15 +126,16 @@ MIR 是一种 JSON 格式的组件描述语言，它抽象了不同前端框架�
 
 ```json
 {
-  "props": {
-    "variant": "primary",         // 静态值
-    "disabled": false,
-    "size": "medium",
-    "onClick": {                  // 函数属性
-      "$type": "function",
-      "ref": "handleClick"
+    "props": {
+        "variant": "primary", // 静态值
+        "disabled": false,
+        "size": "medium",
+        "onClick": {
+            // 函数属性
+            "$type": "function",
+            "ref": "handleClick"
+        }
     }
-  }
 }
 ```
 
@@ -144,17 +145,19 @@ MIR 是一种 JSON 格式的组件描述语言，它抽象了不同前端框架�
 
 ```json
 {
-  "children": [
-    "纯文本内容",                 // 文本节点
-    {                            // 组件节点
-      "type": "MdrIcon",
-      "props": { "name": "check" }
-    },
-    {                            // 动态内容
-      "$type": "expression",
-      "value": "user.name"
-    }
-  ]
+    "children": [
+        "纯文本内容", // 文本节点
+        {
+            // 组件节点
+            "type": "MdrIcon",
+            "props": { "name": "check" }
+        },
+        {
+            // 动态内容
+            "$type": "expression",
+            "value": "user.name"
+        }
+    ]
 }
 ```
 
@@ -162,24 +165,24 @@ MIR 是一种 JSON 格式的组件描述语言，它抽象了不同前端框架�
 
 ```json
 {
-  "events": {
-    "onClick": {
-      "type": "graph",           // 节点图
-      "ref": "click-handler"
-    },
-    "onChange": {
-      "type": "action",          // 预设操作
-      "action": "setState",
-      "params": {
-        "key": "inputValue",
-        "value": "$event.target.value"
-      }
-    },
-    "onSubmit": {
-      "type": "code",            // 代码片段
-      "code": "console.log('submitted', data)"
+    "events": {
+        "onClick": {
+            "type": "graph", // 节点图
+            "ref": "click-handler"
+        },
+        "onChange": {
+            "type": "action", // 预设操作
+            "action": "setState",
+            "params": {
+                "key": "inputValue",
+                "value": "$event.target.value"
+            }
+        },
+        "onSubmit": {
+            "type": "code", // 代码片段
+            "code": "console.log('submitted', data)"
+        }
     }
-  }
 }
 ```
 
@@ -187,21 +190,21 @@ MIR 是一种 JSON 格式的组件描述语言，它抽象了不同前端框架�
 
 ```json
 {
-  "bindings": {
-    "content": {
-      "source": "state",         // 状态绑定
-      "path": "user.name"
-    },
-    "items": {
-      "source": "api",           // API 绑定
-      "endpoint": "/api/users",
-      "path": "data.list"
-    },
-    "visible": {
-      "source": "expression",    // 表达式
-      "value": "user.role === 'admin'"
+    "bindings": {
+        "content": {
+            "source": "state", // 状态绑定
+            "path": "user.name"
+        },
+        "items": {
+            "source": "api", // API 绑定
+            "endpoint": "/api/users",
+            "path": "data.list"
+        },
+        "visible": {
+            "source": "expression", // 表达式
+            "value": "user.role === 'admin'"
+        }
     }
-  }
 }
 ```
 
@@ -209,14 +212,15 @@ MIR 是一种 JSON 格式的组件描述语言，它抽象了不同前端框架�
 
 ```json
 {
-  "condition": {
-    "type": "expression",
-    "value": "isLoggedIn",
-    "else": {                    // 可选的 else 分支
-      "type": "MdrText",
-      "props": { "content": "请先登录" }
+    "condition": {
+        "type": "expression",
+        "value": "isLoggedIn",
+        "else": {
+            // 可选的 else 分支
+            "type": "MdrText",
+            "props": { "content": "请先登录" }
+        }
     }
-  }
 }
 ```
 
@@ -224,16 +228,16 @@ MIR 是一种 JSON 格式的组件描述语言，它抽象了不同前端框架�
 
 ```json
 {
-  "loop": {
-    "source": "users",
-    "item": "user",
-    "index": "idx",
-    "key": "user.id"
-  },
-  "type": "MdrCard",
-  "props": {
-    "title": { "$type": "expression", "value": "user.name" }
-  }
+    "loop": {
+        "source": "users",
+        "item": "user",
+        "index": "idx",
+        "key": "user.id"
+    },
+    "type": "MdrCard",
+    "props": {
+        "title": { "$type": "expression", "value": "user.name" }
+    }
 }
 ```
 
@@ -257,9 +261,9 @@ MIR 使用特殊的表达式格式表示动态值：
 
 ```json
 {
-  "$type": "call",
-  "function": "formatDate",
-  "args": ["user.createdAt", "YYYY-MM-DD"]
+    "$type": "call",
+    "function": "formatDate",
+    "args": ["user.createdAt", "YYYY-MM-DD"]
 }
 ```
 
@@ -269,10 +273,10 @@ MIR 使用特殊的表达式格式表示动态值：
 
 ```json
 {
-  "props": {
-    "title": "${user.name}",        // 自动识别为模板
-    "count": "$items.length"        // 自动识别为表达式
-  }
+    "props": {
+        "title": "${user.name}", // 自动识别为模板
+        "count": "$items.length" // 自动识别为表达式
+    }
 }
 ```
 
@@ -282,40 +286,40 @@ MIR 定义了一套标准的内置组件：
 
 ### 布局组件
 
-| 组件 | 说明 | 关键属性 |
-| --- | --- | --- |
-| MdrContainer | 容器 | layout, padding, gap |
-| MdrGrid | 网格布局 | columns, rows, gap |
-| MdrFlex | 弹性布局 | direction, justify, align |
-| MdrStack | 堆叠布局 | spacing, direction |
+| 组件         | 说明     | 关键属性                  |
+| ------------ | -------- | ------------------------- |
+| MdrContainer | 容器     | layout, padding, gap      |
+| MdrGrid      | 网格布局 | columns, rows, gap        |
+| MdrFlex      | 弹性布局 | direction, justify, align |
+| MdrStack     | 堆叠布局 | spacing, direction        |
 
 ### 基础组件
 
-| 组件 | 说明 | 关键属性 |
-| --- | --- | --- |
-| MdrText | 文本 | content, variant, color |
+| 组件      | 说明 | 关键属性                |
+| --------- | ---- | ----------------------- |
+| MdrText   | 文本 | content, variant, color |
 | MdrButton | 按钮 | variant, size, disabled |
-| MdrLink | 链接 | href, target |
-| MdrImage | 图片 | src, alt, objectFit |
-| MdrIcon | 图标 | name, size, color |
+| MdrLink   | 链接 | href, target            |
+| MdrImage  | 图片 | src, alt, objectFit     |
+| MdrIcon   | 图标 | name, size, color       |
 
 ### 表单组件
 
-| 组件 | 说明 | 关键属性 |
-| --- | --- | --- |
-| MdrInput | 输入框 | type, placeholder, value |
-| MdrSelect | 下拉选择 | options, value |
-| MdrCheckbox | 复选框 | checked, label |
-| MdrRadio | 单选框 | options, value |
-| MdrTextarea | 多行输入 | rows, placeholder |
+| 组件        | 说明     | 关键属性                 |
+| ----------- | -------- | ------------------------ |
+| MdrInput    | 输入框   | type, placeholder, value |
+| MdrSelect   | 下拉选择 | options, value           |
+| MdrCheckbox | 复选框   | checked, label           |
+| MdrRadio    | 单选框   | options, value           |
+| MdrTextarea | 多行输入 | rows, placeholder        |
 
 ### 数据组件
 
-| 组件 | 说明 | 关键属性 |
-| --- | --- | --- |
+| 组件     | 说明 | 关键属性            |
+| -------- | ---- | ------------------- |
 | MdrTable | 表格 | columns, dataSource |
-| MdrList | 列表 | items, renderItem |
-| MdrCard | 卡片 | title, content |
+| MdrList  | 列表 | items, renderItem   |
+| MdrCard  | 卡片 | title, content      |
 
 ## 代码生成
 
@@ -328,18 +332,18 @@ MIR 可以转换为多种框架代码：
 import { Container, Text, Button } from '@mdr/ui';
 
 export function HomePage() {
-  const handleClick = useCallback(() => {
-    // 来自节点图
-  }, []);
+    const handleClick = useCallback(() => {
+        // 来自节点图
+    }, []);
 
-  return (
-    <Container layout="flex" direction="column">
-      <Text variant="h1">Hello, MdrFrontEngine!</Text>
-      <Button variant="primary" size="medium" onClick={handleClick}>
-        点击我
-      </Button>
-    </Container>
-  );
+    return (
+        <Container layout="flex" direction="column">
+            <Text variant="h1">Hello, MdrFrontEngine!</Text>
+            <Button variant="primary" size="medium" onClick={handleClick}>
+                点击我
+            </Button>
+        </Container>
+    );
 }
 ```
 
@@ -348,19 +352,19 @@ export function HomePage() {
 ```vue
 <!-- 从 MIR 生成的 Vue 代码 -->
 <template>
-  <MdrContainer layout="flex" direction="column">
-    <MdrText variant="h1">Hello, MdrFrontEngine!</MdrText>
-    <MdrButton variant="primary" size="medium" @click="handleClick">
-      点击我
-    </MdrButton>
-  </MdrContainer>
+    <MdrContainer layout="flex" direction="column">
+        <MdrText variant="h1">Hello, MdrFrontEngine!</MdrText>
+        <MdrButton variant="primary" size="medium" @click="handleClick">
+            点击我
+        </MdrButton>
+    </MdrContainer>
 </template>
 
 <script setup>
 import { MdrContainer, MdrText, MdrButton } from '@mdr/ui-vue';
 
 const handleClick = () => {
-  // 来自节点图
+    // 来自节点图
 };
 </script>
 ```
@@ -370,16 +374,19 @@ const handleClick = () => {
 ```html
 <!-- 从 MIR 生成的原生 Web 代码 -->
 <div class="mdr-container" style="display: flex; flex-direction: column;">
-  <h1 class="mdr-text">Hello, MdrFrontEngine!</h1>
-  <button class="mdr-button mdr-button--primary mdr-button--medium" onclick="handleClick()">
-    点击我
-  </button>
+    <h1 class="mdr-text">Hello, MdrFrontEngine!</h1>
+    <button
+        class="mdr-button mdr-button--primary mdr-button--medium"
+        onclick="handleClick()"
+    >
+        点击我
+    </button>
 </div>
 
 <script>
-function handleClick() {
-  // 来自节点图
-}
+    function handleClick() {
+        // 来自节点图
+    }
 </script>
 ```
 
@@ -389,7 +396,7 @@ MIR 文件通过 JSON Schema 进行验证：
 
 ```json
 {
-  "$schema": "https://mdr.dev/schemas/mir/1.0.json"
+    "$schema": "https://mdr.dev/schemas/mir/1.0.json"
 }
 ```
 
@@ -408,8 +415,8 @@ Error: Invalid MIR document
 
 ```json
 {
-  "id": "hero-title",    // ✅ 语义化
-  "id": "node-123"       // ❌ 无意义
+    "id": "hero-title", // ✅ 语义化
+    "id": "node-123" // ❌ 无意义
 }
 ```
 

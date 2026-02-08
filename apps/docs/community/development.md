@@ -4,12 +4,12 @@
 
 ## 环境要求
 
-| 工具 | 版本 | 用途 |
-| --- | --- | --- |
+| 工具    | 版本      | 用途              |
+| ------- | --------- | ----------------- |
 | Node.js | >= 20.0.0 | JavaScript 运行时 |
-| pnpm | >= 10.0.0 | 包管理器 |
-| Go | >= 1.24 | 后端开发 |
-| Git | 任意 | 版本控制 |
+| pnpm    | >= 10.0.0 | 包管理器          |
+| Go      | >= 1.24   | 后端开发          |
+| Git     | 任意      | 版本控制          |
 
 ## 快速开始
 
@@ -117,20 +117,20 @@ pnpm init
 
 ```json
 {
-  "name": "@mdr/new-package",
-  "version": "0.0.1",
-  "private": true,
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts",
-    "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
-  },
-  "devDependencies": {
-    "tsup": "^8.0.0",
-    "typescript": "^5.9.0"
-  }
+    "name": "@mdr/new-package",
+    "version": "0.0.1",
+    "private": true,
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "scripts": {
+        "build": "tsup src/index.ts --format cjs,esm --dts",
+        "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
+    },
+    "devDependencies": {
+        "tsup": "^8.0.0",
+        "typescript": "^5.9.0"
+    }
 }
 ```
 
@@ -166,15 +166,15 @@ pnpm turbo run test --filter=@mdr/web
 
 ### 前端 (apps/web)
 
-| 技术 | 版本 | 用途 |
-| --- | --- | --- |
-| React | 19 | UI 框架 |
-| TypeScript | 5.9 | 类型系统 |
-| Vite | latest | 构建工具 |
-| Tailwind CSS | 4.1 | 样式框架 |
-| Zustand | 5 | 状态管理 |
-| React Router | 7 | 路由 |
-| @dnd-kit | latest | 拖拽功能 |
+| 技术          | 版本   | 用途       |
+| ------------- | ------ | ---------- |
+| React         | 19     | UI 框架    |
+| TypeScript    | 5.9    | 类型系统   |
+| Vite          | latest | 构建工具   |
+| Tailwind CSS  | 4.1    | 样式框架   |
+| Zustand       | 5      | 状态管理   |
+| React Router  | 7      | 路由       |
+| @dnd-kit      | latest | 拖拽功能   |
 | Monaco Editor | latest | 代码编辑器 |
 
 **目录结构**:
@@ -210,12 +210,12 @@ apps/web/src/
 
 ### UI 组件库 (packages/ui)
 
-| 技术 | 用途 |
-| --- | --- |
-| React | 组件框架 |
-| SCSS | 样式 |
+| 技术      | 用途     |
+| --------- | -------- |
+| React     | 组件框架 |
+| SCSS      | 样式     |
 | Storybook | 组件文档 |
-| Vitest | 单元测试 |
+| Vitest    | 单元测试 |
 
 **开发组件**:
 
@@ -233,6 +233,7 @@ pnpm --filter @mdr/ui build
 **添加新组件**:
 
 1. 创建组件目录：
+
 ```
 packages/ui/src/button/
 ├── MdrButton.tsx
@@ -243,6 +244,7 @@ packages/ui/src/button/
 ```
 
 2. 导出组件：
+
 ```typescript
 // packages/ui/src/index.ts
 export * from './button';
@@ -250,10 +252,10 @@ export * from './button';
 
 ### 后端 (apps/backend)
 
-| 技术 | 用途 |
-| --- | --- |
-| Go | 编程语言 |
-| Gin | Web 框架 |
+| 技术   | 用途     |
+| ------ | -------- |
+| Go     | 编程语言 |
+| Gin    | Web 框架 |
 | bcrypt | 密码哈希 |
 
 **目录结构**:
@@ -391,24 +393,24 @@ pnpm --filter @mdr/web exec tsc --noEmit
 
 ```json
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "chrome",
-      "request": "launch",
-      "name": "Debug Web",
-      "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}/apps/web/src"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug CLI",
-      "program": "${workspaceFolder}/apps/cli/src/cli.ts",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["tsx"]
-    }
-  ]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Debug Web",
+            "url": "http://localhost:5173",
+            "webRoot": "${workspaceFolder}/apps/web/src"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug CLI",
+            "program": "${workspaceFolder}/apps/cli/src/cli.ts",
+            "runtimeExecutable": "pnpm",
+            "runtimeArgs": ["tsx"]
+        }
+    ]
 }
 ```
 

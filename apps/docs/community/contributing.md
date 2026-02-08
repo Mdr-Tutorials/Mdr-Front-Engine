@@ -15,11 +15,11 @@
 1. 搜索现有 Issues，确认问题尚未被报告
 2. 创建新 Issue，使用 Bug 报告模板
 3. 提供详细信息：
-   - 重现步骤
-   - 期望行为
-   - 实际行为
-   - 环境信息（操作系统、浏览器、Node.js 版本等）
-   - 如可能，提供截图或错误日志
+    - 重现步骤
+    - 期望行为
+    - 实际行为
+    - 环境信息（操作系统、浏览器、Node.js 版本等）
+    - 如可能，提供截图或错误日志
 
 ### 提出新功能
 
@@ -28,9 +28,9 @@
 1. 搜索现有 Issues 和 Discussions
 2. 创建 Discussion 或 Issue 描述你的想法
 3. 说明：
-   - 功能解决什么问题
-   - 提议的解决方案
-   - 可能的替代方案
+    - 功能解决什么问题
+    - 提议的解决方案
+    - 可能的替代方案
 
 ### 提交代码
 
@@ -57,14 +57,14 @@ git checkout -b fix/问题描述
 
 分支命名规范：
 
-| 前缀 | 用途 |
-| --- | --- |
-| `feature/` | 新功能 |
-| `fix/` | Bug 修复 |
-| `docs/` | 文档更新 |
-| `refactor/` | 代码重构 |
-| `test/` | 测试相关 |
-| `chore/` | 构建/工具相关 |
+| 前缀        | 用途          |
+| ----------- | ------------- |
+| `feature/`  | 新功能        |
+| `fix/`      | Bug 修复      |
+| `docs/`     | 文档更新      |
+| `refactor/` | 代码重构      |
+| `test/`     | 测试相关      |
+| `chore/`    | 构建/工具相关 |
 
 #### 3. 安装依赖
 
@@ -124,16 +124,16 @@ docs(readme): update installation instructions
 
 **Type 类型**:
 
-| 类型 | 描述 |
-| --- | --- |
-| `feat` | 新功能 |
-| `fix` | Bug 修复 |
-| `docs` | 文档更新 |
-| `style` | 代码格式（不影响逻辑） |
-| `refactor` | 代码重构 |
-| `test` | 测试相关 |
-| `chore` | 构建/工具/依赖更新 |
-| `perf` | 性能优化 |
+| 类型       | 描述                   |
+| ---------- | ---------------------- |
+| `feat`     | 新功能                 |
+| `fix`      | Bug 修复               |
+| `docs`     | 文档更新               |
+| `style`    | 代码格式（不影响逻辑） |
+| `refactor` | 代码重构               |
+| `test`     | 测试相关               |
+| `chore`    | 构建/工具/依赖更新     |
+| `perf`     | 性能优化               |
 
 **Scope 范围**（可选）:
 
@@ -197,14 +197,14 @@ pnpm format
 ```typescript
 // 推荐
 interface ButtonProps {
-  text: string;
-  onClick: () => void;
+    text: string;
+    onClick: () => void;
 }
 
 // 避免
 type ButtonProps = {
-  text: any;
-  onClick: Function;
+    text: any;
+    onClick: Function;
 };
 ```
 
@@ -217,16 +217,12 @@ type ButtonProps = {
 ```tsx
 // 推荐
 interface MdrButtonProps {
-  text: string;
-  disabled?: boolean;
+    text: string;
+    disabled?: boolean;
 }
 
 export function MdrButton({ text, disabled = false }: MdrButtonProps) {
-  return (
-    <button disabled={disabled}>
-      {text}
-    </button>
-  );
+    return <button disabled={disabled}>{text}</button>;
 }
 ```
 
@@ -242,17 +238,17 @@ import { render, screen } from '@testing-library/react';
 import { MdrButton } from './MdrButton';
 
 describe('MdrButton', () => {
-  it('renders button text', () => {
-    render(<MdrButton text="Click me" />);
-    expect(screen.getByText('Click me')).toBeInTheDocument();
-  });
+    it('renders button text', () => {
+        render(<MdrButton text="Click me" />);
+        expect(screen.getByText('Click me')).toBeInTheDocument();
+    });
 
-  it('handles click events', () => {
-    const onClick = vi.fn();
-    render(<MdrButton text="Click" onClick={onClick} />);
-    screen.getByText('Click').click();
-    expect(onClick).toHaveBeenCalled();
-  });
+    it('handles click events', () => {
+        const onClick = vi.fn();
+        render(<MdrButton text="Click" onClick={onClick} />);
+        screen.getByText('Click').click();
+        expect(onClick).toHaveBeenCalled();
+    });
 });
 ```
 
@@ -271,7 +267,7 @@ describe('MdrButton', () => {
  * @returns 按钮元素
  */
 export function MdrButton(props: MdrButtonProps): JSX.Element {
-  // ...
+    // ...
 }
 ```
 

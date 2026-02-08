@@ -4,13 +4,13 @@ MdrFrontEngine 支持多种部署方式，从传统静态托管到 Web3 去中�
 
 ## 部署选项概览
 
-| 平台 | 特点 | 适用场景 |
-| --- | --- | --- |
+| 平台             | 特点                 | 适用场景           |
+| ---------------- | -------------------- | ------------------ |
 | **GitHub Pages** | 免费、与 GitHub 集成 | 开源项目、个人站点 |
-| **Vercel** | 自动部署、边缘网络 | 生产应用、团队协作 |
-| **Netlify** | 表单处理、函数支持 | 需要后端功能的站点 |
-| **自托管** | 完全控制 | 企业内部、特殊需求 |
-| **IPFS** | 去中心化、永存 | Web3 应用 |
+| **Vercel**       | 自动部署、边缘网络   | 生产应用、团队协作 |
+| **Netlify**      | 表单处理、函数支持   | 需要后端功能的站点 |
+| **自托管**       | 完全控制             | 企业内部、特殊需求 |
+| **IPFS**         | 去中心化、永存       | Web3 应用          |
 
 ## GitHub Pages
 
@@ -32,31 +32,31 @@ MdrFrontEngine 支持多种部署方式，从传统静态托管到 Web3 去中�
 name: Deploy to GitHub Pages
 
 on:
-  push:
-    branches: [main]
+    push:
+        branches: [main]
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 10
+            - uses: pnpm/action-setup@v2
+              with:
+                  version: 10
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: 'pnpm'
 
-      - run: pnpm install
-      - run: pnpm build
+            - run: pnpm install
+            - run: pnpm build
 
-      - uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+            - uses: peaceiris/actions-gh-pages@v3
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  publish_dir: ./dist
 ```
 
 4. 在仓库 Settings → Pages 中启用 GitHub Pages
@@ -64,6 +64,7 @@ jobs:
 ### 配置自定义域名
 
 1. 在仓库根目录创建 `CNAME` 文件：
+
 ```
 www.example.com
 ```
@@ -97,21 +98,19 @@ vercel
 
 ```json
 {
-  "buildCommand": "pnpm build",
-  "outputDirectory": "dist",
-  "framework": "vite",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" }
-      ]
-    }
-  ]
+    "buildCommand": "pnpm build",
+    "outputDirectory": "dist",
+    "framework": "vite",
+    "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+    "headers": [
+        {
+            "source": "/(.*)",
+            "headers": [
+                { "key": "X-Content-Type-Options", "value": "nosniff" },
+                { "key": "X-Frame-Options", "value": "DENY" }
+            ]
+        }
+    ]
 }
 ```
 
@@ -163,10 +162,10 @@ VITE_APP_TITLE=My App
 ```javascript
 // netlify/functions/api.js
 exports.handler = async (event, context) => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ message: "Hello from Netlify Functions!" })
-  };
+    return {
+        statusCode: 200,
+        body: JSON.stringify({ message: 'Hello from Netlify Functions!' }),
+    };
 };
 ```
 
@@ -225,11 +224,11 @@ CMD ["nginx", "-g", "daemon off;"]
 # docker-compose.yml
 version: '3.8'
 services:
-  web:
-    build: .
-    ports:
-      - "80:80"
-    restart: unless-stopped
+    web:
+        build: .
+        ports:
+            - '80:80'
+        restart: unless-stopped
 ```
 
 ```bash
@@ -261,18 +260,18 @@ ipfs-car pack dist --output app.car
 ```javascript
 // vite.config.ts
 export default defineConfig({
-  base: './',  // 使用相对路径
-  build: {
-    assetsDir: 'assets',
-    rollupOptions: {
-      output: {
-        // 确保文件名可预测
-        entryFileNames: 'assets/[name].[hash].js',
-        chunkFileNames: 'assets/[name].[hash].js',
-        assetFileNames: 'assets/[name].[hash].[ext]'
-      }
-    }
-  }
+    base: './', // 使用相对路径
+    build: {
+        assetsDir: 'assets',
+        rollupOptions: {
+            output: {
+                // 确保文件名可预测
+                entryFileNames: 'assets/[name].[hash].js',
+                chunkFileNames: 'assets/[name].[hash].js',
+                assetFileNames: 'assets/[name].[hash].[ext]',
+            },
+        },
+    },
 });
 ```
 
@@ -357,6 +356,7 @@ SPA 应用需要配置服务器将所有路由指向 `index.html`。
 ### 资源加载失败
 
 检查 `base` 配置是否正确：
+
 - GitHub Pages: `base: '/repo-name/'`
 - 根域名: `base: '/'`
 - IPFS: `base: './'`

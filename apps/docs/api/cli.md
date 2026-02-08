@@ -38,6 +38,7 @@ mdr build
 **当前状态**: 已连接，功能开发中
 
 **计划功能**:
+
 - 解析 MIR 文件
 - 生成 React 组件代码
 - 处理节点图逻辑
@@ -55,12 +56,12 @@ mdr export [options]
 
 **计划功能**:
 
-| 选项 | 描述 |
-| --- | --- |
+| 选项                   | 描述                               |
+| ---------------------- | ---------------------------------- |
 | `--target <framework>` | 目标框架（react, vue, angular 等） |
-| `--output <dir>` | 输出目录 |
-| `--page <name>` | 仅导出指定页面 |
-| `--with-tests` | 包含测试文件 |
+| `--output <dir>`       | 输出目录                           |
+| `--page <name>`        | 仅导出指定页面                     |
+| `--with-tests`         | 包含测试文件                       |
 
 ### deploy
 
@@ -74,10 +75,10 @@ mdr deploy [options]
 
 **计划功能**:
 
-| 选项 | 描述 |
-| --- | --- |
+| 选项                | 描述                                            |
+| ------------------- | ----------------------------------------------- |
 | `--platform <name>` | 部署平台（github-pages, vercel, netlify, ipfs） |
-| `--config <file>` | 配置文件路径 |
+| `--config <file>`   | 配置文件路径                                    |
 
 ## 配置文件
 
@@ -85,20 +86,20 @@ CLI 工具支持通过配置文件自定义行为。创建 `mdr.config.json`：
 
 ```json
 {
-  "build": {
-    "outDir": "dist",
-    "target": "react",
-    "minify": true
-  },
-  "export": {
-    "framework": "react",
-    "typescript": true,
-    "cssModule": true
-  },
-  "deploy": {
-    "platform": "vercel",
-    "projectName": "my-app"
-  }
+    "build": {
+        "outDir": "dist",
+        "target": "react",
+        "minify": true
+    },
+    "export": {
+        "framework": "react",
+        "typescript": true,
+        "cssModule": true
+    },
+    "deploy": {
+        "platform": "vercel",
+        "projectName": "my-app"
+    }
 }
 ```
 

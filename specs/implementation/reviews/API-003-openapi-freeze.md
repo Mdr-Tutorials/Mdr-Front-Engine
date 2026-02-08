@@ -14,26 +14,26 @@
 ## 对齐项（Final）
 
 1. 并发基线字段统一为 `expected*`
-   - `expectedContentRev`
-   - `expectedWorkspaceRev`
-   - `expectedRouteRev`
+    - `expectedContentRev`
+    - `expectedWorkspaceRev`
+    - `expectedRouteRev`
 2. 成功响应统一返回最新版本锚点
-   - `workspaceRev`
-   - `routeRev`
-   - `opSeq`
+    - `workspaceRev`
+    - `routeRev`
+    - `opSeq`
 3. 能力协商包含保留域表达
-   - `core.nodegraph.*`
-   - `core.animation.*`
+    - `core.nodegraph.*`
+    - `core.animation.*`
 4. Envelope 对齐 `API-002`
-   - `IntentEnvelope` required 字段一致
-   - `CommandEnvelope`/`PatchOp` 作为冻结 schema 收录
+    - `IntentEnvelope` required 字段一致
+    - `CommandEnvelope`/`PatchOp` 作为冻结 schema 收录
 5. 错误码对齐 `API-002`
-   - `UNSUPPORTED_INTENT`
-   - `UNSUPPORTED_COMMAND`
-   - `RESERVED_DOMAIN_DISABLED`
-   - `INVALID_ENVELOPE_VERSION`
-   - `INVALID_ENVELOPE_PAYLOAD`
-   - `MIR_VALIDATION_FAILED`
+    - `UNSUPPORTED_INTENT`
+    - `UNSUPPORTED_COMMAND`
+    - `RESERVED_DOMAIN_DISABLED`
+    - `INVALID_ENVELOPE_VERSION`
+    - `INVALID_ENVELOPE_PAYLOAD`
+    - `MIR_VALIDATION_FAILED`
 
 ## 校验记录
 

@@ -25,9 +25,7 @@
                                     "type": "string"
                                 }
                             },
-                            "required": [
-                                "$param"
-                            ]
+                            "required": ["$param"]
                         },
                         {
                             "title": "StateBindingReference",
@@ -37,9 +35,7 @@
                                     "type": "string"
                                 }
                             },
-                            "required": [
-                                "$state"
-                            ]
+                            "required": ["$state"]
                         },
                         {
                             "title": "ConditionalMap",
@@ -53,9 +49,7 @@
                                     }
                                 }
                             },
-                            "required": [
-                                "$map"
-                            ]
+                            "required": ["$map"]
                         }
                     ]
                 },
@@ -77,9 +71,7 @@
                                         "type": "string"
                                     }
                                 },
-                                "required": [
-                                    "$param"
-                                ]
+                                "required": ["$param"]
                             },
                             {
                                 "title": "StateBindingReference",
@@ -89,9 +81,7 @@
                                         "type": "string"
                                     }
                                 },
-                                "required": [
-                                    "$state"
-                                ]
+                                "required": ["$state"]
                             },
                             {
                                 "title": "ConditionalMap",
@@ -105,9 +95,7 @@
                                         }
                                     }
                                 },
-                                "required": [
-                                    "$map"
-                                ]
+                                "required": ["$map"]
                             }
                         ]
                     }
@@ -146,9 +134,7 @@
                                 "type": "boolean"
                             }
                         },
-                        "required": [
-                            "trigger"
-                        ]
+                        "required": ["trigger"]
                     }
                 },
                 "binding": {
@@ -198,17 +184,11 @@
                                         "type": "object"
                                     }
                                 },
-                                "required": [
-                                    "rule",
-                                    "message"
-                                ]
+                                "required": ["rule", "message"]
                             }
                         }
                     },
-                    "required": [
-                        "path",
-                        "type"
-                    ]
+                    "required": ["path", "type"]
                 },
                 "resources": {
                     "type": "object",
@@ -216,12 +196,7 @@
                         "type": "object",
                         "properties": {
                             "type": {
-                                "enum": [
-                                    "file",
-                                    "url",
-                                    "inline",
-                                    "base64"
-                                ]
+                                "enum": ["file", "url", "inline", "base64"]
                             },
                             "value": {
                                 "type": "string"
@@ -233,16 +208,11 @@
                                 "type": "boolean"
                             }
                         },
-                        "required": [
-                            "type",
-                            "value"
-                        ]
+                        "required": ["type", "value"]
                     }
                 }
             },
-            "required": [
-                "type"
-            ]
+            "required": ["type"]
         }
     },
     "properties": {
@@ -285,9 +255,7 @@
                     "$ref": "#/definitions/ComponentNode"
                 }
             },
-            "required": [
-                "root"
-            ]
+            "required": ["root"]
         },
         "logic": {
             "type": "object",
@@ -318,11 +286,7 @@
                                         ]
                                     },
                                     "trigger": {
-                                        "enum": [
-                                            "manual",
-                                            "event",
-                                            "scheduled"
-                                        ]
+                                        "enum": ["manual", "event", "scheduled"]
                                     },
                                     "asyncStrategy": {
                                         "enum": [
@@ -347,10 +311,7 @@
                                         }
                                     }
                                 },
-                                "required": [
-                                    "mode",
-                                    "trigger"
-                                ]
+                                "required": ["mode", "trigger"]
                             },
                             "nodes": {
                                 "type": "array",
@@ -429,10 +390,7 @@
                                                         }
                                                     }
                                                 },
-                                                "required": [
-                                                    "name",
-                                                    "source"
-                                                ]
+                                                "required": ["name", "source"]
                                             }
                                         },
                                         "outputs": {
@@ -475,9 +433,7 @@
                                                         }
                                                     }
                                                 },
-                                                "required": [
-                                                    "name"
-                                                ]
+                                                "required": ["name"]
                                             }
                                         },
                                         "config": {
@@ -496,10 +452,7 @@
                                             }
                                         }
                                     },
-                                    "required": [
-                                        "id",
-                                        "type"
-                                    ]
+                                    "required": ["id", "type"]
                                 }
                             },
                             "edges": {
@@ -520,10 +473,7 @@
                                                     "type": "string"
                                                 }
                                             },
-                                            "required": [
-                                                "nodeId",
-                                                "port"
-                                            ]
+                                            "required": ["nodeId", "port"]
                                         },
                                         "target": {
                                             "type": "object",
@@ -535,25 +485,14 @@
                                                     "type": "string"
                                                 }
                                             },
-                                            "required": [
-                                                "nodeId",
-                                                "port"
-                                            ]
+                                            "required": ["nodeId", "port"]
                                         }
                                     },
-                                    "required": [
-                                        "id",
-                                        "source",
-                                        "target"
-                                    ]
+                                    "required": ["id", "source", "target"]
                                 }
                             }
                         },
-                        "required": [
-                            "id",
-                            "nodes",
-                            "edges"
-                        ]
+                        "required": ["id", "nodes", "edges"]
                     }
                 },
                 "state": {
@@ -562,12 +501,7 @@
                         "type": "object",
                         "properties": {
                             "type": {
-                                "enum": [
-                                    "local",
-                                    "global",
-                                    "derived",
-                                    "async"
-                                ]
+                                "enum": ["local", "global", "derived", "async"]
                             },
                             "initial": {},
                             "schema": {
@@ -641,10 +575,7 @@
                                 "type": "string"
                             },
                             "scope": {
-                                "enum": [
-                                    "global",
-                                    "node"
-                                ]
+                                "enum": ["global", "node"]
                             }
                         }
                     }
@@ -663,8 +594,5 @@
             }
         }
     },
-    "required": [
-        "version",
-        "ui"
-    ]
+    "required": ["version", "ui"]
 }

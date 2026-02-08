@@ -56,9 +56,10 @@
 
     .MdrPanelContent {
         overflow: hidden;
-        transition: max-height var(--transition-normal), opacity var(--transition-normal);
+        transition:
+            max-height var(--transition-normal),
+            opacity var(--transition-normal);
     }
-
 
     &:not(.Collapsed) .MdrPanelContent {
         max-height: 1000px;
@@ -121,7 +122,7 @@
     }
 }
 
-[data-theme="dark"] {
+[data-theme='dark'] {
     .MdrPanel {
         &.Elevated {
             box-shadow: var(--shadow-lg);

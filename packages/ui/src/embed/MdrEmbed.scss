@@ -2,7 +2,7 @@
     display: block;
     transition: all var(--transition-normal);
 
-    >div {
+    > div {
         border-radius: var(--radius-md);
         box-shadow: var(--shadow-sm);
         background-color: var(--color-3);
@@ -13,32 +13,32 @@
     }
 
     &.aspect-16-9 {
-        >div {
+        > div {
             aspect-ratio: 16 / 9;
         }
     }
 
     &.aspect-4-3 {
-        >div {
+        > div {
             aspect-ratio: 4 / 3;
         }
     }
 
     &.aspect-1-1 {
-        >div {
+        > div {
             aspect-ratio: 1 / 1;
         }
     }
 
     &.aspect-21-9 {
-        >div {
+        > div {
             aspect-ratio: 21 / 9;
         }
     }
 
     &.YouTube,
     &.Vimeo {
-        >div {
+        > div {
             background-color: var(--color-10);
         }
     }
@@ -46,22 +46,22 @@
     &.Twitter,
     &.Instagram,
     &.Facebook {
-        >div {
+        > div {
             background-color: var(--color-0);
         }
     }
 
-    &:hover>div {
+    &:hover > div {
         box-shadow: var(--shadow-md);
     }
 }
 
-[data-theme="dark"] {
-    .MdrEmbed>div {
+[data-theme='dark'] {
+    .MdrEmbed > div {
         box-shadow: var(--shadow-sm);
     }
 
-    .MdrEmbed:hover>div {
+    .MdrEmbed:hover > div {
         box-shadow: var(--shadow-md);
     }
 }

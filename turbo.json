@@ -2,12 +2,8 @@
     "$schema": "https://turbo.build/schema.json",
     "tasks": {
         "build": {
-            "dependsOn": [
-                "^build"
-            ],
-            "outputs": [
-                "dist/**"
-            ]
+            "dependsOn": ["^build"],
+            "outputs": ["dist/**"]
         },
         "lint": {
             "outputs": []
@@ -24,9 +20,7 @@
             "persistent": true
         },
         "build-storybook": {
-            "outputs": [
-                "storybook-static/**"
-            ]
+            "outputs": ["storybook-static/**"]
         }
     }
 }

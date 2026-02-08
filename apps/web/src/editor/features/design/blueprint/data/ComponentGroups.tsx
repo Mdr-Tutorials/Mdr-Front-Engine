@@ -8,11 +8,11 @@ import { DATA_GROUP } from './groups/DataGroup';
 import { FEEDBACK_GROUP } from './groups/FeedbackGroup';
 
 export const COMPONENT_GROUPS: ComponentGroup[] = [
-  BASE_GROUP,
-  LAYOUT_GROUP,
-  FORM_GROUP,
-  NAV_GROUP,
-  MEDIA_GROUP,
-  DATA_GROUP,
-  FEEDBACK_GROUP,
+    BASE_GROUP,
+    LAYOUT_GROUP,
+    FORM_GROUP,
+    NAV_GROUP,
+    MEDIA_GROUP,
+    DATA_GROUP,
+    FEEDBACK_GROUP,
 ];

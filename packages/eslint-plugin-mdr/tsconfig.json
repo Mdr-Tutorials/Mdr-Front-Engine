@@ -2,9 +2,7 @@
     "compilerOptions": {
         "target": "ES2020",
         "module": "CommonJS",
-        "lib": [
-            "ES2020"
-        ],
+        "lib": ["ES2020"],
         "outDir": "./lib",
         "rootDir": "./src",
         "strict": true,
@@ -15,12 +13,6 @@
         "declarationMap": true,
         "sourceMap": true
     },
-    "include": [
-        "src/**/*"
-    ],
-    "exclude": [
-        "node_modules",
-        "lib",
-        "tests"
-    ]
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "lib", "tests"]
 }

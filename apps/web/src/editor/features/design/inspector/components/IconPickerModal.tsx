@@ -3,16 +3,16 @@ import { useTranslation } from 'react-i18next';
 import { Search, X } from 'lucide-react';
 import type { IconRef } from '@/mir/renderer/iconRegistry';
 import {
-  listIconNamesByProvider,
-  listIconProviders,
-  resolveIconRef,
+    listIconNamesByProvider,
+    listIconProviders,
+    resolveIconRef,
 } from '@/mir/renderer/iconRegistry';
 
 type IconPickerModalProps = {
-  open: boolean;
-  initialIconRef?: IconRef | null;
-  onClose: () => void;
-  onSelect: (iconRef: IconRef) => void;
+    open: boolean;
+    initialIconRef?: IconRef | null;
+    onClose: () => void;
+    onSelect: (iconRef: IconRef) => void;
 };
 
 const ICONS_PER_PAGE = 160;
@@ -20,325 +20,380 @@ const ICONS_PER_PAGE = 160;
 const normalizeSearch = (value: string) => value.trim().toLowerCase();
 
 export function IconPickerModal({
-  open,
-  initialIconRef,
-  onClose,
-  onSelect,
+    open,
+    initialIconRef,
+    onClose,
+    onSelect,
 }: IconPickerModalProps) {
-  const { t } = useTranslation('blueprint');
-  const providers = useMemo(() => listIconProviders(), []);
-  const fallbackProvider = providers[0]?.id ?? 'lucide';
-  const [providerId, setProviderId] = useState(
-    initialIconRef?.provider ?? fallbackProvider
-  );
-  const [search, setSearch] = useState('');
-  const [selectedName, setSelectedName] = useState(initialIconRef?.name ?? '');
-  const [page, setPage] = useState(1);
-  const [pageInput, setPageInput] = useState('1');
-  const listRef = useRef<HTMLDivElement | null>(null);
+    const { t } = useTranslation('blueprint');
+    const providers = useMemo(() => listIconProviders(), []);
+    const fallbackProvider = providers[0]?.id ?? 'lucide';
+    const [providerId, setProviderId] = useState(
+        initialIconRef?.provider ?? fallbackProvider
+    );
+    const [search, setSearch] = useState('');
+    const [selectedName, setSelectedName] = useState(
+        initialIconRef?.name ?? ''
+    );
+    const [page, setPage] = useState(1);
+    const [pageInput, setPageInput] = useState('1');
+    const listRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (!open) return;
-    setProviderId(initialIconRef?.provider ?? fallbackProvider);
-    setSelectedName(initialIconRef?.name ?? '');
-    setSearch('');
-    setPage(1);
-    setPageInput('1');
-  }, [fallbackProvider, initialIconRef?.name, initialIconRef?.provider, open]);
+    useEffect(() => {
+        if (!open) return;
+        setProviderId(initialIconRef?.provider ?? fallbackProvider);
+        setSelectedName(initialIconRef?.name ?? '');
+        setSearch('');
+        setPage(1);
+        setPageInput('1');
+    }, [
+        fallbackProvider,
+        initialIconRef?.name,
+        initialIconRef?.provider,
+        open,
+    ]);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        onClose();
-      }
+    useEffect(() => {
+        if (!open) return;
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                onClose();
+            }
+        };
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    }, [onClose, open]);
+
+    const iconNames = useMemo(
+        () => listIconNamesByProvider(providerId),
+        [providerId]
+    );
+    const filteredNames = useMemo(() => {
+        const query = normalizeSearch(search);
+        if (!query) return iconNames;
+        return iconNames.filter((name) => name.toLowerCase().includes(query));
+    }, [iconNames, search]);
+    const totalPages = Math.max(
+        1,
+        Math.ceil(filteredNames.length / ICONS_PER_PAGE)
+    );
+    const currentPage = Math.min(page, totalPages);
+    const pageStart = (currentPage - 1) * ICONS_PER_PAGE;
+    const pageEnd = pageStart + ICONS_PER_PAGE;
+    const visibleNames = filteredNames.slice(pageStart, pageEnd);
+    const selectedRef = selectedName
+        ? { provider: providerId, name: selectedName }
+        : null;
+    const selectedIcon = selectedRef ? resolveIconRef(selectedRef) : null;
+    const SelectedIcon = selectedIcon;
+    const canApply = Boolean(selectedName);
+
+    useEffect(() => {
+        setPage(1);
+    }, [providerId, search]);
+
+    useEffect(() => {
+        if (page > totalPages) {
+            setPage(totalPages);
+        }
+    }, [page, totalPages]);
+
+    useEffect(() => {
+        setPageInput(String(currentPage));
+    }, [currentPage]);
+
+    const applyPageInput = () => {
+        const nextPage = Number(pageInput);
+        if (!Number.isFinite(nextPage)) {
+            setPageInput(String(currentPage));
+            return;
+        }
+        const clamped = Math.min(totalPages, Math.max(1, Math.trunc(nextPage)));
+        setPage(clamped);
+        setPageInput(String(clamped));
     };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [onClose, open]);
 
-  const iconNames = useMemo(
-    () => listIconNamesByProvider(providerId),
-    [providerId]
-  );
-  const filteredNames = useMemo(() => {
-    const query = normalizeSearch(search);
-    if (!query) return iconNames;
-    return iconNames.filter((name) => name.toLowerCase().includes(query));
-  }, [iconNames, search]);
-  const totalPages = Math.max(1, Math.ceil(filteredNames.length / ICONS_PER_PAGE));
-  const currentPage = Math.min(page, totalPages);
-  const pageStart = (currentPage - 1) * ICONS_PER_PAGE;
-  const pageEnd = pageStart + ICONS_PER_PAGE;
-  const visibleNames = filteredNames.slice(pageStart, pageEnd);
-  const selectedRef = selectedName
-    ? { provider: providerId, name: selectedName }
-    : null;
-  const selectedIcon = selectedRef ? resolveIconRef(selectedRef) : null;
-  const SelectedIcon = selectedIcon;
-  const canApply = Boolean(selectedName);
+    useEffect(() => {
+        listRef.current?.scrollTo({ top: 0, behavior: 'auto' });
+    }, [currentPage]);
 
-  useEffect(() => {
-    setPage(1);
-  }, [providerId, search]);
+    if (!open) return null;
 
-  useEffect(() => {
-    if (page > totalPages) {
-      setPage(totalPages);
-    }
-  }, [page, totalPages]);
-
-  useEffect(() => {
-    setPageInput(String(currentPage));
-  }, [currentPage]);
-
-  const applyPageInput = () => {
-    const nextPage = Number(pageInput);
-    if (!Number.isFinite(nextPage)) {
-      setPageInput(String(currentPage));
-      return;
-    }
-    const clamped = Math.min(totalPages, Math.max(1, Math.trunc(nextPage)));
-    setPage(clamped);
-    setPageInput(String(clamped));
-  };
-
-  useEffect(() => {
-    listRef.current?.scrollTo({ top: 0, behavior: 'auto' });
-  }, [currentPage]);
-
-  if (!open) return null;
-
-  return (
-    <div
-      className="fixed inset-0 z-[9998] flex items-center justify-center bg-[rgba(7,7,7,0.45)] p-4 backdrop-blur-[3px]"
-      onClick={onClose}
-      data-testid="icon-picker-modal"
-    >
-      <div
-        className="flex h-[min(78vh,760px)] w-[min(900px,96vw)] flex-col overflow-hidden rounded-[16px] border border-black/8 bg-(--color-0) shadow-[0_18px_34px_rgba(0,0,0,0.2)] dark:border-white/14"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <header className="flex items-center justify-between border-b border-black/8 px-4 py-3 dark:border-white/12">
-          <div className="min-w-0">
-            <h3 className="m-0 truncate text-[14px] font-semibold text-(--color-9)">
-              {t('inspector.iconPicker.title', { defaultValue: 'Select icon' })}
-            </h3>
-            <p className="m-0 mt-1 text-[11px] text-(--color-6)">
-              {t('inspector.iconPicker.subtitle', {
-                defaultValue: 'Source + search. Ready for multiple icon providers.',
-              })}
-            </p>
-          </div>
-          <button
-            type="button"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
+    return (
+        <div
+            className="fixed inset-0 z-[9998] flex items-center justify-center bg-[rgba(7,7,7,0.45)] p-4 backdrop-blur-[3px]"
             onClick={onClose}
-            data-testid="icon-picker-close"
-            aria-label={t('inspector.iconPicker.close', {
-              defaultValue: 'Close icon picker',
-            })}
-          >
-            <X size={16} />
-          </button>
-        </header>
-
-        <div className="grid grid-cols-1 gap-2 border-b border-black/8 px-4 py-3 md:grid-cols-[180px_1fr] dark:border-white/12">
-          <label className="grid gap-1 text-[11px] font-semibold text-(--color-7)">
-            {t('inspector.iconPicker.source', { defaultValue: 'Source' })}
-            <select
-              className="h-8 rounded-md border border-black/10 bg-transparent px-2 text-[12px] text-(--color-9) outline-none dark:border-white/16"
-              value={providerId}
-              onChange={(event) => {
-                setProviderId(event.target.value);
-                setSelectedName('');
-                setPage(1);
-              }}
-              data-testid="icon-picker-provider"
-            >
-              {providers.map((provider) => (
-                <option key={provider.id} value={provider.id}>
-                  {provider.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="grid gap-1 text-[11px] font-semibold text-(--color-7)">
-            {t('inspector.iconPicker.search', { defaultValue: 'Search' })}
-            <div className="relative">
-              <Search
-                size={13}
-                className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-(--color-5)"
-              />
-              <input
-                className="h-8 w-full rounded-md border border-black/10 bg-transparent pl-7 pr-2 text-[12px] text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder={t('inspector.iconPicker.searchPlaceholder', {
-                  defaultValue: 'Type icon name, e.g. sparkles',
-                })}
-                data-testid="icon-picker-search"
-              />
-            </div>
-          </label>
-        </div>
-
-        <div className="flex min-h-0 flex-1">
-          <div className="flex min-w-0 flex-1 flex-col">
-            <div className="flex items-center justify-between border-b border-black/8 px-4 py-2 text-[11px] text-(--color-6) dark:border-white/12">
-              <span>
-                {t('inspector.iconPicker.matched', {
-                  defaultValue: '{{count}} matched',
-                  count: filteredNames.length,
-                })}
-              </span>
-              <span>
-                {filteredNames.length
-                  ? t('inspector.iconPicker.showingRange', {
-                      defaultValue: 'showing {{from}}-{{to}} / {{total}}',
-                      from: pageStart + 1,
-                      to: Math.min(pageEnd, filteredNames.length),
-                      total: filteredNames.length,
-                    })
-                  : t('inspector.iconPicker.showingEmpty', {
-                      defaultValue: 'showing 0/0',
-                    })}
-              </span>
-            </div>
+            data-testid="icon-picker-modal"
+        >
             <div
-              ref={listRef}
-              className="grid min-h-0 grid-cols-3 gap-2 overflow-y-auto p-3 md:grid-cols-4 lg:grid-cols-5"
+                className="flex h-[min(78vh,760px)] w-[min(900px,96vw)] flex-col overflow-hidden rounded-[16px] border border-black/8 bg-(--color-0) shadow-[0_18px_34px_rgba(0,0,0,0.2)] dark:border-white/14"
+                onClick={(event) => event.stopPropagation()}
             >
-              {visibleNames.map((name) => {
-                const iconRef = { provider: providerId, name };
-                const IconComponent = resolveIconRef(iconRef);
-                const isActive = selectedName === name;
-                return (
-                  <button
-                    type="button"
-                    key={name}
-                    className={`group flex h-[76px] cursor-pointer flex-col items-center justify-center gap-1 rounded-md border px-1 text-center transition-colors ${isActive ? 'border-black/40 bg-black/[0.03] text-(--color-10)' : 'border-black/8 bg-transparent text-(--color-7) hover:border-black/18 hover:text-(--color-9) dark:border-white/12 dark:hover:border-white/25'}`}
-                    onClick={() => setSelectedName(name)}
-                    data-testid={`icon-picker-option-${name}`}
-                    title={name}
-                  >
-                    <span className="inline-flex h-5 w-5 items-center justify-center">
-                      {IconComponent ? <IconComponent size={18} /> : null}
-                    </span>
-                    <span className="w-full truncate text-[10px]">{name}</span>
-                  </button>
-                );
-              })}
-              {!visibleNames.length && (
-                <div className="col-span-full rounded-md border border-dashed border-black/12 px-3 py-5 text-center text-[12px] text-(--color-6) dark:border-white/16">
-                  {t('inspector.iconPicker.empty', {
-                    defaultValue: 'No icons found.',
-                  })}
-                </div>
-              )}
-            </div>
-            <div className="flex items-center justify-between border-t border-black/8 px-3 py-2 text-[11px] text-(--color-6) dark:border-white/12">
-              <span>
-                {t('inspector.iconPicker.page', {
-                  defaultValue: 'Page {{current}}/{{total}}',
-                  current: currentPage,
-                  total: totalPages,
-                })}
-              </span>
-              <div className="inline-flex items-center gap-1">
-                <button
-                  type="button"
-                  className="h-7 rounded-md border border-black/10 px-2 text-[11px] text-(--color-7) disabled:cursor-not-allowed disabled:opacity-40"
-                  onClick={() => setPage((current) => Math.max(1, current - 1))}
-                  disabled={currentPage <= 1}
-                  data-testid="icon-picker-prev-page"
-                >
-                  {t('inspector.iconPicker.prev', { defaultValue: 'Prev' })}
-                </button>
-                <button
-                  type="button"
-                  className="h-7 rounded-md border border-black/10 px-2 text-[11px] text-(--color-7) disabled:cursor-not-allowed disabled:opacity-40"
-                  onClick={() =>
-                    setPage((current) => Math.min(totalPages, current + 1))
-                  }
-                  disabled={currentPage >= totalPages}
-                  data-testid="icon-picker-next-page"
-                >
-                  {t('inspector.iconPicker.next', { defaultValue: 'Next' })}
-                </button>
-                <div className="ml-1 inline-flex items-center gap-1">
-                  <input
-                    className="h-7 w-14 rounded-md border border-black/10 bg-transparent px-2 text-center text-[11px] text-(--color-8) outline-none dark:border-white/16"
-                    value={pageInput}
-                    onChange={(event) => {
-                      const digitsOnly = event.target.value.replace(/[^\d]/g, '');
-                      setPageInput(digitsOnly);
-                    }}
-                    onBlur={applyPageInput}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter') {
-                        event.preventDefault();
-                        applyPageInput();
-                      }
-                    }}
-                    inputMode="numeric"
-                    data-testid="icon-picker-jump-input"
-                  />
-                  <button
-                    type="button"
-                    className="h-7 rounded-md border border-black/10 px-2 text-[11px] text-(--color-7)"
-                    onClick={applyPageInput}
-                    data-testid="icon-picker-jump-go"
-                  >
-                    {t('inspector.iconPicker.go', { defaultValue: 'Go' })}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <aside className="hidden w-52 border-l border-black/8 px-3 py-3 dark:border-white/12 md:flex md:flex-col">
-              <span className="text-[11px] font-semibold text-(--color-7)">
-                {t('inspector.iconPicker.preview', { defaultValue: 'Preview' })}
-              </span>
-              <div className="mt-3 flex flex-1 flex-col items-center justify-center rounded-md border border-black/8 bg-black/[0.02] dark:border-white/14">
-                {SelectedIcon ? (
-                  <SelectedIcon size={34} />
-                ) : (
-                  <span className="text-[11px] text-(--color-5)">
-                    {t('inspector.iconPicker.noIcon', { defaultValue: 'No icon' })}
-                  </span>
-                )}
-                <span className="mt-2 max-w-[90%] truncate text-[11px] text-(--color-7)">
-                  {selectedName || '--'}
-                </span>
-            </div>
-          </aside>
-        </div>
+                <header className="flex items-center justify-between border-b border-black/8 px-4 py-3 dark:border-white/12">
+                    <div className="min-w-0">
+                        <h3 className="m-0 truncate text-[14px] font-semibold text-(--color-9)">
+                            {t('inspector.iconPicker.title', {
+                                defaultValue: 'Select icon',
+                            })}
+                        </h3>
+                        <p className="m-0 mt-1 text-[11px] text-(--color-6)">
+                            {t('inspector.iconPicker.subtitle', {
+                                defaultValue:
+                                    'Source + search. Ready for multiple icon providers.',
+                            })}
+                        </p>
+                    </div>
+                    <button
+                        type="button"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
+                        onClick={onClose}
+                        data-testid="icon-picker-close"
+                        aria-label={t('inspector.iconPicker.close', {
+                            defaultValue: 'Close icon picker',
+                        })}
+                    >
+                        <X size={16} />
+                    </button>
+                </header>
 
-        <footer className="flex items-center justify-end gap-2 border-t border-black/8 px-4 py-3 dark:border-white/12">
-          <button
-            type="button"
-            className="h-8 rounded-md border border-black/12 bg-transparent px-3 text-[12px] text-(--color-7) hover:text-(--color-9)"
-            onClick={onClose}
-          >
-            {t('inspector.iconPicker.cancel', { defaultValue: 'Cancel' })}
-          </button>
-          <button
-            type="button"
-            className="h-8 rounded-md border border-black/14 bg-black px-3 text-[12px] text-white disabled:cursor-not-allowed disabled:opacity-40"
-            onClick={() => {
-              if (!selectedRef) return;
-              onSelect(selectedRef);
-              onClose();
-            }}
-            disabled={!canApply}
-            data-testid="icon-picker-apply"
-          >
-            {t('inspector.iconPicker.apply', { defaultValue: 'Use icon' })}
-          </button>
-        </footer>
-      </div>
-    </div>
-  );
+                <div className="grid grid-cols-1 gap-2 border-b border-black/8 px-4 py-3 md:grid-cols-[180px_1fr] dark:border-white/12">
+                    <label className="grid gap-1 text-[11px] font-semibold text-(--color-7)">
+                        {t('inspector.iconPicker.source', {
+                            defaultValue: 'Source',
+                        })}
+                        <select
+                            className="h-8 rounded-md border border-black/10 bg-transparent px-2 text-[12px] text-(--color-9) outline-none dark:border-white/16"
+                            value={providerId}
+                            onChange={(event) => {
+                                setProviderId(event.target.value);
+                                setSelectedName('');
+                                setPage(1);
+                            }}
+                            data-testid="icon-picker-provider"
+                        >
+                            {providers.map((provider) => (
+                                <option key={provider.id} value={provider.id}>
+                                    {provider.label}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                    <label className="grid gap-1 text-[11px] font-semibold text-(--color-7)">
+                        {t('inspector.iconPicker.search', {
+                            defaultValue: 'Search',
+                        })}
+                        <div className="relative">
+                            <Search
+                                size={13}
+                                className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-(--color-5)"
+                            />
+                            <input
+                                className="h-8 w-full rounded-md border border-black/10 bg-transparent pl-7 pr-2 text-[12px] text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+                                value={search}
+                                onChange={(event) =>
+                                    setSearch(event.target.value)
+                                }
+                                placeholder={t(
+                                    'inspector.iconPicker.searchPlaceholder',
+                                    {
+                                        defaultValue:
+                                            'Type icon name, e.g. sparkles',
+                                    }
+                                )}
+                                data-testid="icon-picker-search"
+                            />
+                        </div>
+                    </label>
+                </div>
+
+                <div className="flex min-h-0 flex-1">
+                    <div className="flex min-w-0 flex-1 flex-col">
+                        <div className="flex items-center justify-between border-b border-black/8 px-4 py-2 text-[11px] text-(--color-6) dark:border-white/12">
+                            <span>
+                                {t('inspector.iconPicker.matched', {
+                                    defaultValue: '{{count}} matched',
+                                    count: filteredNames.length,
+                                })}
+                            </span>
+                            <span>
+                                {filteredNames.length
+                                    ? t('inspector.iconPicker.showingRange', {
+                                          defaultValue:
+                                              'showing {{from}}-{{to}} / {{total}}',
+                                          from: pageStart + 1,
+                                          to: Math.min(
+                                              pageEnd,
+                                              filteredNames.length
+                                          ),
+                                          total: filteredNames.length,
+                                      })
+                                    : t('inspector.iconPicker.showingEmpty', {
+                                          defaultValue: 'showing 0/0',
+                                      })}
+                            </span>
+                        </div>
+                        <div
+                            ref={listRef}
+                            className="grid min-h-0 grid-cols-3 gap-2 overflow-y-auto p-3 md:grid-cols-4 lg:grid-cols-5"
+                        >
+                            {visibleNames.map((name) => {
+                                const iconRef = { provider: providerId, name };
+                                const IconComponent = resolveIconRef(iconRef);
+                                const isActive = selectedName === name;
+                                return (
+                                    <button
+                                        type="button"
+                                        key={name}
+                                        className={`group flex h-[76px] cursor-pointer flex-col items-center justify-center gap-1 rounded-md border px-1 text-center transition-colors ${isActive ? 'border-black/40 bg-black/[0.03] text-(--color-10)' : 'border-black/8 bg-transparent text-(--color-7) hover:border-black/18 hover:text-(--color-9) dark:border-white/12 dark:hover:border-white/25'}`}
+                                        onClick={() => setSelectedName(name)}
+                                        data-testid={`icon-picker-option-${name}`}
+                                        title={name}
+                                    >
+                                        <span className="inline-flex h-5 w-5 items-center justify-center">
+                                            {IconComponent ? (
+                                                <IconComponent size={18} />
+                                            ) : null}
+                                        </span>
+                                        <span className="w-full truncate text-[10px]">
+                                            {name}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                            {!visibleNames.length && (
+                                <div className="col-span-full rounded-md border border-dashed border-black/12 px-3 py-5 text-center text-[12px] text-(--color-6) dark:border-white/16">
+                                    {t('inspector.iconPicker.empty', {
+                                        defaultValue: 'No icons found.',
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex items-center justify-between border-t border-black/8 px-3 py-2 text-[11px] text-(--color-6) dark:border-white/12">
+                            <span>
+                                {t('inspector.iconPicker.page', {
+                                    defaultValue: 'Page {{current}}/{{total}}',
+                                    current: currentPage,
+                                    total: totalPages,
+                                })}
+                            </span>
+                            <div className="inline-flex items-center gap-1">
+                                <button
+                                    type="button"
+                                    className="h-7 rounded-md border border-black/10 px-2 text-[11px] text-(--color-7) disabled:cursor-not-allowed disabled:opacity-40"
+                                    onClick={() =>
+                                        setPage((current) =>
+                                            Math.max(1, current - 1)
+                                        )
+                                    }
+                                    disabled={currentPage <= 1}
+                                    data-testid="icon-picker-prev-page"
+                                >
+                                    {t('inspector.iconPicker.prev', {
+                                        defaultValue: 'Prev',
+                                    })}
+                                </button>
+                                <button
+                                    type="button"
+                                    className="h-7 rounded-md border border-black/10 px-2 text-[11px] text-(--color-7) disabled:cursor-not-allowed disabled:opacity-40"
+                                    onClick={() =>
+                                        setPage((current) =>
+                                            Math.min(totalPages, current + 1)
+                                        )
+                                    }
+                                    disabled={currentPage >= totalPages}
+                                    data-testid="icon-picker-next-page"
+                                >
+                                    {t('inspector.iconPicker.next', {
+                                        defaultValue: 'Next',
+                                    })}
+                                </button>
+                                <div className="ml-1 inline-flex items-center gap-1">
+                                    <input
+                                        className="h-7 w-14 rounded-md border border-black/10 bg-transparent px-2 text-center text-[11px] text-(--color-8) outline-none dark:border-white/16"
+                                        value={pageInput}
+                                        onChange={(event) => {
+                                            const digitsOnly =
+                                                event.target.value.replace(
+                                                    /[^\d]/g,
+                                                    ''
+                                                );
+                                            setPageInput(digitsOnly);
+                                        }}
+                                        onBlur={applyPageInput}
+                                        onKeyDown={(event) => {
+                                            if (event.key === 'Enter') {
+                                                event.preventDefault();
+                                                applyPageInput();
+                                            }
+                                        }}
+                                        inputMode="numeric"
+                                        data-testid="icon-picker-jump-input"
+                                    />
+                                    <button
+                                        type="button"
+                                        className="h-7 rounded-md border border-black/10 px-2 text-[11px] text-(--color-7)"
+                                        onClick={applyPageInput}
+                                        data-testid="icon-picker-jump-go"
+                                    >
+                                        {t('inspector.iconPicker.go', {
+                                            defaultValue: 'Go',
+                                        })}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <aside className="hidden w-52 border-l border-black/8 px-3 py-3 dark:border-white/12 md:flex md:flex-col">
+                        <span className="text-[11px] font-semibold text-(--color-7)">
+                            {t('inspector.iconPicker.preview', {
+                                defaultValue: 'Preview',
+                            })}
+                        </span>
+                        <div className="mt-3 flex flex-1 flex-col items-center justify-center rounded-md border border-black/8 bg-black/[0.02] dark:border-white/14">
+                            {SelectedIcon ? (
+                                <SelectedIcon size={34} />
+                            ) : (
+                                <span className="text-[11px] text-(--color-5)">
+                                    {t('inspector.iconPicker.noIcon', {
+                                        defaultValue: 'No icon',
+                                    })}
+                                </span>
+                            )}
+                            <span className="mt-2 max-w-[90%] truncate text-[11px] text-(--color-7)">
+                                {selectedName || '--'}
+                            </span>
+                        </div>
+                    </aside>
+                </div>
+
+                <footer className="flex items-center justify-end gap-2 border-t border-black/8 px-4 py-3 dark:border-white/12">
+                    <button
+                        type="button"
+                        className="h-8 rounded-md border border-black/12 bg-transparent px-3 text-[12px] text-(--color-7) hover:text-(--color-9)"
+                        onClick={onClose}
+                    >
+                        {t('inspector.iconPicker.cancel', {
+                            defaultValue: 'Cancel',
+                        })}
+                    </button>
+                    <button
+                        type="button"
+                        className="h-8 rounded-md border border-black/14 bg-black px-3 text-[12px] text-white disabled:cursor-not-allowed disabled:opacity-40"
+                        onClick={() => {
+                            if (!selectedRef) return;
+                            onSelect(selectedRef);
+                            onClose();
+                        }}
+                        disabled={!canApply}
+                        data-testid="icon-picker-apply"
+                    >
+                        {t('inspector.iconPicker.apply', {
+                            defaultValue: 'Use icon',
+                        })}
+                    </button>
+                </footer>
+            </div>
+        </div>
+    );
 }

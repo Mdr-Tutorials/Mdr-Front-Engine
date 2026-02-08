@@ -19,40 +19,40 @@ MdrFrontEngine 使用 10 级灰度和语义化颜色：
 
 ```css
 :root {
-  /* 灰度 */
-  --mdr-gray-0: #ffffff;
-  --mdr-gray-1: #f8f9fa;
-  --mdr-gray-2: #e9ecef;
-  --mdr-gray-3: #dee2e6;
-  --mdr-gray-4: #ced4da;
-  --mdr-gray-5: #adb5bd;
-  --mdr-gray-6: #6c757d;
-  --mdr-gray-7: #495057;
-  --mdr-gray-8: #343a40;
-  --mdr-gray-9: #212529;
-  --mdr-gray-10: #000000;
+    /* 灰度 */
+    --mdr-gray-0: #ffffff;
+    --mdr-gray-1: #f8f9fa;
+    --mdr-gray-2: #e9ecef;
+    --mdr-gray-3: #dee2e6;
+    --mdr-gray-4: #ced4da;
+    --mdr-gray-5: #adb5bd;
+    --mdr-gray-6: #6c757d;
+    --mdr-gray-7: #495057;
+    --mdr-gray-8: #343a40;
+    --mdr-gray-9: #212529;
+    --mdr-gray-10: #000000;
 
-  /* 主色 */
-  --mdr-color-primary: #5f67ee;
-  --mdr-color-primary-hover: #4c54d8;
-  --mdr-color-primary-active: #3d45c2;
-  --mdr-color-primary-light: #eef0ff;
+    /* 主色 */
+    --mdr-color-primary: #5f67ee;
+    --mdr-color-primary-hover: #4c54d8;
+    --mdr-color-primary-active: #3d45c2;
+    --mdr-color-primary-light: #eef0ff;
 
-  /* 语义色 */
-  --mdr-color-success: #10b981;
-  --mdr-color-warning: #f59e0b;
-  --mdr-color-danger: #ef4444;
-  --mdr-color-info: #3b82f6;
+    /* 语义色 */
+    --mdr-color-success: #10b981;
+    --mdr-color-warning: #f59e0b;
+    --mdr-color-danger: #ef4444;
+    --mdr-color-info: #3b82f6;
 
-  /* 文本色 */
-  --mdr-color-text: var(--mdr-gray-9);
-  --mdr-color-text-secondary: var(--mdr-gray-6);
-  --mdr-color-text-muted: var(--mdr-gray-5);
+    /* 文本色 */
+    --mdr-color-text: var(--mdr-gray-9);
+    --mdr-color-text-secondary: var(--mdr-gray-6);
+    --mdr-color-text-muted: var(--mdr-gray-5);
 
-  /* 背景色 */
-  --mdr-color-background: var(--mdr-gray-0);
-  --mdr-color-surface: var(--mdr-gray-1);
-  --mdr-color-border: var(--mdr-gray-3);
+    /* 背景色 */
+    --mdr-color-background: var(--mdr-gray-0);
+    --mdr-color-surface: var(--mdr-gray-1);
+    --mdr-color-border: var(--mdr-gray-3);
 }
 ```
 
@@ -60,17 +60,17 @@ MdrFrontEngine 使用 10 级灰度和语义化颜色：
 
 ```css
 :root {
-  --mdr-spacing-0: 0;
-  --mdr-spacing-1: 0.25rem;   /* 4px */
-  --mdr-spacing-2: 0.5rem;    /* 8px */
-  --mdr-spacing-3: 0.75rem;   /* 12px */
-  --mdr-spacing-4: 1rem;      /* 16px */
-  --mdr-spacing-5: 1.25rem;   /* 20px */
-  --mdr-spacing-6: 1.5rem;    /* 24px */
-  --mdr-spacing-8: 2rem;      /* 32px */
-  --mdr-spacing-10: 2.5rem;   /* 40px */
-  --mdr-spacing-12: 3rem;     /* 48px */
-  --mdr-spacing-16: 4rem;     /* 64px */
+    --mdr-spacing-0: 0;
+    --mdr-spacing-1: 0.25rem; /* 4px */
+    --mdr-spacing-2: 0.5rem; /* 8px */
+    --mdr-spacing-3: 0.75rem; /* 12px */
+    --mdr-spacing-4: 1rem; /* 16px */
+    --mdr-spacing-5: 1.25rem; /* 20px */
+    --mdr-spacing-6: 1.5rem; /* 24px */
+    --mdr-spacing-8: 2rem; /* 32px */
+    --mdr-spacing-10: 2.5rem; /* 40px */
+    --mdr-spacing-12: 3rem; /* 48px */
+    --mdr-spacing-16: 4rem; /* 64px */
 }
 ```
 
@@ -78,12 +78,12 @@ MdrFrontEngine 使用 10 级灰度和语义化颜色：
 
 ```css
 :root {
-  --mdr-radius-none: 0;
-  --mdr-radius-sm: 0.25rem;   /* 4px */
-  --mdr-radius-md: 0.5rem;    /* 8px */
-  --mdr-radius-lg: 0.75rem;   /* 12px */
-  --mdr-radius-xl: 1rem;      /* 16px */
-  --mdr-radius-full: 9999px;
+    --mdr-radius-none: 0;
+    --mdr-radius-sm: 0.25rem; /* 4px */
+    --mdr-radius-md: 0.5rem; /* 8px */
+    --mdr-radius-lg: 0.75rem; /* 12px */
+    --mdr-radius-xl: 1rem; /* 16px */
+    --mdr-radius-full: 9999px;
 }
 ```
 
@@ -91,10 +91,13 @@ MdrFrontEngine 使用 10 级灰度和语义化颜色：
 
 ```css
 :root {
-  --mdr-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --mdr-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --mdr-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --mdr-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --mdr-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --mdr-shadow-md:
+        0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --mdr-shadow-lg:
+        0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --mdr-shadow-xl:
+        0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 ```
 
@@ -102,30 +105,30 @@ MdrFrontEngine 使用 10 级灰度和语义化颜色：
 
 ```css
 :root {
-  /* 字体族 */
-  --mdr-font-sans: ui-sans-serif, system-ui, sans-serif;
-  --mdr-font-mono: ui-monospace, monospace;
+    /* 字体族 */
+    --mdr-font-sans: ui-sans-serif, system-ui, sans-serif;
+    --mdr-font-mono: ui-monospace, monospace;
 
-  /* 字号 */
-  --mdr-text-xs: 0.75rem;     /* 12px */
-  --mdr-text-sm: 0.875rem;    /* 14px */
-  --mdr-text-base: 1rem;      /* 16px */
-  --mdr-text-lg: 1.125rem;    /* 18px */
-  --mdr-text-xl: 1.25rem;     /* 20px */
-  --mdr-text-2xl: 1.5rem;     /* 24px */
-  --mdr-text-3xl: 1.875rem;   /* 30px */
-  --mdr-text-4xl: 2.25rem;    /* 36px */
+    /* 字号 */
+    --mdr-text-xs: 0.75rem; /* 12px */
+    --mdr-text-sm: 0.875rem; /* 14px */
+    --mdr-text-base: 1rem; /* 16px */
+    --mdr-text-lg: 1.125rem; /* 18px */
+    --mdr-text-xl: 1.25rem; /* 20px */
+    --mdr-text-2xl: 1.5rem; /* 24px */
+    --mdr-text-3xl: 1.875rem; /* 30px */
+    --mdr-text-4xl: 2.25rem; /* 36px */
 
-  /* 字重 */
-  --mdr-font-normal: 400;
-  --mdr-font-medium: 500;
-  --mdr-font-semibold: 600;
-  --mdr-font-bold: 700;
+    /* 字重 */
+    --mdr-font-normal: 400;
+    --mdr-font-medium: 500;
+    --mdr-font-semibold: 600;
+    --mdr-font-bold: 700;
 
-  /* 行高 */
-  --mdr-leading-tight: 1.25;
-  --mdr-leading-normal: 1.5;
-  --mdr-leading-relaxed: 1.75;
+    /* 行高 */
+    --mdr-leading-tight: 1.25;
+    --mdr-leading-normal: 1.5;
+    --mdr-leading-relaxed: 1.75;
 }
 ```
 
@@ -137,13 +140,13 @@ MdrFrontEngine 默认根据系统设置自动切换：
 
 ```css
 @media (prefers-color-scheme: dark) {
-  :root {
-    --mdr-color-background: var(--mdr-gray-9);
-    --mdr-color-surface: var(--mdr-gray-8);
-    --mdr-color-text: var(--mdr-gray-1);
-    --mdr-color-text-secondary: var(--mdr-gray-4);
-    --mdr-color-border: var(--mdr-gray-7);
-  }
+    :root {
+        --mdr-color-background: var(--mdr-gray-9);
+        --mdr-color-surface: var(--mdr-gray-8);
+        --mdr-color-text: var(--mdr-gray-1);
+        --mdr-color-text-secondary: var(--mdr-gray-4);
+        --mdr-color-border: var(--mdr-gray-7);
+    }
 }
 ```
 
@@ -152,16 +155,20 @@ MdrFrontEngine 默认根据系统设置自动切换：
 使用 `data-theme` 属性手动控制：
 
 ```html
-<html data-theme="light">  <!-- 浅色模式 -->
-<html data-theme="dark">   <!-- 深色模式 -->
+<html data-theme="light">
+    <!-- 浅色模式 -->
+    <html data-theme="dark">
+        <!-- 深色模式 -->
+    </html>
+</html>
 ```
 
 ```css
-[data-theme="dark"] {
-  --mdr-color-background: #1a1a1a;
-  --mdr-color-surface: #2d2d2d;
-  --mdr-color-text: #ffffff;
-  /* ... */
+[data-theme='dark'] {
+    --mdr-color-background: #1a1a1a;
+    --mdr-color-surface: #2d2d2d;
+    --mdr-color-text: #ffffff;
+    /* ... */
 }
 ```
 
@@ -169,17 +176,17 @@ MdrFrontEngine 默认根据系统设置自动切换：
 
 ```json
 {
-  "type": "MdrButton",
-  "props": {
-    "variant": "outline",
-    "icon": "sun"
-  },
-  "events": {
-    "onClick": {
-      "type": "code",
-      "code": "document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'"
+    "type": "MdrButton",
+    "props": {
+        "variant": "outline",
+        "icon": "sun"
+    },
+    "events": {
+        "onClick": {
+            "type": "code",
+            "code": "document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'"
+        }
     }
-  }
 }
 ```
 
@@ -190,17 +197,17 @@ MdrFrontEngine 默认根据系统设置自动切换：
 ```css
 /* themes/custom.css */
 :root {
-  /* 自定义主色 */
-  --mdr-color-primary: #ff6b6b;
-  --mdr-color-primary-hover: #ee5a5a;
-  --mdr-color-primary-active: #dd4a4a;
+    /* 自定义主色 */
+    --mdr-color-primary: #ff6b6b;
+    --mdr-color-primary-hover: #ee5a5a;
+    --mdr-color-primary-active: #dd4a4a;
 
-  /* 自定义圆角 */
-  --mdr-radius-md: 12px;
-  --mdr-radius-lg: 16px;
+    /* 自定义圆角 */
+    --mdr-radius-md: 12px;
+    --mdr-radius-lg: 16px;
 
-  /* 自定义字体 */
-  --mdr-font-sans: 'Inter', sans-serif;
+    /* 自定义字体 */
+    --mdr-font-sans: 'Inter', sans-serif;
 }
 ```
 
@@ -209,13 +216,13 @@ MdrFrontEngine 默认根据系统设置自动切换：
 ```json
 // project.json
 {
-  "theme": {
-    "extends": "default",
-    "customCSS": "./themes/custom.css",
-    "variables": {
-      "color-primary": "#ff6b6b"
+    "theme": {
+        "extends": "default",
+        "customCSS": "./themes/custom.css",
+        "variables": {
+            "color-primary": "#ff6b6b"
+        }
     }
-  }
 }
 ```
 
@@ -234,13 +241,13 @@ mdr export --target react --theme ./themes/custom.css
 ```css
 /* 全局覆盖按钮样式 */
 .mdr-button {
-  font-weight: var(--mdr-font-semibold);
-  text-transform: uppercase;
+    font-weight: var(--mdr-font-semibold);
+    text-transform: uppercase;
 }
 
 /* 覆盖特定变体 */
 .mdr-button--primary {
-  background: linear-gradient(135deg, var(--mdr-color-primary), #8b5cf6);
+    background: linear-gradient(135deg, var(--mdr-color-primary), #8b5cf6);
 }
 ```
 
@@ -248,12 +255,12 @@ mdr export --target react --theme ./themes/custom.css
 
 ```json
 {
-  "type": "MdrButton",
-  "props": {
-    "variant": "primary"
-  },
-  "className": "my-custom-button",
-  "children": ["自定义按钮"]
+    "type": "MdrButton",
+    "props": {
+        "variant": "primary"
+    },
+    "className": "my-custom-button",
+    "children": ["自定义按钮"]
 }
 ```
 
@@ -261,12 +268,12 @@ mdr export --target react --theme ./themes/custom.css
 
 ```json
 {
-  "type": "MdrContainer",
-  "styles": {
-    "background": "linear-gradient(to right, #667eea, #764ba2)",
-    "padding": "2rem",
-    "borderRadius": "1rem"
-  }
+    "type": "MdrContainer",
+    "styles": {
+        "background": "linear-gradient(to right, #667eea, #764ba2)",
+        "padding": "2rem",
+        "borderRadius": "1rem"
+    }
 }
 ```
 
@@ -276,27 +283,27 @@ mdr export --target react --theme ./themes/custom.css
 
 ```json
 {
-  "colors": {
-    "primary": {
-      "value": "#5f67ee",
-      "description": "主色调"
+    "colors": {
+        "primary": {
+            "value": "#5f67ee",
+            "description": "主色调"
+        },
+        "secondary": {
+            "value": "#6b7280",
+            "description": "次要色"
+        }
     },
-    "secondary": {
-      "value": "#6b7280",
-      "description": "次要色"
+    "spacing": {
+        "xs": { "value": "4px" },
+        "sm": { "value": "8px" },
+        "md": { "value": "16px" },
+        "lg": { "value": "24px" }
+    },
+    "borderRadius": {
+        "sm": { "value": "4px" },
+        "md": { "value": "8px" },
+        "lg": { "value": "12px" }
     }
-  },
-  "spacing": {
-    "xs": { "value": "4px" },
-    "sm": { "value": "8px" },
-    "md": { "value": "16px" },
-    "lg": { "value": "24px" }
-  },
-  "borderRadius": {
-    "sm": { "value": "4px" },
-    "md": { "value": "8px" },
-    "lg": { "value": "12px" }
-  }
 }
 ```
 
@@ -318,28 +325,28 @@ MdrFrontEngine 支持使用 Tailwind CSS：
 ```javascript
 // tailwind.config.ts
 export default {
-  content: ['./src/**/*.{html,js,ts,jsx,tsx}'],
-  theme: {
-    extend: {
-      colors: {
-        primary: 'var(--mdr-color-primary)',
-        secondary: 'var(--mdr-color-secondary)',
-      },
-      spacing: {
-        'mdr-1': 'var(--mdr-spacing-1)',
-        'mdr-2': 'var(--mdr-spacing-2)',
-      }
-    }
-  }
-}
+    content: ['./src/**/*.{html,js,ts,jsx,tsx}'],
+    theme: {
+        extend: {
+            colors: {
+                primary: 'var(--mdr-color-primary)',
+                secondary: 'var(--mdr-color-secondary)',
+            },
+            spacing: {
+                'mdr-1': 'var(--mdr-spacing-1)',
+                'mdr-2': 'var(--mdr-spacing-2)',
+            },
+        },
+    },
+};
 ```
 
 ### 在 MIR 中使用
 
 ```json
 {
-  "type": "MdrContainer",
-  "className": "flex flex-col gap-4 p-6 bg-gray-100 rounded-lg"
+    "type": "MdrContainer",
+    "className": "flex flex-col gap-4 p-6 bg-gray-100 rounded-lg"
 }
 ```
 
@@ -349,11 +356,11 @@ export default {
 
 ```css
 :root {
-  --mdr-breakpoint-sm: 640px;
-  --mdr-breakpoint-md: 768px;
-  --mdr-breakpoint-lg: 1024px;
-  --mdr-breakpoint-xl: 1280px;
-  --mdr-breakpoint-2xl: 1536px;
+    --mdr-breakpoint-sm: 640px;
+    --mdr-breakpoint-md: 768px;
+    --mdr-breakpoint-lg: 1024px;
+    --mdr-breakpoint-xl: 1280px;
+    --mdr-breakpoint-2xl: 1536px;
 }
 ```
 
@@ -361,16 +368,16 @@ export default {
 
 ```json
 {
-  "type": "MdrGrid",
-  "props": {
-    "columns": {
-      "default": 1,
-      "sm": 2,
-      "md": 3,
-      "lg": 4
-    },
-    "gap": "16px"
-  }
+    "type": "MdrGrid",
+    "props": {
+        "columns": {
+            "default": 1,
+            "sm": 2,
+            "md": 3,
+            "lg": 4
+        },
+        "gap": "16px"
+    }
 }
 ```
 
@@ -382,8 +389,8 @@ export default {
 
 ```css
 /* 确保文本可读性 */
---mdr-color-text: var(--mdr-gray-9);        /* 在白色背景上 */
---mdr-color-text-on-primary: #ffffff;       /* 在主色背景上 */
+--mdr-color-text: var(--mdr-gray-9); /* 在白色背景上 */
+--mdr-color-text-on-primary: #ffffff; /* 在主色背景上 */
 ```
 
 ### 焦点样式
@@ -391,8 +398,8 @@ export default {
 ```css
 /* 键盘焦点指示器 */
 :focus-visible {
-  outline: 2px solid var(--mdr-color-primary);
-  outline-offset: 2px;
+    outline: 2px solid var(--mdr-color-primary);
+    outline-offset: 2px;
 }
 ```
 
@@ -400,12 +407,12 @@ export default {
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
 }
 ```
 

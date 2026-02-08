@@ -6,7 +6,7 @@
     background-color: var(--color-0);
 }
 
-.MdrCollapseItem+.MdrCollapseItem {
+.MdrCollapseItem + .MdrCollapseItem {
     border-top: 1px solid var(--color-3);
 }
 

@@ -4,22 +4,22 @@ import { MemoryRouter } from 'react-router';
 import '@mdr/themes';
 
 const preview: Preview = {
-  parameters: {
-    controls: {
-      matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/i,
-      },
+    parameters: {
+        controls: {
+            matchers: {
+                color: /(background|color)$/i,
+                date: /Date$/i,
+            },
+        },
     },
-  },
-  // 添加装饰器
-  decorators: [
-    (Story) => (
-      <MemoryRouter initialEntries={['/']}>
-        <Story />
-      </MemoryRouter>
-    ),
-  ],
+    // 添加装饰器
+    decorators: [
+        (Story) => (
+            <MemoryRouter initialEntries={['/']}>
+                <Story />
+            </MemoryRouter>
+        ),
+    ],
 };
 
 export default preview;

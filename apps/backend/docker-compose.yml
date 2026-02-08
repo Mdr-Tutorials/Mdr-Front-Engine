@@ -1,16 +1,16 @@
 services:
-  postgres:
-    image: postgres:16
-    container_name: mdr-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: mdr_front_engine
-    ports:
-      - "5432:5432"
-    volumes:
-      - mdr-postgres-data:/var/lib/postgresql/data
+    postgres:
+        image: postgres:16
+        container_name: mdr-postgres
+        restart: unless-stopped
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: mdr_front_engine
+        ports:
+            - '5432:5432'
+        volumes:
+            - mdr-postgres-data:/var/lib/postgresql/data
 
 volumes:
-  mdr-postgres-data:
+    mdr-postgres-data:

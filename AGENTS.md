@@ -36,6 +36,7 @@
 ## 1. Project Coordinator (项目协调者)
 
 ### 职责
+
 - 全局项目规划与进度跟踪
 - 任务分解与分配
 - Agent 间协调与冲突解决
@@ -45,21 +46,20 @@
 
 ```yaml
 输入:
-  - 用户需求 (自然语言)
-  - 现有代码库状态
-  - 技术栈限制
+    - 用户需求 (自然语言)
+    - 现有代码库状态
+    - 技术栈限制
 
-处理:
-  1. 需求分析与拆解
-  2. 生成任务列表 (tasks.json)
-  3. 分配任务给专项 Agent
-  4. 监控任务进度
-  5. 集成各 Agent 产出
+处理: 1. 需求分析与拆解
+    2. 生成任务列表 (tasks.json)
+    3. 分配任务给专项 Agent
+    4. 监控任务进度
+    5. 集成各 Agent 产出
 
 输出:
-  - 任务分配清单
-  - 里程碑时间表
-  - 技术决策文档
+    - 任务分配清单
+    - 里程碑时间表
+    - 技术决策文档
 ```
 
 ### 示例对话
@@ -72,7 +72,7 @@ Coordinator:
    - UI 层 (拖拽交互)
    - 状态管理 (组件树更新)
    - MIR 生成 (保存到 MIR 结构)
-   
+
 2. [任务分解]
    - Task#001: UI Agent 实现 DragDropCanvas 组件
    - Task#002: MIR Agent 设计组件树数据结构
@@ -99,17 +99,17 @@ Coordinator:
 
 ```typescript
 interface ArchitectureAgent {
-  // 评估技术栈
-  evaluateTech(requirement: string): TechStack;
-  
-  // 设计模块接口
-  designInterface(module: string): APIDefinition;
-  
-  // 优化建议
-  suggestOptimization(codebase: string): Recommendation[];
-  
-  // 依赖分析
-  analyzeDependencies(pkg: PackageJson): DependencyReport;
+    // 评估技术栈
+    evaluateTech(requirement: string): TechStack;
+
+    // 设计模块接口
+    designInterface(module: string): APIDefinition;
+
+    // 优化建议
+    suggestOptimization(codebase: string): Recommendation[];
+
+    // 依赖分析
+    analyzeDependencies(pkg: PackageJson): DependencyReport;
 }
 ```
 
@@ -119,19 +119,22 @@ interface ArchitectureAgent {
 # 拖拽系统架构设计
 
 ## 技术选型
+
 - **库**: @dnd-kit/core (理由: 轻量、类型安全)
 - **状态管理**: Zustand (理由: 已使用，避免引入新依赖)
 
 ## 模块结构
+
 apps/web/src/editor/features/design/
-├── DragDropCanvas.tsx       # 主画布
-├── ComponentPalette.tsx     # 组件库
+├── DragDropCanvas.tsx # 主画布
+├── ComponentPalette.tsx # 组件库
 ├── hooks/
-│   ├── useDragDrop.ts       # 拖拽逻辑
-│   └── useComponentTree.ts  # 组件树操作
-└── types.ts                 # 类型定义
+│ ├── useDragDrop.ts # 拖拽逻辑
+│ └── useComponentTree.ts # 组件树操作
+└── types.ts # 类型定义
 
 ## 数据流
+
 [Palette] --(drag)--> [Canvas] --(drop)--> [Store] --(update)--> [MIR]
 ```
 
@@ -260,25 +263,25 @@ CSS 类名:
 // apps/web/src/mir/generator/mirToReact.ts
 
 export const generateReactCode = (mirDoc: MIRDocument): string => {
-  // 1. 解析 MIR 文档
-  const { ui, logic } = mirDoc;
-  
-  // 2. 生成组件代码
-  const componentCode = generateComponent(ui.root);
-  
-  // 3. 生成状态管理
-  const stateCode = generateState(logic?.state);
-  
-  // 4. 生成事件处理器
-  const eventCode = generateEvents(ui.root.events);
-  
-  // 5. 组装完整代码
-  return assembleCode({
-    imports: generateImports(),
-    component: componentCode,
-    state: stateCode,
-    events: eventCode,
-  });
+    // 1. 解析 MIR 文档
+    const { ui, logic } = mirDoc;
+
+    // 2. 生成组件代码
+    const componentCode = generateComponent(ui.root);
+
+    // 3. 生成状态管理
+    const stateCode = generateState(logic?.state);
+
+    // 4. 生成事件处理器
+    const eventCode = generateEvents(ui.root.events);
+
+    // 5. 组装完整代码
+    return assembleCode({
+        imports: generateImports(),
+        component: componentCode,
+        state: stateCode,
+        events: eventCode,
+    });
 };
 ```
 
@@ -286,21 +289,20 @@ export const generateReactCode = (mirDoc: MIRDocument): string => {
 
 ```yaml
 用户操作:
-  - 拖拽组件到画布
-  
+    - 拖拽组件到画布
+
 UI Agent:
-  - 更新组件树视图
-  
-MIR Agent:
-  1. 获取新组件配置
-  2. 生成 ComponentNode
-  3. 插入到 MIR 树
-  4. 触发状态更新
-  5. 实时预览
-  
+    - 更新组件树视图
+
+MIR Agent: 1. 获取新组件配置
+    2. 生成 ComponentNode
+    3. 插入到 MIR 树
+    4. 触发状态更新
+    5. 实时预览
+
 输出:
-  - 更新后的 MIR JSON
-  - 实时生成的代码
+    - 更新后的 MIR JSON
+    - 实时生成的代码
 ```
 
 ---
@@ -320,36 +322,36 @@ MIR Agent:
 // apps/web/src/core/nodes/types.ts
 
 export interface MdrNode {
-  id: string;
-  type: 'http' | 'transform' | 'condition' | 'loop';
-  inputs: NodePort[];
-  outputs: NodePort[];
-  config: Record<string, any>;
-  execute: (inputs: any) => Promise<any>;
+    id: string;
+    type: 'http' | 'transform' | 'condition' | 'loop';
+    inputs: NodePort[];
+    outputs: NodePort[];
+    config: Record<string, any>;
+    execute: (inputs: any) => Promise<any>;
 }
 
 // 示例：HTTP 请求节点
 export class HttpRequestNode implements MdrNode {
-  type = 'http';
-  
-  inputs = [
-    { name: 'url', type: 'string' },
-    { name: 'method', type: 'string' },
-  ];
-  
-  outputs = [
-    { name: 'data', type: 'object' },
-    { name: 'error', type: 'Error' },
-  ];
-  
-  async execute(inputs: { url: string; method: string }) {
-    try {
-      const response = await fetch(inputs.url, { method: inputs.method });
-      return { data: await response.json() };
-    } catch (error) {
-      return { error };
+    type = 'http';
+
+    inputs = [
+        { name: 'url', type: 'string' },
+        { name: 'method', type: 'string' },
+    ];
+
+    outputs = [
+        { name: 'data', type: 'object' },
+        { name: 'error', type: 'Error' },
+    ];
+
+    async execute(inputs: { url: string; method: string }) {
+        try {
+            const response = await fetch(inputs.url, { method: inputs.method });
+            return { data: await response.json() };
+        } catch (error) {
+            return { error };
+        }
     }
-  }
 }
 ```
 
@@ -376,14 +378,14 @@ import { DragDropCanvas } from '../DragDropCanvas';
 describe('DragDropCanvas', () => {
   it('应该能拖拽组件到画布', () => {
     const { getByTestId } = render(<DragDropCanvas />);
-    
+
     const button = getByTestId('palette-button');
     const canvas = getByTestId('design-canvas');
-    
+
     // 模拟拖拽
     fireEvent.dragStart(button);
     fireEvent.drop(canvas);
-    
+
     // 验证组件已添加到画布
     expect(canvas.children.length).toBe(1);
   });
@@ -396,17 +398,19 @@ describe('DragDropCanvas', () => {
 import { test, expect } from '@playwright/test';
 
 test('拖拽组件到画布', async ({ page }) => {
-  await page.goto('/editor');
-  
-  // 拖拽按钮组件
-  await page.dragAndDrop(
-    '[data-component="button"]',
-    '[data-testid="canvas"]'
-  );
-  
-  // 验证代码生成
-  const code = await page.locator('[data-testid="code-preview"]').textContent();
-  expect(code).toContain('<MdrButton');
+    await page.goto('/editor');
+
+    // 拖拽按钮组件
+    await page.dragAndDrop(
+        '[data-component="button"]',
+        '[data-testid="canvas"]'
+    );
+
+    // 验证代码生成
+    const code = await page
+        .locator('[data-testid="code-preview"]')
+        .textContent();
+    expect(code).toContain('<MdrButton');
 });
 ```
 
@@ -442,7 +446,7 @@ test('拖拽组件到画布', async ({ page }) => {
      const [error, setError] = useState('');
      // ...
    }
-   
+
    [MIR Agent]
    interface ComponentNode {
      validation?: {
@@ -450,7 +454,7 @@ test('拖拽组件到画布', async ({ page }) => {
        messages: Record<string, string>;
      }
    }
-   
+
    [Node Graph Agent]
    class ValidateNode implements MdrNode {
      execute(input: any) {
@@ -477,18 +481,22 @@ test('拖拽组件到画布', async ({ page }) => {
 **预计工时**: X 小时
 
 ### 需求描述
+
 [详细描述]
 
 ### 技术要求
+
 - 使用 XXX 库
 - 遵循 YYY 规范
 
 ### 验收标准
+
 - [ ] 功能正常
 - [ ] 测试通过
 - [ ] 文档完善
 
 ### 交付物
+
 - [ ] 代码文件
 - [ ] 单元测试
 - [ ] 使用文档
@@ -539,11 +547,10 @@ test('拖拽组件到画布', async ({ page }) => {
 ```yaml
 情况: Architecture Agent 建议用 Rete.js, Node Graph Agent 更熟悉 ReactFlow
 
-决策流程:
-  1. 双方提供技术对比报告
-  2. Coordinator 组织技术评审
-  3. 基于项目目标做出决定
-  4. 记录决策理由 (ADR 文档)
+决策流程: 1. 双方提供技术对比报告
+    2. Coordinator 组织技术评审
+    3. 基于项目目标做出决定
+    4. 记录决策理由 (ADR 文档)
 ```
 
 ---

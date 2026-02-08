@@ -1,69 +1,69 @@
 {
-  "name": "@mdr/vscode",
-  "displayName": "mdr",
-  "description": "MIR 节点图支持",
-  "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.105.0"
-  },
-  "categories": [
-    "Programming Languages",
-    "Debuggers"
-  ],
-  "activationEvents": [],
-  "main": "./out/index.js",
-  "contributes": {
-    "languages": [
-      {
-        "id": "mir",
-        "aliases": [
-          "MIR",
-          "mir"
-        ],
-        "extensions": [
-          ".mir.json"
-        ],
-        "configuration": "./language/mir.language-configuration.json"
-      }
+    "name": "@mdr/vscode",
+    "displayName": "mdr",
+    "description": "MIR 节点图支持",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.105.0"
+    },
+    "categories": [
+        "Programming Languages",
+        "Debuggers"
     ],
-    "commands": [
-      {
-        "command": "mdr.previewMIR",
-        "title": "MIR: Preview MIR"
-      }
-    ],
-    "debuggers": [
-      {
-        "type": "mdr",
-        "label": "Mdr Debug",
-        "program": "./out/debugger/debugAdapter.js"
-      }
-    ]
-  },
-  "scripts": {
-    "vscode:prepublish": "pnpm run package",
-    "compile": "pnpm run check-types && pnpm run lint && node esbuild.js",
-    "dev": "npm-run-all -p watch:*",
-    "watch:esbuild": "node esbuild.js --watch",
-    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
-    "package": "pnpm run check-types && pnpm run lint && node esbuild.js --production",
-    "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "check-types": "tsc --noEmit",
-    "lint": "eslint src",
-    "test": "echo \"No tests for vscode\" && exit 0"
-  },
-  "devDependencies": {
-    "@types/mocha": "^10.0.10",
-    "@types/node": "~22.19.0",
-    "@types/vscode": "^1.105.0",
-    "@typescript-eslint/eslint-plugin": "^8.46.3",
-    "@typescript-eslint/parser": "^8.46.3",
-    "@vscode/test-cli": "^0.0.11",
-    "@vscode/test-electron": "^2.5.2",
-    "esbuild": "^0.25.12",
-    "eslint": "^9.39.1",
-    "npm-run-all": "^4.1.5",
-    "typescript": "^5.9.3"
-  }
+    "activationEvents": [],
+    "main": "./out/index.js",
+    "contributes": {
+        "languages": [
+            {
+                "id": "mir",
+                "aliases": [
+                    "MIR",
+                    "mir"
+                ],
+                "extensions": [
+                    ".mir.json"
+                ],
+                "configuration": "./language/mir.language-configuration.json"
+            }
+        ],
+        "commands": [
+            {
+                "command": "mdr.previewMIR",
+                "title": "MIR: Preview MIR"
+            }
+        ],
+        "debuggers": [
+            {
+                "type": "mdr",
+                "label": "Mdr Debug",
+                "program": "./out/debugger/debugAdapter.js"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "pnpm run package",
+        "compile": "pnpm run check-types && pnpm run lint && node esbuild.js",
+        "dev": "npm-run-all -p watch:*",
+        "watch:esbuild": "node esbuild.js --watch",
+        "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+        "package": "pnpm run check-types && pnpm run lint && node esbuild.js --production",
+        "compile-tests": "tsc -p . --outDir out",
+        "watch-tests": "tsc -p . -w --outDir out",
+        "check-types": "tsc --noEmit",
+        "lint": "eslint src",
+        "test": "echo \"No tests for vscode\" && exit 0"
+    },
+    "devDependencies": {
+        "@types/mocha": "^10.0.10",
+        "@types/node": "~22.19.0",
+        "@types/vscode": "^1.105.0",
+        "@typescript-eslint/eslint-plugin": "^8.46.3",
+        "@typescript-eslint/parser": "^8.46.3",
+        "@vscode/test-cli": "^0.0.11",
+        "@vscode/test-electron": "^2.5.2",
+        "esbuild": "^0.25.12",
+        "eslint": "^9.39.1",
+        "npm-run-all": "^4.1.5",
+        "typescript": "^5.9.3"
+    }
 }

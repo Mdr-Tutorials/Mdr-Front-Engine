@@ -37,16 +37,17 @@ try {
         validate.errors?.forEach((error, i) => {
             console.error(
                 chalk.red(`\n  ${i + 1}. ${error.instancePath || 'root'}`) +
-                chalk.gray(`\n     ${error.message}`) +
-                chalk.yellow(`\n     参数: ${JSON.stringify(error.params)}`)
+                    chalk.gray(`\n     ${error.message}`) +
+                    chalk.yellow(`\n     参数: ${JSON.stringify(error.params)}`)
             );
             if (error.schemaPath) {
-                console.error(chalk.gray(`     Schema路径: ${error.schemaPath}`));
+                console.error(
+                    chalk.gray(`     Schema路径: ${error.schemaPath}`)
+                );
             }
         });
         process.exit(1);
     }
-
 } catch (error) {
     console.error(chalk.red(`\n💥 致命错误: ${error.message}`));
     process.exit(1);

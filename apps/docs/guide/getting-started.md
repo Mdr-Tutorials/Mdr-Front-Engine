@@ -6,17 +6,19 @@
 
 在开始之前，请确保你的开发环境满足以下要求：
 
-| 依赖 | 版本要求 | 检查命令 |
-| --- | --- | --- |
+| 依赖    | 版本要求  | 检查命令         |
+| ------- | --------- | ---------------- |
 | Node.js | >= 20.0.0 | `node --version` |
-| pnpm | >= 10.0.0 | `pnpm --version` |
-| Git | 任意版本 | `git --version` |
+| pnpm    | >= 10.0.0 | `pnpm --version` |
+| Git     | 任意版本  | `git --version`  |
 
 ::: tip 安装 pnpm
 如果你还没有安装 pnpm，可以通过以下命令安装：
+
 ```bash
 npm install -g pnpm
 ```
+
 :::
 
 ## 克隆仓库
@@ -56,15 +58,15 @@ pnpm dev
 
 ### 可用的开发命令
 
-| 命令 | 描述 |
-| --- | --- |
-| `pnpm dev` | 启动所有开发服务器 |
-| `pnpm dev:web` | 仅启动 Web 编辑器 |
-| `pnpm dev:docs` | 启动文档站点 |
-| `pnpm dev:cli` | 启动 CLI 开发模式 |
-| `pnpm build` | 构建所有包 |
-| `pnpm test` | 运行所有测试 |
-| `pnpm lint` | 代码检查 |
+| 命令                | 描述               |
+| ------------------- | ------------------ |
+| `pnpm dev`          | 启动所有开发服务器 |
+| `pnpm dev:web`      | 仅启动 Web 编辑器  |
+| `pnpm dev:docs`     | 启动文档站点       |
+| `pnpm dev:cli`      | 启动 CLI 开发模式  |
+| `pnpm build`        | 构建所有包         |
+| `pnpm test`         | 运行所有测试       |
+| `pnpm lint`         | 代码检查           |
 | `pnpm storybook:ui` | 启动 UI 组件库文档 |
 
 ## 创建第一个项目
@@ -143,16 +145,16 @@ my-project/
 
 ## 快捷键
 
-| 快捷键 | 功能 |
-| --- | --- |
-| `Ctrl/Cmd + S` | 保存项目 |
-| `Ctrl/Cmd + Z` | 撤销 |
-| `Ctrl/Cmd + Shift + Z` | 重做 |
-| `Delete` | 删除选中组件 |
-| `Ctrl/Cmd + D` | 复制组件 |
-| `Ctrl/Cmd + G` | 组合组件 |
-| `Space + 拖拽` | 平移画布 |
-| `Ctrl/Cmd + 滚轮` | 缩放画布 |
+| 快捷键                 | 功能         |
+| ---------------------- | ------------ |
+| `Ctrl/Cmd + S`         | 保存项目     |
+| `Ctrl/Cmd + Z`         | 撤销         |
+| `Ctrl/Cmd + Shift + Z` | 重做         |
+| `Delete`               | 删除选中组件 |
+| `Ctrl/Cmd + D`         | 复制组件     |
+| `Ctrl/Cmd + G`         | 组合组件     |
+| `Space + 拖拽`         | 平移画布     |
+| `Ctrl/Cmd + 滚轮`      | 缩放画布     |
 
 ## 常见问题
 

@@ -314,7 +314,9 @@ describe('BlueprintEditor autosave', () => {
                 await vi.advanceTimersByTimeAsync(1501);
             });
 
-            const saveIndicator = screen.getByTestId('blueprint-save-indicator');
+            const saveIndicator = screen.getByTestId(
+                'blueprint-save-indicator'
+            );
             expect(saveIndicator.getAttribute('data-status')).toBe('idle');
             expect(saveIndicator.getAttribute('data-transport')).toBe('none');
         } finally {

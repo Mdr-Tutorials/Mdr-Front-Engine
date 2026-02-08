@@ -59,11 +59,8 @@
     opacity: 0.6;
 }
 
-[data-theme="dark"] {
+[data-theme='dark'] {
     .MdrRangeTrack {
-        background: linear-gradient(
-            to right,
-        );
+        background: linear-gradient(to right);
     }
 }
-

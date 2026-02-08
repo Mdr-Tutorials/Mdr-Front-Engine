@@ -15,31 +15,31 @@
 
 ### IntentEnvelope
 
-| 字段 | 必填 | 说明 |
-| --- | --- | --- |
-| `id` | 是 | 请求唯一标识 |
-| `namespace` | 是 | 协议命名空间（`core` / `plugin.*` / 自定义） |
-| `type` | 是 | 意图类型 |
-| `version` | 是 | 协议版本 |
-| `payload` | 是 | 业务负载 |
-| `issuedAt` | 是 | 客户端发出时间 |
-| `idempotencyKey` | 否 | 幂等键 |
-| `actor` | 否 | 行为主体（user/client） |
+| 字段             | 必填 | 说明                                         |
+| ---------------- | ---- | -------------------------------------------- |
+| `id`             | 是   | 请求唯一标识                                 |
+| `namespace`      | 是   | 协议命名空间（`core` / `plugin.*` / 自定义） |
+| `type`           | 是   | 意图类型                                     |
+| `version`        | 是   | 协议版本                                     |
+| `payload`        | 是   | 业务负载                                     |
+| `issuedAt`       | 是   | 客户端发出时间                               |
+| `idempotencyKey` | 否   | 幂等键                                       |
+| `actor`          | 否   | 行为主体（user/client）                      |
 
 ### CommandEnvelope
 
-| 字段 | 必填 | 说明 |
-| --- | --- | --- |
-| `id` | 是 | 命令唯一标识 |
-| `namespace` | 是 | 命令命名空间 |
-| `type` | 是 | 命令类型 |
-| `version` | 是 | 协议版本 |
-| `issuedAt` | 是 | 命令生成时间 |
-| `forwardOps` | 是 | 正向可执行 patch |
-| `reverseOps` | 是 | 反向可逆 patch |
-| `target.workspaceId` | 是 | 目标工作区 |
-| `target.documentId` | 否 | 目标文档 |
-| `mergeKey` | 否 | 历史合并键 |
+| 字段                 | 必填 | 说明             |
+| -------------------- | ---- | ---------------- |
+| `id`                 | 是   | 命令唯一标识     |
+| `namespace`          | 是   | 命令命名空间     |
+| `type`               | 是   | 命令类型         |
+| `version`            | 是   | 协议版本         |
+| `issuedAt`           | 是   | 命令生成时间     |
+| `forwardOps`         | 是   | 正向可执行 patch |
+| `reverseOps`         | 是   | 反向可逆 patch   |
+| `target.workspaceId` | 是   | 目标工作区       |
+| `target.documentId`  | 否   | 目标文档         |
+| `mergeKey`           | 否   | 历史合并键       |
 
 ## 示例 payload（冻结样例）
 
@@ -47,17 +47,17 @@
 
 ```json
 {
-  "id": "intent_7f83",
-  "namespace": "core",
-  "type": "route.create",
-  "version": "1.0",
-  "payload": {
-    "parentRouteId": "root",
-    "segment": "product"
-  },
-  "idempotencyKey": "route.create:root:product",
-  "actor": { "userId": "u_1", "clientId": "web_1" },
-  "issuedAt": "2026-02-08T10:00:00Z"
+    "id": "intent_7f83",
+    "namespace": "core",
+    "type": "route.create",
+    "version": "1.0",
+    "payload": {
+        "parentRouteId": "root",
+        "segment": "product"
+    },
+    "idempotencyKey": "route.create:root:product",
+    "actor": { "userId": "u_1", "clientId": "web_1" },
+    "issuedAt": "2026-02-08T10:00:00Z"
 }
 ```
 
@@ -65,19 +65,23 @@
 
 ```json
 {
-  "id": "cmd_912a",
-  "namespace": "core.route",
-  "type": "node.add",
-  "version": "1.0",
-  "issuedAt": "2026-02-08T10:00:01Z",
-  "forwardOps": [
-    { "op": "add", "path": "/routeManifest/root/children/0", "value": { "id": "product", "segment": "product" } }
-  ],
-  "reverseOps": [
-    { "op": "remove", "path": "/routeManifest/root/children/0" }
-  ],
-  "target": { "workspaceId": "ws_1" },
-  "mergeKey": "route.add:root"
+    "id": "cmd_912a",
+    "namespace": "core.route",
+    "type": "node.add",
+    "version": "1.0",
+    "issuedAt": "2026-02-08T10:00:01Z",
+    "forwardOps": [
+        {
+            "op": "add",
+            "path": "/routeManifest/root/children/0",
+            "value": { "id": "product", "segment": "product" }
+        }
+    ],
+    "reverseOps": [
+        { "op": "remove", "path": "/routeManifest/root/children/0" }
+    ],
+    "target": { "workspaceId": "ws_1" },
+    "mergeKey": "route.add:root"
 }
 ```
 

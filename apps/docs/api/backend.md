@@ -36,6 +36,7 @@ X-Auth-Token: <token>
 所有响应均为 JSON 格式。
 
 **成功响应**:
+
 ```json
 {
   "user": { ... },
@@ -44,10 +45,11 @@ X-Auth-Token: <token>
 ```
 
 **错误响应**:
+
 ```json
 {
-  "code": "error_code",
-  "message": "错误描述"
+    "code": "error_code",
+    "message": "错误描述"
 }
 ```
 
@@ -62,9 +64,10 @@ GET /api/ping
 ```
 
 **响应**:
+
 ```json
 {
-  "message": "pong"
+    "message": "pong"
 }
 ```
 
@@ -81,46 +84,48 @@ POST /api/auth/register
 ```
 
 **请求体**:
+
 ```json
 {
-  "email": "user@example.com",
-  "password": "password123",
-  "name": "用户名",
-  "description": "个人简介"
+    "email": "user@example.com",
+    "password": "password123",
+    "name": "用户名",
+    "description": "个人简介"
 }
 ```
 
-| 字段 | 类型 | 必填 | 描述 |
-| --- | --- | --- | --- |
-| `email` | string | 是 | 邮箱地址 |
-| `password` | string | 是 | 密码（至少 8 位） |
-| `name` | string | 否 | 用户名 |
-| `description` | string | 否 | 个人简介 |
+| 字段          | 类型   | 必填 | 描述              |
+| ------------- | ------ | ---- | ----------------- |
+| `email`       | string | 是   | 邮箱地址          |
+| `password`    | string | 是   | 密码（至少 8 位） |
+| `name`        | string | 否   | 用户名            |
+| `description` | string | 否   | 个人简介          |
 
 **成功响应** (201 Created):
+
 ```json
 {
-  "user": {
-    "id": "usr_a1b2c3d4e5f6g7h8",
-    "email": "user@example.com",
-    "name": "用户名",
-    "description": "个人简介",
-    "createdAt": "2024-01-15T10:30:00Z"
-  },
-  "token": "abc123def456...",
-  "expiresAt": "2024-01-16T10:30:00Z"
+    "user": {
+        "id": "usr_a1b2c3d4e5f6g7h8",
+        "email": "user@example.com",
+        "name": "用户名",
+        "description": "个人简介",
+        "createdAt": "2024-01-15T10:30:00Z"
+    },
+    "token": "abc123def456...",
+    "expiresAt": "2024-01-16T10:30:00Z"
 }
 ```
 
 **错误响应**:
 
-| HTTP 状态码 | 错误码 | 描述 |
-| --- | --- | --- |
-| 400 | `invalid_payload` | 请求体格式错误 |
-| 400 | `invalid_email` | 邮箱格式无效 |
-| 400 | `weak_password` | 密码少于 8 位 |
-| 409 | `email_exists` | 邮箱已被注册 |
-| 500 | `create_failed` | 服务器错误 |
+| HTTP 状态码 | 错误码            | 描述           |
+| ----------- | ----------------- | -------------- |
+| 400         | `invalid_payload` | 请求体格式错误 |
+| 400         | `invalid_email`   | 邮箱格式无效   |
+| 400         | `weak_password`   | 密码少于 8 位  |
+| 409         | `email_exists`    | 邮箱已被注册   |
+| 500         | `create_failed`   | 服务器错误     |
 
 ---
 
@@ -133,34 +138,36 @@ POST /api/auth/login
 ```
 
 **请求体**:
+
 ```json
 {
-  "email": "user@example.com",
-  "password": "password123"
+    "email": "user@example.com",
+    "password": "password123"
 }
 ```
 
 **成功响应** (200 OK):
+
 ```json
 {
-  "user": {
-    "id": "usr_a1b2c3d4e5f6g7h8",
-    "email": "user@example.com",
-    "name": "用户名",
-    "description": "个人简介",
-    "createdAt": "2024-01-15T10:30:00Z"
-  },
-  "token": "abc123def456...",
-  "expiresAt": "2024-01-16T10:30:00Z"
+    "user": {
+        "id": "usr_a1b2c3d4e5f6g7h8",
+        "email": "user@example.com",
+        "name": "用户名",
+        "description": "个人简介",
+        "createdAt": "2024-01-15T10:30:00Z"
+    },
+    "token": "abc123def456...",
+    "expiresAt": "2024-01-16T10:30:00Z"
 }
 ```
 
 **错误响应**:
 
-| HTTP 状态码 | 错误码 | 描述 |
-| --- | --- | --- |
-| 400 | `invalid_payload` | 请求体格式错误 |
-| 401 | `invalid_credentials` | 邮箱或密码错误 |
+| HTTP 状态码 | 错误码                | 描述           |
+| ----------- | --------------------- | -------------- |
+| 400         | `invalid_payload`     | 请求体格式错误 |
+| 401         | `invalid_credentials` | 邮箱或密码错误 |
 
 ---
 
@@ -189,15 +196,16 @@ GET /api/auth/me
 **请求头**: 需要认证
 
 **成功响应** (200 OK):
+
 ```json
 {
-  "user": {
-    "id": "usr_a1b2c3d4e5f6g7h8",
-    "email": "user@example.com",
-    "name": "用户名",
-    "description": "个人简介",
-    "createdAt": "2024-01-15T10:30:00Z"
-  }
+    "user": {
+        "id": "usr_a1b2c3d4e5f6g7h8",
+        "email": "user@example.com",
+        "name": "用户名",
+        "description": "个人简介",
+        "createdAt": "2024-01-15T10:30:00Z"
+    }
 }
 ```
 
@@ -217,28 +225,29 @@ GET /api/users/:id
 
 **路径参数**:
 
-| 参数 | 类型 | 描述 |
-| --- | --- | --- |
+| 参数 | 类型   | 描述    |
+| ---- | ------ | ------- |
 | `id` | string | 用户 ID |
 
 **成功响应** (200 OK):
+
 ```json
 {
-  "user": {
-    "id": "usr_a1b2c3d4e5f6g7h8",
-    "email": "user@example.com",
-    "name": "用户名",
-    "description": "个人简介",
-    "createdAt": "2024-01-15T10:30:00Z"
-  }
+    "user": {
+        "id": "usr_a1b2c3d4e5f6g7h8",
+        "email": "user@example.com",
+        "name": "用户名",
+        "description": "个人简介",
+        "createdAt": "2024-01-15T10:30:00Z"
+    }
 }
 ```
 
 **错误响应**:
 
-| HTTP 状态码 | 错误码 | 描述 |
-| --- | --- | --- |
-| 404 | `not_found` | 用户不存在 |
+| HTTP 状态码 | 错误码      | 描述       |
+| ----------- | ----------- | ---------- |
+| 404         | `not_found` | 用户不存在 |
 
 ---
 
@@ -256,14 +265,14 @@ POST /api/projects
 
 ```json
 {
-  "name": "My Project",
-  "description": "optional",
-  "resourceType": "project",
-  "isPublic": true,
-  "mir": {
-    "version": "1.0",
-    "ui": { "root": { "id": "root", "type": "container" } }
-  }
+    "name": "My Project",
+    "description": "optional",
+    "resourceType": "project",
+    "isPublic": true,
+    "mir": {
+        "version": "1.0",
+        "ui": { "root": { "id": "root", "type": "container" } }
+    }
 }
 ```
 
@@ -291,34 +300,34 @@ GET /api/community/projects
 
 **查询参数**:
 
-| 参数 | 类型 | 必填 | 默认值 | 描述 |
-| --- | --- | --- | --- | --- |
-| `keyword` | string | 否 | - | 名称/描述/作者模糊搜索 |
-| `resourceType` | string | 否 | - | 资源类型：`project` / `component` / `nodegraph` |
-| `sort` | string | 否 | `latest` | 排序方式：`latest` 或 `popular` |
-| `page` | number | 否 | `1` | 页码 |
-| `pageSize` | number | 否 | `20` | 每页条数（最大 100） |
+| 参数           | 类型   | 必填 | 默认值   | 描述                                            |
+| -------------- | ------ | ---- | -------- | ----------------------------------------------- |
+| `keyword`      | string | 否   | -        | 名称/描述/作者模糊搜索                          |
+| `resourceType` | string | 否   | -        | 资源类型：`project` / `component` / `nodegraph` |
+| `sort`         | string | 否   | `latest` | 排序方式：`latest` 或 `popular`                 |
+| `page`         | number | 否   | `1`      | 页码                                            |
+| `pageSize`     | number | 否   | `20`     | 每页条数（最大 100）                            |
 
 **成功响应**:
 
 ```json
 {
-  "projects": [
-    {
-      "id": "prj_xxx",
-      "resourceType": "project",
-      "name": "SaaS Dashboard",
-      "description": "Public template",
-      "authorId": "usr_xxx",
-      "authorName": "Alice",
-      "starsCount": 12,
-      "createdAt": "2026-02-07T09:30:00Z",
-      "updatedAt": "2026-02-07T10:00:00Z"
-    }
-  ],
-  "page": 1,
-  "pageSize": 20,
-  "sort": "latest"
+    "projects": [
+        {
+            "id": "prj_xxx",
+            "resourceType": "project",
+            "name": "SaaS Dashboard",
+            "description": "Public template",
+            "authorId": "usr_xxx",
+            "authorName": "Alice",
+            "starsCount": 12,
+            "createdAt": "2026-02-07T09:30:00Z",
+            "updatedAt": "2026-02-07T10:00:00Z"
+        }
+    ],
+    "page": 1,
+    "pageSize": 20,
+    "sort": "latest"
 }
 ```
 
@@ -343,38 +352,40 @@ PATCH /api/users/me
 **请求头**: 需要认证
 
 **请求体**:
+
 ```json
 {
-  "name": "新用户名",
-  "description": "新的个人简介"
+    "name": "新用户名",
+    "description": "新的个人简介"
 }
 ```
 
-| 字段 | 类型 | 必填 | 描述 |
-| --- | --- | --- | --- |
-| `name` | string | 否 | 新用户名 |
-| `description` | string | 否 | 新个人简介 |
+| 字段          | 类型   | 必填 | 描述       |
+| ------------- | ------ | ---- | ---------- |
+| `name`        | string | 否   | 新用户名   |
+| `description` | string | 否   | 新个人简介 |
 
 **成功响应** (200 OK):
+
 ```json
 {
-  "user": {
-    "id": "usr_a1b2c3d4e5f6g7h8",
-    "email": "user@example.com",
-    "name": "新用户名",
-    "description": "新的个人简介",
-    "createdAt": "2024-01-15T10:30:00Z"
-  }
+    "user": {
+        "id": "usr_a1b2c3d4e5f6g7h8",
+        "email": "user@example.com",
+        "name": "新用户名",
+        "description": "新的个人简介",
+        "createdAt": "2024-01-15T10:30:00Z"
+    }
 }
 ```
 
 **错误响应**:
 
-| HTTP 状态码 | 错误码 | 描述 |
-| --- | --- | --- |
-| 400 | `invalid_payload` | 请求体格式错误 |
-| 404 | `not_found` | 用户不存在 |
-| 500 | `update_failed` | 更新失败 |
+| HTTP 状态码 | 错误码            | 描述           |
+| ----------- | ----------------- | -------------- |
+| 400         | `invalid_payload` | 请求体格式错误 |
+| 404         | `not_found`       | 用户不存在     |
+| 500         | `update_failed`   | 更新失败       |
 
 ---
 
@@ -384,11 +395,11 @@ PATCH /api/users/me
 
 ```typescript
 interface User {
-  id: string;          // 格式: "usr_" + 16位随机十六进制
-  email: string;       // 邮箱（小写标准化）
-  name: string;        // 用户名
-  description: string; // 个人简介
-  createdAt: string;   // ISO 8601 格式时间戳
+    id: string; // 格式: "usr_" + 16位随机十六进制
+    email: string; // 邮箱（小写标准化）
+    name: string; // 用户名
+    description: string; // 个人简介
+    createdAt: string; // ISO 8601 格式时间戳
 }
 ```
 
@@ -396,21 +407,21 @@ interface User {
 
 ```typescript
 interface Session {
-  token: string;       // 32位十六进制字符串
-  userId: string;      // 关联的用户 ID
-  createdAt: string;   // 创建时间
-  expiresAt: string;   // 过期时间
+    token: string; // 32位十六进制字符串
+    userId: string; // 关联的用户 ID
+    createdAt: string; // 创建时间
+    expiresAt: string; // 过期时间
 }
 
 interface ProjectSummary {
-  id: string;
-  resourceType: 'project' | 'component' | 'nodegraph';
-  name: string;
-  description: string;
-  isPublic: boolean;
-  starsCount: number;
-  createdAt: string;
-  updatedAt: string;
+    id: string;
+    resourceType: 'project' | 'component' | 'nodegraph';
+    name: string;
+    description: string;
+    isPublic: boolean;
+    starsCount: number;
+    createdAt: string;
+    updatedAt: string;
 }
 ```
 
@@ -418,15 +429,15 @@ interface ProjectSummary {
 
 后端服务通过环境变量配置：
 
-| 环境变量 | 默认值 | 描述 |
-| --- | --- | --- |
-| `BACKEND_ADDR` | `:8080` | 服务监听地址 |
-| `BACKEND_TOKEN_TTL` | `24h` | Token 有效期（支持 Go duration 格式或秒数） |
-| `BACKEND_ALLOWED_ORIGINS` | `http://localhost:5173,http://localhost:5174` | 允许的 CORS 来源（逗号分隔） |
-| `BACKEND_DB_URL` | `postgres://postgres:postgres@localhost:5432/mdr_front_engine?sslmode=disable` | PostgreSQL 连接字符串 |
-| `BACKEND_DB_MAX_OPEN_CONNS` | `10` | 最大打开连接数 |
-| `BACKEND_DB_MAX_IDLE_CONNS` | `5` | 最大空闲连接数 |
-| `BACKEND_DB_MAX_LIFETIME` | `30m` | 连接最大生命周期 |
+| 环境变量                    | 默认值                                                                         | 描述                                        |
+| --------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------- |
+| `BACKEND_ADDR`              | `:8080`                                                                        | 服务监听地址                                |
+| `BACKEND_TOKEN_TTL`         | `24h`                                                                          | Token 有效期（支持 Go duration 格式或秒数） |
+| `BACKEND_ALLOWED_ORIGINS`   | `http://localhost:5173,http://localhost:5174`                                  | 允许的 CORS 来源（逗号分隔）                |
+| `BACKEND_DB_URL`            | `postgres://postgres:postgres@localhost:5432/mdr_front_engine?sslmode=disable` | PostgreSQL 连接字符串                       |
+| `BACKEND_DB_MAX_OPEN_CONNS` | `10`                                                                           | 最大打开连接数                              |
+| `BACKEND_DB_MAX_IDLE_CONNS` | `5`                                                                            | 最大空闲连接数                              |
+| `BACKEND_DB_MAX_LIFETIME`   | `30m`                                                                          | 连接最大生命周期                            |
 
 **示例**:
 
@@ -454,31 +465,34 @@ Access-Control-Expose-Headers: Authorization, Content-Type
 
 ```typescript
 // 注册
-const registerResponse = await fetch('http://localhost:8080/api/auth/register', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    email: 'user@example.com',
-    password: 'password123',
-    name: '用户名'
-  })
-});
+const registerResponse = await fetch(
+    'http://localhost:8080/api/auth/register',
+    {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            email: 'user@example.com',
+            password: 'password123',
+            name: '用户名',
+        }),
+    }
+);
 const { user, token } = await registerResponse.json();
 
 // 使用 Token 请求
 const meResponse = await fetch('http://localhost:8080/api/auth/me', {
-  headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
 });
 const { user: currentUser } = await meResponse.json();
 
 // 更新用户信息
 const updateResponse = await fetch('http://localhost:8080/api/users/me', {
-  method: 'PATCH',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`
-  },
-  body: JSON.stringify({ name: '新名字' })
+    method: 'PATCH',
+    headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ name: '新名字' }),
 });
 ```
 

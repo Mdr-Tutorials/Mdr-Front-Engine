@@ -1,5 +1,9 @@
 import { useState } from 'react';
-import type { DragEndEvent, DragMoveEvent, DragStartEvent } from '@dnd-kit/core';
+import type {
+    DragEndEvent,
+    DragMoveEvent,
+    DragStartEvent,
+} from '@dnd-kit/core';
 import {
     createNodeFromPaletteItem,
     createNodeIdFactory,
@@ -17,7 +21,10 @@ import {
 } from './BlueprintEditor.tree';
 import type { MIRDocument } from '@/core/types/engine.types';
 
-export type TreeDropHint = { overNodeId: string; placement: TreeDropPlacement } | null;
+export type TreeDropHint = {
+    overNodeId: string;
+    placement: TreeDropPlacement;
+} | null;
 
 type UseBlueprintDragDropOptions = {
     mirDoc: MIRDocument;
@@ -29,7 +36,8 @@ type UseBlueprintDragDropOptions = {
 const getOverNodeId = (overData: any, overId: string | null) => {
     if (overData?.kind === 'tree-sort') return overData.nodeId;
     if (overData?.kind === 'tree-node') return overData.nodeId;
-    if (overId?.startsWith('tree-node:')) return overId.slice('tree-node:'.length);
+    if (overId?.startsWith('tree-node:'))
+        return overId.slice('tree-node:'.length);
     return null;
 };
 
@@ -67,9 +75,9 @@ export const useBlueprintDragDrop = ({
     updateMirDoc,
     onNodeSelect,
 }: UseBlueprintDragDropOptions) => {
-    const [activePaletteItemId, setActivePaletteItemId] = useState<string | null>(
-        null
-    );
+    const [activePaletteItemId, setActivePaletteItemId] = useState<
+        string | null
+    >(null);
     const [treeDropHint, setTreeDropHint] = useState<TreeDropHint>(null);
 
     const handleDragStart = (event: DragStartEvent) => {
@@ -96,7 +104,8 @@ export const useBlueprintDragDrop = ({
         const overData = over.data.current as any;
         const overId = typeof over.id === 'string' ? over.id : null;
         const overNodeIdRaw = getOverNodeId(overData, overId);
-        const overNodeId = typeof overNodeIdRaw === 'string' ? overNodeIdRaw : null;
+        const overNodeId =
+            typeof overNodeIdRaw === 'string' ? overNodeIdRaw : null;
         if (!overNodeId) {
             setTreeDropHint(null);
             return;
@@ -115,9 +124,11 @@ export const useBlueprintDragDrop = ({
         }
 
         const canNest =
-            supportsChildrenForNode(overNode) && !isAncestorOf(root, activeId, overNodeId);
+            supportsChildrenForNode(overNode) &&
+            !isAncestorOf(root, activeId, overNodeId);
         const translated =
-            event.active.rect?.current?.translated ?? event.active.rect?.current?.initial;
+            event.active.rect?.current?.translated ??
+            event.active.rect?.current?.initial;
         const activeCenterY = translated
             ? translated.top + translated.height / 2
             : Number.NaN;
@@ -157,11 +168,16 @@ export const useBlueprintDragDrop = ({
                 const overNodeIdRaw = getOverNodeId(overData, overId);
                 const isOverRoot =
                     overId === 'tree-root' || overData?.kind === 'tree-root';
-                const overNodeId = typeof overNodeIdRaw === 'string' ? overNodeIdRaw : null;
+                const overNodeId =
+                    typeof overNodeIdRaw === 'string' ? overNodeIdRaw : null;
                 if (overNodeId === activeId) return doc;
 
-                const overNode = overNodeId ? findNodeById(root, overNodeId) : null;
-                const canNest = Boolean(overNode && supportsChildrenForNode(overNode));
+                const overNode = overNodeId
+                    ? findNodeById(root, overNodeId)
+                    : null;
+                const canNest = Boolean(
+                    overNode && supportsChildrenForNode(overNode)
+                );
                 const translated =
                     event.active.rect?.current?.translated ??
                     event.active.rect?.current?.initial;
@@ -198,7 +214,8 @@ export const useBlueprintDragDrop = ({
                         );
                         if (overIndex === -1) return doc;
                         targetParentId = parentId;
-                        targetIndex = placement === 'before' ? overIndex : overIndex + 1;
+                        targetIndex =
+                            placement === 'before' ? overIndex : overIndex + 1;
                     }
                 }
 
@@ -209,9 +226,12 @@ export const useBlueprintDragDrop = ({
                 if (targetParentId === activeParentId) {
                     const parentNode = findNodeById(root, targetParentId);
                     const siblings = parentNode?.children ?? [];
-                    const fromIndex = siblings.findIndex((item) => item.id === activeId);
+                    const fromIndex = siblings.findIndex(
+                        (item) => item.id === activeId
+                    );
                     if (fromIndex === -1) return doc;
-                    if (fromIndex < targetIndex) adjustedIndex = targetIndex - 1;
+                    if (fromIndex < targetIndex)
+                        adjustedIndex = targetIndex - 1;
                     if (fromIndex === adjustedIndex) return doc;
                 }
 
@@ -233,13 +253,17 @@ export const useBlueprintDragDrop = ({
         if (data?.kind !== 'palette-item') return;
 
         const itemId = String(data.itemId);
-        const variantProps = data.variantProps as Record<string, unknown> | undefined;
+        const variantProps = data.variantProps as
+            | Record<string, unknown>
+            | undefined;
         const selectedSize = data.selectedSize as string | undefined;
         const overData = over.data.current as any;
         const dropKind = overData?.kind;
-        const dropNodeId = dropKind === 'tree-node' ? String(overData.nodeId) : null;
+        const dropNodeId =
+            dropKind === 'tree-node' ? String(overData.nodeId) : null;
         const targetId =
-            dropNodeId ?? (dropKind === 'canvas' ? (selectedId ?? 'root') : 'root');
+            dropNodeId ??
+            (dropKind === 'canvas' ? (selectedId ?? 'root') : 'root');
 
         let nextNodeId = '';
         updateMirDoc((doc) => {

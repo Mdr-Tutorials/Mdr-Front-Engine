@@ -7,7 +7,9 @@
     border: 1px solid;
     border-radius: var(--radius-md);
     background-color: var(--color-0);
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    transition:
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast);
     border-color: var(--color-6);
 
     &:focus-within {
@@ -58,7 +60,9 @@
         cursor: pointer;
         padding: var(--spacing-xs);
         border-radius: var(--radius-sm);
-        transition: background-color var(--transition-fast), color var(--transition-fast);
+        transition:
+            background-color var(--transition-fast),
+            color var(--transition-fast);
         flex-shrink: 0;
 
         &:hover {

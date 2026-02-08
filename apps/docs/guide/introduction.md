@@ -39,24 +39,24 @@ MIR（Modular Intermediate Representation）是 MFE 的核心创新：
 
 ```json
 {
-  "type": "MdrButton",
-  "props": {
-    "variant": "primary",
-    "size": "medium"
-  },
-  "children": ["点击我"]
+    "type": "MdrButton",
+    "props": {
+        "variant": "primary",
+        "size": "medium"
+    },
+    "children": ["点击我"]
 }
 ```
 
 MIR 是一种框架无关的组件描述格式，可以转换为：
 
-| 目标框架 | 输出格式 |
-| --- | --- |
-| React | JSX + Hooks |
-| Vue 3 | SFC + Composition API |
-| Angular | 组件类 + 模板 |
-| SolidJS | JSX + 响应式 |
-| 原生 Web | HTML + CSS + JS |
+| 目标框架 | 输出格式              |
+| -------- | --------------------- |
+| React    | JSX + Hooks           |
+| Vue 3    | SFC + Composition API |
+| Angular  | 组件类 + 模板         |
+| SolidJS  | JSX + 响应式          |
+| 原生 Web | HTML + CSS + JS       |
 
 ### 一键部署
 
@@ -84,15 +84,15 @@ MFE 内置多种部署选项：
 
 ## 与同类工具对比
 
-| 特性 | MdrFrontEngine | Figma to Code | 传统 IDE |
-| --- | :---: | :---: | :---: |
-| 可视化设计 | ✅ | ✅ | ❌ |
-| 逻辑编排 | ✅ (节点图) | ❌ | ✅ (代码) |
-| 多框架导出 | ✅ | 部分 | ❌ |
-| 实时预览 | ✅ | ✅ | 需配置 |
-| 调试支持 | ✅ | ❌ | ✅ |
-| 开源免费 | ✅ | ❌ | 部分 |
-| 本地运行 | ✅ | ❌ | ✅ |
+| 特性       | MdrFrontEngine | Figma to Code | 传统 IDE  |
+| ---------- | :------------: | :-----------: | :-------: |
+| 可视化设计 |       ✅       |      ✅       |    ❌     |
+| 逻辑编排   |  ✅ (节点图)   |      ❌       | ✅ (代码) |
+| 多框架导出 |       ✅       |     部分      |    ❌     |
+| 实时预览   |       ✅       |      ✅       |  需配置   |
+| 调试支持   |       ✅       |      ❌       |    ✅     |
+| 开源免费   |       ✅       |      ❌       |   部分    |
+| 本地运行   |       ✅       |      ❌       |    ✅     |
 
 ## 下一步
 

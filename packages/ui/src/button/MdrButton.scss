@@ -14,7 +14,10 @@
     font-weight: 400;
     border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
     display: inline-block;
     text-align: center;
     text-decoration: none;
@@ -24,7 +27,7 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    gap: .3em;
+    gap: 0.3em;
 
     &:active {
         opacity: 0.9;
@@ -69,7 +72,11 @@
         border-color: var(--color-9);
 
         &:not(.Disabled):hover {
-            @include button-hover(var(--color-7), var(--color-0), var(--color-6));
+            @include button-hover(
+                var(--color-7),
+                var(--color-0),
+                var(--color-6)
+            );
         }
     }
 
@@ -83,7 +90,7 @@
         }
 
         &:not(.Disabled):active {
-            opacity: .75;
+            opacity: 0.75;
         }
     }
 
@@ -93,7 +100,11 @@
         border-color: var(--color-danger);
 
         &:not(.Disabled):hover {
-            @include button-hover(var(--color-danger-hover), null, var(--color-danger-hover));
+            @include button-hover(
+                var(--color-danger-hover),
+                null,
+                var(--color-danger-hover)
+            );
         }
     }
 
@@ -103,7 +114,11 @@
         border-color: var(--color-warning);
 
         &:not(.Disabled):hover {
-            @include button-hover(var(--color-warning-hover), null, var(--color-warning-hover));
+            @include button-hover(
+                var(--color-warning-hover),
+                null,
+                var(--color-warning-hover)
+            );
         }
     }
 
@@ -125,7 +140,11 @@
         border-color: var(--color-danger-subtle);
 
         &:not(.Disabled):hover {
-            @include button-hover(var(--color-danger-subtle-hover), var(--color-danger), var(--color-danger-hover));
+            @include button-hover(
+                var(--color-danger-subtle-hover),
+                var(--color-danger),
+                var(--color-danger-hover)
+            );
         }
     }
 
@@ -135,7 +154,11 @@
         border-color: var(--color-subwarning);
 
         &:not(.Disabled):hover {
-            @include button-hover(var(--color-subwarning-hover), var(--color-warning), var(--color-warning-hover));
+            @include button-hover(
+                var(--color-subwarning-hover),
+                var(--color-warning),
+                var(--color-warning-hover)
+            );
         }
     }
 

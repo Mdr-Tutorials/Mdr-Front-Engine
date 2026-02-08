@@ -2,12 +2,12 @@ import type { Meta, StoryObj } from '@storybook/react';
 import MdrFileUpload from './MdrFileUpload';
 
 const meta: Meta<typeof MdrFileUpload> = {
-  title: 'Components/FileUpload',
-  component: MdrFileUpload,
-  parameters: {
-    layout: 'centered',
-  },
-  tags: ['autodocs'],
+    title: 'Components/FileUpload',
+    component: MdrFileUpload,
+    parameters: {
+        layout: 'centered',
+    },
+    tags: ['autodocs'],
 };
 
 export default meta;
@@ -15,22 +15,22 @@ export default meta;
 type Story = StoryObj<typeof MdrFileUpload>;
 
 export const Default: Story = {
-  args: {
-    label: 'Upload files',
-    description: 'Select files to upload.',
-  },
+    args: {
+        label: 'Upload files',
+        description: 'Select files to upload.',
+    },
 };
 
 export const Multiple: Story = {
-  args: {
-    label: 'Upload documents',
-    multiple: true,
-  },
+    args: {
+        label: 'Upload documents',
+        multiple: true,
+    },
 };
 
 export const Disabled: Story = {
-  args: {
-    label: 'Upload disabled',
-    disabled: true,
-  },
+    args: {
+        label: 'Upload disabled',
+        disabled: true,
+    },
 };

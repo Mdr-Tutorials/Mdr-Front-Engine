@@ -13,10 +13,10 @@ MIT License | 支持本地运行 + 云端协作
 
 ## 核心特性
 
-* **可视化逻辑编排 (Node Graph)**：像连线一样编写业务逻辑，支持内置节点、自定义 JS 脚本与 AI 助手集成。
-* **多目标代码炼化 (Code Transmutation)**：一键导出 Vue 3、React、Angular、SolidJS 甚至是原生 HTML 或 htmx 代码。
-* **数据驱动引擎**：内置 JSON Schema 定义与动态绑定，实现“数据获取 → 渲染 → 更新”的自动化闭环。
-* **全栈生态支持**：原生配套 CLI 命令行工具与 VSCode 插件，打通可视化环境与本地开发工作流。
+- **可视化逻辑编排 (Node Graph)**：像连线一样编写业务逻辑，支持内置节点、自定义 JS 脚本与 AI 助手集成。
+- **多目标代码炼化 (Code Transmutation)**：一键导出 Vue 3、React、Angular、SolidJS 甚至是原生 HTML 或 htmx 代码。
+- **数据驱动引擎**：内置 JSON Schema 定义与动态绑定，实现“数据获取 → 渲染 → 更新”的自动化闭环。
+- **全栈生态支持**：原生配套 CLI 命令行工具与 VSCode 插件，打通可视化环境与本地开发工作流。
 
 ---
 
@@ -43,9 +43,9 @@ MIT License | 支持本地运行 + 云端协作
 
 ### 前提条件
 
-* **pnpm** (推荐 v10+)
-* **Go** (用于运行后端服务)
-* **Node.js** (LTS 版本)
+- **pnpm** (推荐 v10+)
+- **Go** (用于运行后端服务)
+- **Node.js** (LTS 版本)
 
 ### 安装
 
@@ -108,11 +108,11 @@ pnpm cli [command]
 
 ## 🔬 技术栈
 
-* **Monorepo 管理**: [Turbo](https://turbo.build/) + [pnpm](https://pnpm.io/)
-* **Web 核心**: React / Vue (取决于具体 package 配置) + Vite
-* **后端引擎**: [Go](https://go.dev/) (高效、稳定、极致并发)
-* **逻辑引擎**: 节点图系统 (Node-based Graph)
-* **质量保证**: Prettier + Husky (Git Hooks)
+- **Monorepo 管理**: [Turbo](https://turbo.build/) + [pnpm](https://pnpm.io/)
+- **Web 核心**: React / Vue (取决于具体 package 配置) + Vite
+- **后端引擎**: [Go](https://go.dev/) (高效、稳定、极致并发)
+- **逻辑引擎**: 节点图系统 (Node-based Graph)
+- **质量保证**: Prettier + Husky (Git Hooks)
 
 ---
 

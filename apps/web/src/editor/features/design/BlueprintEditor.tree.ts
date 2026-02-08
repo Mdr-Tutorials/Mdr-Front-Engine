@@ -210,7 +210,7 @@ export const insertChildAtIndex = (
         : { node, inserted: false };
 };
 
-const arrayMove = <T,>(list: T[], fromIndex: number, toIndex: number) => {
+const arrayMove = <T>(list: T[], fromIndex: number, toIndex: number) => {
     const next = [...list];
     const [item] = next.splice(fromIndex, 1);
     next.splice(toIndex, 0, item);
@@ -294,7 +294,9 @@ export const cloneNodeWithNewIds = (
     return {
         ...clonedRest,
         id: createId(node.type),
-        children: children?.map((child) => cloneNodeWithNewIds(child, createId)),
+        children: children?.map((child) =>
+            cloneNodeWithNewIds(child, createId)
+        ),
     };
 };
 

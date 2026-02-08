@@ -17,7 +17,9 @@
     padding: var(--spacing-sm) var(--spacing-md);
     font-size: 16px;
     line-height: 1.5;
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    transition:
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast);
     background-color: var(--color-0);
     color: var(--color-10);
     outline: none;

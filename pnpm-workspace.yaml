@@ -1,8 +1,8 @@
 packages:
-  - apps/*
-  - packages/*
-  - examples/*
-  - specs/*
+    - apps/*
+    - packages/*
+    - examples/*
+    - specs/*
 
 onlyBuiltDependencies:
-  - esbuild
+    - esbuild

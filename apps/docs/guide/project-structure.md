@@ -98,6 +98,7 @@ apps/web/
 ```
 
 **技术栈**：
+
 - React 19
 - TypeScript 5.9
 - Vite
@@ -121,10 +122,12 @@ apps/backend/
 ```
 
 **技术栈**：
+
 - Go 1.24
 - Gin Web 框架
 
 **职责**：
+
 - 用户认证
 - 项目存储
 - API 服务
@@ -147,11 +150,13 @@ apps/cli/
 ```
 
 **技术栈**：
+
 - Node.js
 - Commander.js
 - TypeScript
 
 **命令**：
+
 - `mdr build` - 构建项目
 - `mdr export` - 导出静态站点
 - `mdr deploy` - 部署项目
@@ -185,6 +190,7 @@ apps/vscode/
 ```
 
 **功能**：
+
 - `.mir.json` 语法高亮
 - 符号导航
 - 调试支持
@@ -215,6 +221,7 @@ packages/ui/
 ```
 
 **特点**：
+
 - 10 级灰度设计系统
 - 自动深色/浅色模式
 - WCAG 2.1 AA 无障碍
@@ -276,18 +283,18 @@ packages/i18n/
 
 ```json
 {
-  "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "test": {},
-    "lint": {}
-  }
+    "tasks": {
+        "build": {
+            "dependsOn": ["^build"],
+            "outputs": ["dist/**"]
+        },
+        "dev": {
+            "cache": false,
+            "persistent": true
+        },
+        "test": {},
+        "lint": {}
+    }
 }
 ```
 
@@ -295,8 +302,8 @@ packages/i18n/
 
 ```yaml
 packages:
-  - 'apps/*'
-  - 'packages/*'
+    - 'apps/*'
+    - 'packages/*'
 ```
 
 ## 下一步
