@@ -63,6 +63,11 @@ func (server *Server) registerRoutes() {
 	api.PUT("/projects/:id/mir", server.requireAuth(), server.handleSaveProjectMIR)
 	api.POST("/projects/:id/publish", server.requireAuth(), server.handlePublishProject)
 	api.DELETE("/projects/:id", server.requireAuth(), server.handleDeleteProject)
+	api.GET("/workspaces/:workspaceId", server.requireAuth(), server.handleGetWorkspace)
+	api.GET("/workspaces/:workspaceId/capabilities", server.requireAuth(), server.handleGetWorkspaceCapabilities)
+	api.PUT("/workspaces/:workspaceId/documents/:documentId", server.requireAuth(), server.handleSaveWorkspaceDocument)
+	api.POST("/workspaces/:workspaceId/intents", server.requireAuth(), server.handleApplyWorkspaceIntent)
+	api.POST("/workspaces/:workspaceId/batch", server.requireAuth(), server.handleApplyWorkspaceBatch)
 }
 
 func (server *Server) Run() error {

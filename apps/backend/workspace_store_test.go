@@ -5,10 +5,39 @@ import (
 	"encoding/json"
 	"errors"
 	"regexp"
+	"strings"
 	"testing"
+	"time"
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 )
+
+func buildTestCommand(
+	id string,
+	issuedAt time.Time,
+	workspaceID string,
+	documentID string,
+	namespace string,
+	commandType string,
+) WorkspaceCommandEnvelope {
+	return WorkspaceCommandEnvelope{
+		ID:        id,
+		Namespace: namespace,
+		Type:      commandType,
+		Version:   "1.0",
+		IssuedAt:  issuedAt.UTC(),
+		ForwardOps: []WorkspacePatchOp{
+			{Op: "replace", Path: "/title", Value: json.RawMessage(`"next"`)},
+		},
+		ReverseOps: []WorkspacePatchOp{
+			{Op: "replace", Path: "/title", Value: json.RawMessage(`"prev"`)},
+		},
+		Target: WorkspaceCommandTarget{
+			WorkspaceID: workspaceID,
+			DocumentID:  documentID,
+		},
+	}
+}
 
 func TestWorkspaceStoreSaveDocumentContentKeepsWorkspaceAndRouteRev(t *testing.T) {
 	db, mock, err := sqlmock.New()
@@ -18,6 +47,8 @@ func TestWorkspaceStoreSaveDocumentContentKeepsWorkspaceAndRouteRev(t *testing.T
 	defer db.Close()
 
 	store := NewWorkspaceStore(db)
+	issuedAt := time.Date(2026, time.February, 8, 10, 0, 0, 0, time.UTC)
+	command := buildTestCommand("cmd_doc_update_1", issuedAt, "ws_1", "doc_home", "core.mir", "document.update")
 
 	lockQuery := regexp.QuoteMeta(`SELECT d.content_rev, d.meta_rev, w.workspace_rev, w.route_rev, w.op_seq
 FROM workspace_documents d
@@ -33,7 +64,7 @@ SET op_seq = op_seq + 1, updated_at = NOW()
 WHERE id = $1
 RETURNING workspace_rev, route_rev, op_seq`)
 	insertOperation := regexp.QuoteMeta(`INSERT INTO workspace_operations (workspace_id, op_seq, domain, document_id, payload_json, created_at)
-VALUES ($1, $2, $3, $4, $5::jsonb, NOW())`)
+VALUES ($1, $2, $3, $4, $5::jsonb, $6)`)
 
 	mock.ExpectBegin()
 	mock.ExpectQuery(lockQuery).
@@ -46,7 +77,7 @@ VALUES ($1, $2, $3, $4, $5::jsonb, NOW())`)
 		WithArgs("ws_1").
 		WillReturnRows(sqlmock.NewRows([]string{"workspace_rev", "route_rev", "op_seq"}).AddRow(9, 4, 34))
 	mock.ExpectExec(insertOperation).
-		WithArgs("ws_1", int64(34), "mir.document", "doc_home", `{"intent":"content.update"}`).
+		WithArgs("ws_1", int64(34), "core.mir.document.update@1.0", "doc_home", sqlmock.AnyArg(), issuedAt.UTC()).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
 
@@ -55,7 +86,7 @@ VALUES ($1, $2, $3, $4, $5::jsonb, NOW())`)
 		DocumentID:         "doc_home",
 		ExpectedContentRev: 3,
 		Content:            json.RawMessage(`{"title":"next"}`),
-		OperationPayload:   json.RawMessage(`{"intent":"content.update"}`),
+		Command:            command,
 	})
 	if err != nil {
 		t.Fatalf("save document content: %v", err)
@@ -82,6 +113,8 @@ func TestWorkspaceStoreSaveDocumentContentReturnsDocumentConflict(t *testing.T) 
 	defer db.Close()
 
 	store := NewWorkspaceStore(db)
+	issuedAt := time.Date(2026, time.February, 8, 10, 1, 0, 0, time.UTC)
+	command := buildTestCommand("cmd_doc_update_2", issuedAt, "ws_1", "doc_home", "core.mir", "document.update")
 
 	lockQuery := regexp.QuoteMeta(`SELECT d.content_rev, d.meta_rev, w.workspace_rev, w.route_rev, w.op_seq
 FROM workspace_documents d
@@ -100,6 +133,7 @@ FOR UPDATE OF d, w`)
 		DocumentID:         "doc_home",
 		ExpectedContentRev: 5,
 		Content:            json.RawMessage(`{"title":"ignored"}`),
+		Command:            command,
 	})
 	if err == nil {
 		t.Fatalf("expected conflict error")
@@ -128,6 +162,8 @@ func TestWorkspaceStoreSaveRouteManifestIncrementsWorkspaceAndRouteRev(t *testin
 	defer db.Close()
 
 	store := NewWorkspaceStore(db)
+	issuedAt := time.Date(2026, time.February, 8, 10, 2, 0, 0, time.UTC)
+	command := buildTestCommand("cmd_route_update_1", issuedAt, "ws_1", "", "core.route", "manifest.update")
 
 	lockWorkspace := regexp.QuoteMeta(`SELECT workspace_rev, route_rev, op_seq
 FROM workspaces
@@ -142,7 +178,7 @@ SET workspace_rev = workspace_rev + 1, route_rev = route_rev + 1, op_seq = op_se
 WHERE id = $1
 RETURNING workspace_rev, route_rev, op_seq`)
 	insertOperation := regexp.QuoteMeta(`INSERT INTO workspace_operations (workspace_id, op_seq, domain, document_id, payload_json, created_at)
-VALUES ($1, $2, $3, $4, $5::jsonb, NOW())`)
+VALUES ($1, $2, $3, $4, $5::jsonb, $6)`)
 
 	mock.ExpectBegin()
 	mock.ExpectQuery(lockWorkspace).
@@ -155,7 +191,7 @@ VALUES ($1, $2, $3, $4, $5::jsonb, NOW())`)
 		WithArgs("ws_1").
 		WillReturnRows(sqlmock.NewRows([]string{"workspace_rev", "route_rev", "op_seq"}).AddRow(10, 5, 35))
 	mock.ExpectExec(insertOperation).
-		WithArgs("ws_1", int64(35), "workspace.route", nil, `{"intent":"route.update"}`).
+		WithArgs("ws_1", int64(35), "core.route.manifest.update@1.0", nil, sqlmock.AnyArg(), issuedAt.UTC()).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
 
@@ -164,7 +200,7 @@ VALUES ($1, $2, $3, $4, $5::jsonb, NOW())`)
 		ExpectedWorkspaceRev: 9,
 		ExpectedRouteRev:     4,
 		RouteManifest:        json.RawMessage(`{"version":"1","root":{"id":"root"}}`),
-		OperationPayload:     json.RawMessage(`{"intent":"route.update"}`),
+		Command:              command,
 	})
 	if err != nil {
 		t.Fatalf("save route manifest: %v", err)
@@ -174,5 +210,82 @@ VALUES ($1, $2, $3, $4, $5::jsonb, NOW())`)
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Fatalf("sql expectations: %v", err)
+	}
+}
+
+func TestWorkspaceStoreSaveDocumentContentValidatesCommandEnvelope(t *testing.T) {
+	testCases := []struct {
+		name          string
+		mutateCommand func(command *WorkspaceCommandEnvelope)
+		wantMessage   string
+	}{
+		{
+			name: "missing issuedAt",
+			mutateCommand: func(command *WorkspaceCommandEnvelope) {
+				command.IssuedAt = time.Time{}
+			},
+			wantMessage: "command.issuedAt is required",
+		},
+		{
+			name: "workspace mismatch",
+			mutateCommand: func(command *WorkspaceCommandEnvelope) {
+				command.Target.WorkspaceID = "ws_other"
+			},
+			wantMessage: "command.target.workspaceId does not match workspaceID",
+		},
+		{
+			name: "missing document target",
+			mutateCommand: func(command *WorkspaceCommandEnvelope) {
+				command.Target.DocumentID = ""
+			},
+			wantMessage: "command.target.documentId is required for document mutations",
+		},
+		{
+			name: "unsupported patch op",
+			mutateCommand: func(command *WorkspaceCommandEnvelope) {
+				command.ForwardOps = []WorkspacePatchOp{
+					{Op: "execute", Path: "/title"},
+				}
+			},
+			wantMessage: "unsupported op",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("create sqlmock: %v", err)
+			}
+			defer db.Close()
+
+			store := NewWorkspaceStore(db)
+			command := buildTestCommand(
+				"cmd_doc_invalid_"+strings.ReplaceAll(testCase.name, " ", "_"),
+				time.Date(2026, time.February, 8, 10, 5, 0, 0, time.UTC),
+				"ws_1",
+				"doc_home",
+				"core.mir",
+				"document.update",
+			)
+			testCase.mutateCommand(&command)
+
+			_, err = store.SaveDocumentContent(context.Background(), SaveDocumentContentParams{
+				WorkspaceID:        "ws_1",
+				DocumentID:         "doc_home",
+				ExpectedContentRev: 1,
+				Content:            json.RawMessage(`{"title":"next"}`),
+				Command:            command,
+			})
+			if err == nil {
+				t.Fatalf("expected validation error")
+			}
+			if !strings.Contains(err.Error(), testCase.wantMessage) {
+				t.Fatalf("unexpected error message: %v", err)
+			}
+			if err := mock.ExpectationsWereMet(); err != nil {
+				t.Fatalf("sql expectations: %v", err)
+			}
+		})
 	}
 }

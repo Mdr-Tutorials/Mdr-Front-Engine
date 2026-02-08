@@ -643,6 +643,9 @@ func normalizeWorkspaceCommand(command WorkspaceCommandEnvelope) (WorkspaceComma
 	command.Namespace = strings.TrimSpace(command.Namespace)
 	command.Type = strings.TrimSpace(command.Type)
 	command.Version = strings.TrimSpace(command.Version)
+	if !command.IssuedAt.IsZero() {
+		command.IssuedAt = command.IssuedAt.UTC()
+	}
 	command.Target.WorkspaceID = strings.TrimSpace(command.Target.WorkspaceID)
 	command.Target.DocumentID = strings.TrimSpace(command.Target.DocumentID)
 	command.MergeKey = strings.TrimSpace(command.MergeKey)
