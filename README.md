@@ -46,6 +46,7 @@ MIT License | 支持本地运行 + 云端协作
 - **pnpm** (推荐 v10+)
 - **Go** (用于运行后端服务)
 - **Node.js** (LTS 版本)
+- **PostgreSQL**
 
 ### 安装
 
