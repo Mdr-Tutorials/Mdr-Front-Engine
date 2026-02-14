@@ -108,3 +108,7 @@ packages/*/cjs/
 # 测试覆盖率
 coverage/
 .nyc_output/
+
+# 其他
+.tmp*
+.claude/

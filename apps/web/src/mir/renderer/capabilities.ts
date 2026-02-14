@@ -64,6 +64,13 @@ export const registerNodeCapability = (capability: NodeCapability) => {
     capabilityRegistry.push(capability);
 };
 
+/**
+ * 解析节点命中的所有能力。
+ *
+ * 调用链路：
+ * - `MIRRenderer` 点击代理阶段会用它判断 link 能力（是否阻止默认导航）
+ * - `BlueprintEditorInspector` 用它决定是否展示链接相关字段
+ */
 export const resolveNodeCapabilities = (node: ComponentNode | null) => {
     if (!node) return [];
     return capabilityRegistry.filter((capability) => capability.match(node));

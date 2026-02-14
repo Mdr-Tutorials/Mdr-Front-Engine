@@ -454,6 +454,13 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
         [builtInActions]
     );
 
+    /**
+     * Delegated click handler (capture phase).
+     *
+     * 调用链路：
+     * click -> MIRRenderer(onClickCapture) -> onNodeSelect -> Canvas -> controller；
+     * click -> MIRRenderer -> dispatchBuiltInAction/dispatchAction。
+     */
     const handleDelegatedClickCapture = useCallback(
         (event: React.SyntheticEvent) => {
             const target = event.target;

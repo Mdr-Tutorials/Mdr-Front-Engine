@@ -95,6 +95,12 @@ const parseNavigationState = (value: unknown) => {
     return value;
 };
 
+/**
+ * 内置动作执行链路：
+ * MIR 事件 -> executeBuiltInAction ->
+ * - executeGraph: 派发 `mdr:execute-graph`
+ * - navigate: 外链确认或 history/location 跳转
+ */
 export const executeBuiltInAction = (
     actionName: BuiltInActionName,
     context: BuiltInActionContext

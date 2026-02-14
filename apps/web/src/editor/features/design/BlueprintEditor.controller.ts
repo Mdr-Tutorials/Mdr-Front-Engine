@@ -50,6 +50,14 @@ type InteractionRequest = {
     eventKey: string;
 };
 
+/**
+ * Blueprint 编辑器的编排层（controller）。
+ *
+ * 复杂链路集中在这里：
+ * - UI 交互 -> updateMirDoc -> autosave（workspace/project）
+ * - Canvas 内置动作 -> 导航确认/图执行事件 -> 页面或外部系统
+ * - DnD 结果 -> MIR 树变换 -> 选中态与面板状态同步
+ */
 export const useBlueprintEditorController = () => {
     const [routes, setRoutes] = useState<RouteItem[]>(DEFAULT_ROUTES);
     const [currentPath, setCurrentPath] = useState(DEFAULT_ROUTES[0].path);
@@ -127,6 +135,7 @@ export const useBlueprintEditorController = () => {
             activationConstraint: { distance: 6 },
         })
     );
+    // 保存链路：mirDoc 变化 -> useBlueprintAutosave -> editorApi 保存 -> applyWorkspaceMutation
     const {
         saveStatus,
         saveTransport,
@@ -161,6 +170,13 @@ export const useBlueprintEditorController = () => {
         });
     };
 
+    /**
+     * Canvas built-in `navigate` 的控制器出口。
+     *
+     * 调用链路：
+     * MIR 节点 click -> MIRRenderer capture -> BlueprintEditorCanvas builtInActions.navigate
+     * -> controller.handleNavigateRequest
+     */
     const handleNavigateRequest = (options: InteractionRequest) => {
         const params = options.params ?? {};
         const to = typeof params.to === 'string' ? params.to.trim() : '';
@@ -234,6 +250,13 @@ export const useBlueprintEditorController = () => {
         }
     };
 
+    /**
+     * Canvas built-in `executeGraph` 的控制器出口。
+     *
+     * 调用链路：
+     * MIR 事件 -> MIRRenderer -> Canvas builtInActions.executeGraph ->
+     * controller -> `window` 事件总线 `mdr:execute-graph`
+     */
     const handleExecuteGraphRequest = (options: InteractionRequest) => {
         if (typeof window === 'undefined') return;
         window.dispatchEvent(
@@ -353,6 +376,7 @@ export const useBlueprintEditorController = () => {
         setBlueprintState(blueprintKey, { selectedId: nodeId });
     };
 
+    // 拖拽链路：DndContext 事件 -> useBlueprintDragDrop -> updateMirDoc -> 选中态更新
     const {
         activePaletteItemId,
         treeDropHint,

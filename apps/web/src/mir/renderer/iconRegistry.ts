@@ -65,6 +65,11 @@ export const registerIconProvider = (
     });
 };
 
+/**
+ * 图标解析主链路：
+ * Inspector/MIR 写入 `props.iconRef` -> registry 的 icon adapter -> resolveIconRef ->
+ * 对应 provider 返回 React 组件 -> MIRRenderer 渲染。
+ */
 export const resolveIconRef = (value: unknown) => {
     if (!isIconRef(value)) return null;
     const provider = iconProviders.get(normalizeProvider(value.provider));

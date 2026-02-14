@@ -359,6 +359,11 @@ export const parseResolverOrder = (value?: string): RegistryGroup[] => {
     return order.length > 0 ? order : [...DEFAULT_RESOLVER_ORDER];
 };
 
+/**
+ * 组件解析链路：
+ * 设置项 `resolverOrder` -> parseResolverOrder -> createOrderedComponentRegistry ->
+ * MIRRenderer 在 custom/mdr/native 分层查找组件。
+ */
 export const createOrderedComponentRegistry = (
     order: RegistryGroup[] = DEFAULT_RESOLVER_ORDER,
     customRegistry?: ComponentRegistry

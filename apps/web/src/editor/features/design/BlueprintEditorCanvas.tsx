@@ -99,6 +99,11 @@ const normalizeWheelDelta = (event: WheelEvent) => {
     return { x: event.deltaX, y: event.deltaY };
 };
 
+/**
+ * 交互链路：
+ * 节点点击 -> MIRRenderer -> onSelectNode -> controller；
+ * 节点内置动作 -> builtInActions -> controller。
+ */
 export function BlueprintEditorCanvas({
     viewportWidth,
     viewportHeight,
@@ -413,6 +418,7 @@ export function BlueprintEditorCanvas({
                                     allowExternalProps={
                                         allowExternalProps === 'enabled'
                                     }
+                                    // 内置动作链路：MIRRenderer -> builtInActions -> controller。
                                     builtInActions={{
                                         ...(onNavigateRequest
                                             ? { navigate: onNavigateRequest }
