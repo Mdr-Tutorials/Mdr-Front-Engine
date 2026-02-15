@@ -1,6 +1,7 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { ClassProtocolEditor } from '../ClassProtocolEditor';
+import { useSettingsStore } from '@/editor/store/useSettingsStore';
 
 describe('ClassProtocolEditor', () => {
   it('commits whitespace-separated input into class tokens', () => {
@@ -38,6 +39,115 @@ describe('ClassProtocolEditor', () => {
     expect(handleChange.mock.calls.at(-1)?.[0]).toMatch(/^flex items-/);
   });
 
+  it('normalizes p-12px to p-[12px] on enter completion', () => {
+    const handleChange = vi.fn();
+    render(
+      <ClassProtocolEditor
+        value=""
+        onChange={handleChange}
+        inputTestId="class-protocol-input"
+      />
+    );
+
+    const input = screen.getByTestId('class-protocol-input');
+    fireEvent.change(input, { target: { value: 'p-12px' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    expect(handleChange).toHaveBeenCalledWith('p-[12px]');
+  });
+
+  it('allows selecting inferred scale token after intent-preserving suggestion', () => {
+    const handleChange = vi.fn();
+    render(
+      <ClassProtocolEditor
+        value=""
+        onChange={handleChange}
+        inputTestId="class-protocol-input"
+      />
+    );
+
+    const input = screen.getByTestId('class-protocol-input');
+    fireEvent.change(input, { target: { value: 'p-12px' } });
+    fireEvent.keyDown(input, { key: 'ArrowDown' });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    expect(handleChange).toHaveBeenCalledWith('p-3');
+  });
+
+  it('prefers inferred scale token on enter when class px transform mode is enabled', () => {
+    const previousMode =
+      useSettingsStore.getState().global.classPxTransformMode;
+    act(() => {
+      useSettingsStore.setState((state) => ({
+        global: {
+          ...state.global,
+          classPxTransformMode: 'prefer-scale-token',
+        },
+      }));
+    });
+
+    const handleChange = vi.fn();
+    render(
+      <ClassProtocolEditor
+        value=""
+        onChange={handleChange}
+        inputTestId="class-protocol-input"
+      />
+    );
+
+    const input = screen.getByTestId('class-protocol-input');
+    fireEvent.change(input, { target: { value: 'p-12px' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    expect(handleChange).toHaveBeenCalledWith('p-3');
+
+    act(() => {
+      useSettingsStore.setState((state) => ({
+        global: {
+          ...state.global,
+          classPxTransformMode: previousMode,
+        },
+      }));
+    });
+  });
+
+  it('normalizes p-12p to the same first suggestion as p-[12p]', () => {
+    const handleChange = vi.fn();
+    render(
+      <ClassProtocolEditor
+        value=""
+        onChange={handleChange}
+        inputTestId="class-protocol-input"
+      />
+    );
+
+    const input = screen.getByTestId('class-protocol-input');
+    fireEvent.change(input, { target: { value: 'p-12p' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    expect(handleChange).toHaveBeenCalledWith('p-[12px]');
+  });
+
+  it('uses semantic hint completion for color shade templates', () => {
+    const handleChange = vi.fn();
+    render(
+      <ClassProtocolEditor
+        value=""
+        onChange={handleChange}
+        inputTestId="class-protocol-input"
+      />
+    );
+
+    const input = screen.getByTestId(
+      'class-protocol-input'
+    ) as HTMLInputElement;
+    fireEvent.change(input, { target: { value: 'border-red-' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    expect(handleChange).not.toHaveBeenCalled();
+    expect(input.value).toMatch(/^border-red-\d+$/);
+  });
+
   it('keeps conflicting tokens and relies on overridden hint instead of dropping old token', () => {
     const handleChange = vi.fn();
     render(
@@ -70,6 +180,24 @@ describe('ClassProtocolEditor', () => {
     });
 
     expect(handleChange).toHaveBeenCalledWith('p-4');
+  });
+
+  it('does not keep removing tokens on repeated backspace keydown events', () => {
+    const handleChange = vi.fn();
+    render(
+      <ClassProtocolEditor
+        value="p-4 flex items-center"
+        onChange={handleChange}
+        inputTestId="class-protocol-input"
+      />
+    );
+
+    const input = screen.getByTestId('class-protocol-input');
+    fireEvent.keyDown(input, { key: 'Backspace' });
+    fireEvent.keyDown(input, { key: 'Backspace', repeat: true });
+
+    expect(handleChange).toHaveBeenCalledTimes(1);
+    expect(handleChange).toHaveBeenCalledWith('p-4 flex');
   });
 
   it('renders a color dot for color class tokens', () => {

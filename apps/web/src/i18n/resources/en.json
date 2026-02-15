@@ -758,6 +758,14 @@
               "wide": "Wide"
             }
           },
+          "classPxTransformMode": {
+            "label": "PX class transform",
+            "description": "Choose whether Enter keeps arbitrary px input or prefers spacing scale tokens.",
+            "options": {
+              "preserveIntent": "Preserve intent",
+              "preferScaleToken": "Prefer scale token"
+            }
+          },
           "viewportSize": {
             "label": "Viewport size",
             "description": "Default artboard size for new pages."

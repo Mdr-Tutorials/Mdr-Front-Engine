@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { InspectorTextInput } from './InspectorTextInput';
+import {
+  CSS_ABSOLUTE_LENGTH_UNITS,
+  CSS_CONTAINER_LENGTH_UNITS,
+  CSS_FONT_RELATIVE_LENGTH_UNITS,
+  CSS_PERCENTAGE_UNIT,
+  CSS_VIEWPORT_LENGTH_UNITS,
+} from '../units/cssUnits';
 
 type UnitGroup = {
   label: string;
@@ -62,57 +69,25 @@ const getGroupsForQuantity = (
   const GROUPS_LENGTH: UnitGroup[] = [
     {
       label: t('unitInput.groups.absoluteLength'),
-      units: ['px', 'cm', 'mm', 'Q', 'in', 'pt', 'pc'],
+      units: [...CSS_ABSOLUTE_LENGTH_UNITS],
     },
     {
       label: t('unitInput.groups.fontRelative'),
-      units: [
-        'em',
-        'rem',
-        'ex',
-        'rex',
-        'cap',
-        'rcap',
-        'ch',
-        'rch',
-        'ic',
-        'ric',
-        'lh',
-        'rlh',
-      ],
+      units: [...CSS_FONT_RELATIVE_LENGTH_UNITS],
     },
     {
       label: t('unitInput.groups.viewport'),
-      units: [
-        'vw',
-        'vh',
-        'vi',
-        'vb',
-        'vmin',
-        'vmax',
-        'svw',
-        'svh',
-        'svi',
-        'svb',
-        'lvw',
-        'lvh',
-        'lvi',
-        'lvb',
-        'dvw',
-        'dvh',
-        'dvi',
-        'dvb',
-      ],
+      units: [...CSS_VIEWPORT_LENGTH_UNITS],
     },
     {
       label: t('unitInput.groups.container'),
-      units: ['cqw', 'cqh', 'cqi', 'cqb', 'cqmin', 'cqmax'],
+      units: [...CSS_CONTAINER_LENGTH_UNITS],
     },
   ];
 
   // https://developer.mozilla.org/docs/Web/CSS/percentage
   const GROUPS_PERCENTAGE: UnitGroup[] = [
-    { label: t('unitInput.groups.percentage'), units: ['%'] },
+    { label: t('unitInput.groups.percentage'), units: [CSS_PERCENTAGE_UNIT] },
   ];
 
   // https://developer.mozilla.org/docs/Web/CSS/angle

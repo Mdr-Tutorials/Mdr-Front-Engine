@@ -9,9 +9,10 @@ const mergeSuggestions = (
 ): ClassSuggestion[] => {
   const deduped = new Map<string, ClassSuggestion>();
   suggestions.forEach((item) => {
-    const current = deduped.get(item.token);
+    const key = item.insertText ?? item.token;
+    const current = deduped.get(key);
     if (!current || item.score > current.score) {
-      deduped.set(item.token, item);
+      deduped.set(key, item);
     }
   });
   return [...deduped.values()]

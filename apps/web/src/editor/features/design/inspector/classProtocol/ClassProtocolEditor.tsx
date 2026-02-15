@@ -8,13 +8,17 @@ import {
   Type,
   X,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { classProtocolEngine } from './engineRegistry';
 import { resolveClassTokenColorSwatch } from './colorSwatch';
 import type { MountedCssEntry } from './mountedCss';
 import { resolveMountedCssTokenTarget } from './mountedCss';
+import type { ClassSuggestion } from './types';
 import { parseClassTokens, toClassNameValue } from './tokenizer';
+import { useSettingsStore } from '@/editor/store/useSettingsStore';
 
 type ClassProtocolEditorProps = {
+  projectId?: string;
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
@@ -44,6 +48,7 @@ const getSuggestionIcon = (token: string) => {
 };
 
 export function ClassProtocolEditor({
+  projectId,
   value,
   onChange,
   placeholder,
@@ -51,6 +56,7 @@ export function ClassProtocolEditor({
   mountedCssEntries = [],
   onOpenMountedCss,
 }: ClassProtocolEditorProps) {
+  const { i18n, t } = useTranslation();
   const [draft, setDraft] = useState('');
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
   const [mode, setMode] = useState<EditMode>('token');
@@ -84,7 +90,11 @@ export function ClassProtocolEditor({
     }
     return retained;
   }, [tokens]);
-  const suggestions = useMemo(
+  const classPxTransformMode = useSettingsStore((state) =>
+    state.getEffectiveGlobalValue(projectId, 'classPxTransformMode')
+  );
+  const preferScaleToken = classPxTransformMode === 'prefer-scale-token';
+  const engineSuggestions = useMemo(
     () =>
       classProtocolEngine.suggest({
         query: draft,
@@ -93,6 +103,67 @@ export function ClassProtocolEditor({
       }),
     [draft, tokens]
   );
+  const suggestions = useMemo(() => {
+    if (!preferScaleToken) return engineSuggestions;
+
+    const inferredIndex = engineSuggestions.findIndex((item) =>
+      item.detail?.startsWith('Inferred from ')
+    );
+    if (inferredIndex <= 0) return engineSuggestions;
+
+    const inferred = engineSuggestions[inferredIndex];
+    if (!inferred) return engineSuggestions;
+    const next = [...engineSuggestions];
+    next.splice(inferredIndex, 1);
+    next.unshift(inferred);
+    return next;
+  }, [engineSuggestions, preferScaleToken]);
+
+  const getSuggestionLabel = (suggestion: ClassSuggestion) => {
+    if (suggestion.kind === 'hint' && suggestion.hint) {
+      if (suggestion.hint.type === 'arbitrary-length-template') {
+        const templateText = i18n.resolvedLanguage?.startsWith('zh')
+          ? '带单位长度'
+          : 'length with unit';
+        return `${suggestion.hint.prefix}-[${templateText}]`;
+      }
+      if (suggestion.hint.type === 'color-shade-template') {
+        const templateText = i18n.resolvedLanguage?.startsWith('zh')
+          ? '颜色深度'
+          : 'color shade';
+        return `${suggestion.hint.prefix}-[${templateText}]`;
+      }
+    }
+    return suggestion.label ?? suggestion.token;
+  };
+
+  const getSuggestionDetail = (suggestion: ClassSuggestion) => {
+    if (suggestion.kind === 'hint' && suggestion.hint) {
+      if (suggestion.hint.type === 'arbitrary-length-template') {
+        const defaultValue = i18n.resolvedLanguage?.startsWith('zh')
+          ? '例如 {{exampleA}}, {{exampleB}}'
+          : 'Example: {{exampleA}}, {{exampleB}}';
+        return t(
+          'blueprint.inspector.fields.className.hints.arbitraryLengthTemplate',
+          {
+            defaultValue,
+            exampleA: `${suggestion.hint.prefix}-[12px]`,
+            exampleB: `${suggestion.hint.prefix}-[1rem]`,
+          }
+        );
+      }
+      if (suggestion.hint.type === 'color-shade-template') {
+        const defaultValue = i18n.resolvedLanguage?.startsWith('zh')
+          ? '例如 {{example}}'
+          : 'Example: {{example}}';
+        return t('blueprint.inspector.fields.className.hints.colorShade', {
+          defaultValue,
+          example: suggestion.hint.example,
+        });
+      }
+    }
+    return suggestion.detail;
+  };
 
   useEffect(() => {
     setActiveSuggestionIndex(0);
@@ -263,10 +334,14 @@ export function ClassProtocolEditor({
               if (!draft.trim()) return;
               event.preventDefault();
               const picked = suggestions[activeSuggestionIndex];
-              commitToken(picked?.token ?? draft);
+              if (picked?.kind === 'hint') {
+                setDraft(picked.insertText ?? picked.token);
+                return;
+              }
+              commitToken(picked?.insertText ?? picked?.token ?? draft);
               return;
             }
-            if (event.key === 'Backspace' && !draft) {
+            if (event.key === 'Backspace' && !draft && !event.repeat) {
               if (!tokens.length) return;
               event.preventDefault();
               removeTokenAt(tokens.length - 1);
@@ -307,12 +382,19 @@ export function ClassProtocolEditor({
                 aria-selected={activeSuggestionIndex === index}
                 onMouseDown={(event) => {
                   event.preventDefault();
-                  commitToken(suggestion.token);
+                  if (suggestion.kind === 'hint') {
+                    setDraft(suggestion.insertText ?? suggestion.token);
+                    return;
+                  }
+                  commitToken(suggestion.insertText ?? suggestion.token);
                 }}
                 data-testid={`inspector-classname-suggestion-${suggestion.token}`}
+                title={getSuggestionDetail(suggestion)}
               >
                 <Icon size={12} />
-                <span className="truncate">{suggestion.token}</span>
+                <span className="truncate">
+                  {getSuggestionLabel(suggestion)}
+                </span>
               </button>
             );
           })}

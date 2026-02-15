@@ -7,6 +7,7 @@ import { useInspectorSectionContext } from '../InspectorSectionContext';
 export function InspectorNodeCapabilitiesFields() {
   const {
     t,
+    projectId,
     supportsClassProtocol,
     classNameValue,
     mountedCssEntries,
@@ -36,6 +37,7 @@ export function InspectorNodeCapabilitiesFields() {
             })}
             control={
               <ClassProtocolEditor
+                projectId={projectId}
                 value={classNameValue}
                 placeholder="e.g. p-4 flex items-center"
                 inputTestId="inspector-classname-input"

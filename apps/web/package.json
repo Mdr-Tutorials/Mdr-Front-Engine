@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "tailwind:snapshot": "node --experimental-strip-types ../../scripts/generate-tailwind-runtime-snapshot.mjs",
     "test": "node ../../node_modules/vitest/vitest.mjs --config vitest.config.ts --run",
     "test:watch": "node ../../node_modules/vitest/vitest.mjs --config vitest.config.ts",
     "test:coverage": "node ../../node_modules/vitest/vitest.mjs --config vitest.config.ts --run --coverage --maxConcurrency=1"

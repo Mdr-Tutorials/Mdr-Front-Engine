@@ -317,6 +317,7 @@ export const useBlueprintEditorInspectorController = () => {
   const sectionContextValue = useMemo(
     () => ({
       t,
+      projectId,
       expandedSections,
       toggleSection,
       draftId,
@@ -356,6 +357,7 @@ export const useBlueprintEditorInspectorController = () => {
     }),
     [
       t,
+      projectId,
       expandedSections,
       draftId,
       selectedNode,

@@ -758,6 +758,14 @@
               "wide": "宽屏"
             }
           },
+          "classPxTransformMode": {
+            "label": "PX 类名转换",
+            "description": "选择回车时保留任意 px 输入，还是优先转为空间刻度 token。",
+            "options": {
+              "preserveIntent": "保留输入意图",
+              "preferScaleToken": "优先刻度 token"
+            }
+          },
           "viewportSize": {
             "label": "视口尺寸",
             "description": "新页面的默认画板尺寸。"

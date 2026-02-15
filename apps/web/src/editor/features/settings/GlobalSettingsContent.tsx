@@ -296,6 +296,36 @@ export const GlobalSettingsContent = ({
             />
           }
         />
+        <SettingsRow
+          label={t('settings.global.rows.classPxTransformMode.label')}
+          description={t(
+            'settings.global.rows.classPxTransformMode.description'
+          )}
+          meta={renderMeta('classPxTransformMode')}
+          control={
+            <MdrRadioGroup
+              options={[
+                {
+                  label: t(
+                    'settings.global.rows.classPxTransformMode.options.preserveIntent'
+                  ),
+                  value: 'preserve-intent',
+                },
+                {
+                  label: t(
+                    'settings.global.rows.classPxTransformMode.options.preferScaleToken'
+                  ),
+                  value: 'prefer-scale-token',
+                },
+              ].map((option) => ({
+                ...option,
+                disabled: !isOverrideEnabled('classPxTransformMode'),
+              }))}
+              value={String(resolveValue('classPxTransformMode'))}
+              onChange={(value) => updateValue('classPxTransformMode', value)}
+            />
+          }
+        />
       </SettingsPanel>
       <SettingsPanel
         title={t('settings.global.panels.blueprint.title')}

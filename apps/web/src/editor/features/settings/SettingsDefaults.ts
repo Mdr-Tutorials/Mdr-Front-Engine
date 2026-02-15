@@ -7,6 +7,7 @@ export const createGlobalDefaults = () => ({
   undoSteps: '80',
   confirmPrompts: ['delete', 'reset', 'leave'],
   panelLayout: 'balanced',
+  classPxTransformMode: 'preserve-intent',
   viewportWidth: '1440',
   viewportHeight: '900',
   zoomStep: 5,
