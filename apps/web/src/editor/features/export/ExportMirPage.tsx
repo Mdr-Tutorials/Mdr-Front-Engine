@@ -12,10 +12,13 @@ import {
 } from 'lucide-react';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import { generateReactBundle } from '@/mir/generator/mirToReact';
+import { antdReactAdapter } from '@/mir/generator/react/antdAdapter';
 import { CodeViewer } from './CodeViewer';
 import './ExportMirPage.scss';
 
 type ExportTab = 'mir' | 'react';
+type ReactAdapterMode = 'mdr' | 'antd';
+type ReactImportStrategy = 'workspace' | 'esm-sh';
 type FileTreeNode = {
     key: string;
     name: string;
@@ -80,6 +83,10 @@ export function ExportMirPage() {
     );
     const [copied, setCopied] = useState(false);
     const [activeTab, setActiveTab] = useState<ExportTab>('mir');
+    const [reactAdapterMode, setReactAdapterMode] =
+        useState<ReactAdapterMode>('mdr');
+    const [reactImportStrategy, setReactImportStrategy] =
+        useState<ReactImportStrategy>('workspace');
     const [activeReactFile, setActiveReactFile] = useState('');
     const [expandedFolders, setExpandedFolders] = useState<
         Record<string, boolean>
@@ -93,7 +100,21 @@ export function ExportMirPage() {
     const reactBundle = useMemo(() => {
         if (!mirDoc?.ui?.root) return null;
         try {
-            return generateReactBundle(mirDoc, { resourceType: projectType });
+            const adapter =
+                reactAdapterMode === 'antd' ? antdReactAdapter : undefined;
+            const packageResolver = {
+                strategy: reactImportStrategy,
+                packageVersions:
+                    reactAdapterMode === 'antd'
+                        ? { antd: '5.28.0' }
+                        : undefined,
+            } as const;
+
+            return generateReactBundle(mirDoc, {
+                resourceType: projectType,
+                adapter,
+                packageResolver,
+            });
         } catch (error) {
             const message = t('react.error', {
                 defaultValue: 'React 代码生成失败',
@@ -110,7 +131,7 @@ export function ExportMirPage() {
                 ],
             };
         }
-    }, [mirDoc, projectType, t]);
+    }, [mirDoc, projectType, reactAdapterMode, reactImportStrategy, t]);
 
     useEffect(() => {
         if (!reactBundle) {
@@ -288,6 +309,42 @@ export function ExportMirPage() {
                             {t('tabs.react', { defaultValue: 'React' })}
                         </button>
                     </div>
+                    {activeTab === 'react' && (
+                        <div className="inline-flex items-center gap-2 text-xs">
+                            <label className="inline-flex items-center gap-1">
+                                <span>Adapter</span>
+                                <select
+                                    className="h-7 rounded border border-black/10 bg-transparent px-2 text-xs dark:border-white/15"
+                                    value={reactAdapterMode}
+                                    onChange={(event) =>
+                                        setReactAdapterMode(
+                                            event.target
+                                                .value as ReactAdapterMode
+                                        )
+                                    }
+                                >
+                                    <option value="mdr">@mdr/ui</option>
+                                    <option value="antd">antd</option>
+                                </select>
+                            </label>
+                            <label className="inline-flex items-center gap-1">
+                                <span>Imports</span>
+                                <select
+                                    className="h-7 rounded border border-black/10 bg-transparent px-2 text-xs dark:border-white/15"
+                                    value={reactImportStrategy}
+                                    onChange={(event) =>
+                                        setReactImportStrategy(
+                                            event.target
+                                                .value as ReactImportStrategy
+                                        )
+                                    }
+                                >
+                                    <option value="workspace">workspace</option>
+                                    <option value="esm-sh">esm.sh</option>
+                                </select>
+                            </label>
+                        </div>
+                    )}
                     <button
                         type="button"
                         className="ExportMirPageCopy"
@@ -307,6 +364,18 @@ export function ExportMirPage() {
             </div>
 
             <div className="ExportMirPageBody">
+                {activeTab === 'react' && reactBundle?.diagnostics?.length ? (
+                    <div className="mb-2 rounded-md border border-amber-300/60 bg-amber-100/40 px-2 py-1 text-xs text-amber-900 dark:border-amber-700/60 dark:bg-amber-900/20 dark:text-amber-100">
+                        {reactBundle.diagnostics.map((item) => (
+                            <p
+                                key={`${item.code}:${item.path}`}
+                                className="m-0"
+                            >
+                                [{item.severity}] {item.code}: {item.message}
+                            </p>
+                        ))}
+                    </div>
+                ) : null}
                 {!activeCode ? (
                     <div className="ExportMirPageEmpty">{activeEmpty}</div>
                 ) : activeTab === 'react' && reactBundle ? (

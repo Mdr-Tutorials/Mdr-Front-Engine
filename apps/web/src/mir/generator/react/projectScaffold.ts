@@ -5,6 +5,7 @@ export const createProjectReactBundle = (
 ): ReactExportBundle => ({
     type: 'project',
     entryFilePath: 'src/App.tsx',
+    diagnostics: compiled.diagnostics,
     files: [
         {
             path: 'package.json',
@@ -23,7 +24,7 @@ export const createProjectReactBundle = (
                     dependencies: {
                         react: '^18.3.1',
                         'react-dom': '^18.3.1',
-                        '@mdr/ui': 'latest',
+                        ...compiled.dependencies,
                     },
                     devDependencies: {
                         typescript: '^5.6.3',
@@ -111,6 +112,7 @@ export const createSingleFileBundle = (
 ): ReactExportBundle => ({
     type,
     entryFilePath: `${compiled.componentName}.tsx`,
+    diagnostics: compiled.diagnostics,
     files: [
         {
             path: `${compiled.componentName}.tsx`,

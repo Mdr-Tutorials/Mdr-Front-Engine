@@ -182,15 +182,28 @@ export function BlueprintEditorSidebar({
     const { t } = useTranslation('blueprint');
     const [query, setQuery] = useState('');
     const [isSearchOpen, setSearchOpen] = useState(false);
+    const [activeLibrary, setActiveLibrary] = useState<
+        'builtIn' | 'headless' | 'external'
+    >('builtIn');
+    const [externalLoadState, setExternalLoadState] = useState<
+        'idle' | 'loading' | 'ready' | 'error'
+    >('idle');
+    const [externalMessage, setExternalMessage] = useState('');
+    const [registryVersion, setRegistryVersion] = useState(0);
     const searchInputRef = useRef<HTMLInputElement | null>(null);
 
     const normalizedQuery = query.trim().toLowerCase();
     const effectiveSearchOpen = isSearchOpen || Boolean(normalizedQuery);
     const groups = useMemo(() => {
         const rawGroups = getComponentGroups();
-        if (!normalizedQuery) return rawGroups;
+        const scopedGroups = rawGroups.filter((group) => {
+            const groupSource = group.source ?? 'builtIn';
+            return groupSource === activeLibrary;
+        });
 
-        return rawGroups
+        if (!normalizedQuery) return scopedGroups;
+
+        return scopedGroups
             .map((group) => {
                 const groupTitle = t(
                     `componentLibrary.groups.${group.id}.title`,
@@ -223,7 +236,7 @@ export function BlueprintEditorSidebar({
             .filter((value): value is NonNullable<typeof value> =>
                 Boolean(value)
             );
-    }, [normalizedQuery, t]);
+    }, [activeLibrary, normalizedQuery, registryVersion, t]);
 
     const handleQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
         setQuery(event.target.value);
@@ -238,12 +251,33 @@ export function BlueprintEditorSidebar({
         return () => window.clearTimeout(id);
     }, [effectiveSearchOpen]);
 
+    useEffect(() => {
+        if (activeLibrary !== 'external') return;
+        setExternalLoadState('loading');
+        void import('./blueprint/external/antdEsmLibrary')
+            .then((mod) => mod.ensureAntdEsmLibrary())
+            .then((diagnostics) => {
+                const hasError = diagnostics.some(
+                    (item) => item.level === 'error'
+                );
+                setExternalLoadState(hasError ? 'error' : 'ready');
+                setExternalMessage(
+                    diagnostics.map((item) => item.message).join(' ')
+                );
+                setRegistryVersion((value) => value + 1);
+            })
+            .catch((error) => {
+                setExternalLoadState('error');
+                setExternalMessage(String(error));
+            });
+    }, [activeLibrary]);
+
     const openSearch = () => setSearchOpen(true);
     const closeSearch = () => setSearchOpen(false);
 
     return (
         <aside
-            className={`BlueprintEditorSidebar absolute left-0 top-0 z-[3] flex min-h-0 w-[var(--sidebar-width)] flex-col rounded-[14px] border border-black/6 bg-(--color-0) shadow-[0_12px_26px_rgba(0,0,0,0.08)] dark:border-transparent ${!isCollapsed && !isTreeCollapsed ? '[bottom:var(--component-tree-height)] rounded-b-none border-b-0' : 'bottom-0'} ${isCollapsed ? 'Collapsed bottom-auto h-9 items-center justify-center border-none bg-transparent p-0 shadow-none' : ''}`}
+            className={`BlueprintEditorSidebar absolute flex min-h-0 w-[var(--sidebar-width)] flex-col rounded-[14px] border border-black/6 bg-(--color-0) shadow-[0_12px_26px_rgba(0,0,0,0.08)] dark:border-transparent ${isCollapsed ? 'Collapsed left-0 top-3 z-[7] h-0 w-0 overflow-visible border-none bg-transparent p-0 shadow-none' : `left-0 top-0 z-[4] ${!isTreeCollapsed ? '[bottom:var(--component-tree-height)] rounded-b-none border-b-0' : 'bottom-0'}`}`}
         >
             <div
                 className={`BlueprintEditorSidebarHeader flex items-center justify-between gap-2.5 border-b border-black/6 px-3 py-2.5 text-[13px] font-semibold dark:border-white/8 ${isCollapsed ? 'w-full items-center justify-center border-b-0 p-0' : ''}`}
@@ -303,7 +337,7 @@ export function BlueprintEditorSidebar({
                         </div>
                     )}
                     <button
-                        className={`BlueprintEditorCollapse inline-flex items-center justify-center gap-1.5 rounded-full border-0 bg-transparent px-1.5 py-0.5 text-(--color-6) hover:text-(--color-9) ${isCollapsed ? 'h-7 w-7 border border-black/8 bg-(--color-0) p-0 shadow-[0_10px_22px_rgba(0,0,0,0.14)] dark:border-white/16 dark:shadow-[0_12px_24px_rgba(0,0,0,0.45)]' : ''}`}
+                        className={`BlueprintEditorCollapse inline-flex items-center justify-center gap-1.5 rounded-full border-0 bg-transparent px-1.5 py-0.5 text-(--color-6) hover:text-(--color-9) ${isCollapsed ? 'absolute left-0 top-0 h-8 w-6 rounded-l-none rounded-r-full border border-l-0 border-black/8 bg-(--color-0) p-0 pr-0.5 shadow-[0_10px_22px_rgba(0,0,0,0.14)] dark:border-white/16 dark:shadow-[0_12px_24px_rgba(0,0,0,0.45)]' : ''}`}
                         onClick={onToggleCollapse}
                         aria-label={t('sidebar.toggleLibrary')}
                     >
@@ -315,6 +349,63 @@ export function BlueprintEditorSidebar({
                     </button>
                 </div>
             </div>
+            {!isCollapsed && (
+                <div className="BlueprintEditorSidebarLibraryBar px-3 py-2">
+                    <div className="inline-flex w-full items-center gap-1 text-[11px] text-(--color-7)">
+                        <button
+                            type="button"
+                            className={`h-6 flex-1 cursor-pointer rounded-full px-2 transition-colors ${
+                                activeLibrary === 'builtIn'
+                                    ? 'border border-black/16 text-(--color-9) dark:border-white/20'
+                                    : 'border border-transparent bg-transparent hover:text-(--color-9)'
+                            }`}
+                            onClick={() => setActiveLibrary('builtIn')}
+                            aria-label={t('sidebar.libraries.builtIn')}
+                        >
+                            {t('sidebar.libraries.builtIn')}
+                        </button>
+                        <button
+                            type="button"
+                            className={`h-6 flex-1 cursor-pointer rounded-full px-2 transition-colors ${
+                                activeLibrary === 'headless'
+                                    ? 'border border-black/16 text-(--color-9) dark:border-white/20'
+                                    : 'border border-transparent bg-transparent hover:text-(--color-9)'
+                            }`}
+                            onClick={() => setActiveLibrary('headless')}
+                            aria-label={t('sidebar.libraries.headless')}
+                        >
+                            {t('sidebar.libraries.headless')}
+                        </button>
+                        <button
+                            type="button"
+                            className={`h-6 flex-1 cursor-pointer rounded-full px-2 transition-colors ${
+                                activeLibrary === 'external'
+                                    ? 'border border-black/16 text-(--color-9) dark:border-white/20'
+                                    : 'border border-transparent bg-transparent hover:text-(--color-9)'
+                            }`}
+                            onClick={() => setActiveLibrary('external')}
+                            aria-label={t('sidebar.libraries.external')}
+                        >
+                            {t('sidebar.libraries.external')}
+                        </button>
+                    </div>
+                    {activeLibrary === 'external' &&
+                    externalLoadState !== 'ready' ? (
+                        <p className="mt-1.5 text-[10px] text-(--color-6)">
+                            {externalLoadState === 'loading'
+                                ? t('sidebar.external.loading', {
+                                      defaultValue:
+                                          'Loading Ant Design from esm.sh...',
+                                  })
+                                : externalMessage ||
+                                  t('sidebar.external.error', {
+                                      defaultValue:
+                                          'Failed to load remote components.',
+                                  })}
+                        </p>
+                    ) : null}
+                </div>
+            )}
             {!isCollapsed && (
                 <div className="BlueprintEditorComponentList grid gap-4 overflow-auto px-3 pb-3 pt-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:h-0 [&::-webkit-scrollbar]:w-0">
                     {groups.map((group) => {

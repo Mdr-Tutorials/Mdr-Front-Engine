@@ -19,6 +19,8 @@ const bundleFactories: Record<string, BundleFactory> = {
         createProjectReactBundle(
             compileMirToReactComponent(mirDoc, {
                 componentName: options?.componentName || 'App',
+                adapter: options?.adapter,
+                packageResolver: options?.packageResolver,
             })
         ),
     component: (mirDoc, options) =>

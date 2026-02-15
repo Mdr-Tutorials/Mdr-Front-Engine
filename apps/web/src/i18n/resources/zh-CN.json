@@ -1198,6 +1198,9 @@
                 }
             },
             "fields": {
+                "className": {
+                    "label": "类名"
+                },
                 "id": {
                     "label": "组件 ID",
                     "description": "在当前蓝图中保持唯一。",
@@ -1223,11 +1226,22 @@
                     "fields": {
                         "gap": "间距",
                         "gapHint": "输入数字（px）或 CSS 尺寸值。",
+                        "margin": "外边距",
+                        "padding": "内边距",
+                        "spacingHint": "支持 CSS 简写（1、2、3、4 个值），也可展开后按方向分别编辑。",
+                        "expand": "展开",
+                        "collapse": "收起",
                         "flexDirection": "方向",
                         "justifyContent": "主轴对齐",
                         "alignItems": "交叉轴对齐",
                         "gridColumns": "列数",
-                        "gridColumnsHint": "用于设置 gridTemplateColumns。"
+                        "gridColumnsHint": "用于设置 gridTemplateColumns。",
+                        "sides": {
+                            "top": "上",
+                            "right": "右",
+                            "bottom": "下",
+                            "left": "左"
+                        }
                     },
                     "options": {
                         "direction": {
@@ -1290,6 +1304,15 @@
         },
         "sidebar": {
             "title": "组件库",
+            "libraries": {
+                "builtIn": "内置组件",
+                "headless": "无头组件",
+                "external": "外部组件"
+            },
+            "external": {
+                "loading": "正在从 esm.sh 加载 Ant Design...",
+                "error": "远程组件加载失败。"
+            },
             "toggleLibrary": "切换组件库",
             "openSearch": "搜索组件",
             "searchPlaceholder": "搜索组件...",
@@ -1341,6 +1364,9 @@
                 },
                 "feedback": {
                     "title": "反馈组件"
+                },
+                "radix": {
+                    "title": "Radix UI"
                 }
             },
             "items": {}

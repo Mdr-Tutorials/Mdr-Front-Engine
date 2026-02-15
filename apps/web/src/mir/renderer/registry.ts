@@ -1,3 +1,4 @@
+import { createElement } from 'react';
 import type React from 'react';
 import * as MdrUi from '@mdr/ui';
 import type { ComponentNode } from '@/core/types/engine.types';
@@ -50,6 +51,10 @@ export type ComponentRegistry = {
     get: (type: string) => RegistryEntry | undefined;
     resolve: (type: string) => ResolvedComponent;
 };
+
+const runtimeEntries = new Map<string, RegistryEntry>();
+const RUNTIME_REGISTRY_UPDATED_EVENT = 'mdr:runtime-registry-updated';
+let runtimeRegistryRevision = 0;
 
 const normalizeSelectionData = (selectionData?: Record<string, string>) =>
     selectionData ?? {};
@@ -250,6 +255,65 @@ const registerNativeComponents = (registry: ComponentRegistry) => {
     registry.register('input', 'input', htmlInputAdapter);
 };
 
+const createHeadlessPrimitive = (tag: string) => {
+    const HeadlessPrimitive = ({
+        children,
+        ...props
+    }: Record<string, unknown> & { children?: React.ReactNode }) =>
+        createElement(tag, props, children);
+    HeadlessPrimitive.displayName = `Headless${tag.charAt(0).toUpperCase()}${tag.slice(1)}`;
+    return HeadlessPrimitive;
+};
+
+const registerHeadlessComponents = (registry: ComponentRegistry) => {
+    registry.register(
+        'RadixSlot',
+        createHeadlessPrimitive('span'),
+        htmlTextAdapter
+    );
+    registry.register(
+        'RadixLabel',
+        createHeadlessPrimitive('label'),
+        htmlTextAdapter
+    );
+    registry.register(
+        'RadixSeparator',
+        createHeadlessPrimitive('div'),
+        htmlAdapter
+    );
+    registry.register(
+        'RadixAccordion',
+        createHeadlessPrimitive('div'),
+        htmlAdapter
+    );
+    registry.register('RadixTabs', createHeadlessPrimitive('div'), htmlAdapter);
+    registry.register(
+        'RadixDialog',
+        createHeadlessPrimitive('div'),
+        htmlAdapter
+    );
+    registry.register(
+        'RadixPopover',
+        createHeadlessPrimitive('div'),
+        htmlAdapter
+    );
+    registry.register(
+        'RadixTooltip',
+        createHeadlessPrimitive('div'),
+        htmlAdapter
+    );
+    registry.register(
+        'RadixDropdownMenu',
+        createHeadlessPrimitive('div'),
+        htmlAdapter
+    );
+    registry.register(
+        'RadixSwitch',
+        createHeadlessPrimitive('button'),
+        htmlButtonAdapter
+    );
+};
+
 const registerMdrComponents = (registry: ComponentRegistry) => {
     // Auto-register all components exported by @mdr/ui to keep the canvas renderer extensible.
     // Defaults to mdrAdapter; specific components override via adapterOverrides below.
@@ -327,6 +391,43 @@ export const createComponentRegistry = (): ComponentRegistry => {
     return { register, get, resolve };
 };
 
+export const registerRuntimeComponent = (
+    type: string,
+    component: React.ElementType,
+    adapter: ComponentAdapter = htmlAdapter
+) => {
+    runtimeEntries.set(type, { component, adapter });
+    runtimeRegistryRevision += 1;
+    if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+            new CustomEvent(RUNTIME_REGISTRY_UPDATED_EVENT, {
+                detail: { revision: runtimeRegistryRevision },
+            })
+        );
+    }
+};
+
+export const resetRuntimeComponents = () => {
+    runtimeEntries.clear();
+    runtimeRegistryRevision += 1;
+    if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+            new CustomEvent(RUNTIME_REGISTRY_UPDATED_EVENT, {
+                detail: { revision: runtimeRegistryRevision },
+            })
+        );
+    }
+};
+
+export const getRuntimeRegistryRevision = () => runtimeRegistryRevision;
+export const runtimeRegistryUpdatedEvent = RUNTIME_REGISTRY_UPDATED_EVENT;
+
+const registerRuntimeEntries = (registry: ComponentRegistry) => {
+    runtimeEntries.forEach((entry, type) => {
+        registry.register(type, entry.component, entry.adapter);
+    });
+};
+
 export const createNativeRegistry = () => {
     const registry = createComponentRegistry();
     registerNativeComponents(registry);
@@ -336,6 +437,7 @@ export const createNativeRegistry = () => {
 export const createMdrRegistry = () => {
     const registry = createComponentRegistry();
     registerMdrComponents(registry);
+    registerHeadlessComponents(registry);
     return registry;
 };
 
@@ -370,11 +472,22 @@ export const createOrderedComponentRegistry = (
 ) => {
     const resolvedOrder = order.length > 0 ? order : DEFAULT_RESOLVER_ORDER;
     const registries = {
-        custom: customRegistry ?? createComponentRegistry(),
+        custom:
+            customRegistry ??
+            (() => {
+                const runtimeRegistry = createComponentRegistry();
+                registerRuntimeEntries(runtimeRegistry);
+                return runtimeRegistry;
+            })(),
         mdr: createMdrRegistry(),
         native: createNativeRegistry(),
     };
 
+    /**
+     * Runtime registration call chain:
+     * registerRuntimeComponent(...) -> runtimeEntries -> createOrderedComponentRegistry(custom layer)
+     * -> MIRRenderer(registry.resolve) -> concrete render component.
+     */
     const register = (
         type: string,
         component: React.ElementType,
@@ -422,6 +535,8 @@ export const createDefaultComponentRegistry = () => {
     const registry = createComponentRegistry();
     registerNativeComponents(registry);
     registerMdrComponents(registry);
+    registerHeadlessComponents(registry);
+    registerRuntimeEntries(registry);
     return registry;
 };
 

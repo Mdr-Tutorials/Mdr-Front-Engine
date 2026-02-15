@@ -40,6 +40,7 @@ export type ComponentPreviewItem = {
 export type ComponentGroup = {
     id: string;
     title: string;
+    source?: 'builtIn' | 'headless' | 'external';
     items: ComponentPreviewItem[];
 };
 

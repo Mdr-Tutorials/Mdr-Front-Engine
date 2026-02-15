@@ -14,7 +14,9 @@ import { useSettingsStore } from '@/editor/store/useSettingsStore';
 import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
 import {
     createOrderedComponentRegistry,
+    getRuntimeRegistryRevision,
     parseResolverOrder,
+    runtimeRegistryUpdatedEvent,
 } from '@/mir/renderer/registry';
 import { VIEWPORT_ZOOM_RANGE } from './BlueprintEditor.data';
 
@@ -129,6 +131,9 @@ export function BlueprintEditorCanvas({
     );
     const diagnostics = useSettingsStore((state) => state.global.diagnostics);
     const [isPanning, setIsPanning] = useState(false);
+    const [runtimeRegistryRevision, setRuntimeRegistryRevision] = useState(() =>
+        getRuntimeRegistryRevision()
+    );
     const mirDoc = useEditorStore((state) => state.mirDoc);
     const surfaceRef = useRef<HTMLDivElement | null>(null);
     const panState = useRef<PanState>({
@@ -155,8 +160,17 @@ export function BlueprintEditorCanvas({
     const showSelectionDiagnostics = diagnostics.includes('selection');
     const registry = useMemo(
         () => createOrderedComponentRegistry(parseResolverOrder(resolverOrder)),
-        [resolverOrder]
+        [resolverOrder, runtimeRegistryRevision]
     );
+
+    useEffect(() => {
+        const handler = () =>
+            setRuntimeRegistryRevision(getRuntimeRegistryRevision());
+        if (typeof window === 'undefined') return;
+        window.addEventListener(runtimeRegistryUpdatedEvent, handler);
+        return () =>
+            window.removeEventListener(runtimeRegistryUpdatedEvent, handler);
+    }, []);
     const { setNodeRef: setCanvasDropRef, isOver: isCanvasOver } = useDroppable(
         {
             id: 'canvas-drop',

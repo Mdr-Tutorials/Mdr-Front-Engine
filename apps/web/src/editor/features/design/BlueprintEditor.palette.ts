@@ -19,6 +19,7 @@ import {
     TREE_SELECT_OPTIONS,
 } from './BlueprintEditor.data';
 import type { ComponentNode, MIRDocument } from '@/core/types/engine.types';
+import { createRadixNodeFromPaletteItem } from './BlueprintEditor.radix';
 
 const collectTypeCounts = (
     node: ComponentNode,
@@ -117,15 +118,31 @@ export const createNodeFromPaletteItem = (
     variantProps?: Record<string, unknown>,
     selectedSize?: string
 ): ComponentNode => {
-    const typeFromPalette = (value: string) =>
-        `Mdr${value
+    const toPascalCase = (value: string) =>
+        value
             .split(/[-_]/)
             .filter(Boolean)
             .map(
                 (segment) =>
                     `${segment.charAt(0).toUpperCase()}${segment.slice(1)}`
             )
-            .join('')}`;
+            .join('');
+
+    const typeFromPalette = (value: string) => {
+        if (value.startsWith('radix-')) {
+            return `Radix${toPascalCase(value.slice('radix-'.length))}`;
+        }
+        return `Mdr${toPascalCase(value)}`;
+    };
+
+    const radixNode = createRadixNodeFromPaletteItem(
+        itemId,
+        createId,
+        variantProps
+    );
+    if (radixNode) {
+        return radixNode;
+    }
 
     if (itemId === 'text') {
         return {
@@ -302,6 +319,61 @@ export const createNodeFromPaletteItem = (
                 size: 18,
                 ...variantProps,
             },
+        };
+    }
+    if (itemId === 'antd-button') {
+        return {
+            id: createId('AntdButton'),
+            type: 'AntdButton',
+            text: 'Button',
+            props: {
+                type: 'primary',
+                size: selectedSize ?? 'middle',
+                ...variantProps,
+            },
+        };
+    }
+    if (itemId === 'antd-input') {
+        return {
+            id: createId('AntdInput'),
+            type: 'AntdInput',
+            props: {
+                placeholder: 'Input',
+                size: selectedSize ?? 'middle',
+                ...variantProps,
+            },
+        };
+    }
+    if (itemId === 'antd-modal') {
+        return {
+            id: createId('AntdModal'),
+            type: 'AntdModal',
+            text: 'Modal content',
+            props: {
+                open: true,
+                title: 'Modal Title',
+                ...variantProps,
+            },
+        };
+    }
+    if (itemId === 'antd-form-item') {
+        return {
+            id: createId('AntdFormItem'),
+            type: 'AntdFormItem',
+            props: {
+                label: 'Field',
+                name: 'field',
+                ...variantProps,
+            },
+            children: [
+                {
+                    id: createId('AntdInput'),
+                    type: 'AntdInput',
+                    props: {
+                        placeholder: 'Type here',
+                    },
+                },
+            ],
         };
     }
 

@@ -1198,6 +1198,9 @@
                 }
             },
             "fields": {
+                "className": {
+                    "label": "Class Name"
+                },
                 "id": {
                     "label": "Component ID",
                     "description": "Unique within the blueprint.",
@@ -1223,11 +1226,22 @@
                     "fields": {
                         "gap": "Gap",
                         "gapHint": "Number (px) or CSS size.",
+                        "margin": "Margin",
+                        "padding": "Padding",
+                        "spacingHint": "Use CSS shorthand (1, 2, 3, or 4 values), or expand to edit each side.",
+                        "expand": "Expand",
+                        "collapse": "Collapse",
                         "flexDirection": "Direction",
                         "justifyContent": "Justify",
                         "alignItems": "Align",
                         "gridColumns": "Columns",
-                        "gridColumnsHint": "Sets gridTemplateColumns."
+                        "gridColumnsHint": "Sets gridTemplateColumns.",
+                        "sides": {
+                            "top": "Top",
+                            "right": "Right",
+                            "bottom": "Bottom",
+                            "left": "Left"
+                        }
                     },
                     "options": {
                         "direction": {
@@ -1290,6 +1304,15 @@
         },
         "sidebar": {
             "title": "Component Library",
+            "libraries": {
+                "builtIn": "Built-in",
+                "headless": "Headless",
+                "external": "External"
+            },
+            "external": {
+                "loading": "Loading Ant Design from esm.sh...",
+                "error": "Failed to load remote components."
+            },
             "toggleLibrary": "Toggle library",
             "openSearch": "Search components",
             "searchPlaceholder": "Search components...",
@@ -1341,6 +1364,9 @@
                 },
                 "feedback": {
                     "title": "Feedback"
+                },
+                "radix": {
+                    "title": "Radix UI"
                 }
             },
             "items": {}

@@ -37,6 +37,8 @@ vi.mock('@/mir/renderer/MIRRenderer', () => ({
 vi.mock('@/mir/renderer/registry', () => ({
     createOrderedComponentRegistry: () => ({}),
     parseResolverOrder: () => [],
+    getRuntimeRegistryRevision: () => 0,
+    runtimeRegistryUpdatedEvent: 'mdr:runtime-registry-updated',
 }));
 
 beforeEach(() => {
