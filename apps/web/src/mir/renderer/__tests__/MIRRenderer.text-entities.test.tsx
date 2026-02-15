@@ -53,4 +53,39 @@ describe('MIRRenderer html entities', () => {
         expect(container.textContent).toContain(expectedText);
         expect(container.textContent).not.toContain(sourceText);
     });
+
+    it('mounts node-level mounted css content into style tags', () => {
+        const root: ComponentNode = {
+            id: 'root',
+            type: 'div',
+            props: {
+                mountedCss: [
+                    {
+                        id: 'mounted-1',
+                        path: 'src/styles/card.css',
+                        content: '.card { color: rgb(255, 0, 0); }',
+                        classes: ['card'],
+                    },
+                ],
+            },
+            children: [
+                {
+                    id: 'text-1',
+                    type: 'text',
+                    text: 'Mounted css test',
+                    props: {
+                        className: 'card',
+                    },
+                },
+            ],
+        };
+
+        const { container } = render(
+            <MIRRenderer node={root} mirDoc={createDoc(root)} />
+        );
+
+        const styleTag = container.querySelector('style[data-mir-mounted-css]');
+        expect(styleTag?.textContent).toContain('.card');
+        expect(styleTag?.textContent).toContain('rgb(255, 0, 0)');
+    });
 });

@@ -4,6 +4,7 @@ import { useParams } from 'react-router';
 import {
     AlertTriangle,
     Check,
+    Code,
     ChevronDown,
     ChevronLeft,
     ChevronRight,
@@ -28,97 +29,22 @@ import { INSPECTOR_PANELS } from './inspector/panels/registry';
 import { InspectorRow } from './inspector/components/InspectorRow';
 import { IconPickerModal } from './inspector/components/IconPickerModal';
 import { LinkBasicsFields } from './inspector/components/LinkBasicsFields';
+import { ClassProtocolEditor } from './inspector/classProtocol/ClassProtocolEditor';
+import { MountedCssEditorModal } from './inspector/classProtocol/MountedCssEditorModal';
+import { resolveMountedCssEntries } from './inspector/classProtocol/mountedCss';
+import { useMountedCssEditorState } from './inspector/classProtocol/useMountedCssEditorState';
+import { getPrimaryTextField, updateNodeTextField } from './blueprintText';
 import {
-    getPrimaryTextField,
-    updateNodeTextField,
-    type TextFieldKey,
-} from './blueprintText';
+    collectIds,
+    findNodeById,
+    getTextFieldLabel,
+    renameNodeId,
+    updateNodeById,
+} from './BlueprintEditorInspector.utils';
 
 type BlueprintEditorInspectorProps = {
     isCollapsed: boolean;
     onToggleCollapse: () => void;
-};
-
-const findNodeById = (
-    node: ComponentNode,
-    nodeId: string
-): ComponentNode | null => {
-    if (node.id === nodeId) return node;
-    const children = node.children ?? [];
-    for (const child of children) {
-        const found = findNodeById(child, nodeId);
-        if (found) return found;
-    }
-    return null;
-};
-
-const collectIds = (
-    node: ComponentNode,
-    ids: Set<string> = new Set()
-): Set<string> => {
-    ids.add(node.id);
-    node.children?.forEach((child) => collectIds(child, ids));
-    return ids;
-};
-
-const renameNodeId = (
-    node: ComponentNode,
-    fromId: string,
-    toId: string
-): ComponentNode => {
-    if (node.id === fromId) {
-        return { ...node, id: toId };
-    }
-    if (!node.children?.length) return node;
-    const nextChildren = node.children.map((child) =>
-        renameNodeId(child, fromId, toId)
-    );
-    return { ...node, children: nextChildren };
-};
-
-const updateNodeById = (
-    node: ComponentNode,
-    targetId: string,
-    updater: (node: ComponentNode) => ComponentNode
-): { node: ComponentNode; updated: boolean } => {
-    if (node.id === targetId) {
-        return { node: updater(node), updated: true };
-    }
-    if (!node.children?.length) return { node, updated: false };
-    let updated = false;
-    const nextChildren = node.children.map((child) => {
-        const result = updateNodeById(child, targetId, updater);
-        if (result.updated) updated = true;
-        return result.node;
-    });
-    return updated
-        ? { node: { ...node, children: nextChildren }, updated: true }
-        : { node, updated: false };
-};
-
-const getTextFieldLabel = (
-    key: TextFieldKey,
-    t: (key: string, options?: Record<string, unknown>) => string
-) => {
-    switch (key) {
-        case 'title':
-            return t('inspector.panels.text.fields.title', {
-                defaultValue: 'Title',
-            });
-        case 'label':
-            return t('inspector.panels.text.fields.label', {
-                defaultValue: 'Label',
-            });
-        case 'description':
-            return t('inspector.panels.text.fields.description', {
-                defaultValue: 'Description',
-            });
-        case 'text':
-        default:
-            return t('inspector.panels.text.fields.text', {
-                defaultValue: 'Text',
-            });
-    }
 };
 
 export function BlueprintEditorInspector({
@@ -209,11 +135,15 @@ export function BlueprintEditorInspector({
     const isIconNode =
         selectedNode?.type === 'MdrIcon' ||
         selectedNode?.type === 'MdrIconLink';
-    const isRadixNode = selectedNode?.type.startsWith('Radix') ?? false;
-    const radixClassName =
+    const supportsClassProtocol = selectedNode?.type !== 'container';
+    const classNameValue =
         typeof selectedNode?.props?.className === 'string'
             ? selectedNode.props.className
             : '';
+    const mountedCssEntries = useMemo(
+        () => (selectedNode ? resolveMountedCssEntries(selectedNode) : []),
+        [selectedNode]
+    );
     const SelectedIconComponent = selectedIconComponent;
     const linkCapability = useMemo(
         () => resolveLinkCapability(selectedNode),
@@ -421,6 +351,22 @@ export function BlueprintEditorInspector({
             return { ...current, props: nextProps };
         });
     };
+    const {
+        isMountedCssEditorOpen,
+        mountedCssEditorPath,
+        mountedCssEditorValue,
+        mountedCssEditorFocusClass,
+        mountedCssEditorFocusLine,
+        mountedCssEditorFocusColumn,
+        setMountedCssEditorValue,
+        openMountedCssEditor,
+        closeMountedCssEditor,
+        saveMountedCss,
+    } = useMountedCssEditorState({
+        selectedNode,
+        mountedCssEntries,
+        updateSelectedNode,
+    });
 
     if (isCollapsed) {
         return (
@@ -593,7 +539,7 @@ export function BlueprintEditorInspector({
                                             />
                                         </div>
                                     ) : null}
-                                    {isRadixNode ? (
+                                    {supportsClassProtocol ? (
                                         <div className="InspectorField flex flex-col gap-1.5">
                                             <InspectorRow
                                                 label={t(
@@ -604,14 +550,20 @@ export function BlueprintEditorInspector({
                                                     }
                                                 )}
                                                 control={
-                                                    <MdrInput
-                                                        size="Small"
-                                                        dataAttributes={{
-                                                            'data-testid':
-                                                                'inspector-classname-input',
-                                                        }}
-                                                        value={radixClassName}
+                                                    <ClassProtocolEditor
+                                                        value={classNameValue}
                                                         placeholder="e.g. p-4 flex items-center"
+                                                        inputTestId="inspector-classname-input"
+                                                        mountedCssEntries={
+                                                            mountedCssEntries
+                                                        }
+                                                        onOpenMountedCss={(
+                                                            target
+                                                        ) => {
+                                                            openMountedCssEditor(
+                                                                target
+                                                            );
+                                                        }}
                                                         onChange={(value) => {
                                                             updateSelectedNode(
                                                                 (current) => ({
@@ -744,21 +696,56 @@ export function BlueprintEditorInspector({
                         </section>
 
                         <section className="pt-1">
-                            <button
-                                type="button"
-                                className="flex w-full cursor-pointer items-center justify-between border-0 bg-transparent px-0 py-1 text-left"
-                                onClick={() => toggleSection('style')}
-                            >
-                                <span className="text-[13px] font-semibold tracking-[0.01em] text-(--color-9)">
-                                    {t('inspector.groups.style.title', {
-                                        defaultValue: 'Style',
-                                    })}
-                                </span>
-                                <ChevronDown
-                                    size={14}
-                                    className={`${expandedSections.style ? 'rotate-0' : '-rotate-90'} text-(--color-6) transition-transform`}
-                                />
-                            </button>
+                            <div className="flex w-full items-center justify-between gap-1 px-0 py-1">
+                                <button
+                                    type="button"
+                                    className="flex min-w-0 flex-1 cursor-pointer items-center justify-between border-0 bg-transparent p-0 text-left"
+                                    onClick={() => toggleSection('style')}
+                                >
+                                    <span className="text-[13px] font-semibold tracking-[0.01em] text-(--color-9)">
+                                        {t('inspector.groups.style.title', {
+                                            defaultValue: 'Style',
+                                        })}
+                                    </span>
+                                    <ChevronDown
+                                        size={14}
+                                        className={`${expandedSections.style ? 'rotate-0' : '-rotate-90'} text-(--color-6) transition-transform`}
+                                    />
+                                </button>
+                                <button
+                                    type="button"
+                                    className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
+                                    onClick={() => {
+                                        openMountedCssEditor();
+                                    }}
+                                    aria-label={t(
+                                        'inspector.groups.style.openMountedCss',
+                                        {
+                                            defaultValue: 'Open mounted CSS',
+                                        }
+                                    )}
+                                    title={
+                                        mountedCssEntries[0]?.path
+                                            ? `${t(
+                                                  'inspector.groups.style.openMountedCss',
+                                                  {
+                                                      defaultValue:
+                                                          'Open mounted CSS',
+                                                  }
+                                              )}: ${mountedCssEntries[0].path}`
+                                            : t(
+                                                  'inspector.groups.style.attachMountedCss',
+                                                  {
+                                                      defaultValue:
+                                                          'Attach mounted CSS',
+                                                  }
+                                              )
+                                    }
+                                    data-testid="inspector-style-open-mounted-css"
+                                >
+                                    <Code size={14} />
+                                </button>
+                            </div>
                             {expandedSections.style && (
                                 <div className="flex flex-col gap-2 pb-1 pt-1">
                                     {matchedPanels.length ? (
@@ -1516,6 +1503,17 @@ export function BlueprintEditorInspector({
                 initialIconRef={selectedIconRef}
                 onClose={() => setIconPickerOpen(false)}
                 onSelect={applyIconRef}
+            />
+            <MountedCssEditorModal
+                isOpen={isMountedCssEditorOpen}
+                path={mountedCssEditorPath}
+                value={mountedCssEditorValue}
+                highlightedClassName={mountedCssEditorFocusClass}
+                highlightedLine={mountedCssEditorFocusLine}
+                highlightedColumn={mountedCssEditorFocusColumn}
+                onChange={setMountedCssEditorValue}
+                onClose={closeMountedCssEditor}
+                onSave={saveMountedCss}
             />
         </aside>
     );

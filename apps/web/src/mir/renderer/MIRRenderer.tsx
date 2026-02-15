@@ -30,6 +30,7 @@ type ActionContext = {
 };
 
 type ActionHandlers = Record<string, (context: ActionContext) => void>;
+type UnsafeRecord = Record<string, unknown>;
 
 type RenderContext = {
     state: RenderState;
@@ -132,6 +133,64 @@ const collectNodesById = (
     map[node.id] = node;
     node.children?.forEach((child) => collectNodesById(child, map));
     return map;
+};
+
+const asRecord = (value: unknown): UnsafeRecord | null =>
+    typeof value === 'object' && value !== null && !Array.isArray(value)
+        ? (value as UnsafeRecord)
+        : null;
+
+const readMountedCssContent = (value: unknown): string | null => {
+    const record = asRecord(value);
+    if (!record) return null;
+    return typeof record.content === 'string' && record.content.trim()
+        ? record.content
+        : null;
+};
+
+const collectMountedCssFromNode = (
+    node: ComponentNode,
+    result: Array<{ key: string; content: string }> = []
+) => {
+    const anyNode = node as ComponentNode & { metadata?: unknown };
+    const props = asRecord(anyNode.props);
+    const metadata = asRecord(anyNode.metadata);
+    const mountedCandidates = [
+        props?.mountedCss,
+        props?.styleMount,
+        props?.styleMountCss,
+        metadata?.mountedCss,
+        metadata?.styleMount,
+    ];
+    mountedCandidates.forEach((candidate, candidateIndex) => {
+        if (Array.isArray(candidate)) {
+            candidate.forEach((entry, entryIndex) => {
+                const content = readMountedCssContent(entry);
+                if (!content) return;
+                result.push({
+                    key: `${node.id}-${candidateIndex}-${entryIndex}`,
+                    content,
+                });
+            });
+            return;
+        }
+        const content = readMountedCssContent(candidate);
+        if (!content) return;
+        result.push({
+            key: `${node.id}-${candidateIndex}`,
+            content,
+        });
+    });
+    node.children?.forEach((child) => collectMountedCssFromNode(child, result));
+    return result;
+};
+
+const stripInternalProps = (props: Record<string, any>) => {
+    const next = { ...props };
+    delete next.mountedCss;
+    delete next.styleMount;
+    delete next.styleMountCss;
+    return next;
 };
 
 const isSelectionDebugEnabled = () =>
@@ -268,7 +327,7 @@ const MIRNode: React.FC<{
         Object.entries(eventProps).forEach(([key, handler]) => {
             combined[key] = mergeHandlers(combined[key], handler);
         });
-        return combined;
+        return stripInternalProps(combined);
     }, [adapterResult.props, resolvedProps, eventProps]);
 
     const selectionData = context.onNodeSelect
@@ -425,6 +484,16 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
     );
     const nodeEventsById = useMemo(() => collectNodeEvents(node), [node]);
     const nodesById = useMemo(() => collectNodesById(node), [node]);
+    const mountedCssBlocks = useMemo(() => {
+        const blocks = collectMountedCssFromNode(node);
+        const seen = new Set<string>();
+        return blocks.filter((block) => {
+            const dedupeKey = block.content.trim();
+            if (!dedupeKey || seen.has(dedupeKey)) return false;
+            seen.add(dedupeKey);
+            return true;
+        });
+    }, [node]);
 
     const dispatchBuiltInAction = useCallback(
         (
@@ -577,6 +646,13 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
             style={{ display: 'contents' }}
             onClickCapture={handleDelegatedClickCapture}
         >
+            {mountedCssBlocks.map((block) => (
+                <style
+                    key={block.key}
+                    data-mir-mounted-css={block.key}
+                    dangerouslySetInnerHTML={{ __html: block.content }}
+                />
+            ))}
             <MIRNode node={node} context={context} registry={registry} />
         </div>
     );

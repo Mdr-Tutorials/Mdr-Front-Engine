@@ -59,6 +59,22 @@ vi.mock('@mdr/ui', () => ({
     ),
 }));
 
+vi.mock('@uiw/react-codemirror', () => ({
+    default: ({
+        value,
+        onChange,
+    }: {
+        value: string;
+        onChange: (value: string) => void;
+    }) => (
+        <textarea
+            data-testid="mounted-css-codemirror"
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+        />
+    ),
+}));
+
 beforeEach(() => {
     resetEditorStore();
 });
@@ -321,19 +337,19 @@ describe('BlueprintEditorInspector', () => {
         });
     });
 
-    it('updates className for Radix nodes', () => {
+    it('updates className through class protocol editor', () => {
         resetEditorStore({
             mirDoc: createMirDoc([
                 {
-                    id: 'radix-switch-1',
-                    type: 'RadixSwitch',
+                    id: 'card-1',
+                    type: 'MdrCard',
                     props: {},
                 },
             ]),
             blueprintStateByProject: {
                 [PROJECT_ID]: {
                     ...DEFAULT_BLUEPRINT_STATE,
-                    selectedId: 'radix-switch-1',
+                    selectedId: 'card-1',
                 },
             },
         });
@@ -354,9 +370,114 @@ describe('BlueprintEditorInspector', () => {
 
         const node = useEditorStore
             .getState()
-            .mirDoc.ui.root.children?.find(
-                (item) => item.id === 'radix-switch-1'
-            );
+            .mirDoc.ui.root.children?.find((item) => item.id === 'card-1');
         expect(node?.props?.className).toBe('p-4 flex items-center gap-2');
+    });
+
+    it('shows mounted css action and opens mounted css modal', () => {
+        resetEditorStore({
+            mirDoc: createMirDoc([
+                {
+                    id: 'card-1',
+                    type: 'MdrCard',
+                    props: {
+                        className: 'card',
+                        mountedCss: [
+                            {
+                                id: 'css-1',
+                                path: 'src/styles/card.css',
+                                classes: ['card'],
+                            },
+                        ],
+                    },
+                },
+            ]),
+            blueprintStateByProject: {
+                [PROJECT_ID]: {
+                    ...DEFAULT_BLUEPRINT_STATE,
+                    selectedId: 'card-1',
+                },
+            },
+        });
+
+        render(
+            <BlueprintEditorInspector
+                isCollapsed={false}
+                onToggleCollapse={() => {}}
+            />
+        );
+
+        fireEvent.click(screen.getByTestId('inspector-style-open-mounted-css'));
+        expect(screen.getByTestId('mounted-css-modal')).toBeTruthy();
+    });
+
+    it('keeps style code button visible even without mounted css', () => {
+        resetEditorStore({
+            mirDoc: createMirDoc([
+                {
+                    id: 'card-1',
+                    type: 'MdrCard',
+                    props: { className: 'card' },
+                },
+            ]),
+            blueprintStateByProject: {
+                [PROJECT_ID]: {
+                    ...DEFAULT_BLUEPRINT_STATE,
+                    selectedId: 'card-1',
+                },
+            },
+        });
+
+        render(
+            <BlueprintEditorInspector
+                isCollapsed={false}
+                onToggleCollapse={() => {}}
+            />
+        );
+
+        fireEvent.click(screen.getByTestId('inspector-style-open-mounted-css'));
+        expect(screen.getByTestId('mounted-css-modal')).toBeTruthy();
+    });
+
+    it('saves mounted css content into node props', () => {
+        resetEditorStore({
+            mirDoc: createMirDoc([
+                {
+                    id: 'card-1',
+                    type: 'MdrCard',
+                    props: { className: 'card' },
+                },
+            ]),
+            blueprintStateByProject: {
+                [PROJECT_ID]: {
+                    ...DEFAULT_BLUEPRINT_STATE,
+                    selectedId: 'card-1',
+                },
+            },
+        });
+
+        render(
+            <BlueprintEditorInspector
+                isCollapsed={false}
+                onToggleCollapse={() => {}}
+            />
+        );
+
+        fireEvent.click(screen.getByTestId('inspector-style-open-mounted-css'));
+        fireEvent.change(screen.getByTestId('mounted-css-codemirror'), {
+            target: { value: '.card { color: red; }' },
+        });
+        fireEvent.click(screen.getByTestId('mounted-css-save'));
+
+        const node = useEditorStore
+            .getState()
+            .mirDoc.ui.root.children?.find((item) => item.id === 'card-1');
+        const mountedCss = (node?.props?.mountedCss ?? []) as Array<
+            Record<string, unknown>
+        >;
+        expect(mountedCss.length).toBe(1);
+        expect(mountedCss[0]?.path).toBe('src/styles/mounted/card-1.css');
+        expect(mountedCss[0]?.content).toContain('.card');
+        expect(mountedCss[0]?.classes).toContain('card');
     });
 });
