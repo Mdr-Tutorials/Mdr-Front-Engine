@@ -1,7 +1,11 @@
-import ReactDOMModule from '/node_modules/.vite/deps/react-dom.js';
+import ReactDOMModule from 'react-dom';
 
 const ReactDOM = ReactDOMModule;
 
+/**
+ * Bridge react-dom from the host runtime so remote esm components use the same renderer instance.
+ * 从宿主运行时桥接 react-dom，确保远程 esm 组件复用同一渲染器实例。
+ */
 export default ReactDOM;
 
 export const createPortal = ReactDOM.createPortal;

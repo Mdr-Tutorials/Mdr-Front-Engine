@@ -6,9 +6,9 @@
 - 日期：2026-02-08
 - 关联任务：`API-004`
 - 关联实现：
-    - `apps/backend/database.go`
-    - `apps/backend/workspace_store.go`
-    - `apps/backend/workspace_store_test.go`
+  - `apps/backend/database.go`
+  - `apps/backend/workspace_store.go`
+  - `apps/backend/workspace_store_test.go`
 
 ## 目标
 
@@ -27,11 +27,11 @@
 
 1. `workspace_rev/route_rev/op_seq` 均为 `>= 1`
 2. `workspace_documents.doc_type` 限定为：
-    - `mir-page`
-    - `mir-layout`
-    - `mir-component`
-    - `mir-graph`
-    - `mir-animation`
+   - `mir-page`
+   - `mir-layout`
+   - `mir-component`
+   - `mir-graph`
+   - `mir-animation`
 3. 文档唯一索引：`(workspace_id, path)`
 4. 操作序列主键：`(workspace_id, op_seq)`
 

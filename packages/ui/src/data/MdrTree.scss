@@ -1,48 +1,48 @@
 .MdrTree {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    color: var(--color-8);
-    font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--color-8);
+  font-size: 14px;
 }
 
 .MdrTreeRow {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
 }
 
 .MdrTreeToggle {
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    color: var(--color-6);
-    font-size: 12px;
-    width: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-6);
+  font-size: 12px;
+  width: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .MdrTreeSpacer {
-    width: 18px;
+  width: 18px;
 }
 
 .MdrTreeLabel {
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    color: inherit;
-    padding: 2px 6px;
-    border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
 
-    &.Selected {
-        background-color: var(--color-2);
-        color: var(--color-9);
-    }
+  &.Selected {
+    background-color: var(--color-2);
+    color: var(--color-9);
+  }
 
-    &.Disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
+  &.Disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }

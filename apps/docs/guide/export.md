@@ -55,24 +55,20 @@ import { Container, Text, Button } from '@mdr/ui';
 import styles from './Home.module.css';
 
 export function Home() {
-    const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0);
 
-    const handleClick = useCallback(() => {
-        setCount((prev) => prev + 1);
-    }, []);
+  const handleClick = useCallback(() => {
+    setCount((prev) => prev + 1);
+  }, []);
 
-    return (
-        <Container
-            className={styles.container}
-            layout="flex"
-            direction="column"
-        >
-            <Text variant="h1">计数器: {count}</Text>
-            <Button variant="primary" onClick={handleClick}>
-                增加
-            </Button>
-        </Container>
-    );
+  return (
+    <Container className={styles.container} layout="flex" direction="column">
+      <Text variant="h1">计数器: {count}</Text>
+      <Button variant="primary" onClick={handleClick}>
+        增加
+      </Button>
+    </Container>
+  );
 }
 ```
 
@@ -99,10 +95,10 @@ dist/
 ```vue
 <!-- pages/Home.vue -->
 <template>
-    <MdrContainer class="container" layout="flex" direction="column">
-        <MdrText variant="h1">计数器: {{ count }}</MdrText>
-        <MdrButton variant="primary" @click="handleClick"> 增加 </MdrButton>
-    </MdrContainer>
+  <MdrContainer class="container" layout="flex" direction="column">
+    <MdrText variant="h1">计数器: {{ count }}</MdrText>
+    <MdrButton variant="primary" @click="handleClick"> 增加 </MdrButton>
+  </MdrContainer>
 </template>
 
 <script setup lang="ts">
@@ -112,13 +108,13 @@ import { MdrContainer, MdrText, MdrButton } from '@mdr/ui-vue';
 const count = ref(0);
 
 const handleClick = () => {
-    count.value++;
+  count.value++;
 };
 </script>
 
 <style scoped>
 .container {
-    /* 样式 */
+  /* 样式 */
 }
 </style>
 ```
@@ -147,37 +143,37 @@ dist/
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-    MdrContainerComponent,
-    MdrTextComponent,
-    MdrButtonComponent,
+  MdrContainerComponent,
+  MdrTextComponent,
+  MdrButtonComponent,
 } from '@mdr/ui-angular';
 
 @Component({
-    selector: 'app-home',
-    standalone: true,
-    imports: [
-        CommonModule,
-        MdrContainerComponent,
-        MdrTextComponent,
-        MdrButtonComponent,
-    ],
-    templateUrl: './home.component.html',
-    styleUrls: ['./home.component.css'],
+  selector: 'app-home',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MdrContainerComponent,
+    MdrTextComponent,
+    MdrButtonComponent,
+  ],
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css'],
 })
 export class HomeComponent {
-    count = 0;
+  count = 0;
 
-    handleClick() {
-        this.count++;
-    }
+  handleClick() {
+    this.count++;
+  }
 }
 ```
 
 ```html
 <!-- pages/home/home.component.html -->
 <mdr-container layout="flex" direction="column">
-    <mdr-text variant="h1">计数器: {{ count }}</mdr-text>
-    <mdr-button variant="primary" (click)="handleClick()"> 增加 </mdr-button>
+  <mdr-text variant="h1">计数器: {{ count }}</mdr-text>
+  <mdr-button variant="primary" (click)="handleClick()"> 增加 </mdr-button>
 </mdr-container>
 ```
 
@@ -191,20 +187,20 @@ import { createSignal } from 'solid-js';
 import { Container, Text, Button } from '@mdr/ui-solid';
 
 export function Home() {
-    const [count, setCount] = createSignal(0);
+  const [count, setCount] = createSignal(0);
 
-    const handleClick = () => {
-        setCount((prev) => prev + 1);
-    };
+  const handleClick = () => {
+    setCount((prev) => prev + 1);
+  };
 
-    return (
-        <Container layout="flex" direction="column">
-            <Text variant="h1">计数器: {count()}</Text>
-            <Button variant="primary" onClick={handleClick}>
-                增加
-            </Button>
-        </Container>
-    );
+  return (
+    <Container layout="flex" direction="column">
+      <Text variant="h1">计数器: {count()}</Text>
+      <Button variant="primary" onClick={handleClick}>
+        增加
+      </Button>
+    </Container>
+  );
 }
 ```
 
@@ -216,27 +212,24 @@ export function Home() {
 <!-- pages/home.html -->
 <!DOCTYPE html>
 <html lang="zh-CN">
-    <head>
-        <meta charset="UTF-8" />
-        <title>首页</title>
-        <link rel="stylesheet" href="../styles/global.css" />
-        <link rel="stylesheet" href="./home.css" />
-    </head>
-    <body>
-        <div class="mdr-container" data-layout="flex" data-direction="column">
-            <h1 class="mdr-text" data-variant="h1">
-                计数器: <span id="count">0</span>
-            </h1>
-            <button
-                class="mdr-button mdr-button--primary"
-                onclick="handleClick()"
-            >
-                增加
-            </button>
-        </div>
+  <head>
+    <meta charset="UTF-8" />
+    <title>首页</title>
+    <link rel="stylesheet" href="../styles/global.css" />
+    <link rel="stylesheet" href="./home.css" />
+  </head>
+  <body>
+    <div class="mdr-container" data-layout="flex" data-direction="column">
+      <h1 class="mdr-text" data-variant="h1">
+        计数器: <span id="count">0</span>
+      </h1>
+      <button class="mdr-button mdr-button--primary" onclick="handleClick()">
+        增加
+      </button>
+    </div>
 
-        <script src="./home.js"></script>
-    </body>
+    <script src="./home.js"></script>
+  </body>
 </html>
 ```
 
@@ -245,8 +238,8 @@ export function Home() {
 let count = 0;
 
 function handleClick() {
-    count++;
-    document.getElementById('count').textContent = count;
+  count++;
+  document.getElementById('count').textContent = count;
 }
 ```
 
@@ -309,14 +302,14 @@ onClick → SetLoading(true) → HTTP GET → SetState(data) → SetLoading(fals
 
 ```typescript
 const handleClick = useCallback(async () => {
-    setLoading(true);
-    try {
-        const response = await fetch('/api/users');
-        const data = await response.json();
-        setUsers(data);
-    } finally {
-        setLoading(false);
-    }
+  setLoading(true);
+  try {
+    const response = await fetch('/api/users');
+    const data = await response.json();
+    setUsers(data);
+  } finally {
+    setLoading(false);
+  }
 }, []);
 ```
 
@@ -324,14 +317,14 @@ const handleClick = useCallback(async () => {
 
 ```typescript
 const handleClick = async () => {
-    loading.value = true;
-    try {
-        const response = await fetch('/api/users');
-        const data = await response.json();
-        users.value = data;
-    } finally {
-        loading.value = false;
-    }
+  loading.value = true;
+  try {
+    const response = await fetch('/api/users');
+    const data = await response.json();
+    users.value = data;
+  } finally {
+    loading.value = false;
+  }
 };
 ```
 

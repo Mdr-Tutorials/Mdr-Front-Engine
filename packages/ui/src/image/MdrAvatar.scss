@@ -1,117 +1,117 @@
 .MdrAvatar {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-    background-color: var(--color-3);
-    color: var(--color-7);
-    font-weight: 600;
-    transition: all var(--transition-normal);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-3);
+  color: var(--color-7);
+  font-weight: 600;
+  transition: all var(--transition-normal);
 
-    img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
-    .MdrAvatar-initials,
-    .MdrAvatar-placeholder {
-        font-size: inherit;
-        line-height: 1;
-    }
+  .MdrAvatar-initials,
+  .MdrAvatar-placeholder {
+    font-size: inherit;
+    line-height: 1;
+  }
+
+  .MdrAvatar-status {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    border: 2px solid var(--color-0);
+  }
+
+  &.ExtraSmall {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
 
     .MdrAvatar-status {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        border: 2px solid var(--color-0);
+      width: 8px;
+      height: 8px;
     }
+  }
 
-    &.ExtraSmall {
-        width: 24px;
-        height: 24px;
-        font-size: 10px;
+  &.Small {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
 
-        .MdrAvatar-status {
-            width: 8px;
-            height: 8px;
-        }
+    .MdrAvatar-status {
+      width: 10px;
+      height: 10px;
     }
+  }
 
-    &.Small {
-        width: 32px;
-        height: 32px;
-        font-size: 12px;
+  &.Medium {
+    width: 48px;
+    height: 48px;
+    font-size: 16px;
 
-        .MdrAvatar-status {
-            width: 10px;
-            height: 10px;
-        }
+    .MdrAvatar-status {
+      width: 12px;
+      height: 12px;
     }
+  }
 
-    &.Medium {
-        width: 48px;
-        height: 48px;
-        font-size: 16px;
+  &.Large {
+    width: 64px;
+    height: 64px;
+    font-size: 20px;
 
-        .MdrAvatar-status {
-            width: 12px;
-            height: 12px;
-        }
+    .MdrAvatar-status {
+      width: 14px;
+      height: 14px;
     }
+  }
 
-    &.Large {
-        width: 64px;
-        height: 64px;
-        font-size: 20px;
+  &.ExtraLarge {
+    width: 96px;
+    height: 96px;
+    font-size: 28px;
 
-        .MdrAvatar-status {
-            width: 14px;
-            height: 14px;
-        }
+    .MdrAvatar-status {
+      width: 16px;
+      height: 16px;
     }
+  }
 
-    &.ExtraLarge {
-        width: 96px;
-        height: 96px;
-        font-size: 28px;
+  &.Square {
+    border-radius: var(--radius-none);
+  }
 
-        .MdrAvatar-status {
-            width: 16px;
-            height: 16px;
-        }
+  &.Rounded {
+    border-radius: var(--radius-md);
+  }
+
+  &.Circle {
+    border-radius: var(--radius-full);
+
+    .MdrAvatar-status {
+      border-radius: var(--radius-full);
     }
+  }
 
-    &.Square {
-        border-radius: var(--radius-none);
-    }
+  &.status-Online .MdrAvatar-status {
+    background-color: var(--color-success, #10b981);
+  }
 
-    &.Rounded {
-        border-radius: var(--radius-md);
-    }
+  &.status-Offline .MdrAvatar-status {
+    background-color: var(--color-5);
+  }
 
-    &.Circle {
-        border-radius: var(--radius-full);
+  &.status-Busy .MdrAvatar-status {
+    background-color: var(--color-danger);
+  }
 
-        .MdrAvatar-status {
-            border-radius: var(--radius-full);
-        }
-    }
-
-    &.status-Online .MdrAvatar-status {
-        background-color: var(--color-success, #10b981);
-    }
-
-    &.status-Offline .MdrAvatar-status {
-        background-color: var(--color-5);
-    }
-
-    &.status-Busy .MdrAvatar-status {
-        background-color: var(--color-danger);
-    }
-
-    &.status-Away .MdrAvatar-status {
-        background-color: var(--color-warning);
-    }
+  &.status-Away .MdrAvatar-status {
+    background-color: var(--color-warning);
+  }
 }

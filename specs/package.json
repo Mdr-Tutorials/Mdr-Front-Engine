@@ -1,9 +1,9 @@
 {
-    "name": "@mdr/specs",
-    "version": "1.0.0",
-    "private": true,
-    "exports": {
-        "./mir": "./mir/MIR-v1.0.json",
-        "./decisions": "./decisions/*.md"
-    }
+  "name": "@mdr/specs",
+  "version": "1.0.0",
+  "private": true,
+  "exports": {
+    "./mir": "./mir/MIR-v1.0.json",
+    "./decisions": "./decisions/*.md"
+  }
 }

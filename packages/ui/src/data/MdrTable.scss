@@ -1,77 +1,77 @@
 .MdrTableWrapper {
-    width: 100%;
+  width: 100%;
 }
 
 .MdrTableTitle {
-    font-weight: 600;
-    margin-bottom: var(--spacing-sm);
-    color: var(--color-8);
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-8);
 }
 
 .MdrTable {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-    color: var(--color-8);
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  color: var(--color-8);
 
-    th,
-    td {
-        padding: var(--spacing-sm);
-        border-bottom: 1px solid var(--color-3);
-    }
+  th,
+  td {
+    padding: var(--spacing-sm);
+    border-bottom: 1px solid var(--color-3);
+  }
 
-    thead th {
-        font-weight: 600;
-        background-color: var(--color-1);
-    }
+  thead th {
+    font-weight: 600;
+    background-color: var(--color-1);
+  }
 
-    &.Bordered th,
-    &.Bordered td {
-        border: 1px solid var(--color-3);
-    }
+  &.Bordered th,
+  &.Bordered td {
+    border: 1px solid var(--color-3);
+  }
 
-    &.Striped tbody tr:nth-child(even) {
-        background-color: var(--color-1);
-    }
+  &.Striped tbody tr:nth-child(even) {
+    background-color: var(--color-1);
+  }
 
-    &.Hoverable tbody tr:hover {
-        background-color: var(--color-2);
-    }
+  &.Hoverable tbody tr:hover {
+    background-color: var(--color-2);
+  }
 }
 
 .MdrTable.Small th,
 .MdrTable.Small td {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 13px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 13px;
 }
 
 .MdrTable.Large th,
 .MdrTable.Large td {
-    padding: var(--spacing-md) var(--spacing-md);
-    font-size: 15px;
+  padding: var(--spacing-md) var(--spacing-md);
+  font-size: 15px;
 }
 
 .MdrTable caption {
-    caption-side: bottom;
-    padding-top: var(--spacing-xs);
-    font-size: 12px;
-    color: var(--color-6);
+  caption-side: bottom;
+  padding-top: var(--spacing-xs);
+  font-size: 12px;
+  color: var(--color-6);
 }
 
 .MdrTableEmpty {
-    text-align: center;
-    padding: var(--spacing-md);
-    color: var(--color-6);
+  text-align: center;
+  padding: var(--spacing-md);
+  color: var(--color-6);
 }
 
 .AlignLeft {
-    text-align: left;
+  text-align: left;
 }
 
 .AlignCenter {
-    text-align: center;
+  text-align: center;
 }
 
 .AlignRight {
-    text-align: right;
+  text-align: right;
 }

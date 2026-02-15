@@ -26,59 +26,59 @@ export type DocumentId = string;
 export type VfsNodeId = string;
 
 export type WorkspaceDocumentType =
-    | 'mir-page'
-    | 'mir-layout'
-    | 'mir-component'
-    | 'mir-graph' // 预留：节点图文档
-    | 'mir-animation'; // 预留：动画文档
+  | 'mir-page'
+  | 'mir-layout'
+  | 'mir-component'
+  | 'mir-graph' // 预留：节点图文档
+  | 'mir-animation'; // 预留：动画文档
 
 export interface WorkspaceDocument {
-    id: DocumentId;
-    type: WorkspaceDocumentType;
-    name: string;
-    path: string;
-    contentRev: number;
-    metaRev: number;
-    content: unknown; // MIRDocument | GraphDocument | AnimationDocument（由上层 narrowing）
-    updatedAt: string;
-    capabilities?: string[]; // 预留：声明该文档允许的编辑域能力
+  id: DocumentId;
+  type: WorkspaceDocumentType;
+  name: string;
+  path: string;
+  contentRev: number;
+  metaRev: number;
+  content: unknown; // MIRDocument | GraphDocument | AnimationDocument（由上层 narrowing）
+  updatedAt: string;
+  capabilities?: string[]; // 预留：声明该文档允许的编辑域能力
 }
 
 export interface VfsNode {
-    id: VfsNodeId;
-    kind: 'dir' | 'doc';
-    name: string;
-    parentId: VfsNodeId | null;
-    children?: VfsNodeId[]; // dir only
-    docId?: DocumentId; // doc only
+  id: VfsNodeId;
+  kind: 'dir' | 'doc';
+  name: string;
+  parentId: VfsNodeId | null;
+  children?: VfsNodeId[]; // dir only
+  docId?: DocumentId; // doc only
 }
 
 export interface RouteManifest {
-    version: '1';
-    root: RouteNode;
+  version: '1';
+  root: RouteNode;
 }
 
 export interface RouteNode {
-    id: string;
-    segment?: string;
-    index?: boolean;
-    layoutDocId?: DocumentId;
-    pageDocId?: DocumentId;
-    children?: RouteNode[];
+  id: string;
+  segment?: string;
+  index?: boolean;
+  layoutDocId?: DocumentId;
+  pageDocId?: DocumentId;
+  children?: RouteNode[];
 }
 
 export interface WorkspaceState {
-    id: WorkspaceId;
-    name: string;
-    workspaceRev: number;
-    routeRev: number;
-    opSeq: number;
-    treeRootId: VfsNodeId;
-    treeById: Record<VfsNodeId, VfsNode>;
-    docsById: Record<DocumentId, WorkspaceDocument>;
-    routeManifest: RouteManifest;
-    activeDocumentId: DocumentId;
-    activeRouteNodeId?: string;
+  id: WorkspaceId;
+  name: string;
+  workspaceRev: number;
+  routeRev: number;
+  opSeq: number;
+  treeRootId: VfsNodeId;
+  treeById: Record<VfsNodeId, VfsNode>;
+  docsById: Record<DocumentId, WorkspaceDocument>;
+  routeManifest: RouteManifest;
+  activeDocumentId: DocumentId;
+  activeRouteNodeId?: string;
 }
 ```
 
@@ -111,14 +111,14 @@ export interface WorkspaceState {
 
 ```ts
 interface WorkspaceStore {
-    workspace?: WorkspaceState;
-    setWorkspace(snapshot: WorkspaceState): void;
-    setActiveDocument(docId: DocumentId): void;
-    updateDocument(
-        docId: DocumentId,
-        updater: (doc: WorkspaceDocument) => WorkspaceDocument
-    ): void;
-    applyWorkspaceCommand(command: CommandEnvelope): void;
+  workspace?: WorkspaceState;
+  setWorkspace(snapshot: WorkspaceState): void;
+  setActiveDocument(docId: DocumentId): void;
+  updateDocument(
+    docId: DocumentId,
+    updater: (doc: WorkspaceDocument) => WorkspaceDocument
+  ): void;
+  applyWorkspaceCommand(command: CommandEnvelope): void;
 }
 ```
 

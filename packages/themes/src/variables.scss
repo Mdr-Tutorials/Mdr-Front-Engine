@@ -1,167 +1,167 @@
 @use 'sass:color';
 
 body {
-    font-family:
-        Inter,
-        'HarmonyOS Sans',
-        -apple-system,
-        BlinkMacSystemFont,
-        'Segoe UI',
-        Roboto,
-        sans-serif;
-    // 设置默认背景和文字颜色，确保切换时有底色
-    background-color: var(--color-0);
-    color: var(--color-10);
-    transition:
-        background-color 0.3s,
-        color 0.3s;
+  font-family:
+    Inter,
+    'HarmonyOS Sans',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  // 设置默认背景和文字颜色，确保切换时有底色
+  background-color: var(--color-0);
+  color: var(--color-10);
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 }
 
 $colors-light: (
-    0: #ffffff,
-    1: #fcfcfc,
-    2: #f5f5f5,
-    3: #e0e0e0,
-    4: #cccccc,
-    5: #999999,
-    6: #666666,
-    7: #3f3f3f,
-    8: #1a1a1a,
-    9: #0d0d0d,
-    10: #000000,
-    success: #1b9335,
-    danger: #ff6265,
-    danger-hover: #d9363e,
-    danger-subtle: #ff8080,
-    danger-subtle-hover: #d9363e23,
-    warning: #ffb007,
-    warning-hover: #eb9901,
-    subwarning: #ffb728,
-    subwarning-hover: #e08e0027,
+  0: #ffffff,
+  1: #fcfcfc,
+  2: #f5f5f5,
+  3: #e0e0e0,
+  4: #cccccc,
+  5: #999999,
+  6: #666666,
+  7: #3f3f3f,
+  8: #1a1a1a,
+  9: #0d0d0d,
+  10: #000000,
+  success: #1b9335,
+  danger: #ff6265,
+  danger-hover: #d9363e,
+  danger-subtle: #ff8080,
+  danger-subtle-hover: #d9363e23,
+  warning: #ffb007,
+  warning-hover: #eb9901,
+  subwarning: #ffb728,
+  subwarning-hover: #e08e0027,
 );
 
 $colors-dark: (
-    0: #0d0d0d,
-    1: #1a1a1a,
-    2: #262626,
-    3: #333333,
-    4: #4d4d4d,
-    5: #808080,
-    6: #999999,
-    7: #cccccc,
-    8: #e0e0e0,
-    9: #f5f5f5,
-    10: #ffffff,
-    success: #23ad41,
-    danger: #de6f6f,
-    danger-hover: #dd5457,
-    danger-subtle: #b74444,
-    danger-subtle-hover: #a73434,
-    warning: #c99906,
-    warning-hover: #a87509,
-    subwarning: #9c891b,
-    subwarning-hover: #8a770e,
+  0: #0d0d0d,
+  1: #1a1a1a,
+  2: #262626,
+  3: #333333,
+  4: #4d4d4d,
+  5: #808080,
+  6: #999999,
+  7: #cccccc,
+  8: #e0e0e0,
+  9: #f5f5f5,
+  10: #ffffff,
+  success: #23ad41,
+  danger: #de6f6f,
+  danger-hover: #dd5457,
+  danger-subtle: #b74444,
+  danger-subtle-hover: #a73434,
+  warning: #c99906,
+  warning-hover: #a87509,
+  subwarning: #9c891b,
+  subwarning-hover: #8a770e,
 );
 
 $spacing: (
-    none: 0,
-    xs: 4px,
-    sm: 8px,
-    md: 16px,
-    lg: 24px,
-    xl: 32px,
-    2xl: 48px,
+  none: 0,
+  xs: 4px,
+  sm: 8px,
+  md: 16px,
+  lg: 24px,
+  xl: 32px,
+  2xl: 48px,
 );
 $border-radius: (
-    none: 0,
-    sm: 4px,
-    md: 8px,
-    lg: 12px,
-    full: 9999px,
+  none: 0,
+  sm: 4px,
+  md: 8px,
+  lg: 12px,
+  full: 9999px,
 );
 $font-sizes: (
-    xs: 12px,
-    sm: 14px,
-    md: 16px,
-    lg: 18px,
-    xl: 20px,
-    2xl: 24px,
-    3xl: 30px,
-    4xl: 36px,
+  xs: 12px,
+  sm: 14px,
+  md: 16px,
+  lg: 18px,
+  xl: 20px,
+  2xl: 24px,
+  3xl: 30px,
+  4xl: 36px,
 );
 $shadows: (
-    sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05),
-    md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+  sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05),
+  md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+  lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
 );
 $transitions: (
-    fast: 150ms ease,
-    normal: 300ms ease,
+  fast: 150ms ease,
+  normal: 300ms ease,
 );
 
 // 2. 默认变量注入（浅色模式）
 :root {
-    // 注入颜色（浅色）
-    @each $key, $value in $colors-light {
-        --color-#{$key}: #{$value};
-        --color-#{$key}-rgb: #{color.channel($value, 'red')}
-            #{color.channel($value, 'green')}
-            #{color.channel($value, 'blue')};
-    }
+  // 注入颜色（浅色）
+  @each $key, $value in $colors-light {
+    --color-#{$key}: #{$value};
+    --color-#{$key}-rgb: #{color.channel($value, 'red')}
+      #{color.channel($value, 'green')}
+      #{color.channel($value, 'blue')};
+  }
 
-    // 语义化颜色（可被 Tailwind 映射）
-    --color-node-bg: var(--color-1);
-    --color-node-bg-rgb: var(--color-1-rgb);
+  // 语义化颜色（可被 Tailwind 映射）
+  --color-node-bg: var(--color-1);
+  --color-node-bg-rgb: var(--color-1-rgb);
 
-    // 注入其他不变量
-    @each $key, $value in $spacing {
-        --spacing-#{$key}: #{$value};
-    }
+  // 注入其他不变量
+  @each $key, $value in $spacing {
+    --spacing-#{$key}: #{$value};
+  }
 
-    @each $key, $value in $border-radius {
-        --radius-#{$key}: #{$value};
-    }
+  @each $key, $value in $border-radius {
+    --radius-#{$key}: #{$value};
+  }
 
-    @each $key, $value in $font-sizes {
-        --font-size-#{$key}: #{$value};
-    }
+  @each $key, $value in $font-sizes {
+    --font-size-#{$key}: #{$value};
+  }
 
-    @each $key, $value in $shadows {
-        --shadow-#{$key}: #{$value};
-    }
+  @each $key, $value in $shadows {
+    --shadow-#{$key}: #{$value};
+  }
 
-    @each $key, $value in $transitions {
-        --transition-#{$key}: #{$value};
-    }
+  @each $key, $value in $transitions {
+    --transition-#{$key}: #{$value};
+  }
 }
 
 // 3. 实现系统自动切换（可选，但推荐）
 @media (prefers-color-scheme: dark) {
-    :root {
-        @each $key, $value in $colors-dark {
-            --color-#{$key}: #{$value};
-            --color-#{$key}-rgb: #{color.channel($value, 'red')}
-                #{color.channel($value, 'green')}
-                #{color.channel($value, 'blue')};
-        }
+  :root {
+    @each $key, $value in $colors-dark {
+      --color-#{$key}: #{$value};
+      --color-#{$key}-rgb: #{color.channel($value, 'red')}
+        #{color.channel($value, 'green')}
+        #{color.channel($value, 'blue')};
     }
+  }
 }
 
 // 4. 实现手动强制切换（核心：利用 [data-theme]）
 [data-theme='light'] {
-    @each $key, $value in $colors-light {
-        --color-#{$key}: #{$value};
-        --color-#{$key}-rgb: #{color.channel($value, 'red')}
-            #{color.channel($value, 'green')}
-            #{color.channel($value, 'blue')};
-    }
+  @each $key, $value in $colors-light {
+    --color-#{$key}: #{$value};
+    --color-#{$key}-rgb: #{color.channel($value, 'red')}
+      #{color.channel($value, 'green')}
+      #{color.channel($value, 'blue')};
+  }
 }
 
 [data-theme='dark'] {
-    @each $key, $value in $colors-dark {
-        --color-#{$key}: #{$value};
-        --color-#{$key}-rgb: #{color.channel($value, 'red')}
-            #{color.channel($value, 'green')}
-            #{color.channel($value, 'blue')};
-    }
+  @each $key, $value in $colors-dark {
+    --color-#{$key}: #{$value};
+    --color-#{$key}-rgb: #{color.channel($value, 'red')}
+      #{color.channel($value, 'green')}
+      #{color.channel($value, 'blue')};
+  }
 }

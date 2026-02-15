@@ -1,66 +1,66 @@
 ﻿@use './MdrField.scss';
 
 .MdrFileUpload {
-    width: 100%;
+  width: 100%;
 }
 
 .MdrFileUploadDropzone {
-    border: 1px dashed var(--color-6);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-lg);
-    text-align: center;
-    cursor: pointer;
-    background-color: var(--color-0);
-    transition:
-        border-color var(--transition-fast),
-        background-color var(--transition-fast);
+  border: 1px dashed var(--color-6);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  text-align: center;
+  cursor: pointer;
+  background-color: var(--color-0);
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast);
 
-    &:hover {
-        border-color: var(--color-9);
-        background-color: var(--color-1);
-    }
+  &:hover {
+    border-color: var(--color-9);
+    background-color: var(--color-1);
+  }
 }
 
 .MdrFileUploadIcon {
-    color: var(--color-6);
-    margin-bottom: var(--spacing-xs);
+  color: var(--color-6);
+  margin-bottom: var(--spacing-xs);
 }
 
 .MdrFileUploadText {
-    font-size: 14px;
-    color: var(--color-8);
+  font-size: 14px;
+  color: var(--color-8);
 }
 
 .MdrFileUploadHint {
-    font-size: 12px;
-    color: var(--color-6);
+  font-size: 12px;
+  color: var(--color-6);
 }
 
 .MdrFileUploadInput {
-    display: none;
+  display: none;
 }
 
 .MdrFileUploadList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
 }
 
 .MdrFileUploadItem {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    background-color: var(--color-1);
-    color: var(--color-8);
-    font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-1);
+  color: var(--color-8);
+  font-size: 13px;
 }
 
 .MdrFileUpload.Disabled .MdrFileUploadDropzone {
-    opacity: 0.6;
-    cursor: not-allowed;
+  opacity: 0.6;
+  cursor: not-allowed;
 }

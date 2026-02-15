@@ -1,17 +1,17 @@
 {
-    "files": [],
-    "references": [
-        {
-            "path": "./apps/web"
-        },
-        {
-            "path": "./packages/shared"
-        },
-        {
-            "path": "./packages/ui"
-        },
-        {
-            "path": "./packages/themes"
-        }
-    ]
+  "files": [],
+  "references": [
+    {
+      "path": "./apps/web"
+    },
+    {
+      "path": "./packages/shared"
+    },
+    {
+      "path": "./packages/ui"
+    },
+    {
+      "path": "./packages/themes"
+    }
+  ]
 }

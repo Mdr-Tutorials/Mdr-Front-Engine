@@ -47,17 +47,17 @@
 
 ```json
 {
-    "id": "intent_7f83",
-    "namespace": "core",
-    "type": "route.create",
-    "version": "1.0",
-    "payload": {
-        "parentRouteId": "root",
-        "segment": "product"
-    },
-    "idempotencyKey": "route.create:root:product",
-    "actor": { "userId": "u_1", "clientId": "web_1" },
-    "issuedAt": "2026-02-08T10:00:00Z"
+  "id": "intent_7f83",
+  "namespace": "core",
+  "type": "route.create",
+  "version": "1.0",
+  "payload": {
+    "parentRouteId": "root",
+    "segment": "product"
+  },
+  "idempotencyKey": "route.create:root:product",
+  "actor": { "userId": "u_1", "clientId": "web_1" },
+  "issuedAt": "2026-02-08T10:00:00Z"
 }
 ```
 
@@ -65,23 +65,21 @@
 
 ```json
 {
-    "id": "cmd_912a",
-    "namespace": "core.route",
-    "type": "node.add",
-    "version": "1.0",
-    "issuedAt": "2026-02-08T10:00:01Z",
-    "forwardOps": [
-        {
-            "op": "add",
-            "path": "/routeManifest/root/children/0",
-            "value": { "id": "product", "segment": "product" }
-        }
-    ],
-    "reverseOps": [
-        { "op": "remove", "path": "/routeManifest/root/children/0" }
-    ],
-    "target": { "workspaceId": "ws_1" },
-    "mergeKey": "route.add:root"
+  "id": "cmd_912a",
+  "namespace": "core.route",
+  "type": "node.add",
+  "version": "1.0",
+  "issuedAt": "2026-02-08T10:00:01Z",
+  "forwardOps": [
+    {
+      "op": "add",
+      "path": "/routeManifest/root/children/0",
+      "value": { "id": "product", "segment": "product" }
+    }
+  ],
+  "reverseOps": [{ "op": "remove", "path": "/routeManifest/root/children/0" }],
+  "target": { "workspaceId": "ws_1" },
+  "mergeKey": "route.add:root"
 }
 ```
 

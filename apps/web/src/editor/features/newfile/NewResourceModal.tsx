@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { MdrButton, MdrInput, MdrTextarea } from '@mdr/ui';
 import { Box, Layers, Workflow } from 'lucide-react';
 import {
-    useEditorStore,
-    createDefaultMirDoc,
+  useEditorStore,
+  createDefaultMirDoc,
 } from '@/editor/store/useEditorStore';
 import { useAuthStore } from '@/auth/useAuthStore';
 import { editorApi } from '@/editor/editorApi';
@@ -13,241 +13,229 @@ import { editorApi } from '@/editor/editorApi';
 export type ResourceType = 'project' | 'component' | 'nodegraph';
 
 interface NewResourceModalProps {
-    open: boolean;
-    onClose: () => void;
-    defaultType?: ResourceType;
+  open: boolean;
+  onClose: () => void;
+  defaultType?: ResourceType;
 }
 
 function NewResourceModal({
-    open,
-    onClose,
-    defaultType = 'project',
+  open,
+  onClose,
+  defaultType = 'project',
 }: NewResourceModalProps) {
-    const { t } = useTranslation('editor');
-    const navigate = useNavigate();
-    const token = useAuthStore((state) => state.token);
-    const setProject = useEditorStore((state) => state.setProject);
-    const setMirDoc = useEditorStore((state) => state.setMirDoc);
+  const { t } = useTranslation('editor');
+  const navigate = useNavigate();
+  const token = useAuthStore((state) => state.token);
+  const setProject = useEditorStore((state) => state.setProject);
+  const setMirDoc = useEditorStore((state) => state.setMirDoc);
 
-    // State
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-    const [isPublic, setIsPublic] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [isSubmitting, setSubmitting] = useState(false);
+  // State
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [isPublic, setIsPublic] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setSubmitting] = useState(false);
 
-    const [type, setType] = useState<ResourceType>(defaultType);
+  const [type, setType] = useState<ResourceType>(defaultType);
 
-    if (!open) return null;
+  if (!open) return null;
 
-    const handleCreate = async () => {
-        if (!token) {
-            setError('Please sign in first.');
-            return;
-        }
-        setSubmitting(true);
-        setError(null);
-        const finalName = name.trim() || 'Untitled';
-        const initialMir = createDefaultMirDoc();
+  const handleCreate = async () => {
+    if (!token) {
+      setError('Please sign in first.');
+      return;
+    }
+    setSubmitting(true);
+    setError(null);
+    const finalName = name.trim() || 'Untitled';
+    const initialMir = createDefaultMirDoc();
 
-        try {
-            const { project } = await editorApi.createProject(token, {
-                name: finalName,
-                description: description.trim() || undefined,
-                resourceType: type,
-                isPublic,
-                mir: initialMir,
-            });
-            setProject({
-                id: project.id,
-                name: project.name,
-                description: project.description,
-                type: project.resourceType,
-                isPublic: project.isPublic,
-                starsCount: project.starsCount,
-            });
-            setMirDoc(initialMir);
+    try {
+      const { project } = await editorApi.createProject(token, {
+        name: finalName,
+        description: description.trim() || undefined,
+        resourceType: type,
+        isPublic,
+        mir: initialMir,
+      });
+      setProject({
+        id: project.id,
+        name: project.name,
+        description: project.description,
+        type: project.resourceType,
+        isPublic: project.isPublic,
+        starsCount: project.starsCount,
+      });
+      setMirDoc(initialMir);
 
-            onClose();
-            if (type === 'project') {
-                navigate(`/editor/project/${project.id}/blueprint`);
-            } else if (type === 'component') {
-                navigate(`/editor/project/${project.id}/component`);
-            } else {
-                navigate(`/editor/project/${project.id}/nodegraph`);
-            }
-        } catch (apiError) {
-            setError(
-                apiError instanceof Error ? apiError.message : 'Create failed.'
-            );
-        } finally {
-            setSubmitting(false);
-        }
-    };
+      onClose();
+      if (type === 'project') {
+        navigate(`/editor/project/${project.id}/blueprint`);
+      } else if (type === 'component') {
+        navigate(`/editor/project/${project.id}/component`);
+      } else {
+        navigate(`/editor/project/${project.id}/nodegraph`);
+      }
+    } catch (apiError) {
+      setError(apiError instanceof Error ? apiError.message : 'Create failed.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-    return (
-        <div
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-[rgba(8,8,8,0.5)] backdrop-blur-[6px]"
+  return (
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-[rgba(8,8,8,0.5)] backdrop-blur-[6px]"
+      onClick={onClose}
+    >
+      <div
+        className="flex w-[min(720px,92vw)] flex-col overflow-hidden rounded-[18px] border border-[rgba(0,0,0,0.08)] bg-[var(--color-0)] text-[var(--color-10)] shadow-[0_18px_44px_rgba(0,0,0,0.16)]"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <header className="flex items-center justify-between border-b border-b-[rgba(0,0,0,0.06)] bg-[linear-gradient(120deg,var(--color-1),var(--color-0))] px-[22px] py-[18px]">
+          <div>
+            <h2 className="m-0 text-[18px] font-bold">
+              {t('modals.newResource.title', 'Create New')}
+            </h2>
+            <p className="mt-[6px] text-[12px] text-[var(--color-6)]">
+              {t(
+                'modals.newResource.subtitle',
+                'Select a type and start building'
+              )}
+            </p>
+          </div>
+          <button
+            className="flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-[20px] text-[var(--color-6)] transition-all duration-[300ms] ease-[ease] hover:bg-[rgba(0,0,0,0.07)] hover:text-[var(--color-10)]"
             onClick={onClose}
-        >
-            <div
-                className="flex w-[min(720px,92vw)] flex-col overflow-hidden rounded-[18px] border border-[rgba(0,0,0,0.08)] bg-[var(--color-0)] text-[var(--color-10)] shadow-[0_18px_44px_rgba(0,0,0,0.16)]"
-                onClick={(event) => event.stopPropagation()}
-            >
-                <header className="flex items-center justify-between border-b border-b-[rgba(0,0,0,0.06)] bg-[linear-gradient(120deg,var(--color-1),var(--color-0))] px-[22px] py-[18px]">
-                    <div>
-                        <h2 className="m-0 text-[18px] font-bold">
-                            {t('modals.newResource.title', 'Create New')}
-                        </h2>
-                        <p className="mt-[6px] text-[12px] text-[var(--color-6)]">
-                            {t(
-                                'modals.newResource.subtitle',
-                                'Select a type and start building'
-                            )}
-                        </p>
-                    </div>
-                    <button
-                        className="flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-[20px] text-[var(--color-6)] transition-all duration-[300ms] ease-[ease] hover:bg-[rgba(0,0,0,0.07)] hover:text-[var(--color-10)]"
-                        onClick={onClose}
-                        aria-label={t('modals.close')}
-                    >
-                        ✕
-                    </button>
-                </header>
+            aria-label={t('modals.close')}
+          >
+            ✕
+          </button>
+        </header>
 
-                <div className="flex flex-col gap-[22px] p-[28px]">
-                    {error && (
-                        <p className="m-0 rounded-[10px] border border-[var(--color-3)] bg-[var(--color-1)] p-[10px] text-[12px] text-[var(--color-7)]">
-                            {error}
-                        </p>
-                    )}
-                    <div className="flex flex-col gap-[10px]">
-                        <label className="flex items-center gap-[4px] text-[13px] font-semibold text-[var(--color-8)]">
-                            {t('modals.newResource.typeLabel', 'Type')}
-                        </label>
-                        <div className="mb-[8px] grid grid-cols-3 gap-[16px]">
-                            <button
-                                type="button"
-                                className={`flex cursor-pointer flex-col items-center justify-center gap-[8px] rounded-[var(--radius-lg)] border p-[16px] transition-all duration-[150ms] ease-[ease] ${
-                                    type === 'project'
-                                        ? 'border-[var(--color-10)] bg-[var(--color-0)] text-[var(--color-10)]'
-                                        : 'border-[var(--color-3)] bg-[var(--color-1)] text-[var(--color-6)] hover:bg-[var(--color-2)] hover:text-[var(--color-10)]'
-                                }`}
-                                onClick={() => setType('project')}
-                            >
-                                <Box size={24} />
-                                <span className="text-[12px] font-medium">
-                                    {t('modals.newProject.title', 'Project')
-                                        .replace('Create ', '')
-                                        .replace('新建', '')}
-                                </span>
-                            </button>
-                            <button
-                                type="button"
-                                className={`flex cursor-pointer flex-col items-center justify-center gap-[8px] rounded-[var(--radius-lg)] border p-[16px] transition-all duration-[150ms] ease-[ease] ${
-                                    type === 'component'
-                                        ? 'border-[var(--color-10)] bg-[var(--color-0)] text-[var(--color-10)]'
-                                        : 'border-[var(--color-3)] bg-[var(--color-1)] text-[var(--color-6)] hover:bg-[var(--color-2)] hover:text-[var(--color-10)]'
-                                }`}
-                                onClick={() => setType('component')}
-                            >
-                                <Layers size={24} />
-                                <span className="text-[12px] font-medium">
-                                    {t('modals.newComponent.title', 'Component')
-                                        .replace('Create ', '')
-                                        .replace('新建', '')}
-                                </span>
-                            </button>
-                            <button
-                                type="button"
-                                className={`flex cursor-pointer flex-col items-center justify-center gap-[8px] rounded-[var(--radius-lg)] border p-[16px] transition-all duration-[150ms] ease-[ease] ${
-                                    type === 'nodegraph'
-                                        ? 'border-[var(--color-10)] bg-[var(--color-0)] text-[var(--color-10)]'
-                                        : 'border-[var(--color-3)] bg-[var(--color-1)] text-[var(--color-6)] hover:bg-[var(--color-2)] hover:text-[var(--color-10)]'
-                                }`}
-                                onClick={() => setType('nodegraph')}
-                            >
-                                <Workflow size={24} />
-                                <span className="text-[12px] font-medium">
-                                    {t(
-                                        'modals.newNodeGraph.title',
-                                        'Node Graph'
-                                    )
-                                        .replace('Create ', '')
-                                        .replace('新建', '')}
-                                </span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col gap-[10px]">
-                        <label
-                            className="flex items-center gap-[4px] text-[13px] font-semibold text-[var(--color-8)]"
-                            htmlFor="new-resource-name"
-                        >
-                            <span>
-                                {t('modals.newResource.nameLabel', 'Name')}
-                            </span>
-                        </label>
-                        <MdrInput
-                            id="new-resource-name"
-                            placeholder="项目名称？（默认：'Untitled'）"
-                            value={name}
-                            onChange={setName}
-                        />
-                    </div>
-
-                    <div className="flex flex-col gap-[10px]">
-                        <label className="flex items-center gap-[4px] text-[13px] font-semibold text-[var(--color-8)]">
-                            {t(
-                                'modals.newProject.descriptionLabel',
-                                'Description'
-                            )}
-                        </label>
-                        <MdrTextarea
-                            placeholder={t(
-                                'modals.newProject.descriptionPlaceholder',
-                                'Optional description'
-                            )}
-                            value={description}
-                            onChange={setDescription}
-                        />
-                    </div>
-
-                    <label className="inline-flex cursor-pointer items-center justify-between rounded-[12px] border border-[var(--color-3)] bg-[var(--color-1)] px-[12px] py-[10px]">
-                        <span className="text-[13px] font-semibold text-[var(--color-8)]">
-                            {t(
-                                'modals.newResource.publicLabel',
-                                'Publish to community after creation'
-                            )}
-                        </span>
-                        <input
-                            type="checkbox"
-                            checked={isPublic}
-                            onChange={(event) =>
-                                setIsPublic(event.target.checked)
-                            }
-                            className="h-[16px] w-[16px] cursor-pointer accent-black"
-                        />
-                    </label>
-                </div>
-
-                <footer className="flex items-center justify-end gap-[12px] border-t border-t-[rgba(0,0,0,0.06)] bg-[var(--color-1)] px-[22px] py-[18px]">
-                    <MdrButton
-                        text={t('modals.actions.cancel')}
-                        category="Ghost"
-                        onClick={onClose}
-                    />
-                    <MdrButton
-                        text={t('modals.actions.create', 'Create')}
-                        category="Primary"
-                        onClick={handleCreate}
-                        disabled={isSubmitting}
-                    />
-                </footer>
+        <div className="flex flex-col gap-[22px] p-[28px]">
+          {error && (
+            <p className="m-0 rounded-[10px] border border-[var(--color-3)] bg-[var(--color-1)] p-[10px] text-[12px] text-[var(--color-7)]">
+              {error}
+            </p>
+          )}
+          <div className="flex flex-col gap-[10px]">
+            <label className="flex items-center gap-[4px] text-[13px] font-semibold text-[var(--color-8)]">
+              {t('modals.newResource.typeLabel', 'Type')}
+            </label>
+            <div className="mb-[8px] grid grid-cols-3 gap-[16px]">
+              <button
+                type="button"
+                className={`flex cursor-pointer flex-col items-center justify-center gap-[8px] rounded-[var(--radius-lg)] border p-[16px] transition-all duration-[150ms] ease-[ease] ${
+                  type === 'project'
+                    ? 'border-[var(--color-10)] bg-[var(--color-0)] text-[var(--color-10)]'
+                    : 'border-[var(--color-3)] bg-[var(--color-1)] text-[var(--color-6)] hover:bg-[var(--color-2)] hover:text-[var(--color-10)]'
+                }`}
+                onClick={() => setType('project')}
+              >
+                <Box size={24} />
+                <span className="text-[12px] font-medium">
+                  {t('modals.newProject.title', 'Project')
+                    .replace('Create ', '')
+                    .replace('新建', '')}
+                </span>
+              </button>
+              <button
+                type="button"
+                className={`flex cursor-pointer flex-col items-center justify-center gap-[8px] rounded-[var(--radius-lg)] border p-[16px] transition-all duration-[150ms] ease-[ease] ${
+                  type === 'component'
+                    ? 'border-[var(--color-10)] bg-[var(--color-0)] text-[var(--color-10)]'
+                    : 'border-[var(--color-3)] bg-[var(--color-1)] text-[var(--color-6)] hover:bg-[var(--color-2)] hover:text-[var(--color-10)]'
+                }`}
+                onClick={() => setType('component')}
+              >
+                <Layers size={24} />
+                <span className="text-[12px] font-medium">
+                  {t('modals.newComponent.title', 'Component')
+                    .replace('Create ', '')
+                    .replace('新建', '')}
+                </span>
+              </button>
+              <button
+                type="button"
+                className={`flex cursor-pointer flex-col items-center justify-center gap-[8px] rounded-[var(--radius-lg)] border p-[16px] transition-all duration-[150ms] ease-[ease] ${
+                  type === 'nodegraph'
+                    ? 'border-[var(--color-10)] bg-[var(--color-0)] text-[var(--color-10)]'
+                    : 'border-[var(--color-3)] bg-[var(--color-1)] text-[var(--color-6)] hover:bg-[var(--color-2)] hover:text-[var(--color-10)]'
+                }`}
+                onClick={() => setType('nodegraph')}
+              >
+                <Workflow size={24} />
+                <span className="text-[12px] font-medium">
+                  {t('modals.newNodeGraph.title', 'Node Graph')
+                    .replace('Create ', '')
+                    .replace('新建', '')}
+                </span>
+              </button>
             </div>
+          </div>
+
+          <div className="flex flex-col gap-[10px]">
+            <label
+              className="flex items-center gap-[4px] text-[13px] font-semibold text-[var(--color-8)]"
+              htmlFor="new-resource-name"
+            >
+              <span>{t('modals.newResource.nameLabel', 'Name')}</span>
+            </label>
+            <MdrInput
+              id="new-resource-name"
+              placeholder="项目名称？（默认：'Untitled'）"
+              value={name}
+              onChange={setName}
+            />
+          </div>
+
+          <div className="flex flex-col gap-[10px]">
+            <label className="flex items-center gap-[4px] text-[13px] font-semibold text-[var(--color-8)]">
+              {t('modals.newProject.descriptionLabel', 'Description')}
+            </label>
+            <MdrTextarea
+              placeholder={t(
+                'modals.newProject.descriptionPlaceholder',
+                'Optional description'
+              )}
+              value={description}
+              onChange={setDescription}
+            />
+          </div>
+
+          <label className="inline-flex cursor-pointer items-center justify-between rounded-[12px] border border-[var(--color-3)] bg-[var(--color-1)] px-[12px] py-[10px]">
+            <span className="text-[13px] font-semibold text-[var(--color-8)]">
+              {t(
+                'modals.newResource.publicLabel',
+                'Publish to community after creation'
+              )}
+            </span>
+            <input
+              type="checkbox"
+              checked={isPublic}
+              onChange={(event) => setIsPublic(event.target.checked)}
+              className="h-[16px] w-[16px] cursor-pointer accent-black"
+            />
+          </label>
         </div>
-    );
+
+        <footer className="flex items-center justify-end gap-[12px] border-t border-t-[rgba(0,0,0,0.06)] bg-[var(--color-1)] px-[22px] py-[18px]">
+          <MdrButton
+            text={t('modals.actions.cancel')}
+            category="Ghost"
+            onClick={onClose}
+          />
+          <MdrButton
+            text={t('modals.actions.create', 'Create')}
+            category="Primary"
+            onClick={handleCreate}
+            disabled={isSubmitting}
+          />
+        </footer>
+      </div>
+    </div>
+  );
 }
 
 export default NewResourceModal;

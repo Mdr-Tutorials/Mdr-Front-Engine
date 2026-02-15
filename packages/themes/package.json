@@ -1,8 +1,8 @@
 {
-    "name": "@mdr/themes",
-    "version": "0.0.1",
-    "main": "./src/index.scss",
-    "exports": {
-        ".": "./src/variables.scss"
-    }
+  "name": "@mdr/themes",
+  "version": "0.0.1",
+  "main": "./src/index.scss",
+  "exports": {
+    ".": "./src/variables.scss"
+  }
 }

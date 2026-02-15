@@ -1,41 +1,41 @@
 .MdrCollapse {
-    width: 100%;
-    border: 1px solid var(--color-3);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    background-color: var(--color-0);
+  width: 100%;
+  border: 1px solid var(--color-3);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background-color: var(--color-0);
 }
 
 .MdrCollapseItem + .MdrCollapseItem {
-    border-top: 1px solid var(--color-3);
+  border-top: 1px solid var(--color-3);
 }
 
 .MdrCollapseHeader {
-    width: 100%;
-    padding: var(--spacing-sm) var(--spacing-md);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
-    color: var(--color-8);
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-8);
 }
 
 .MdrCollapseContent {
-    padding: var(--spacing-md);
-    color: var(--color-7);
-    border-top: 1px solid var(--color-3);
+  padding: var(--spacing-md);
+  color: var(--color-7);
+  border-top: 1px solid var(--color-3);
 }
 
 .MdrCollapseItem.Disabled .MdrCollapseHeader {
-    opacity: 0.5;
-    cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .MdrCollapseIcon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

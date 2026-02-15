@@ -19,36 +19,36 @@
 type DocId = string;
 
 type RouteNode = {
-    id: string;
-    segment?: string; // "product" | ":id" | "*"
-    index?: boolean;
-    layoutDocId?: DocId;
-    pageDocId?: DocId;
-    runtime?: RouteRuntime;
-    children?: RouteNode[];
+  id: string;
+  segment?: string; // "product" | ":id" | "*"
+  index?: boolean;
+  layoutDocId?: DocId;
+  pageDocId?: DocId;
+  runtime?: RouteRuntime;
+  children?: RouteNode[];
 };
 
 type RouteManifest = {
-    version: '1';
-    root: RouteNode;
+  version: '1';
+  root: RouteNode;
 };
 
 type RouteRuntime = {
-    loaderRef?: string;
-    actionRef?: string;
-    guardRef?: string;
-    errorBoundaryDocId?: DocId;
-    suspenseDocId?: DocId;
-    seo?: {
-        title?: string;
-        description?: string;
-        canonical?: string;
-        noIndex?: boolean;
-    };
-    experiment?: {
-        key: string;
-        variantMap?: Record<string, DocId>;
-    };
+  loaderRef?: string;
+  actionRef?: string;
+  guardRef?: string;
+  errorBoundaryDocId?: DocId;
+  suspenseDocId?: DocId;
+  seo?: {
+    title?: string;
+    description?: string;
+    canonical?: string;
+    noIndex?: boolean;
+  };
+  experiment?: {
+    key: string;
+    variantMap?: Record<string, DocId>;
+  };
 };
 ```
 
@@ -82,26 +82,26 @@ RootLayout(Outlet)
 
 ```json
 {
-    "version": "1",
-    "root": {
-        "id": "root",
-        "layoutDocId": "layout-root",
+  "version": "1",
+  "root": {
+    "id": "root",
+    "layoutDocId": "layout-root",
+    "children": [
+      { "id": "home", "index": true, "pageDocId": "page-home" },
+      {
+        "id": "product",
+        "segment": "product",
+        "layoutDocId": "layout-product",
         "children": [
-            { "id": "home", "index": true, "pageDocId": "page-home" },
-            {
-                "id": "product",
-                "segment": "product",
-                "layoutDocId": "layout-product",
-                "children": [
-                    {
-                        "id": "product-detail",
-                        "segment": ":id",
-                        "pageDocId": "page-product-detail"
-                    }
-                ]
-            }
+          {
+            "id": "product-detail",
+            "segment": ":id",
+            "pageDocId": "page-product-detail"
+          }
         ]
-    }
+      }
+    ]
+  }
 }
 ```
 
@@ -115,9 +115,9 @@ RootLayout(Outlet)
 
 ```ts
 type RouteModuleMount = {
-    mountId: string;
-    mountPath: string; // "/account"
-    moduleRef: string; // component-route-module-id
+  mountId: string;
+  mountPath: string; // "/account"
+  moduleRef: string; // component-route-module-id
 };
 ```
 

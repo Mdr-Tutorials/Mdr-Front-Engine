@@ -1,22 +1,22 @@
 .MdrAnchorNavigation {
-    display: flex;
-    gap: var(--spacing-sm);
-    color: var(--color-6);
+  display: flex;
+  gap: var(--spacing-sm);
+  color: var(--color-6);
 }
 
 .MdrAnchorNavigation.Vertical {
-    flex-direction: column;
+  flex-direction: column;
 }
 
 .MdrAnchorNavigationItem {
-    text-decoration: none;
-    color: inherit;
-    font-size: 13px;
-    padding: 4px 8px;
-    border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: inherit;
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
 
-    &.Active {
-        background-color: var(--color-2);
-        color: var(--color-9);
-    }
+  &.Active {
+    background-color: var(--color-2);
+    color: var(--color-9);
+  }
 }

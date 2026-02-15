@@ -1,26 +1,26 @@
 .MdrPagination {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xs);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
 }
 
 .MdrPagination button {
-    border: 1px solid var(--color-3);
-    background-color: var(--color-0);
-    color: var(--color-8);
-    padding: 4px 10px;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-size: 13px;
+  border: 1px solid var(--color-3);
+  background-color: var(--color-0);
+  color: var(--color-8);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 13px;
 
-    &.Active {
-        background-color: var(--color-9);
-        color: var(--color-0);
-        border-color: var(--color-9);
-    }
+  &.Active {
+    background-color: var(--color-9);
+    color: var(--color-0);
+    border-color: var(--color-9);
+  }
 
-    &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }

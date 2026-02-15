@@ -26,29 +26,27 @@ console.log(`   Schema: ${SCHEMA_PATH}`);
 console.log(`   文件: ${mirPath}`);
 
 try {
-    const mir = JSON.parse(readFileSync(mirPath, 'utf-8'));
-    const valid = validate(mir);
+  const mir = JSON.parse(readFileSync(mirPath, 'utf-8'));
+  const valid = validate(mir);
 
-    if (valid) {
-        console.log(chalk.green('\n✅ MIR格式正确！'));
-        process.exit(0);
-    } else {
-        console.error(chalk.red('\n❌ 校验失败：'));
-        validate.errors?.forEach((error, i) => {
-            console.error(
-                chalk.red(`\n  ${i + 1}. ${error.instancePath || 'root'}`) +
-                    chalk.gray(`\n     ${error.message}`) +
-                    chalk.yellow(`\n     参数: ${JSON.stringify(error.params)}`)
-            );
-            if (error.schemaPath) {
-                console.error(
-                    chalk.gray(`     Schema路径: ${error.schemaPath}`)
-                );
-            }
-        });
-        process.exit(1);
-    }
-} catch (error) {
-    console.error(chalk.red(`\n💥 致命错误: ${error.message}`));
+  if (valid) {
+    console.log(chalk.green('\n✅ MIR格式正确！'));
+    process.exit(0);
+  } else {
+    console.error(chalk.red('\n❌ 校验失败：'));
+    validate.errors?.forEach((error, i) => {
+      console.error(
+        chalk.red(`\n  ${i + 1}. ${error.instancePath || 'root'}`) +
+          chalk.gray(`\n     ${error.message}`) +
+          chalk.yellow(`\n     参数: ${JSON.stringify(error.params)}`)
+      );
+      if (error.schemaPath) {
+        console.error(chalk.gray(`     Schema路径: ${error.schemaPath}`));
+      }
+    });
     process.exit(1);
+  }
+} catch (error) {
+  console.error(chalk.red(`\n💥 致命错误: ${error.message}`));
+  process.exit(1);
 }

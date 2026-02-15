@@ -1,44 +1,43 @@
 .MdrField {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 .MdrFieldHeader {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
 }
 
 .MdrFieldLabel {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--color-8);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-8);
 }
 
 .MdrFieldRequired {
-    color: var(--color-danger);
+  color: var(--color-danger);
 }
 
 .MdrFieldDescription {
-    font-size: 12px;
-    color: var(--color-6);
+  font-size: 12px;
+  color: var(--color-6);
 }
 
 .MdrFieldMessage {
-    font-size: 12px;
-    color: var(--color-6);
+  font-size: 12px;
+  color: var(--color-6);
 }
 
 .MdrFieldMessage.Error {
-    color: var(--color-danger);
+  color: var(--color-danger);
 }
 
 .MdrFieldMessage.Warning {
-    color: var(--color-warning);
+  color: var(--color-warning);
 }
 
 .MdrFieldMessage.Success {
-    color: var(--color-success);
+  color: var(--color-success);
 }

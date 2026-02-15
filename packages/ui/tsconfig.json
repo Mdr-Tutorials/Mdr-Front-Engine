@@ -1,25 +1,25 @@
 {
-    "extends": "../../tsconfig.base.json",
-    "compilerOptions": {
-        "baseUrl": ".",
-        "composite": true,
-        "declaration": true,
-        "declarationMap": true,
-        "outDir": "./dist",
-        "noEmit": false,
-        "paths": {
-            "@mdr/shared": ["../shared/src"],
-            "@mdr/themes": ["../themes"]
-        }
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./dist",
+    "noEmit": false,
+    "paths": {
+      "@mdr/shared": ["../shared/src"],
+      "@mdr/themes": ["../themes"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    {
+      "path": "../shared"
     },
-    "include": ["src/**/*"],
-    "exclude": ["node_modules", "dist"],
-    "references": [
-        {
-            "path": "../shared"
-        },
-        {
-            "path": "../themes"
-        }
-    ]
+    {
+      "path": "../themes"
+    }
+  ]
 }

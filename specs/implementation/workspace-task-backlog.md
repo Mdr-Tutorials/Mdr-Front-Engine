@@ -5,8 +5,8 @@
 - In Progress
 - 日期：2026-02-08
 - 关联：
-    - `specs/implementation/workspace-refactor-plan.md`
-    - `specs/decisions/README.md`
+  - `specs/implementation/workspace-refactor-plan.md`
+  - `specs/decisions/README.md`
 
 ## 0. 边界与执行原则
 
@@ -36,132 +36,132 @@
 ### A. Data & API
 
 - [x] `API-001` 冻结 `workspace-model` 字段（`workspaceRev/routeRev/contentRev/metaRev/opSeq`）
-    - 产出：字段冻结记录 + 评审结论
-    - 依赖：无
-    - 验收：冻结期间不新增破坏性字段
-    - 结果：`specs/workspace/workspace-model.md`、`specs/implementation/reviews/API-001-workspace-model-freeze.md`
+  - 产出：字段冻结记录 + 评审结论
+  - 依赖：无
+  - 验收：冻结期间不新增破坏性字段
+  - 结果：`specs/workspace/workspace-model.md`、`specs/implementation/reviews/API-001-workspace-model-freeze.md`
 
 - [x] `API-002` 冻结 `IntentEnvelope/CommandEnvelope`（含 reserved domain 错误码）
-    - 产出：固定字段表 + 示例 payload
-    - 依赖：`API-001`
-    - 验收：`core.nodegraph.*`/`core.animation.*` 可协商为 `false`
-    - 结果：`specs/decisions/12.intent-command-extension.md`、`specs/implementation/reviews/API-002-intent-command-freeze.md`
+  - 产出：固定字段表 + 示例 payload
+  - 依赖：`API-001`
+  - 验收：`core.nodegraph.*`/`core.animation.*` 可协商为 `false`
+  - 结果：`specs/decisions/12.intent-command-extension.md`、`specs/implementation/reviews/API-002-intent-command-freeze.md`
 
 - [x] `API-003` 完成 OpenAPI 定稿并校验
-    - 产出：`specs/api/workspace-sync.openapi.yaml`
-    - 依赖：`API-001`、`API-002`
-    - 验收：YAML 解析通过；响应模型统一使用 `expected*` 与最新 rev 返回
-    - 结果：`specs/api/workspace-sync.openapi.yaml`、`specs/implementation/reviews/API-003-openapi-freeze.md`
+  - 产出：`specs/api/workspace-sync.openapi.yaml`
+  - 依赖：`API-001`、`API-002`
+  - 验收：YAML 解析通过；响应模型统一使用 `expected*` 与最新 rev 返回
+  - 结果：`specs/api/workspace-sync.openapi.yaml`、`specs/implementation/reviews/API-003-openapi-freeze.md`
 
 - [x] `API-004` 后端数据表与仓储层改造（workspace/docs/route/op_seq）
-    - 产出：DDL + DAO + 单测
-    - 依赖：`API-003`
-    - 验收：文档内容更新不误增无关分区 rev
-    - 结果：`apps/backend/database.go`、`apps/backend/workspace_store.go`、`apps/backend/workspace_store_test.go`、`specs/implementation/reviews/API-004-workspace-store.md`
+  - 产出：DDL + DAO + 单测
+  - 依赖：`API-003`
+  - 验收：文档内容更新不误增无关分区 rev
+  - 结果：`apps/backend/database.go`、`apps/backend/workspace_store.go`、`apps/backend/workspace_store_test.go`、`specs/implementation/reviews/API-004-workspace-store.md`
 
 - [ ] `API-005` 实现 5 个 workspace 接口（snapshot/capabilities/document/intents/batch）
-    - 产出：handler + service + 错误码
-    - 依赖：`API-004`
-    - 验收：`DOCUMENT/WORKSPACE/ROUTE/HYBRID` 冲突可稳定复现
+  - 产出：handler + service + 错误码
+  - 依赖：`API-004`
+  - 验收：`DOCUMENT/WORKSPACE/ROUTE/HYBRID` 冲突可稳定复现
 
 ### A1. MIR Data Scope / List Render（v1.2）
 
 - [x] `MIR-001` 完成 ADR + MIR v1.2 契约草案 + JSON Schema 草案
-    - 产出：`specs/decisions/15.mir-data-scope-and-list-render.md`、`specs/mir/mir-contract-v1.2.md`、`specs/mir/MIR-v1.2.json`
-    - 依赖：`API-001`、`API-002`、`API-003`
-    - 验收：v1.2 明确 `data/list` 字段、`$data/$item/$index` 语义与错误码建议
-    - 结果：`specs/implementation/reviews/MIR-001-data-scope-list-contract.md`
+  - 产出：`specs/decisions/15.mir-data-scope-and-list-render.md`、`specs/mir/mir-contract-v1.2.md`、`specs/mir/MIR-v1.2.json`
+  - 依赖：`API-001`、`API-002`、`API-003`
+  - 验收：v1.2 明确 `data/list` 字段、`$data/$item/$index` 语义与错误码建议
+  - 结果：`specs/implementation/reviews/MIR-001-data-scope-list-contract.md`
 
 - [ ] `MIR-002` 渲染器支持 data scope 继承与 list 模板渲染
-    - 产出：`MIRRenderer` 上下文求值扩展 + 单测
-    - 依赖：`MIR-001`
-    - 验收：同一模板可基于数组稳定渲染，子节点可继承父 scope
+  - 产出：`MIRRenderer` 上下文求值扩展 + 单测
+  - 依赖：`MIR-001`
+  - 验收：同一模板可基于数组稳定渲染，子节点可继承父 scope
 
 - [ ] `MIR-003` Inspector 增加“绑定数据模型/提升为列表”面板
-    - 产出：节点配置 UI + 引导文案 + 诊断提示
-    - 依赖：`MIR-001`
-    - 验收：用户可在 Blueprint 内完成数据绑定与 list 配置
+  - 产出：节点配置 UI + 引导文案 + 诊断提示
+  - 依赖：`MIR-001`
+  - 验收：用户可在 Blueprint 内完成数据绑定与 list 配置
 
 - [ ] `MIR-004` 前后端校验接入 v1.2 错误模型
-    - 产出：schema 校验器 + 错误码映射（`MIR_LIST_SOURCE_NOT_ARRAY` 等）
-    - 依赖：`MIR-001`、`API-005`
-    - 验收：保存/导出前后都能返回字段级错误
+  - 产出：schema 校验器 + 错误码映射（`MIR_LIST_SOURCE_NOT_ARRAY` 等）
+  - 依赖：`MIR-001`、`API-005`
+  - 验收：保存/导出前后都能返回字段级错误
 
 - [ ] `MIR-005` 代码生成器支持 list 输出与引用解析
-    - 产出：React 生成器 `.map()` 支持 + 回归测试
-    - 依赖：`MIR-002`、`MIR-004`
-    - 验收：渲染预览与生成代码语义一致
+  - 产出：React 生成器 `.map()` 支持 + 回归测试
+  - 依赖：`MIR-002`、`MIR-004`
+  - 验收：渲染预览与生成代码语义一致
 
 ### B. Editor Core（Store / Command / Outbox）
 
 - [ ] `CORE-001` 重构 `useEditorStore`，移除 `mirDoc` 状态入口
-    - 产出：`workspace + activeDocumentId + activeRouteNodeId` 状态模型
-    - 依赖：`API-003`
-    - 验收：代码中无 `state.mirDoc` 引用
+  - 产出：`workspace + activeDocumentId + activeRouteNodeId` 状态模型
+  - 依赖：`API-003`
+  - 验收：代码中无 `state.mirDoc` 引用
 
 - [ ] `CORE-002` 实现 Command Executor（forward/reverse/transaction/mergeKey）
-    - 产出：执行器 + 历史栈模块 + 单测
-    - 依赖：`CORE-001`
-    - 验收：拖拽/连续输入可按 merge 规则折叠历史
+  - 产出：执行器 + 历史栈模块 + 单测
+  - 依赖：`CORE-001`
+  - 验收：拖拽/连续输入可按 merge 规则折叠历史
 
 - [ ] `CORE-003` 实现 Outbox（本地即时应用 + 防抖批量 flush + 重放）
-    - 产出：outbox 模块 + 重放策略
-    - 依赖：`CORE-002`、`API-005`
-    - 验收：离线编辑后恢复网络可重放并收敛 rev
+  - 产出：outbox 模块 + 重放策略
+  - 依赖：`CORE-002`、`API-005`
+  - 验收：离线编辑后恢复网络可重放并收敛 rev
 
 - [ ] `CORE-004` 接入 capabilities 协商与 reserved domain no-op
-    - 产出：能力缓存 + `UNHANDLED_RESERVED_DOMAIN` 遥测
-    - 依赖：`CORE-003`
-    - 验收：收到保留域命令不崩溃、不触发 UI 行为
+  - 产出：能力缓存 + `UNHANDLED_RESERVED_DOMAIN` 遥测
+  - 依赖：`CORE-003`
+  - 验收：收到保留域命令不崩溃、不触发 UI 行为
 
 ### C. Blueprint UX（Route/Layout/Outlet）
 
 - [ ] `UX-001` 将 `routes/currentPath` 切换为 `routeManifest + activeRouteNodeId`
-    - 产出：路由树状态与渲染映射层
-    - 依赖：`CORE-001`
-    - 验收：URL 预览选择与持久化路由节点一致
+  - 产出：路由树状态与渲染映射层
+  - 依赖：`CORE-001`
+  - 验收：URL 预览选择与持久化路由节点一致
 
 - [ ] `UX-002` 实现路由意图操作（新建页面/子路由/拆分布局/删除）
-    - 产出：Blueprint 操作入口 -> Intent Dispatch
-    - 依赖：`UX-001`、`API-005`
-    - 验收：同一操作可写入 routeRev 与相关 doc metaRev/contentRev
+  - 产出：Blueprint 操作入口 -> Intent Dispatch
+  - 依赖：`UX-001`、`API-005`
+  - 验收：同一操作可写入 routeRev 与相关 doc metaRev/contentRev
 
 - [ ] `UX-003` 实现内部文档自动维护（不暴露文件 UI）
-    - 产出：系统级文档创建/重命名/归档策略
-    - 依赖：`UX-002`
-    - 验收：用户无文件系统心智也可完成多页面编辑
+  - 产出：系统级文档创建/重命名/归档策略
+  - 依赖：`UX-002`
+  - 验收：用户无文件系统心智也可完成多页面编辑
 
 - [ ] `UX-004` 增加 Outlet/路由诊断（OUTLET_MISSING 等）
-    - 产出：诊断引擎 + 编辑器提示
-    - 依赖：`UX-002`
-    - 验收：阻断发布级错误；可点击定位到节点
+  - 产出：诊断引擎 + 编辑器提示
+  - 依赖：`UX-002`
+  - 验收：阻断发布级错误；可点击定位到节点
 
 ### D. Migration & Quality
 
 - [ ] `MIG-001` 编写 `projects.mir_json -> workspace snapshot` 迁移器
-    - 产出：迁移脚本 + 失败报告格式
-    - 依赖：`API-005`、`CORE-001`
-    - 验收：迁移成功率目标 `>=99%`
+  - 产出：迁移脚本 + 失败报告格式
+  - 依赖：`API-005`、`CORE-001`
+  - 验收：迁移成功率目标 `>=99%`
 
 - [ ] `MIG-002` 切换 runbook（停写旧接口 -> 执行迁移 -> 发布客户端 -> 验证）
-    - 产出：上线手册 + 回滚手册
-    - 依赖：`MIG-001`
-    - 验收：回滚演练至少 1 次成功
+  - 产出：上线手册 + 回滚手册
+  - 依赖：`MIG-001`
+  - 验收：回滚演练至少 1 次成功
 
 - [ ] `QA-001` 压测：高频编辑 / 混合事务冲突 / 命令重放一致性
-    - 产出：压测报告 + 基线阈值
-    - 依赖：`CORE-003`、`API-005`
-    - 验收：30 次/分钟编辑无明显卡顿
+  - 产出：压测报告 + 基线阈值
+  - 依赖：`CORE-003`、`API-005`
+  - 验收：30 次/分钟编辑无明显卡顿
 
 - [ ] `QA-002` 回归：Blueprint 全链路 + Export 一致性 + MIR 校验错误提示
-    - 产出：自动化测试清单（单测/E2E）
-    - 依赖：`UX-004`
-    - 验收：P0 崩溃缺陷为 0
+  - 产出：自动化测试清单（单测/E2E）
+  - 依赖：`UX-004`
+  - 验收：P0 崩溃缺陷为 0
 
 - [ ] `QA-003` 扩展预演（仅协议，不落地编辑器）
-    - 产出：`core.nodegraph.*` / `core.animation.*` mock 回放报告
-    - 依赖：`CORE-004`
-    - 验收：新增 mock 不改核心协议字段
+  - 产出：`core.nodegraph.*` / `core.animation.*` mock 回放报告
+  - 依赖：`CORE-004`
+  - 验收：新增 mock 不改核心协议字段
 
 ## 3. 关键依赖图（简化）
 

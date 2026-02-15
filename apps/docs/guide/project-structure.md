@@ -283,18 +283,18 @@ packages/i18n/
 
 ```json
 {
-    "tasks": {
-        "build": {
-            "dependsOn": ["^build"],
-            "outputs": ["dist/**"]
-        },
-        "dev": {
-            "cache": false,
-            "persistent": true
-        },
-        "test": {},
-        "lint": {}
-    }
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "test": {},
+    "lint": {}
+  }
 }
 ```
 
@@ -302,8 +302,8 @@ packages/i18n/
 
 ```yaml
 packages:
-    - 'apps/*'
-    - 'packages/*'
+  - 'apps/*'
+  - 'packages/*'
 ```
 
 ## 下一步

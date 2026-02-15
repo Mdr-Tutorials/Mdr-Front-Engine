@@ -1,52 +1,52 @@
 .MdrIframe {
-    display: block;
-    transition: all var(--transition-normal);
+  display: block;
+  transition: all var(--transition-normal);
 
+  > div {
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    background-color: var(--color-3);
+  }
+
+  iframe {
+    background-color: var(--color-0);
+  }
+
+  &.aspect-16-9 {
     > div {
-        border-radius: var(--radius-md);
-        box-shadow: var(--shadow-sm);
-        background-color: var(--color-3);
+      aspect-ratio: 16 / 9;
     }
+  }
 
-    iframe {
-        background-color: var(--color-0);
+  &.aspect-4-3 {
+    > div {
+      aspect-ratio: 4 / 3;
     }
+  }
 
-    &.aspect-16-9 {
-        > div {
-            aspect-ratio: 16 / 9;
-        }
+  &.aspect-1-1 {
+    > div {
+      aspect-ratio: 1 / 1;
     }
+  }
 
-    &.aspect-4-3 {
-        > div {
-            aspect-ratio: 4 / 3;
-        }
+  &.aspect-21-9 {
+    > div {
+      aspect-ratio: 21 / 9;
     }
+  }
 
-    &.aspect-1-1 {
-        > div {
-            aspect-ratio: 1 / 1;
-        }
-    }
-
-    &.aspect-21-9 {
-        > div {
-            aspect-ratio: 21 / 9;
-        }
-    }
-
-    &:hover > div {
-        box-shadow: var(--shadow-md);
-    }
+  &:hover > div {
+    box-shadow: var(--shadow-md);
+  }
 }
 
 [data-theme='dark'] {
-    .MdrIframe > div {
-        box-shadow: var(--shadow-sm);
-    }
+  .MdrIframe > div {
+    box-shadow: var(--shadow-sm);
+  }
 
-    .MdrIframe:hover > div {
-        box-shadow: var(--shadow-md);
-    }
+  .MdrIframe:hover > div {
+    box-shadow: var(--shadow-md);
+  }
 }

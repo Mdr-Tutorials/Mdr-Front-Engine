@@ -5,18 +5,18 @@
 - In Progress
 - 日期：2026-02-08
 - 关联：
-    - `specs/implementation/workspace-task-backlog.md`
-    - `specs/decisions/05.workspace-vfs.md`
-    - `specs/decisions/06.command-history.md`
-    - `specs/decisions/07.workspace-sync.md`
-    - `specs/decisions/08.route-manifest-outlet.md`
-    - `specs/decisions/09.component-route-composition.md`
-    - `specs/decisions/10.mir-contract-validation.md`
-    - `specs/decisions/11.revision-partitioning.md`
-    - `specs/decisions/12.intent-command-extension.md`
-    - `specs/decisions/13.route-runtime-contract.md`
-    - `specs/decisions/14.plugin-sandbox-and-capability.md`
-    - `specs/decisions/15.mir-data-scope-and-list-render.md`
+  - `specs/implementation/workspace-task-backlog.md`
+  - `specs/decisions/05.workspace-vfs.md`
+  - `specs/decisions/06.command-history.md`
+  - `specs/decisions/07.workspace-sync.md`
+  - `specs/decisions/08.route-manifest-outlet.md`
+  - `specs/decisions/09.component-route-composition.md`
+  - `specs/decisions/10.mir-contract-validation.md`
+  - `specs/decisions/11.revision-partitioning.md`
+  - `specs/decisions/12.intent-command-extension.md`
+  - `specs/decisions/13.route-runtime-contract.md`
+  - `specs/decisions/14.plugin-sandbox-and-capability.md`
+  - `specs/decisions/15.mir-data-scope-and-list-render.md`
 
 ## 当前进展（2026-02-08）
 
@@ -92,11 +92,11 @@
 
 1. 设计并创建 workspace 数据表（工作区、文档、路由清单、操作序列）
 2. 实现接口：
-    - `GET /api/workspaces/:id`
-    - `GET /api/workspaces/:id/capabilities`
-    - `PUT /api/workspaces/:id/documents/:documentId`
-    - `POST /api/workspaces/:id/intents`
-    - `POST /api/workspaces/:id/batch`
+   - `GET /api/workspaces/:id`
+   - `GET /api/workspaces/:id/capabilities`
+   - `PUT /api/workspaces/:id/documents/:documentId`
+   - `POST /api/workspaces/:id/intents`
+   - `POST /api/workspaces/:id/batch`
 3. 实现分区 rev 校验与冲突返回（`DOCUMENT/WORKSPACE/ROUTE/HYBRID`）
 4. 接入 MIR v1.1/v1.2 保存校验
 
@@ -120,14 +120,14 @@
 任务：
 
 1. 替换 `useEditorStore`：
-    - 移除 `mirDoc/setMirDoc/updateMirDoc`
-    - 引入 `workspace/activeDocumentId/applyCommand`
+   - 移除 `mirDoc/setMirDoc/updateMirDoc`
+   - 引入 `workspace/activeDocumentId/applyCommand`
 2. 实现 Command 执行器：
-    - 支持 `forwardOps/reverseOps`
-    - 支持事务合并
+   - 支持 `forwardOps/reverseOps`
+   - 支持事务合并
 3. 实现 Outbox：
-    - 本地即时应用
-    - 防抖批量同步
+   - 本地即时应用
+   - 防抖批量同步
 4. 接入 capabilities 拉取与意图发送
 5. 预留域命令默认 no-op（记录历史与遥测，不触发 UI 行为）
 
@@ -151,10 +151,10 @@
 
 1. 将现有 `routes/currentPath` 本地状态替换为 `routeManifest + activeRouteNodeId`
 2. 增加用户意图操作：
-    - 新建页面
-    - 新建子路由
-    - 拆分/合并布局
-    - 删除页面/路由
+   - 新建页面
+   - 新建子路由
+   - 拆分/合并布局
+   - 删除页面/路由
 3. 自动维护内部文档树（不暴露文件操作 UI）
 4. Outlet 诊断与错误提示
 
@@ -179,9 +179,9 @@
 1. 编写迁移器：`projects.mir_json -> workspace snapshot`
 2. 为失败项目生成迁移报告（不可自动修复项）
 3. 上线切换窗口：
-    - 停止旧写入
-    - 执行迁移
-    - 发布新客户端
+   - 停止旧写入
+   - 执行迁移
+   - 发布新客户端
 4. 预设回滚方案（数据库备份 + 版本回退）
 
 输出：
@@ -203,19 +203,19 @@
 任务：
 
 1. 新增压力测试：
-    - 高频文档写入并发
-    - 路由/文档混合事务冲突
-    - 命令重放一致性
+   - 高频文档写入并发
+   - 路由/文档混合事务冲突
+   - 命令重放一致性
 2. 新增回归测试：
-    - Blueprint 操作链路
-    - Export 产物一致性
-    - MIR 校验错误提示
+   - Blueprint 操作链路
+   - Export 产物一致性
+   - MIR 校验错误提示
 3. 预演两个“未来功能”：
-    - 插件意图命名空间接入（mock）
-    - Route runtime loader/guard mock 执行
+   - 插件意图命名空间接入（mock）
+   - Route runtime loader/guard mock 执行
 4. 预演保留域协议：
-    - `core.nodegraph.*` envelope 回放（不落地编辑器）
-    - `core.animation.*` envelope 回放（不落地编辑器）
+   - `core.nodegraph.*` envelope 回放（不落地编辑器）
+   - `core.animation.*` envelope 回放（不落地编辑器）
 
 验收：
 

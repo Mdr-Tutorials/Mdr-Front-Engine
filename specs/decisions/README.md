@@ -7,33 +7,33 @@
 ## 核心决策（按主题）
 
 1. **Workspace 与数据模型**
-    - `specs/decisions/05.workspace-vfs.md`
-    - `specs/workspace/workspace-model.md`
+   - `specs/decisions/05.workspace-vfs.md`
+   - `specs/workspace/workspace-model.md`
 2. **Undo/Redo 与命令协议**
-    - `specs/decisions/06.command-history.md`
-    - `specs/decisions/12.intent-command-extension.md`
+   - `specs/decisions/06.command-history.md`
+   - `specs/decisions/12.intent-command-extension.md`
 3. **同步与并发控制**
-    - `specs/decisions/07.workspace-sync.md`
-    - `specs/decisions/11.revision-partitioning.md`
-    - `specs/api/workspace-sync.openapi.yaml`
+   - `specs/decisions/07.workspace-sync.md`
+   - `specs/decisions/11.revision-partitioning.md`
+   - `specs/api/workspace-sync.openapi.yaml`
 4. **路由体系与模块组合**
-    - `specs/decisions/08.route-manifest-outlet.md`
-    - `specs/decisions/09.component-route-composition.md`
-    - `specs/decisions/13.route-runtime-contract.md`
-    - `specs/router/route-manifest.md`
+   - `specs/decisions/08.route-manifest-outlet.md`
+   - `specs/decisions/09.component-route-composition.md`
+   - `specs/decisions/13.route-runtime-contract.md`
+   - `specs/router/route-manifest.md`
 5. **MIR 契约与校验**
-    - `specs/decisions/10.mir-contract-validation.md`
-    - `specs/decisions/15.mir-data-scope-and-list-render.md`
-    - `specs/mir/mir-contract-v1.1.md`
-    - `specs/mir/MIR-v1.1.json`
-    - `specs/mir/mir-contract-v1.2.md`
-    - `specs/mir/MIR-v1.2.json`
+   - `specs/decisions/10.mir-contract-validation.md`
+   - `specs/decisions/15.mir-data-scope-and-list-render.md`
+   - `specs/mir/mir-contract-v1.1.md`
+   - `specs/mir/MIR-v1.1.json`
+   - `specs/mir/mir-contract-v1.2.md`
+   - `specs/mir/MIR-v1.2.json`
 6. **插件与安全扩展**
-    - `specs/decisions/14.plugin-sandbox-and-capability.md`
+   - `specs/decisions/14.plugin-sandbox-and-capability.md`
 7. **样式协议编辑器**
-    - `specs/decisions/16.class-protocol-editor.md`
+   - `specs/decisions/16.class-protocol-editor.md`
 8. **外部组件库接入**
-    - `specs/decisions/17.external-library-runtime-and-adapter.md`
+   - `specs/decisions/17.external-library-runtime-and-adapter.md`
 
 ## 实施主计划
 

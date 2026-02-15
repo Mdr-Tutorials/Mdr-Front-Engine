@@ -1,101 +1,101 @@
 .ExportMirPage {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 16px;
-    height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  height: 100%;
 }
 
 .ExportMirPageHeader {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .ExportMirPageTitle {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .ExportMirPageTitle h1 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 0.01em;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
 .ExportMirPageTitle p {
-    margin: 0;
-    color: var(--color-6);
-    font-size: 12px;
+  margin: 0;
+  color: var(--color-6);
+  font-size: 12px;
 }
 
 .ExportMirPageCopy {
-    border: none;
-    background: rgba(0, 0, 0, 0.06);
-    color: var(--color-9);
-    padding: 6px 10px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
+  border: none;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--color-9);
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .ExportMirPageCopy:hover {
-    background: rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.08);
 }
 
 .ExportMirPageCopy:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .ExportMirPageActions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .ExportMirPageTabs {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px;
-    border-radius: 999px;
-    background: rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .ExportMirPageTab {
-    border: none;
-    background: transparent;
-    color: var(--color-7);
-    padding: 6px 12px;
-    border-radius: 999px;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
+  border: none;
+  background: transparent;
+  color: var(--color-7);
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .ExportMirPageTab.Active {
-    color: var(--color-9);
-    background: rgba(0, 0, 0, 0.08);
+  color: var(--color-9);
+  background: rgba(0, 0, 0, 0.08);
 }
 
 .ExportMirPageBody {
-    flex: 1;
-    min-height: 0;
+  flex: 1;
+  min-height: 0;
 }
 
 .ExportMirPageEmpty {
-    border-radius: 12px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    background: rgba(0, 0, 0, 0.02);
-    padding: 14px;
-    color: var(--color-7);
-    font-size: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+  padding: 14px;
+  color: var(--color-7);
+  font-size: 12px;
 }

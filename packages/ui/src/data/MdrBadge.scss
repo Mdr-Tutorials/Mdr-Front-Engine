@@ -1,28 +1,28 @@
 .MdrBadge {
-    position: relative;
-    display: inline-flex;
+  position: relative;
+  display: inline-flex;
 }
 
 .MdrBadgeCount {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    min-width: 18px;
-    height: 18px;
-    padding: 0 4px;
-    border-radius: var(--radius-full);
-    background-color: var(--color-danger);
-    color: var(--color-0);
-    font-size: 11px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-danger);
+  color: var(--color-0);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .MdrBadgeCount.Dot {
-    width: 10px;
-    height: 10px;
-    min-width: 10px;
-    padding: 0;
+  width: 10px;
+  height: 10px;
+  min-width: 10px;
+  padding: 0;
 }

@@ -1,150 +1,150 @@
 .MdrInput {
-    display: inline-flex;
-    align-items: center;
-    position: relative;
-    width: 100%;
-    max-width: 400px;
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  max-width: 400px;
 
-    width: 100%;
-    border: 1px solid;
-    border-radius: var(--radius-md);
-    padding: 0 var(--spacing-sm);
+  width: 100%;
+  border: 1px solid;
+  border-radius: var(--radius-md);
+  padding: 0 var(--spacing-sm);
+  font-size: 16px;
+  line-height: 1.5;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+  outline: none;
+  background-color: var(--color-0);
+  color: var(--color-10);
+  border-color: var(--color-4);
+
+  &::placeholder {
+    color: var(--color-6);
+  }
+
+  &:focus {
+    border-color: var(--color-primary, var(--color-9));
+    box-shadow: 0 0 0 3px
+      rgba(var(--color-primary-rgb, var(--color-9-rgb)), 0.1);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--color-2);
+  }
+
+  &:read-only {
+    background-color: var(--color-2);
+    cursor: default;
+  }
+
+  &.Small {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 14px;
+  }
+
+  &.Medium {
+    padding: var(--spacing-sm) var(--spacing-md);
     font-size: 16px;
-    line-height: 1.5;
-    transition:
-        border-color var(--transition-fast),
-        box-shadow var(--transition-fast);
-    outline: none;
-    background-color: var(--color-0);
-    color: var(--color-10);
-    border-color: var(--color-4);
+  }
 
-    &::placeholder {
-        color: var(--color-6);
-    }
+  &.Large {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: 18px;
+  }
+
+  &.Error {
+    border-color: var(--color-danger);
 
     &:focus {
-        border-color: var(--color-primary, var(--color-9));
-        box-shadow: 0 0 0 3px
-            rgba(var(--color-primary-rgb, var(--color-9-rgb)), 0.1);
+      border-color: var(--color-danger);
+      box-shadow: 0 0 0 3px rgba(var(--color-danger-rgb), 0.1);
     }
+  }
 
-    &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        background-color: var(--color-2);
+  &.Warning {
+    border-color: var(--color-warning);
+
+    &:focus {
+      border-color: var(--color-warning);
+      box-shadow: 0 0 0 3px rgba(var(--color-warning-rgb), 0.1);
     }
+  }
 
-    &:read-only {
-        background-color: var(--color-2);
-        cursor: default;
+  &.Success {
+    border-color: var(--color-success);
+
+    &:focus {
+      border-color: var(--color-success);
+      box-shadow: 0 0 0 3px rgba(var(--color-success-rgb), 0.1);
+    }
+  }
+
+  &.WithIcon {
+    input {
+      padding-left: var(--spacing-xl);
     }
 
     &.Small {
-        padding: var(--spacing-xs) var(--spacing-sm);
-        font-size: 14px;
-    }
-
-    &.Medium {
-        padding: var(--spacing-sm) var(--spacing-md);
-        font-size: 16px;
+      padding-left: var(--spacing-lg);
     }
 
     &.Large {
-        padding: var(--spacing-md) var(--spacing-lg);
-        font-size: 18px;
-    }
-
-    &.Error {
-        border-color: var(--color-danger);
-
-        &:focus {
-            border-color: var(--color-danger);
-            box-shadow: 0 0 0 3px rgba(var(--color-danger-rgb), 0.1);
-        }
-    }
-
-    &.Warning {
-        border-color: var(--color-warning);
-
-        &:focus {
-            border-color: var(--color-warning);
-            box-shadow: 0 0 0 3px rgba(var(--color-warning-rgb), 0.1);
-        }
-    }
-
-    &.Success {
-        border-color: var(--color-success);
-
-        &:focus {
-            border-color: var(--color-success);
-            box-shadow: 0 0 0 3px rgba(var(--color-success-rgb), 0.1);
-        }
+      padding-left: var(--spacing-xl);
     }
 
     &.WithIcon {
-        input {
-            padding-left: var(--spacing-xl);
-        }
-
-        &.Small {
-            padding-left: var(--spacing-lg);
-        }
-
-        &.Large {
-            padding-left: var(--spacing-xl);
-        }
-
-        &.WithIcon {
-            padding-right: var(--spacing-xl);
-        }
-
-        &.Small.WithIcon {
-            padding-right: var(--spacing-lg);
-        }
-
-        &.Large.WithIcon {
-            padding-right: var(--spacing-xl);
-        }
+      padding-right: var(--spacing-xl);
     }
 
-    .MdrInputIcon {
-        position: absolute;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--color-6);
-        pointer-events: none;
-
-        &.Left {
-            left: var(--spacing-sm);
-        }
-
-        &.Right {
-            right: var(--spacing-sm);
-        }
+    &.Small.WithIcon {
+      padding-right: var(--spacing-lg);
     }
 
-    &.Small .MdrInputIcon.Left {
-        left: var(--spacing-sm);
+    &.Large.WithIcon {
+      padding-right: var(--spacing-xl);
+    }
+  }
+
+  .MdrInputIcon {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-6);
+    pointer-events: none;
+
+    &.Left {
+      left: var(--spacing-sm);
     }
 
-    &.Small .MdrInputIcon.Right {
-        right: var(--spacing-sm);
+    &.Right {
+      right: var(--spacing-sm);
     }
+  }
 
-    &.Large .MdrInputIcon.Left {
-        left: var(--spacing-md);
-    }
+  &.Small .MdrInputIcon.Left {
+    left: var(--spacing-sm);
+  }
 
-    &.Large .MdrInputIcon.Right {
-        right: var(--spacing-md);
-    }
+  &.Small .MdrInputIcon.Right {
+    right: var(--spacing-sm);
+  }
+
+  &.Large .MdrInputIcon.Left {
+    left: var(--spacing-md);
+  }
+
+  &.Large .MdrInputIcon.Right {
+    right: var(--spacing-md);
+  }
 }
 
 .MdrInput-wrapper {
-    display: flex;
-    flex-direction: row;
-    gap: var(--spacing-sm);
-    align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: var(--spacing-sm);
+  align-items: center;
 }

@@ -1,44 +1,44 @@
 .MdrSidebar {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-    background-color: var(--color-0);
-    border-right: 1px solid var(--color-2);
-    padding: var(--spacing-md);
-    color: var(--color-8);
-    min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  background-color: var(--color-0);
+  border-right: 1px solid var(--color-2);
+  padding: var(--spacing-md);
+  color: var(--color-8);
+  min-height: 100vh;
 }
 
 .MdrSidebarTitle {
-    font-weight: 600;
-    font-size: 14px;
+  font-weight: 600;
+  font-size: 14px;
 }
 
 .MdrSidebarNav {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
 }
 
 .MdrSidebarItem {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    text-decoration: none;
-    color: inherit;
-    padding: 6px 8px;
-    border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  text-decoration: none;
+  color: inherit;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
 
-    &.Active {
-        background-color: var(--color-2);
-        font-weight: 600;
-    }
+  &.Active {
+    background-color: var(--color-2);
+    font-weight: 600;
+  }
 }
 
 .MdrSidebarFooter {
-    margin-top: auto;
+  margin-top: auto;
 }
 
 .MdrSidebar.Collapsed {
-    width: 72px;
+  width: 72px;
 }

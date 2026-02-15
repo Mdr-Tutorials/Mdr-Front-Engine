@@ -5,10 +5,10 @@ type AppResources = typeof en;
 type CombinedResources = I18nResources['en'] & AppResources;
 
 declare module 'i18next' {
-    interface CustomTypeOptions {
-        defaultNS: typeof defaultNS;
-        resources: CombinedResources;
-    }
+  interface CustomTypeOptions {
+    defaultNS: typeof defaultNS;
+    resources: CombinedResources;
+  }
 }
 
 export {};

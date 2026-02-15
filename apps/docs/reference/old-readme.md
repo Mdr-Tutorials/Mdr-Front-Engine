@@ -323,12 +323,12 @@ packages/shared/
 
 ```typescript
 export interface MdrComponent {
-    className?: string;
-    style?: React.CSSProperties;
-    id?: string;
-    dataAttributes?: Record<string, string>;
-    onClick?: (e: React.MouseEvent) => void;
-    as?: React.ElementType;
+  className?: string;
+  style?: React.CSSProperties;
+  id?: string;
+  dataAttributes?: Record<string, string>;
+  onClick?: (e: React.MouseEvent) => void;
+  as?: React.ElementType;
 }
 ```
 
@@ -386,10 +386,10 @@ packages/eslint-plugin-mdr/
 
 ```json
 {
-    "plugins": ["@mdr/eslint"],
-    "rules": {
-        "@mdr/no-circular": "error"
-    }
+  "plugins": ["@mdr/eslint"],
+  "rules": {
+    "@mdr/no-circular": "error"
+  }
 }
 ```
 
@@ -504,10 +504,10 @@ pnpm test:e2e
 
 ```json
 {
-    "dependencies": {
-        "@mdr/shared": "workspace:*",
-        "@mdr/ui": "workspace:*"
-    }
+  "dependencies": {
+    "@mdr/shared": "workspace:*",
+    "@mdr/ui": "workspace:*"
+  }
 }
 ```
 

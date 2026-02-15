@@ -1,1551 +1,1551 @@
 {
-    "routes": {
-        "nodeGraphEditor": "Node Graph",
-        "componentEditor": "Components",
-        "animationEditor": "Animations",
-        "resourceManager": "Resources",
-        "testing": "Tests",
-        "exportSettings": "Export",
-        "deploymentSettings": "Deployment",
-        "editorSettings": "Settings",
-        "projectSettings": "Project Settings",
-        "communityPage": "Community",
-        "aboutPage": "About"
+  "routes": {
+    "nodeGraphEditor": "Node Graph",
+    "componentEditor": "Components",
+    "animationEditor": "Animations",
+    "resourceManager": "Resources",
+    "testing": "Tests",
+    "exportSettings": "Export",
+    "deploymentSettings": "Deployment",
+    "editorSettings": "Settings",
+    "projectSettings": "Project Settings",
+    "communityPage": "Community",
+    "aboutPage": "About"
+  },
+  "home": {
+    "brand": {
+      "name": "MdrFrontEngine"
     },
+    "nav": {
+      "community": "Community",
+      "tutorials": "Tutorials",
+      "docs": "Docs",
+      "signIn": "Sign in",
+      "github": "GitHub",
+      "languageSwitch": "Switch language"
+    },
+    "hero": {
+      "line1": {
+        "highlight": "Mdr"
+      },
+      "line2": {
+        "before": "Frontend",
+        "highlight": "All in"
+      },
+      "line3": {
+        "before": "Instantly",
+        "highlight": "Transmuted"
+      },
+      "subtitle": "Orchestrate logic, drive data, and transmute inspiration into code."
+    },
+    "actions": {
+      "enterEditor": "Enter Editor",
+      "viewDocs": "View Docs"
+    },
+    "mirTest": {
+      "title": "MIR Preview",
+      "exportButton": "Quick Export"
+    },
+    "footer": {
+      "copy": "(c) 2026 Mdr Front Engine",
+      "placeholder": "Walk with the front-end."
+    }
+  },
+  "community": {
+    "backHome": "Back to Home",
+    "badge": "Community",
+    "title": "Public MIR Showcase",
+    "subtitle": "Explore projects, components, and node graphs shared by creators.",
+    "count": "results",
+    "countNone": "No results",
+    "error": {
+      "load": "Could not load community projects."
+    },
+    "search": {
+      "placeholder": "Search by title, author, description..."
+    },
+    "filter": {
+      "all": "All types",
+      "project": "Projects",
+      "component": "Components",
+      "nodegraph": "Node Graphs"
+    },
+    "sort": {
+      "latest": "Latest",
+      "popular": "Popular"
+    },
+    "card": {
+      "untitled": "Untitled",
+      "emptyDesc": "No description provided yet.",
+      "unknown": "Unknown"
+    },
+    "empty": {
+      "title": "No public projects found",
+      "body": "Try another keyword, switch the type filter, or sort by latest."
+    },
+    "pagination": {
+      "prev": "Prev",
+      "page": "Page",
+      "next": "Next"
+    },
+    "detail": {
+      "back": "Back to Community",
+      "author": "Author",
+      "updated": "Updated",
+      "preview": "Read-only Preview",
+      "mir": "MIR Document",
+      "clone": "Clone to My Workspace",
+      "cloning": "Cloning...",
+      "error": {
+        "title": "Unable to load this project",
+        "missing": "Project ID is missing.",
+        "load": "Could not load project detail.",
+        "clone": "Could not clone this project.",
+        "cloneSelf": "You cannot clone your own project from community."
+      }
+    }
+  },
+  "editor": {
     "home": {
-        "brand": {
-            "name": "MdrFrontEngine"
-        },
-        "nav": {
-            "community": "Community",
-            "tutorials": "Tutorials",
-            "docs": "Docs",
-            "signIn": "Sign in",
-            "github": "GitHub",
-            "languageSwitch": "Switch language"
-        },
-        "hero": {
-            "line1": {
-                "highlight": "Mdr"
-            },
-            "line2": {
-                "before": "Frontend",
-                "highlight": "All in"
-            },
-            "line3": {
-                "before": "Instantly",
-                "highlight": "Transmuted"
-            },
-            "subtitle": "Orchestrate logic, drive data, and transmute inspiration into code."
-        },
-        "actions": {
-            "enterEditor": "Enter Editor",
-            "viewDocs": "View Docs"
-        },
-        "mirTest": {
-            "title": "MIR Preview",
-            "exportButton": "Quick Export"
-        },
-        "footer": {
-            "copy": "(c) 2026 Mdr Front Engine",
-            "placeholder": "Walk with the front-end."
-        }
+      "welcomeTitle": "Welcome back",
+      "actions": {
+        "newProject": "New Project"
+      },
+      "card": {
+        "untitled": "Untitled",
+        "noDescription": "No description",
+        "actions": "Actions",
+        "moreActions": "More actions",
+        "publish": "Publish to Community",
+        "publishDisabled": "Publish disabled for copies",
+        "publishDisabledReason": "Cloned projects cannot be published.",
+        "publishing": "Publishing...",
+        "openCommunity": "Open Community",
+        "delete": "Delete Project",
+        "deleting": "Deleting...",
+        "deleteConfirm": "Delete this project permanently?",
+        "publishFailed": "Failed to publish project.",
+        "deleteFailed": "Failed to delete project."
+      }
     },
-    "community": {
-        "backHome": "Back to Home",
-        "badge": "Community",
-        "title": "Public MIR Showcase",
-        "subtitle": "Explore projects, components, and node graphs shared by creators.",
-        "count": "results",
-        "countNone": "No results",
-        "error": {
-            "load": "Could not load community projects."
+    "projectHome": {
+      "title": "{{name}}",
+      "subtitle": "Overview and quick actions for this project.",
+      "untitled": "Untitled project {{id}}",
+      "fields": {
+        "id": "Project ID",
+        "name": "Project name",
+        "visibility": "Visibility"
+      },
+      "actions": {
+        "projectInfo": "Project details",
+        "blueprint": {
+          "label": "Blueprints",
+          "description": "Design screens and layout."
         },
-        "search": {
-            "placeholder": "Search by title, author, description..."
+        "component": {
+          "label": "Components",
+          "description": "Create and manage reusable pieces."
         },
-        "filter": {
-            "all": "All types",
-            "project": "Projects",
-            "component": "Components",
-            "nodegraph": "Node Graphs"
+        "resources": {
+          "label": "Resources",
+          "description": "Organize assets and libraries."
         },
-        "sort": {
-            "latest": "Latest",
-            "popular": "Popular"
+        "nodegraph": {
+          "label": "Node Graph",
+          "description": "Build logic and data flows."
         },
-        "card": {
-            "untitled": "Untitled",
-            "emptyDesc": "No description provided yet.",
-            "unknown": "Unknown"
+        "animation": {
+          "label": "Animations",
+          "description": "Craft motion and transitions."
         },
-        "empty": {
-            "title": "No public projects found",
-            "body": "Try another keyword, switch the type filter, or sort by latest."
+        "testing": {
+          "label": "Testing",
+          "description": "Validate behaviors and flows."
         },
-        "pagination": {
-            "prev": "Prev",
-            "page": "Page",
-            "next": "Next"
+        "export": {
+          "label": "Export",
+          "description": "Generate and share deliverables."
         },
-        "detail": {
-            "back": "Back to Community",
-            "author": "Author",
-            "updated": "Updated",
-            "preview": "Read-only Preview",
-            "mir": "MIR Document",
-            "clone": "Clone to My Workspace",
-            "cloning": "Cloning...",
-            "error": {
-                "title": "Unable to load this project",
-                "missing": "Project ID is missing.",
-                "load": "Could not load project detail.",
-                "clone": "Could not clone this project.",
-                "cloneSelf": "You cannot clone your own project from community."
-            }
-        }
-    },
-    "editor": {
-        "home": {
-            "welcomeTitle": "Welcome back",
-            "actions": {
-                "newProject": "New Project"
-            },
-            "card": {
-                "untitled": "Untitled",
-                "noDescription": "No description",
-                "actions": "Actions",
-                "moreActions": "More actions",
-                "publish": "Publish to Community",
-                "publishDisabled": "Publish disabled for copies",
-                "publishDisabledReason": "Cloned projects cannot be published.",
-                "publishing": "Publishing...",
-                "openCommunity": "Open Community",
-                "delete": "Delete Project",
-                "deleting": "Deleting...",
-                "deleteConfirm": "Delete this project permanently?",
-                "publishFailed": "Failed to publish project.",
-                "deleteFailed": "Failed to delete project."
-            }
-        },
-        "projectHome": {
-            "title": "{{name}}",
-            "subtitle": "Overview and quick actions for this project.",
-            "untitled": "Untitled project {{id}}",
-            "fields": {
-                "id": "Project ID",
-                "name": "Project name",
-                "visibility": "Visibility"
-            },
-            "actions": {
-                "projectInfo": "Project details",
-                "blueprint": {
-                    "label": "Blueprints",
-                    "description": "Design screens and layout."
-                },
-                "component": {
-                    "label": "Components",
-                    "description": "Create and manage reusable pieces."
-                },
-                "resources": {
-                    "label": "Resources",
-                    "description": "Organize assets and libraries."
-                },
-                "nodegraph": {
-                    "label": "Node Graph",
-                    "description": "Build logic and data flows."
-                },
-                "animation": {
-                    "label": "Animations",
-                    "description": "Craft motion and transitions."
-                },
-                "testing": {
-                    "label": "Testing",
-                    "description": "Validate behaviors and flows."
-                },
-                "export": {
-                    "label": "Export",
-                    "description": "Generate and share deliverables."
-                },
-                "deployment": {
-                    "label": "Deployment",
-                    "description": "Configure release environments."
-                },
-                "settings": {
-                    "label": "Project settings",
-                    "description": "Manage project configuration."
-                }
-            },
-            "visibility": {
-                "public": "Public",
-                "private": "Private",
-                "openCommunity": "Open Community",
-                "published": "Published to Community",
-                "publish": "Publish"
-            }
-        },
-        "bar": {
-            "cancel": "Cancel",
-            "exit": "Exit",
-            "exitAria": "Exit editor",
-            "exitTitle": "Exit editor?",
-            "projectHome": "Project home",
-            "exitToEditor": "Return to editor home",
-            "exitToHome": "Return to home"
-        },
-        "modals": {
-            "close": "Close",
-            "actions": {
-                "cancel": "Cancel",
-                "create": "Create"
-            },
-            "newResource": {
-                "title": "Create New",
-                "subtitle": "Select a type and start building",
-                "typeLabel": "Type",
-                "nameLabel": "Name",
-                "publicLabel": "Publish to community after creation"
-            },
-            "newProject": {
-                "title": "Create Project",
-                "subtitle": "Start a new workspace.",
-                "nameLabel": "Project name",
-                "required": "Required",
-                "namePlaceholder": "e.g. Marketing Website",
-                "nameRequired": "Project name is required.",
-                "descriptionLabel": "Description",
-                "descriptionPlaceholder": "What are you building?",
-                "create": "Create"
-            },
-            "newComponent": {
-                "title": "Create Component",
-                "subtitle": "Define a reusable piece.",
-                "nameLabel": "Component name",
-                "required": "Required",
-                "namePlaceholder": "e.g. PricingCard",
-                "nameRequired": "Component name is required.",
-                "descriptionLabel": "Description",
-                "descriptionPlaceholder": "What does this component do?",
-                "create": "Create"
-            },
-            "newNodeGraph": {
-                "title": "Create Node Graph",
-                "subtitle": "Start a new logic flow.",
-                "nameLabel": "Graph name",
-                "required": "Required",
-                "namePlaceholder": "e.g. UserOnboarding",
-                "nameRequired": "Graph name is required.",
-                "descriptionLabel": "Description",
-                "descriptionPlaceholder": "What is this flow for?",
-                "create": "Create"
-            }
-        },
-        "tips": {
-            "prefix": "Tip",
-            "items": {
-                "ux01": {
-                    "title": "Write the user story first",
-                    "body": "Before sketching, write one sentence describing what this screen helps users accomplish."
-                },
-                "ux02": {
-                    "title": "Keep blueprints focused",
-                    "body": "One blueprint, one job. Split complex flows into smaller blueprints to avoid visual overload."
-                },
-                "ux03": {
-                    "title": "Work backwards from the outcome",
-                    "body": "Start by visualizing the end state, then trace back each step users need to take."
-                },
-                "ux04": {
-                    "title": "Name nodes in plain language",
-                    "body": "Use action names users understand like 'Submit Form', and avoid abbreviations."
-                },
-                "ux05": {
-                    "title": "Minimize wire spaghetti",
-                    "body": "Use grouping and aliases to reduce crossing wires—keep your canvas clean."
-                },
-                "ux06": {
-                    "title": "Group state nodes together",
-                    "body": "Cluster state nodes in one area so you can see what changes at a glance."
-                },
-                "ux07": {
-                    "title": "Pin frequent tools nearby",
-                    "body": "Favorite common components and blueprints at the top to reduce scrolling."
-                },
-                "ux08": {
-                    "title": "Use clear component previews",
-                    "body": "Give custom components recognizable thumbnails to avoid picking the wrong one."
-                },
-                "ux09": {
-                    "title": "Write realistic placeholder text",
-                    "body": "Even placeholder copy should be close to real content to test flow and clarity."
-                },
-                "ux10": {
-                    "title": "Save or commit often",
-                    "body": "After each small change, save or commit so you can roll back easily if needed."
-                },
-                "ux11": {
-                    "title": "Color-code node categories",
-                    "body": "Use colors to distinguish data, view, and interaction nodes—let color guide you."
-                },
-                "ux12": {
-                    "title": "Make error messages specific",
-                    "body": "Don't just say 'Error'. Tell users exactly what's wrong and how to fix it."
-                },
-                "ux13": {
-                    "title": "Enable alignment guides",
-                    "body": "Turn on snap-to-edge guides so components align crisply and consistently."
-                },
-                "ux14": {
-                    "title": "Use layout components first",
-                    "body": "Start with grids and flex containers, then fill in details—responsive design gets easier."
-                },
-                "ux15": {
-                    "title": "Test mobile view early",
-                    "body": "Preview at phone size at least once to catch 'can't tap' or 'too cramped' issues early."
-                },
-                "ux16": {
-                    "title": "Design complete button states",
-                    "body": "Don't stop at normal state—test hover, pressed, and disabled to ensure consistency."
-                },
-                "ux17": {
-                    "title": "Don't load everything at once",
-                    "body": "For long lists, add pagination or lazy loading—don't make users scroll endlessly."
-                },
-                "ux18": {
-                    "title": "Show loading feedback",
-                    "body": "Any operation over one second deserves a visible loading indicator."
-                },
-                "ux19": {
-                    "title": "Break up intimidating forms",
-                    "body": "Split multi-part forms into steps with a progress bar so users know what's left."
-                },
-                "ux20": {
-                    "title": "Test with real data structures",
-                    "body": "Use mock data with realistic structure to catch field naming and layout issues."
-                },
-                "ux21": {
-                    "title": "Extract reusable logic",
-                    "body": "Turn common logic into blueprint fragments or function nodes—don't copy-paste."
-                },
-                "ux22": {
-                    "title": "Add notes as you go",
-                    "body": "Drop a quick comment next to key nodes—future you will be grateful."
-                },
-                "ux23": {
-                    "title": "Keep interaction paths short",
-                    "body": "From entry to outcome, aim for 3-5 steps to keep users moving smoothly."
-                },
-                "ux24": {
-                    "title": "Design thoughtful empty states",
-                    "body": "When lists are empty, show friendly guidance instead of blank space."
-                },
-                "ux25": {
-                    "title": "Use smart defaults",
-                    "body": "Set sensible defaults for common choices so users can skip a step."
-                },
-                "ux26": {
-                    "title": "Confirm destructive actions",
-                    "body": "Add a confirmation dialog for delete or reset, and explain the consequences."
-                },
-                "ux27": {
-                    "title": "Always provide a next step",
-                    "body": "On success screens, offer 'Go back' or 'Continue next' instead of just a close button."
-                },
-                "ux28": {
-                    "title": "Walk through your own flow",
-                    "body": "Before launch, complete a real task with your UI and note any friction."
-                },
-                "ux29": {
-                    "title": "Support keyboard navigation",
-                    "body": "Add shortcuts for common actions so power users don't need to reach for the mouse."
-                },
-                "ux30": {
-                    "title": "Make error messages copyable",
-                    "body": "Let users copy error text with one click for easier troubleshooting."
-                },
-                "ux31": {
-                    "title": "Position tooltips carefully",
-                    "body": "Place hover hints where they won't block key information."
-                },
-                "ux32": {
-                    "title": "Remember scroll position",
-                    "body": "When users return to a list, restore their scroll position."
-                },
-                "ux33": {
-                    "title": "Don't rely on color alone",
-                    "body": "Add icons or text labels to help colorblind users distinguish states."
-                },
-                "ux34": {
-                    "title": "Name components by purpose",
-                    "body": "Use 'purpose + context' names like 'Primary Button / Dialog Confirm'."
-                },
-                "ux35": {
-                    "title": "Keep sidebars clean",
-                    "body": "Collapse advanced settings so beginners aren't overwhelmed at first glance."
-                },
-                "ux36": {
-                    "title": "Build the happy path first",
-                    "body": "Perfect the most typical user journey before handling edge cases."
-                },
-                "ux37": {
-                    "title": "Arrange nodes logically",
-                    "body": "Flow nodes left-to-right in the order users think—reduce future reading cost."
-                },
-                "ux38": {
-                    "title": "Group nodes like a story",
-                    "body": "Structure as 'fetch data → process → display' to make blueprints tell a clear story."
-                },
-                "ux39": {
-                    "title": "Start from templates",
-                    "body": "For similar pages, clone a template instead of starting from scratch."
-                },
-                "ux40": {
-                    "title": "Ask 'then what?' at every step",
-                    "body": "For each screen, ask what users naturally do next, then provide that path."
-                },
-                "ux41": {
-                    "title": "Progressively disclose options",
-                    "body": "Show only required fields at first, hide advanced config behind 'Show more'."
-                },
-                "ux42": {
-                    "title": "Keep heavy nodes async",
-                    "body": "Run long computations asynchronously to avoid locking up the entire UI."
-                },
-                "ux43": {
-                    "title": "Match preview to production",
-                    "body": "Use production-like settings in preview to avoid 'works here, breaks live' surprises."
-                },
-                "ux44": {
-                    "title": "Put docs near the canvas",
-                    "body": "Add a doc link directly in the properties panel so users don't hunt for help."
-                },
-                "ux45": {
-                    "title": "Use whitespace to guide eyes",
-                    "body": "Don't fear empty space—give key buttons breathing room."
-                },
-                "ux46": {
-                    "title": "Keep default themes simple",
-                    "body": "Limit theme colors to two or three—let content shine, not the palette."
-                },
-                "ux47": {
-                    "title": "Align consistently",
-                    "body": "Within a page, align titles, body text, and buttons to a common baseline."
-                },
-                "ux48": {
-                    "title": "Enable column sorting",
-                    "body": "Let users sort and filter tables by column to find key data quickly."
-                },
-                "ux49": {
-                    "title": "Validate input in real-time",
-                    "body": "Show errors as users type, not after they submit everything."
-                },
-                "ux50": {
-                    "title": "Plan for localization",
-                    "body": "Leave extra length for text so layouts don't break when switching languages."
-                },
-                "ux51": {
-                    "title": "Make errors visible, not scary",
-                    "body": "Highlight error nodes in red, but use conversational language instead of 'CRITICAL ERROR'."
-                },
-                "ux52": {
-                    "title": "Write human commit messages",
-                    "body": "Describe what changed and for whom, not just 'fix'."
-                },
-                "ux53": {
-                    "title": "Agree on naming conventions",
-                    "body": "Before collaborating, establish node and component naming rules to avoid confusion."
-                },
-                "ux54": {
-                    "title": "Show collaborator presence",
-                    "body": "Display other users' cursors and actions on canvas to prevent conflicts."
-                },
-                "ux55": {
-                    "title": "Visualize merge conflicts",
-                    "body": "Use visual diffs instead of raw JSON when merging changes."
-                },
-                "ux56": {
-                    "title": "Always show next steps",
-                    "body": "New users should always see a suggested next action button."
-                },
-                "ux57": {
-                    "title": "Skip pointless confirmations",
-                    "body": "Don't confirm actions that are easily undone—save users' clicks."
-                },
-                "ux58": {
-                    "title": "Build a blueprint library",
-                    "body": "Package common workflows as reusable blueprints for the whole team."
-                },
-                "ux59": {
-                    "title": "Name styles semantically",
-                    "body": "Use 'primary action' instead of 'blue' so themes can change easily."
-                },
-                "ux60": {
-                    "title": "Organize by user tasks",
-                    "body": "Structure navigation by scenarios, not tech modules, so non-devs can navigate too."
-                },
-                "ux61": {
-                    "title": "Collapse long property panels",
-                    "body": "Break parameter lists into sections to avoid endless scrolling."
-                },
-                "ux62": {
-                    "title": "Add magnetic drop zones",
-                    "body": "Make drop targets slightly magnetic so beginners land components correctly."
-                },
-                "ux63": {
-                    "title": "Keep preview button visible",
-                    "body": "Ensure the preview button is accessible no matter which panels are open."
-                },
-                "ux64": {
-                    "title": "Keep undo granular",
-                    "body": "Undo should revert one meaningful action, not fifty steps at once."
-                },
-                "ux65": {
-                    "title": "Test before exporting",
-                    "body": "Click through key interactions in the editor before exporting code."
-                },
-                "ux66": {
-                    "title": "Fail gracefully",
-                    "body": "When requests fail, keep existing data instead of clearing the screen."
-                },
-                "ux67": {
-                    "title": "Use skeleton screens",
-                    "body": "Show skeleton placeholders while loading lists or cards—better than blank."
-                },
-                "ux68": {
-                    "title": "Avoid jargon in messages",
-                    "body": "Say 'Save failed, check network' instead of 'Request timeout'."
-                },
-                "ux69": {
-                    "title": "Think device, not pixels",
-                    "body": "Set responsive breakpoints by 'phone/tablet/desktop', not exact widths."
-                },
-                "ux70": {
-                    "title": "Allow rollback on overrides",
-                    "body": "For any config override, provide a one-click undo."
-                },
-                "ux71": {
-                    "title": "Optimize mouse travel",
-                    "body": "Place 'Save' and 'Publish' along common cursor paths to reduce movement."
-                },
-                "ux72": {
-                    "title": "Provide empty state templates",
-                    "body": "Offer drag-and-drop empty state templates for common scenarios."
-                },
-                "ux73": {
-                    "title": "Group table actions on the right",
-                    "body": "Put row actions in one column instead of scattering them across cells."
-                },
-                "ux74": {
-                    "title": "Avoid nested scrollbars",
-                    "body": "Try not to have more than one scrollable area on screen at once."
-                },
-                "ux75": {
-                    "title": "Fix blueprint entry position",
-                    "body": "Keep main entry nodes in the top-left so they're easy to find."
-                },
-                "ux76": {
-                    "title": "Use icons to speed recognition",
-                    "body": "Give node categories consistent icons—eventually you won't need to read labels."
-                },
-                "ux77": {
-                    "title": "Remember panel collapse state",
-                    "body": "Let the panel remember which sections users prefer collapsed."
-                },
-                "ux78": {
-                    "title": "Warn on unsaved exit",
-                    "body": "If users close with unsaved changes, gently remind them."
-                },
-                "ux79": {
-                    "title": "Design nodes with use cases",
-                    "body": "Before adding a new node type, write two typical use cases to avoid bloat."
-                },
-                "ux80": {
-                    "title": "Show plugin permissions clearly",
-                    "body": "When installing plugins, explicitly list what data they access."
-                },
-                "ux81": {
-                    "title": "Show debug info side-by-side",
-                    "body": "Display debug logs next to the canvas instead of forcing context switching."
-                },
-                "ux82": {
-                    "title": "Filter logs by user task",
-                    "body": "Let users filter debug logs by session or action chain for faster troubleshooting."
-                },
-                "ux83": {
-                    "title": "Mock data shouldn't be perfect",
-                    "body": "Include some edge cases in test data to see if your UI can handle them."
-                },
-                "ux84": {
-                    "title": "Flag slow operations",
-                    "body": "Mark known slow nodes so designers avoid chaining too many in sequence."
-                },
-                "ux85": {
-                    "title": "Animate to clarify, not decorate",
-                    "body": "Only use animation to explain state changes—don't slow users down for aesthetics."
-                },
-                "ux86": {
-                    "title": "Keep color meanings consistent",
-                    "body": "Green always means success, red always means danger—never mix them."
-                },
-                "ux87": {
-                    "title": "Limit nav depth to three",
-                    "body": "If menus go deeper than three levels, rethink your information architecture."
-                },
-                "ux88": {
-                    "title": "Support fuzzy search",
-                    "body": "Let node and component search handle typos, pinyin, or partial matches."
-                },
-                "ux89": {
-                    "title": "Put help where it's needed",
-                    "body": "Add a '?' icon next to complex panels that links directly to relevant docs."
-                },
-                "ux90": {
-                    "title": "Make configs shareable",
-                    "body": "Allow one-click sharing of build configs so teams stay aligned."
-                },
-                "ux91": {
-                    "title": "Focus the first screen",
-                    "body": "When users enter the editor, guide them to complete one simple, full task."
-                },
-                "ux92": {
-                    "title": "Include a sample project",
-                    "body": "New workspaces should include a deletable example to help users explore."
-                },
-                "ux93": {
-                    "title": "Make history searchable",
-                    "body": "In complex debugging, let users search operation history by keyword."
-                },
-                "ux94": {
-                    "title": "Auto-fit canvas to content",
-                    "body": "Adjust canvas zoom so the whole blueprint structure is visible from the start."
-                },
-                "ux95": {
-                    "title": "Include comments in exports",
-                    "body": "Generated code should include blueprint-linked comments for easier dev handoff."
-                },
-                "ux96": {
-                    "title": "Document failure modes",
-                    "body": "In docs, include 'don't do this' examples to help users avoid common pitfalls."
-                },
-                "ux97": {
-                    "title": "Always provide an escape hatch",
-                    "body": "No matter how complex, users should always be able to 'Go home' or 'Undo'."
-                },
-                "ux98": {
-                    "title": "Enable Enter to submit",
-                    "body": "For common forms, let keyboard users press Enter to submit."
-                },
-                "ux99": {
-                    "title": "Switch views by role",
-                    "body": "Offer different node panel views for designers, devs, and ops to reduce noise."
-                },
-                "ux100": {
-                    "title": "Respect existing habits",
-                    "body": "Match layouts and interactions to patterns users already know—reduce migration cost."
-                }
-            }
+        "deployment": {
+          "label": "Deployment",
+          "description": "Configure release environments."
         },
         "settings": {
-            "actions": {
-                "exit": "Exit settings"
-            },
-            "editorPage": {
-                "title": "Editor Settings",
-                "subtitle": "Global defaults applied to every project and new workspace."
-            },
-            "projectPage": {
-                "title": "Project Settings",
-                "subtitle": "Project-specific configuration with optional global overrides.",
-                "tabs": {
-                    "project": "Project settings",
-                    "global": "Global defaults"
-                },
-                "overrides": {
-                    "title": "Overrides",
-                    "body": "Toggle a row to override the global default for this project."
-                }
-            },
-            "overrides": {
-                "toggle": {
-                    "on": "Project override",
-                    "off": "Use global"
-                },
-                "labels": {
-                    "global": "Global: {{value}}",
-                    "effective": "Effective: {{value}}"
-                }
-            },
-            "global": {
-                "panels": {
-                    "appearance": {
-                        "title": "Appearance & Language",
-                        "description": "Defaults that shape the editor look and feel for every workspace."
-                    },
-                    "behavior": {
-                        "title": "Editor behavior",
-                        "description": "How the editor saves, confirms, and manages your work."
-                    },
-                    "blueprint": {
-                        "title": "Blueprint defaults",
-                        "description": "Defaults applied when creating or opening a new blueprint."
-                    },
-                    "components": {
-                        "title": "Components & rendering",
-                        "description": "Control how MIR resolves and renders components."
-                    },
-                    "codegen": {
-                        "title": "Code generation",
-                        "description": "Defaults for exported code and artifacts."
-                    },
-                    "shortcuts": {
-                        "title": "Shortcuts & diagnostics",
-                        "description": "Productivity settings and debug overlays."
-                    }
-                },
-                "rows": {
-                    "language": {
-                        "label": "Interface language",
-                        "description": "Primary locale for menus, panels, and tooltips.",
-                        "options": {
-                            "en": "English",
-                            "zhCN": "Simplified Chinese"
-                        }
-                    },
-                    "theme": {
-                        "label": "Theme preference",
-                        "description": "Pick the default color mode for the editor.",
-                        "options": {
-                            "home": "Follow home",
-                            "light": "Light",
-                            "dark": "Dark"
-                        }
-                    },
-                    "density": {
-                        "label": "Density",
-                        "description": "Control spacing and compactness for the workspace.",
-                        "options": {
-                            "comfortable": "Comfortable",
-                            "compact": "Compact"
-                        }
-                    },
-                    "fontScale": {
-                        "label": "Font scale",
-                        "description": "Scale typography across the editor UI."
-                    },
-                    "autosaveInterval": {
-                        "label": "Auto-save interval (sec)",
-                        "description": "Interval to persist changes automatically."
-                    },
-                    "undoSteps": {
-                        "label": "Undo steps",
-                        "description": "Maximum steps stored in the undo stack."
-                    },
-                    "confirmPrompts": {
-                        "label": "Confirm prompts",
-                        "description": "When to show confirmation dialogs.",
-                        "options": {
-                            "delete": "Delete",
-                            "reset": "Reset",
-                            "leave": "Leave"
-                        }
-                    },
-                    "panelLayout": {
-                        "label": "Default panel layout",
-                        "description": "Choose the baseline layout for editor panels.",
-                        "options": {
-                            "balanced": "Balanced",
-                            "focus": "Focus",
-                            "wide": "Wide"
-                        }
-                    },
-                    "viewportSize": {
-                        "label": "Viewport size",
-                        "description": "Default artboard size for new pages."
-                    },
-                    "zoomStep": {
-                        "label": "Zoom step",
-                        "description": "Zoom increment when scrolling or pressing shortcuts."
-                    },
-                    "assist": {
-                        "label": "Assist overlays",
-                        "description": "Grid, guides, and snapping defaults.",
-                        "options": {
-                            "grid": "Grid",
-                            "alignment": "Alignment",
-                            "snap": "Snap"
-                        }
-                    },
-                    "panInertia": {
-                        "label": "Pan inertia",
-                        "description": "Momentum applied after dragging the canvas."
-                    },
-                    "resolverOrder": {
-                        "label": "Resolver order",
-                        "description": "Lookup priority when multiple registries exist.",
-                        "options": {
-                            "customMdrNative": "Custom → MDR → Native",
-                            "mdrNative": "MDR → Native",
-                            "nativeOnly": "Native only"
-                        }
-                    },
-                    "customNamespaces": {
-                        "label": "Custom namespaces",
-                        "description": "Allowed namespaces for project components."
-                    },
-                    "renderMode": {
-                        "label": "Render mode",
-                        "description": "Choose strict validation or tolerant rendering.",
-                        "options": {
-                            "strict": "Strict",
-                            "tolerant": "Tolerant"
-                        }
-                    },
-                    "externalProps": {
-                        "label": "External props",
-                        "description": "Allow runtime props injection for previews.",
-                        "options": {
-                            "allow": "Allow",
-                            "disable": "Disable"
-                        }
-                    },
-                    "defaultFramework": {
-                        "label": "Default framework",
-                        "description": "Primary target for generated UI code.",
-                        "options": {
-                            "react": "React",
-                            "vue": "Vue",
-                            "html": "HTML"
-                        }
-                    },
-                    "formatting": {
-                        "label": "Formatting",
-                        "description": "Code style and formatting preferences.",
-                        "options": {
-                            "prettier": "Prettier",
-                            "none": "None"
-                        }
-                    },
-                    "outputPath": {
-                        "label": "Output path",
-                        "description": "Where generated code is stored."
-                    },
-                    "importStyle": {
-                        "label": "Import style",
-                        "description": "How generated imports are organized.",
-                        "options": {
-                            "auto": "Auto",
-                            "grouped": "Grouped",
-                            "single": "Single"
-                        }
-                    },
-                    "metadata": {
-                        "label": "Metadata comments",
-                        "description": "Include MIR metadata annotations in output.",
-                        "options": {
-                            "include": "Include metadata",
-                            "skip": "Skip metadata"
-                        }
-                    },
-                    "shortcutPreset": {
-                        "label": "Shortcut preset",
-                        "description": "Default keyboard shortcut profile.",
-                        "options": {
-                            "default": "Default",
-                            "vim": "Vim-style",
-                            "vscode": "VS Code"
-                        }
-                    },
-                    "diagnostics": {
-                        "label": "Diagnostics overlay",
-                        "description": "Show visual debugging cues on the canvas.",
-                        "options": {
-                            "selectionBounds": "Selection bounds",
-                            "perfHints": "Perf hints",
-                            "eventsLog": "Events log"
-                        }
-                    },
-                    "logLevel": {
-                        "label": "Log level",
-                        "description": "Controls verbosity for debug logs.",
-                        "options": {
-                            "error": "Error",
-                            "warn": "Warn",
-                            "info": "Info"
-                        }
-                    },
-                    "telemetry": {
-                        "label": "Telemetry",
-                        "description": "Share anonymous usage metrics.",
-                        "options": {
-                            "allow": "Allow",
-                            "disable": "Disable"
-                        }
-                    }
-                }
-            },
-            "project": {
-                "panels": {
-                    "basics": {
-                        "title": "Project basics",
-                        "description": "Identity and defaults unique to this project."
-                    },
-                    "collaboration": {
-                        "title": "Collaboration",
-                        "description": "Access, permissions, and team workflow defaults."
-                    },
-                    "designSystem": {
-                        "title": "Design system",
-                        "description": "Project-specific UI tokens and asset libraries."
-                    },
-                    "integrations": {
-                        "title": "Integrations & environments",
-                        "description": "Data sources, auth, and environment settings."
-                    },
-                    "mir": {
-                        "title": "MIR & validation",
-                        "description": "Schema enforcement and node policy."
-                    },
-                    "build": {
-                        "title": "Build & export",
-                        "description": "Project export configuration and build options."
-                    }
-                },
-                "rows": {
-                    "name": {
-                        "label": "Project name",
-                        "description": "Display name shown in navigation and exports."
-                    },
-                    "description": {
-                        "label": "Description",
-                        "description": "High-level summary for collaborators."
-                    },
-                    "defaultRoute": {
-                        "label": "Default route",
-                        "description": "Landing path when opening the project."
-                    },
-                    "timezone": {
-                        "label": "Timezone",
-                        "description": "Used for logs, scheduling, and timestamps.",
-                        "options": {
-                            "utc": "UTC",
-                            "utcMinus5": "UTC-5 (New York)",
-                            "utcPlus1": "UTC+1 (Berlin)",
-                            "utcPlus8": "UTC+8 (Shanghai)"
-                        }
-                    },
-                    "defaultRole": {
-                        "label": "Default role",
-                        "description": "Role applied to new collaborators.",
-                        "options": {
-                            "viewer": "Viewer",
-                            "editor": "Editor",
-                            "admin": "Admin"
-                        }
-                    },
-                    "previewAccess": {
-                        "label": "Preview access",
-                        "description": "Who can open preview links.",
-                        "options": {
-                            "restricted": "Restricted",
-                            "public": "Anyone with link"
-                        }
-                    },
-                    "auditRetention": {
-                        "label": "Audit retention (days)",
-                        "description": "Duration to retain audit events."
-                    },
-                    "notifications": {
-                        "label": "Notifications",
-                        "description": "Default notification channels.",
-                        "options": {
-                            "mentions": "Mentions",
-                            "builds": "Builds",
-                            "deployments": "Deployments"
-                        }
-                    },
-                    "themeTokenSet": {
-                        "label": "Theme token set",
-                        "description": "Token pack used to render colors and spacing.",
-                        "options": {
-                            "mdrDefault": "MDR Default",
-                            "mdrMidnight": "MDR Midnight",
-                            "mdrSunrise": "MDR Sunrise"
-                        }
-                    },
-                    "componentLibraryVersion": {
-                        "label": "Component library version",
-                        "description": "Pinned version of shared MDR components.",
-                        "options": {
-                            "v142Stable": "v1.4.2 (stable)",
-                            "v150Beta": "v1.5.0 (beta)"
-                        }
-                    },
-                    "assetHost": {
-                        "label": "Asset host",
-                        "description": "Primary CDN or asset bucket URL."
-                    },
-                    "fontPack": {
-                        "label": "Font pack",
-                        "description": "Font families available in the design system."
-                    },
-                    "iconSet": {
-                        "label": "Icon set",
-                        "description": "Default icon pack for UI templates."
-                    },
-                    "apiBase": {
-                        "label": "API base URL",
-                        "description": "Primary API endpoint for data requests."
-                    },
-                    "authMode": {
-                        "label": "Auth mode",
-                        "description": "Authentication flow used by previews.",
-                        "options": {
-                            "oauth": "OAuth",
-                            "apiKey": "API key",
-                            "none": "None"
-                        }
-                    },
-                    "envPrefix": {
-                        "label": "Env prefix",
-                        "description": "Prefix for injected environment variables."
-                    },
-                    "deploymentTarget": {
-                        "label": "Deployment target",
-                        "description": "Default environment for publishing builds.",
-                        "options": {
-                            "staging": "Staging",
-                            "production": "Production",
-                            "preview": "Preview"
-                        }
-                    },
-                    "schemaVersion": {
-                        "label": "Schema version",
-                        "description": "Pinned MIR schema for this project.",
-                        "options": {
-                            "v10Stable": "1.0 (stable)",
-                            "v11Preview": "1.1 (preview)"
-                        }
-                    },
-                    "strictness": {
-                        "label": "Validation strictness",
-                        "description": "Higher values enforce more rules."
-                    },
-                    "customNodes": {
-                        "label": "Custom nodes",
-                        "description": "Allowed custom node types in graphs.",
-                        "options": {
-                            "http": "HTTP",
-                            "transform": "Transform",
-                            "condition": "Condition",
-                            "loop": "Loop"
-                        }
-                    },
-                    "autoMigrate": {
-                        "label": "Auto-migrate",
-                        "description": "Automatically migrate MIR when schema updates.",
-                        "options": {
-                            "enable": "Enable auto-migrate",
-                            "disable": "Disable auto-migrate"
-                        }
-                    },
-                    "buildTarget": {
-                        "label": "Build target",
-                        "description": "Primary runtime output for builds.",
-                        "options": {
-                            "web": "Web",
-                            "mobile": "Mobile",
-                            "desktop": "Desktop"
-                        }
-                    },
-                    "outputDir": {
-                        "label": "Output directory",
-                        "description": "Default directory for build artifacts."
-                    },
-                    "minify": {
-                        "label": "Minify",
-                        "description": "Minify assets on export.",
-                        "options": {
-                            "enable": "Enable minify",
-                            "disable": "Disable minify"
-                        }
-                    },
-                    "sourceMaps": {
-                        "label": "Source maps",
-                        "description": "Generate source maps for debugging.",
-                        "options": {
-                            "enable": "Emit source maps",
-                            "disable": "Disable source maps"
-                        }
-                    }
-                }
-            }
+          "label": "Project settings",
+          "description": "Manage project configuration."
         }
+      },
+      "visibility": {
+        "public": "Public",
+        "private": "Private",
+        "openCommunity": "Open Community",
+        "published": "Published to Community",
+        "publish": "Publish"
+      }
     },
-    "export": {
-        "title": "Export Code",
-        "mir": {
-            "title": "MIR",
-            "description": "Current project MIR JSON (temporary page)",
-            "empty": "No MIR yet (create components in Blueprint Editor first)"
+    "bar": {
+      "cancel": "Cancel",
+      "exit": "Exit",
+      "exitAria": "Exit editor",
+      "exitTitle": "Exit editor?",
+      "projectHome": "Project home",
+      "exitToEditor": "Return to editor home",
+      "exitToHome": "Return to home"
+    },
+    "modals": {
+      "close": "Close",
+      "actions": {
+        "cancel": "Cancel",
+        "create": "Create"
+      },
+      "newResource": {
+        "title": "Create New",
+        "subtitle": "Select a type and start building",
+        "typeLabel": "Type",
+        "nameLabel": "Name",
+        "publicLabel": "Publish to community after creation"
+      },
+      "newProject": {
+        "title": "Create Project",
+        "subtitle": "Start a new workspace.",
+        "nameLabel": "Project name",
+        "required": "Required",
+        "namePlaceholder": "e.g. Marketing Website",
+        "nameRequired": "Project name is required.",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "What are you building?",
+        "create": "Create"
+      },
+      "newComponent": {
+        "title": "Create Component",
+        "subtitle": "Define a reusable piece.",
+        "nameLabel": "Component name",
+        "required": "Required",
+        "namePlaceholder": "e.g. PricingCard",
+        "nameRequired": "Component name is required.",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "What does this component do?",
+        "create": "Create"
+      },
+      "newNodeGraph": {
+        "title": "Create Node Graph",
+        "subtitle": "Start a new logic flow.",
+        "nameLabel": "Graph name",
+        "required": "Required",
+        "namePlaceholder": "e.g. UserOnboarding",
+        "nameRequired": "Graph name is required.",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "What is this flow for?",
+        "create": "Create"
+      }
+    },
+    "tips": {
+      "prefix": "Tip",
+      "items": {
+        "ux01": {
+          "title": "Write the user story first",
+          "body": "Before sketching, write one sentence describing what this screen helps users accomplish."
         },
-        "react": {
-            "title": "React",
-            "description": "React component code generated from the current MIR",
-            "empty": "No React code yet (generate MIR first)",
-            "error": "Failed to generate React code"
+        "ux02": {
+          "title": "Keep blueprints focused",
+          "body": "One blueprint, one job. Split complex flows into smaller blueprints to avoid visual overload."
         },
-        "close": "Close",
-        "copy": "Copy",
-        "copySuccess": "Copied",
-        "footer": {
-            "generator": "Generated by Mdr Front Engine"
+        "ux03": {
+          "title": "Work backwards from the outcome",
+          "body": "Start by visualizing the end state, then trace back each step users need to take."
         },
+        "ux04": {
+          "title": "Name nodes in plain language",
+          "body": "Use action names users understand like 'Submit Form', and avoid abbreviations."
+        },
+        "ux05": {
+          "title": "Minimize wire spaghetti",
+          "body": "Use grouping and aliases to reduce crossing wires—keep your canvas clean."
+        },
+        "ux06": {
+          "title": "Group state nodes together",
+          "body": "Cluster state nodes in one area so you can see what changes at a glance."
+        },
+        "ux07": {
+          "title": "Pin frequent tools nearby",
+          "body": "Favorite common components and blueprints at the top to reduce scrolling."
+        },
+        "ux08": {
+          "title": "Use clear component previews",
+          "body": "Give custom components recognizable thumbnails to avoid picking the wrong one."
+        },
+        "ux09": {
+          "title": "Write realistic placeholder text",
+          "body": "Even placeholder copy should be close to real content to test flow and clarity."
+        },
+        "ux10": {
+          "title": "Save or commit often",
+          "body": "After each small change, save or commit so you can roll back easily if needed."
+        },
+        "ux11": {
+          "title": "Color-code node categories",
+          "body": "Use colors to distinguish data, view, and interaction nodes—let color guide you."
+        },
+        "ux12": {
+          "title": "Make error messages specific",
+          "body": "Don't just say 'Error'. Tell users exactly what's wrong and how to fix it."
+        },
+        "ux13": {
+          "title": "Enable alignment guides",
+          "body": "Turn on snap-to-edge guides so components align crisply and consistently."
+        },
+        "ux14": {
+          "title": "Use layout components first",
+          "body": "Start with grids and flex containers, then fill in details—responsive design gets easier."
+        },
+        "ux15": {
+          "title": "Test mobile view early",
+          "body": "Preview at phone size at least once to catch 'can't tap' or 'too cramped' issues early."
+        },
+        "ux16": {
+          "title": "Design complete button states",
+          "body": "Don't stop at normal state—test hover, pressed, and disabled to ensure consistency."
+        },
+        "ux17": {
+          "title": "Don't load everything at once",
+          "body": "For long lists, add pagination or lazy loading—don't make users scroll endlessly."
+        },
+        "ux18": {
+          "title": "Show loading feedback",
+          "body": "Any operation over one second deserves a visible loading indicator."
+        },
+        "ux19": {
+          "title": "Break up intimidating forms",
+          "body": "Split multi-part forms into steps with a progress bar so users know what's left."
+        },
+        "ux20": {
+          "title": "Test with real data structures",
+          "body": "Use mock data with realistic structure to catch field naming and layout issues."
+        },
+        "ux21": {
+          "title": "Extract reusable logic",
+          "body": "Turn common logic into blueprint fragments or function nodes—don't copy-paste."
+        },
+        "ux22": {
+          "title": "Add notes as you go",
+          "body": "Drop a quick comment next to key nodes—future you will be grateful."
+        },
+        "ux23": {
+          "title": "Keep interaction paths short",
+          "body": "From entry to outcome, aim for 3-5 steps to keep users moving smoothly."
+        },
+        "ux24": {
+          "title": "Design thoughtful empty states",
+          "body": "When lists are empty, show friendly guidance instead of blank space."
+        },
+        "ux25": {
+          "title": "Use smart defaults",
+          "body": "Set sensible defaults for common choices so users can skip a step."
+        },
+        "ux26": {
+          "title": "Confirm destructive actions",
+          "body": "Add a confirmation dialog for delete or reset, and explain the consequences."
+        },
+        "ux27": {
+          "title": "Always provide a next step",
+          "body": "On success screens, offer 'Go back' or 'Continue next' instead of just a close button."
+        },
+        "ux28": {
+          "title": "Walk through your own flow",
+          "body": "Before launch, complete a real task with your UI and note any friction."
+        },
+        "ux29": {
+          "title": "Support keyboard navigation",
+          "body": "Add shortcuts for common actions so power users don't need to reach for the mouse."
+        },
+        "ux30": {
+          "title": "Make error messages copyable",
+          "body": "Let users copy error text with one click for easier troubleshooting."
+        },
+        "ux31": {
+          "title": "Position tooltips carefully",
+          "body": "Place hover hints where they won't block key information."
+        },
+        "ux32": {
+          "title": "Remember scroll position",
+          "body": "When users return to a list, restore their scroll position."
+        },
+        "ux33": {
+          "title": "Don't rely on color alone",
+          "body": "Add icons or text labels to help colorblind users distinguish states."
+        },
+        "ux34": {
+          "title": "Name components by purpose",
+          "body": "Use 'purpose + context' names like 'Primary Button / Dialog Confirm'."
+        },
+        "ux35": {
+          "title": "Keep sidebars clean",
+          "body": "Collapse advanced settings so beginners aren't overwhelmed at first glance."
+        },
+        "ux36": {
+          "title": "Build the happy path first",
+          "body": "Perfect the most typical user journey before handling edge cases."
+        },
+        "ux37": {
+          "title": "Arrange nodes logically",
+          "body": "Flow nodes left-to-right in the order users think—reduce future reading cost."
+        },
+        "ux38": {
+          "title": "Group nodes like a story",
+          "body": "Structure as 'fetch data → process → display' to make blueprints tell a clear story."
+        },
+        "ux39": {
+          "title": "Start from templates",
+          "body": "For similar pages, clone a template instead of starting from scratch."
+        },
+        "ux40": {
+          "title": "Ask 'then what?' at every step",
+          "body": "For each screen, ask what users naturally do next, then provide that path."
+        },
+        "ux41": {
+          "title": "Progressively disclose options",
+          "body": "Show only required fields at first, hide advanced config behind 'Show more'."
+        },
+        "ux42": {
+          "title": "Keep heavy nodes async",
+          "body": "Run long computations asynchronously to avoid locking up the entire UI."
+        },
+        "ux43": {
+          "title": "Match preview to production",
+          "body": "Use production-like settings in preview to avoid 'works here, breaks live' surprises."
+        },
+        "ux44": {
+          "title": "Put docs near the canvas",
+          "body": "Add a doc link directly in the properties panel so users don't hunt for help."
+        },
+        "ux45": {
+          "title": "Use whitespace to guide eyes",
+          "body": "Don't fear empty space—give key buttons breathing room."
+        },
+        "ux46": {
+          "title": "Keep default themes simple",
+          "body": "Limit theme colors to two or three—let content shine, not the palette."
+        },
+        "ux47": {
+          "title": "Align consistently",
+          "body": "Within a page, align titles, body text, and buttons to a common baseline."
+        },
+        "ux48": {
+          "title": "Enable column sorting",
+          "body": "Let users sort and filter tables by column to find key data quickly."
+        },
+        "ux49": {
+          "title": "Validate input in real-time",
+          "body": "Show errors as users type, not after they submit everything."
+        },
+        "ux50": {
+          "title": "Plan for localization",
+          "body": "Leave extra length for text so layouts don't break when switching languages."
+        },
+        "ux51": {
+          "title": "Make errors visible, not scary",
+          "body": "Highlight error nodes in red, but use conversational language instead of 'CRITICAL ERROR'."
+        },
+        "ux52": {
+          "title": "Write human commit messages",
+          "body": "Describe what changed and for whom, not just 'fix'."
+        },
+        "ux53": {
+          "title": "Agree on naming conventions",
+          "body": "Before collaborating, establish node and component naming rules to avoid confusion."
+        },
+        "ux54": {
+          "title": "Show collaborator presence",
+          "body": "Display other users' cursors and actions on canvas to prevent conflicts."
+        },
+        "ux55": {
+          "title": "Visualize merge conflicts",
+          "body": "Use visual diffs instead of raw JSON when merging changes."
+        },
+        "ux56": {
+          "title": "Always show next steps",
+          "body": "New users should always see a suggested next action button."
+        },
+        "ux57": {
+          "title": "Skip pointless confirmations",
+          "body": "Don't confirm actions that are easily undone—save users' clicks."
+        },
+        "ux58": {
+          "title": "Build a blueprint library",
+          "body": "Package common workflows as reusable blueprints for the whole team."
+        },
+        "ux59": {
+          "title": "Name styles semantically",
+          "body": "Use 'primary action' instead of 'blue' so themes can change easily."
+        },
+        "ux60": {
+          "title": "Organize by user tasks",
+          "body": "Structure navigation by scenarios, not tech modules, so non-devs can navigate too."
+        },
+        "ux61": {
+          "title": "Collapse long property panels",
+          "body": "Break parameter lists into sections to avoid endless scrolling."
+        },
+        "ux62": {
+          "title": "Add magnetic drop zones",
+          "body": "Make drop targets slightly magnetic so beginners land components correctly."
+        },
+        "ux63": {
+          "title": "Keep preview button visible",
+          "body": "Ensure the preview button is accessible no matter which panels are open."
+        },
+        "ux64": {
+          "title": "Keep undo granular",
+          "body": "Undo should revert one meaningful action, not fifty steps at once."
+        },
+        "ux65": {
+          "title": "Test before exporting",
+          "body": "Click through key interactions in the editor before exporting code."
+        },
+        "ux66": {
+          "title": "Fail gracefully",
+          "body": "When requests fail, keep existing data instead of clearing the screen."
+        },
+        "ux67": {
+          "title": "Use skeleton screens",
+          "body": "Show skeleton placeholders while loading lists or cards—better than blank."
+        },
+        "ux68": {
+          "title": "Avoid jargon in messages",
+          "body": "Say 'Save failed, check network' instead of 'Request timeout'."
+        },
+        "ux69": {
+          "title": "Think device, not pixels",
+          "body": "Set responsive breakpoints by 'phone/tablet/desktop', not exact widths."
+        },
+        "ux70": {
+          "title": "Allow rollback on overrides",
+          "body": "For any config override, provide a one-click undo."
+        },
+        "ux71": {
+          "title": "Optimize mouse travel",
+          "body": "Place 'Save' and 'Publish' along common cursor paths to reduce movement."
+        },
+        "ux72": {
+          "title": "Provide empty state templates",
+          "body": "Offer drag-and-drop empty state templates for common scenarios."
+        },
+        "ux73": {
+          "title": "Group table actions on the right",
+          "body": "Put row actions in one column instead of scattering them across cells."
+        },
+        "ux74": {
+          "title": "Avoid nested scrollbars",
+          "body": "Try not to have more than one scrollable area on screen at once."
+        },
+        "ux75": {
+          "title": "Fix blueprint entry position",
+          "body": "Keep main entry nodes in the top-left so they're easy to find."
+        },
+        "ux76": {
+          "title": "Use icons to speed recognition",
+          "body": "Give node categories consistent icons—eventually you won't need to read labels."
+        },
+        "ux77": {
+          "title": "Remember panel collapse state",
+          "body": "Let the panel remember which sections users prefer collapsed."
+        },
+        "ux78": {
+          "title": "Warn on unsaved exit",
+          "body": "If users close with unsaved changes, gently remind them."
+        },
+        "ux79": {
+          "title": "Design nodes with use cases",
+          "body": "Before adding a new node type, write two typical use cases to avoid bloat."
+        },
+        "ux80": {
+          "title": "Show plugin permissions clearly",
+          "body": "When installing plugins, explicitly list what data they access."
+        },
+        "ux81": {
+          "title": "Show debug info side-by-side",
+          "body": "Display debug logs next to the canvas instead of forcing context switching."
+        },
+        "ux82": {
+          "title": "Filter logs by user task",
+          "body": "Let users filter debug logs by session or action chain for faster troubleshooting."
+        },
+        "ux83": {
+          "title": "Mock data shouldn't be perfect",
+          "body": "Include some edge cases in test data to see if your UI can handle them."
+        },
+        "ux84": {
+          "title": "Flag slow operations",
+          "body": "Mark known slow nodes so designers avoid chaining too many in sequence."
+        },
+        "ux85": {
+          "title": "Animate to clarify, not decorate",
+          "body": "Only use animation to explain state changes—don't slow users down for aesthetics."
+        },
+        "ux86": {
+          "title": "Keep color meanings consistent",
+          "body": "Green always means success, red always means danger—never mix them."
+        },
+        "ux87": {
+          "title": "Limit nav depth to three",
+          "body": "If menus go deeper than three levels, rethink your information architecture."
+        },
+        "ux88": {
+          "title": "Support fuzzy search",
+          "body": "Let node and component search handle typos, pinyin, or partial matches."
+        },
+        "ux89": {
+          "title": "Put help where it's needed",
+          "body": "Add a '?' icon next to complex panels that links directly to relevant docs."
+        },
+        "ux90": {
+          "title": "Make configs shareable",
+          "body": "Allow one-click sharing of build configs so teams stay aligned."
+        },
+        "ux91": {
+          "title": "Focus the first screen",
+          "body": "When users enter the editor, guide them to complete one simple, full task."
+        },
+        "ux92": {
+          "title": "Include a sample project",
+          "body": "New workspaces should include a deletable example to help users explore."
+        },
+        "ux93": {
+          "title": "Make history searchable",
+          "body": "In complex debugging, let users search operation history by keyword."
+        },
+        "ux94": {
+          "title": "Auto-fit canvas to content",
+          "body": "Adjust canvas zoom so the whole blueprint structure is visible from the start."
+        },
+        "ux95": {
+          "title": "Include comments in exports",
+          "body": "Generated code should include blueprint-linked comments for easier dev handoff."
+        },
+        "ux96": {
+          "title": "Document failure modes",
+          "body": "In docs, include 'don't do this' examples to help users avoid common pitfalls."
+        },
+        "ux97": {
+          "title": "Always provide an escape hatch",
+          "body": "No matter how complex, users should always be able to 'Go home' or 'Undo'."
+        },
+        "ux98": {
+          "title": "Enable Enter to submit",
+          "body": "For common forms, let keyboard users press Enter to submit."
+        },
+        "ux99": {
+          "title": "Switch views by role",
+          "body": "Offer different node panel views for designers, devs, and ops to reduce noise."
+        },
+        "ux100": {
+          "title": "Respect existing habits",
+          "body": "Match layouts and interactions to patterns users already know—reduce migration cost."
+        }
+      }
+    },
+    "settings": {
+      "actions": {
+        "exit": "Exit settings"
+      },
+      "editorPage": {
+        "title": "Editor Settings",
+        "subtitle": "Global defaults applied to every project and new workspace."
+      },
+      "projectPage": {
+        "title": "Project Settings",
+        "subtitle": "Project-specific configuration with optional global overrides.",
         "tabs": {
-            "mir": "MIR",
-            "react": "React",
-            "vue": "Vue"
+          "project": "Project settings",
+          "global": "Global defaults"
+        },
+        "overrides": {
+          "title": "Overrides",
+          "body": "Toggle a row to override the global default for this project."
         }
-    },
-    "blueprint": {
-        "address": {
-            "add": "Add",
-            "current": "Current URL",
-            "currentPlaceholder": "https://example.com",
-            "list": "Saved URLs",
-            "new": "New URL",
-            "newPlaceholder": "Paste or type a URL"
-        },
-        "autosave": {
-            "capabilities": {
-                "loading": "Checking workspace capabilities…"
-            },
-            "status": {
-                "saving": "Saving…",
-                "error": "Save failed. Retrying on next change.",
-                "workspaceSaved": "Saved to workspace.",
-                "projectSaved": "Saved to project.",
-                "saved": "Saved.",
-                "idle": "Ready"
-            },
-            "messages": {
-                "workspaceRetry": "Workspace save failed. Retrying on next change.",
-                "projectRetry": "Project save failed. Retrying on next change.",
-                "workspaceUnavailableUsingProject": "Workspace document save unavailable. Using project save."
-            }
-        },
-        "canvas": {
-            "placeholderTitle": "Drop a component",
-            "placeholderDescription": "Drag from the library to start building."
-        },
-        "inspector": {
-            "title": "Inspector",
-            "toggle": "Toggle inspector",
-            "placeholder": "Select a component to edit.",
-            "groups": {
-                "basic": "Basic Info",
-                "style": {
-                    "title": "Style",
-                    "empty": "No style settings for this component."
-                },
-                "triggers": {
-                    "title": "Triggers",
-                    "empty": "No triggers configured yet. Event bindings will appear here.",
-                    "linkConflict": "This component has a destination and an onClick trigger. Click may run both.",
-                    "add": "Add trigger",
-                    "delete": "Delete trigger",
-                    "eventLabel": "Trigger Event",
-                    "eventHelp": "Choose which DOM event will trigger this action.",
-                    "actionLabel": "Run Action",
-                    "actionHelp": "Choose what should run when the event is fired.",
-                    "toLabel": "Destination",
-                    "toPlaceholder": "https://example.com",
-                    "toHelp": "Use https:// for external links, or /path for in-app preview routes.",
-                    "httpsOnly": "Use https:// for external links or /path for internal links.",
-                    "replace": "Replace",
-                    "replaceHelp": "When enabled, this navigation replaces the current history entry.",
-                    "targetHelp": "Browser tab target used by navigation actions.",
-                    "statePlaceholder": "state (optional JSON)",
-                    "stateHelp": "Optional navigation state. Plain text or JSON string.",
-                    "targets": {
-                        "self": "_self",
-                        "blank": "_blank"
-                    },
-                    "actions": {
-                        "navigate": "Navigate",
-                        "executeGraph": "Execute Graph"
-                    },
-                    "graph": {
-                        "new": "New Graph",
-                        "newHelp": "Create and execute a new node graph.",
-                        "select": "Select Graph",
-                        "selectHelp": "Run one of the existing node graphs.",
-                        "namePlaceholder": "New graph name",
-                        "nameHelp": "Name for the new node graph to be created.",
-                        "empty": "No graph available"
-                    },
-                    "navigation": {
-                        "confirm": {
-                            "title": "Open external link?",
-                            "url": "URL: {{to}}",
-                            "target": "Target: {{effectiveTarget}}",
-                            "targetOverridden": "Configured target: {{configuredTarget}} (opened as {{effectiveTarget}} in Blueprint preview for safety).",
-                            "replace": "Replace history: {{replace}}",
-                            "source": "Source: {{nodeId}} · {{trigger}}",
-                            "yes": "Yes",
-                            "no": "No"
-                        }
-                    }
-                }
-            },
-            "fields": {
-                "className": {
-                    "label": "Class Name"
-                },
-                "id": {
-                    "label": "Component ID",
-                    "description": "Unique within the blueprint.",
-                    "duplicate": "ID already exists."
-                },
-                "icon": {
-                    "label": "Icon",
-                    "empty": "No icon selected"
-                },
-                "link": {
-                    "destination": "Destination",
-                    "destinationPlaceholder": "/path or https://example.com",
-                    "target": "Target",
-                    "rel": "Rel",
-                    "title": "Title",
-                    "titlePlaceholder": "Open docs"
-                }
-            },
-            "panels": {
-                "layout": {
-                    "title": "Layout",
-                    "description": "Configure Flex/Grid layout behavior.",
-                    "fields": {
-                        "gap": "Gap",
-                        "gapHint": "Number (px) or CSS size.",
-                        "margin": "Margin",
-                        "padding": "Padding",
-                        "spacingHint": "Use CSS shorthand (1, 2, 3, or 4 values), or expand to edit each side.",
-                        "expand": "Expand",
-                        "collapse": "Collapse",
-                        "flexDirection": "Direction",
-                        "justifyContent": "Justify",
-                        "alignItems": "Align",
-                        "gridColumns": "Columns",
-                        "gridColumnsHint": "Sets gridTemplateColumns.",
-                        "sides": {
-                            "top": "Top",
-                            "right": "Right",
-                            "bottom": "Bottom",
-                            "left": "Left"
-                        }
-                    },
-                    "options": {
-                        "direction": {
-                            "row": "Row",
-                            "rowReverse": "Row Reverse",
-                            "column": "Column",
-                            "columnReverse": "Column Reverse"
-                        },
-                        "justify": {
-                            "start": "Start",
-                            "center": "Center",
-                            "end": "End",
-                            "spaceBetween": "Space Between",
-                            "spaceAround": "Space Around",
-                            "spaceEvenly": "Space Evenly"
-                        },
-                        "align": {
-                            "start": "Start",
-                            "center": "Center",
-                            "end": "End",
-                            "stretch": "Stretch",
-                            "baseline": "Baseline"
-                        }
-                    }
-                },
-                "text": {
-                    "title": "Text",
-                    "description": "Edit the text displayed by this component.",
-                    "fields": {
-                        "text": "Text",
-                        "title": "Title",
-                        "label": "Label",
-                        "description": "Description"
-                    }
-                }
-            },
-            "actions": {
-                "apply": "Apply"
-            },
-            "iconPicker": {
-                "title": "Select icon",
-                "subtitle": "Source + search. Ready for multiple icon providers.",
-                "close": "Close icon picker",
-                "source": "Source",
-                "search": "Search",
-                "searchPlaceholder": "Type icon name, e.g. sparkles",
-                "matched": "{{count}} matched",
-                "showingRange": "showing {{from}}-{{to}} / {{total}}",
-                "showingEmpty": "showing 0/0",
-                "empty": "No icons found.",
-                "page": "Page {{current}}/{{total}}",
-                "prev": "Prev",
-                "next": "Next",
-                "go": "Go",
-                "preview": "Preview",
-                "noIcon": "No icon",
-                "cancel": "Cancel",
-                "apply": "Use icon"
-            }
-        },
-        "sidebar": {
-            "title": "Component Library",
-            "libraries": {
-                "builtIn": "Built-in",
-                "headless": "Headless",
-                "external": "External"
-            },
-            "external": {
-                "loading": "Loading Ant Design from esm.sh...",
-                "error": "Failed to load remote components."
-            },
-            "toggleLibrary": "Toggle library",
-            "openSearch": "Search components",
-            "searchPlaceholder": "Search components...",
-            "clearSearch": "Clear search",
-            "collapseVariants": "Collapse variants",
-            "expandVariants": "Expand variants"
-        },
-        "tree": {
-            "title": "Component Tree",
-            "collapse": "Collapse component tree",
-            "expand": "Expand component tree",
-            "deleteSelected": "Delete selected component",
-            "empty": "No components yet."
-        },
-        "viewport": {
-            "label": "Viewport",
-            "zoom": "Zoom",
-            "reset": "Reset view",
-            "quickPresetMenu": "Presets",
-            "size": "Size {{width}}x{{height}}",
-            "moreDevices": "More devices",
-            "quickPresets": {
-                "desktop": "Desktop",
-                "hd": "HD",
-                "ipad": "iPad",
-                "iphone": "iPhone",
-                "se": "iPhone SE"
-            }
-        },
-        "componentLibrary": {
-            "groups": {
-                "base": {
-                    "title": "Base Components"
-                },
-                "layout": {
-                    "title": "Layout Components"
-                },
-                "form": {
-                    "title": "Form Components"
-                },
-                "nav": {
-                    "title": "Navigation Components"
-                },
-                "media": {
-                    "title": "Media & Embed"
-                },
-                "data": {
-                    "title": "Data Display"
-                },
-                "feedback": {
-                    "title": "Feedback"
-                },
-                "radix": {
-                    "title": "Radix UI"
-                }
-            },
-            "items": {}
-        },
-        "devices": {
-            "desktopFhd": "Desktop (FHD)",
-            "desktopHd": "Desktop (HD)",
-            "macbookAir13": "MacBook Air 13\"",
-            "macbookPro14": "MacBook Pro 14\"",
-            "ipadPro11": "iPad Pro 11\"",
-            "ipadMini": "iPad mini",
-            "pixel8": "Pixel 8",
-            "iphone15Pro": "iPhone 15 Pro",
-            "iphone13": "iPhone 13",
-            "iphoneSe": "iPhone SE",
-            "watch41": "Apple Watch 41mm",
-            "kinds": {
-                "desktop": "Desktop",
-                "laptop": "Laptop",
-                "tablet": "Tablet",
-                "phone": "Phone",
-                "watch": "Watch"
-            }
-        },
-        "unitInput": {
-            "groups": {
-                "absoluteLength": "Absolute length",
-                "fontRelative": "Font-relative",
-                "viewport": "Viewport",
-                "container": "Container",
-                "percentage": "Percentage",
-                "angle": "Angle",
-                "time": "Time",
-                "frequency": "Frequency",
-                "resolution": "Resolution",
-                "current": "Current"
-            },
-            "units": {
-                "px": "Pixel (CSS px, typically 1px = 1/96in)",
-                "cm": "Centimeter",
-                "mm": "Millimeter",
-                "Q": "Quarter-millimeter (1Q = 1/40cm)",
-                "in": "Inch",
-                "pt": "Point (1pt = 1/72in)",
-                "pc": "Pica (1pc = 12pt)",
-                "em": "Relative to current element font size",
-                "rem": "Relative to root element font size",
-                "ex": "Relative to x-height (font-dependent)",
-                "rex": "Relative to root element x-height",
-                "cap": "Relative to cap-height",
-                "rcap": "Relative to root element cap-height",
-                "ch": "Relative to width of \"0\" (font-dependent)",
-                "rch": "Relative to root element \"0\" width",
-                "ic": "Relative to full-width character (font-dependent)",
-                "ric": "Relative to root element full-width character",
-                "lh": "Relative to current element line height",
-                "rlh": "Relative to root element line height",
-                "vw": "1% of viewport width",
-                "vh": "1% of viewport height",
-                "vi": "1% of viewport inline direction",
-                "vb": "1% of viewport block direction",
-                "vmin": "1% of viewport smaller dimension",
-                "vmax": "1% of viewport larger dimension",
-                "svw": "1% of small viewport width",
-                "svh": "1% of small viewport height",
-                "svi": "1% of small viewport inline",
-                "svb": "1% of small viewport block",
-                "lvw": "1% of large viewport width",
-                "lvh": "1% of large viewport height",
-                "lvi": "1% of large viewport inline",
-                "lvb": "1% of large viewport block",
-                "dvw": "1% of dynamic viewport width",
-                "dvh": "1% of dynamic viewport height",
-                "dvi": "1% of dynamic viewport inline",
-                "dvb": "1% of dynamic viewport block",
-                "cqw": "1% of container query width",
-                "cqh": "1% of container query height",
-                "cqi": "1% of container query inline",
-                "cqb": "1% of container query block",
-                "cqmin": "1% of container smaller dimension",
-                "cqmax": "1% of container larger dimension",
-                "%": "Percentage (relative to parent/context, property-specific)",
-                "deg": "Degree",
-                "grad": "Gradian",
-                "rad": "Radian",
-                "turn": "Turn (1turn = 360deg)",
-                "s": "Second",
-                "ms": "Millisecond",
-                "Hz": "Hertz",
-                "kHz": "Kilohertz",
-                "dpi": "Dots per inch",
-                "dpcm": "Dots per centimeter",
-                "dppx": "Dots per pixel"
-            }
-        }
-    },
-    "auth": {
-        "title": "Account access",
-        "subtitle": "Sign in to manage your workspace settings and assets.",
-        "tabs": {
-            "login": "Sign in",
-            "register": "Create account"
-        },
-        "fields": {
-            "name": "Full name",
-            "email": "Email",
-            "password": "Password",
-            "description": "Description"
-        },
-        "placeholders": {
-            "name": "e.g. Alex Rivera",
-            "email": "name@company.com",
-            "password": "At least 8 characters",
-            "description": "Tell us about your role or focus"
-        },
-        "hints": {
-            "password": "Use 8+ characters with a mix of letters and numbers."
-        },
-        "actions": {
-            "login": "Sign in",
-            "register": "Create account"
-        },
-        "panel": {
-            "title": "Workspace access",
-            "subtitle": "Use your credentials to continue editing."
-        },
-        "highlights": {
-            "speedTitle": "Move fast",
-            "speedBody": "Save layouts, experiments, and exports in one place.",
-            "workspaceTitle": "Stay organized",
-            "workspaceBody": "Keep personal and team projects under one account."
-        },
-        "footer": {
-            "hint": "Need inspiration? Jump back to the landing page.",
-            "backHome": "Back to home"
-        }
-    },
-    "profile": {
-        "subtitle": "Manage your personal details.",
-        "sections": {
-            "identity": "Identity",
-            "session": "Session"
+      },
+      "overrides": {
+        "toggle": {
+          "on": "Project override",
+          "off": "Use global"
         },
         "labels": {
-            "name": "Name",
-            "email": "Email",
-            "id": "User ID",
-            "created": "Created",
-            "description": "Description",
-            "token": "Token",
-            "expires": "Expires"
-        },
-        "actions": {
-            "refresh": "Refresh",
-            "logout": "Sign out",
-            "login": "Sign in",
-            "backHome": "Back home",
-            "copyId": "Copy ID",
-            "edit": "Edit",
-            "save": "Save",
-            "cancel": "Cancel"
-        },
-        "edit": {
-            "title": "Edit profile"
-        },
-        "messages": {
-            "saved": "Profile saved.",
-            "copiedId": "User ID copied.",
-            "copiedEmail": "Email copied.",
-            "copyFailed": "Copy failed."
-        },
-        "empty": {
-            "title": "No active session",
-            "subtitle": "Sign in to view your personal profile.",
-            "panelTitle": "Account required",
-            "panelBody": "Sign in to see your account details and session status."
-        },
-        "description": {
-            "empty": "No description yet."
+          "global": "Global: {{value}}",
+          "effective": "Effective: {{value}}"
         }
+      },
+      "global": {
+        "panels": {
+          "appearance": {
+            "title": "Appearance & Language",
+            "description": "Defaults that shape the editor look and feel for every workspace."
+          },
+          "behavior": {
+            "title": "Editor behavior",
+            "description": "How the editor saves, confirms, and manages your work."
+          },
+          "blueprint": {
+            "title": "Blueprint defaults",
+            "description": "Defaults applied when creating or opening a new blueprint."
+          },
+          "components": {
+            "title": "Components & rendering",
+            "description": "Control how MIR resolves and renders components."
+          },
+          "codegen": {
+            "title": "Code generation",
+            "description": "Defaults for exported code and artifacts."
+          },
+          "shortcuts": {
+            "title": "Shortcuts & diagnostics",
+            "description": "Productivity settings and debug overlays."
+          }
+        },
+        "rows": {
+          "language": {
+            "label": "Interface language",
+            "description": "Primary locale for menus, panels, and tooltips.",
+            "options": {
+              "en": "English",
+              "zhCN": "Simplified Chinese"
+            }
+          },
+          "theme": {
+            "label": "Theme preference",
+            "description": "Pick the default color mode for the editor.",
+            "options": {
+              "home": "Follow home",
+              "light": "Light",
+              "dark": "Dark"
+            }
+          },
+          "density": {
+            "label": "Density",
+            "description": "Control spacing and compactness for the workspace.",
+            "options": {
+              "comfortable": "Comfortable",
+              "compact": "Compact"
+            }
+          },
+          "fontScale": {
+            "label": "Font scale",
+            "description": "Scale typography across the editor UI."
+          },
+          "autosaveInterval": {
+            "label": "Auto-save interval (sec)",
+            "description": "Interval to persist changes automatically."
+          },
+          "undoSteps": {
+            "label": "Undo steps",
+            "description": "Maximum steps stored in the undo stack."
+          },
+          "confirmPrompts": {
+            "label": "Confirm prompts",
+            "description": "When to show confirmation dialogs.",
+            "options": {
+              "delete": "Delete",
+              "reset": "Reset",
+              "leave": "Leave"
+            }
+          },
+          "panelLayout": {
+            "label": "Default panel layout",
+            "description": "Choose the baseline layout for editor panels.",
+            "options": {
+              "balanced": "Balanced",
+              "focus": "Focus",
+              "wide": "Wide"
+            }
+          },
+          "viewportSize": {
+            "label": "Viewport size",
+            "description": "Default artboard size for new pages."
+          },
+          "zoomStep": {
+            "label": "Zoom step",
+            "description": "Zoom increment when scrolling or pressing shortcuts."
+          },
+          "assist": {
+            "label": "Assist overlays",
+            "description": "Grid, guides, and snapping defaults.",
+            "options": {
+              "grid": "Grid",
+              "alignment": "Alignment",
+              "snap": "Snap"
+            }
+          },
+          "panInertia": {
+            "label": "Pan inertia",
+            "description": "Momentum applied after dragging the canvas."
+          },
+          "resolverOrder": {
+            "label": "Resolver order",
+            "description": "Lookup priority when multiple registries exist.",
+            "options": {
+              "customMdrNative": "Custom → MDR → Native",
+              "mdrNative": "MDR → Native",
+              "nativeOnly": "Native only"
+            }
+          },
+          "customNamespaces": {
+            "label": "Custom namespaces",
+            "description": "Allowed namespaces for project components."
+          },
+          "renderMode": {
+            "label": "Render mode",
+            "description": "Choose strict validation or tolerant rendering.",
+            "options": {
+              "strict": "Strict",
+              "tolerant": "Tolerant"
+            }
+          },
+          "externalProps": {
+            "label": "External props",
+            "description": "Allow runtime props injection for previews.",
+            "options": {
+              "allow": "Allow",
+              "disable": "Disable"
+            }
+          },
+          "defaultFramework": {
+            "label": "Default framework",
+            "description": "Primary target for generated UI code.",
+            "options": {
+              "react": "React",
+              "vue": "Vue",
+              "html": "HTML"
+            }
+          },
+          "formatting": {
+            "label": "Formatting",
+            "description": "Code style and formatting preferences.",
+            "options": {
+              "prettier": "Prettier",
+              "none": "None"
+            }
+          },
+          "outputPath": {
+            "label": "Output path",
+            "description": "Where generated code is stored."
+          },
+          "importStyle": {
+            "label": "Import style",
+            "description": "How generated imports are organized.",
+            "options": {
+              "auto": "Auto",
+              "grouped": "Grouped",
+              "single": "Single"
+            }
+          },
+          "metadata": {
+            "label": "Metadata comments",
+            "description": "Include MIR metadata annotations in output.",
+            "options": {
+              "include": "Include metadata",
+              "skip": "Skip metadata"
+            }
+          },
+          "shortcutPreset": {
+            "label": "Shortcut preset",
+            "description": "Default keyboard shortcut profile.",
+            "options": {
+              "default": "Default",
+              "vim": "Vim-style",
+              "vscode": "VS Code"
+            }
+          },
+          "diagnostics": {
+            "label": "Diagnostics overlay",
+            "description": "Show visual debugging cues on the canvas.",
+            "options": {
+              "selectionBounds": "Selection bounds",
+              "perfHints": "Perf hints",
+              "eventsLog": "Events log"
+            }
+          },
+          "logLevel": {
+            "label": "Log level",
+            "description": "Controls verbosity for debug logs.",
+            "options": {
+              "error": "Error",
+              "warn": "Warn",
+              "info": "Info"
+            }
+          },
+          "telemetry": {
+            "label": "Telemetry",
+            "description": "Share anonymous usage metrics.",
+            "options": {
+              "allow": "Allow",
+              "disable": "Disable"
+            }
+          }
+        }
+      },
+      "project": {
+        "panels": {
+          "basics": {
+            "title": "Project basics",
+            "description": "Identity and defaults unique to this project."
+          },
+          "collaboration": {
+            "title": "Collaboration",
+            "description": "Access, permissions, and team workflow defaults."
+          },
+          "designSystem": {
+            "title": "Design system",
+            "description": "Project-specific UI tokens and asset libraries."
+          },
+          "integrations": {
+            "title": "Integrations & environments",
+            "description": "Data sources, auth, and environment settings."
+          },
+          "mir": {
+            "title": "MIR & validation",
+            "description": "Schema enforcement and node policy."
+          },
+          "build": {
+            "title": "Build & export",
+            "description": "Project export configuration and build options."
+          }
+        },
+        "rows": {
+          "name": {
+            "label": "Project name",
+            "description": "Display name shown in navigation and exports."
+          },
+          "description": {
+            "label": "Description",
+            "description": "High-level summary for collaborators."
+          },
+          "defaultRoute": {
+            "label": "Default route",
+            "description": "Landing path when opening the project."
+          },
+          "timezone": {
+            "label": "Timezone",
+            "description": "Used for logs, scheduling, and timestamps.",
+            "options": {
+              "utc": "UTC",
+              "utcMinus5": "UTC-5 (New York)",
+              "utcPlus1": "UTC+1 (Berlin)",
+              "utcPlus8": "UTC+8 (Shanghai)"
+            }
+          },
+          "defaultRole": {
+            "label": "Default role",
+            "description": "Role applied to new collaborators.",
+            "options": {
+              "viewer": "Viewer",
+              "editor": "Editor",
+              "admin": "Admin"
+            }
+          },
+          "previewAccess": {
+            "label": "Preview access",
+            "description": "Who can open preview links.",
+            "options": {
+              "restricted": "Restricted",
+              "public": "Anyone with link"
+            }
+          },
+          "auditRetention": {
+            "label": "Audit retention (days)",
+            "description": "Duration to retain audit events."
+          },
+          "notifications": {
+            "label": "Notifications",
+            "description": "Default notification channels.",
+            "options": {
+              "mentions": "Mentions",
+              "builds": "Builds",
+              "deployments": "Deployments"
+            }
+          },
+          "themeTokenSet": {
+            "label": "Theme token set",
+            "description": "Token pack used to render colors and spacing.",
+            "options": {
+              "mdrDefault": "MDR Default",
+              "mdrMidnight": "MDR Midnight",
+              "mdrSunrise": "MDR Sunrise"
+            }
+          },
+          "componentLibraryVersion": {
+            "label": "Component library version",
+            "description": "Pinned version of shared MDR components.",
+            "options": {
+              "v142Stable": "v1.4.2 (stable)",
+              "v150Beta": "v1.5.0 (beta)"
+            }
+          },
+          "assetHost": {
+            "label": "Asset host",
+            "description": "Primary CDN or asset bucket URL."
+          },
+          "fontPack": {
+            "label": "Font pack",
+            "description": "Font families available in the design system."
+          },
+          "iconSet": {
+            "label": "Icon set",
+            "description": "Default icon pack for UI templates."
+          },
+          "apiBase": {
+            "label": "API base URL",
+            "description": "Primary API endpoint for data requests."
+          },
+          "authMode": {
+            "label": "Auth mode",
+            "description": "Authentication flow used by previews.",
+            "options": {
+              "oauth": "OAuth",
+              "apiKey": "API key",
+              "none": "None"
+            }
+          },
+          "envPrefix": {
+            "label": "Env prefix",
+            "description": "Prefix for injected environment variables."
+          },
+          "deploymentTarget": {
+            "label": "Deployment target",
+            "description": "Default environment for publishing builds.",
+            "options": {
+              "staging": "Staging",
+              "production": "Production",
+              "preview": "Preview"
+            }
+          },
+          "schemaVersion": {
+            "label": "Schema version",
+            "description": "Pinned MIR schema for this project.",
+            "options": {
+              "v10Stable": "1.0 (stable)",
+              "v11Preview": "1.1 (preview)"
+            }
+          },
+          "strictness": {
+            "label": "Validation strictness",
+            "description": "Higher values enforce more rules."
+          },
+          "customNodes": {
+            "label": "Custom nodes",
+            "description": "Allowed custom node types in graphs.",
+            "options": {
+              "http": "HTTP",
+              "transform": "Transform",
+              "condition": "Condition",
+              "loop": "Loop"
+            }
+          },
+          "autoMigrate": {
+            "label": "Auto-migrate",
+            "description": "Automatically migrate MIR when schema updates.",
+            "options": {
+              "enable": "Enable auto-migrate",
+              "disable": "Disable auto-migrate"
+            }
+          },
+          "buildTarget": {
+            "label": "Build target",
+            "description": "Primary runtime output for builds.",
+            "options": {
+              "web": "Web",
+              "mobile": "Mobile",
+              "desktop": "Desktop"
+            }
+          },
+          "outputDir": {
+            "label": "Output directory",
+            "description": "Default directory for build artifacts."
+          },
+          "minify": {
+            "label": "Minify",
+            "description": "Minify assets on export.",
+            "options": {
+              "enable": "Enable minify",
+              "disable": "Disable minify"
+            }
+          },
+          "sourceMaps": {
+            "label": "Source maps",
+            "description": "Generate source maps for debugging.",
+            "options": {
+              "enable": "Emit source maps",
+              "disable": "Disable source maps"
+            }
+          }
+        }
+      }
     }
+  },
+  "export": {
+    "title": "Export Code",
+    "mir": {
+      "title": "MIR",
+      "description": "Current project MIR JSON (temporary page)",
+      "empty": "No MIR yet (create components in Blueprint Editor first)"
+    },
+    "react": {
+      "title": "React",
+      "description": "React component code generated from the current MIR",
+      "empty": "No React code yet (generate MIR first)",
+      "error": "Failed to generate React code"
+    },
+    "close": "Close",
+    "copy": "Copy",
+    "copySuccess": "Copied",
+    "footer": {
+      "generator": "Generated by Mdr Front Engine"
+    },
+    "tabs": {
+      "mir": "MIR",
+      "react": "React",
+      "vue": "Vue"
+    }
+  },
+  "blueprint": {
+    "address": {
+      "add": "Add",
+      "current": "Current URL",
+      "currentPlaceholder": "https://example.com",
+      "list": "Saved URLs",
+      "new": "New URL",
+      "newPlaceholder": "Paste or type a URL"
+    },
+    "autosave": {
+      "capabilities": {
+        "loading": "Checking workspace capabilities…"
+      },
+      "status": {
+        "saving": "Saving…",
+        "error": "Save failed. Retrying on next change.",
+        "workspaceSaved": "Saved to workspace.",
+        "projectSaved": "Saved to project.",
+        "saved": "Saved.",
+        "idle": "Ready"
+      },
+      "messages": {
+        "workspaceRetry": "Workspace save failed. Retrying on next change.",
+        "projectRetry": "Project save failed. Retrying on next change.",
+        "workspaceUnavailableUsingProject": "Workspace document save unavailable. Using project save."
+      }
+    },
+    "canvas": {
+      "placeholderTitle": "Drop a component",
+      "placeholderDescription": "Drag from the library to start building."
+    },
+    "inspector": {
+      "title": "Inspector",
+      "toggle": "Toggle inspector",
+      "placeholder": "Select a component to edit.",
+      "groups": {
+        "basic": "Basic Info",
+        "style": {
+          "title": "Style",
+          "empty": "No style settings for this component."
+        },
+        "triggers": {
+          "title": "Triggers",
+          "empty": "No triggers configured yet. Event bindings will appear here.",
+          "linkConflict": "This component has a destination and an onClick trigger. Click may run both.",
+          "add": "Add trigger",
+          "delete": "Delete trigger",
+          "eventLabel": "Trigger Event",
+          "eventHelp": "Choose which DOM event will trigger this action.",
+          "actionLabel": "Run Action",
+          "actionHelp": "Choose what should run when the event is fired.",
+          "toLabel": "Destination",
+          "toPlaceholder": "https://example.com",
+          "toHelp": "Use https:// for external links, or /path for in-app preview routes.",
+          "httpsOnly": "Use https:// for external links or /path for internal links.",
+          "replace": "Replace",
+          "replaceHelp": "When enabled, this navigation replaces the current history entry.",
+          "targetHelp": "Browser tab target used by navigation actions.",
+          "statePlaceholder": "state (optional JSON)",
+          "stateHelp": "Optional navigation state. Plain text or JSON string.",
+          "targets": {
+            "self": "_self",
+            "blank": "_blank"
+          },
+          "actions": {
+            "navigate": "Navigate",
+            "executeGraph": "Execute Graph"
+          },
+          "graph": {
+            "new": "New Graph",
+            "newHelp": "Create and execute a new node graph.",
+            "select": "Select Graph",
+            "selectHelp": "Run one of the existing node graphs.",
+            "namePlaceholder": "New graph name",
+            "nameHelp": "Name for the new node graph to be created.",
+            "empty": "No graph available"
+          },
+          "navigation": {
+            "confirm": {
+              "title": "Open external link?",
+              "url": "URL: {{to}}",
+              "target": "Target: {{effectiveTarget}}",
+              "targetOverridden": "Configured target: {{configuredTarget}} (opened as {{effectiveTarget}} in Blueprint preview for safety).",
+              "replace": "Replace history: {{replace}}",
+              "source": "Source: {{nodeId}} · {{trigger}}",
+              "yes": "Yes",
+              "no": "No"
+            }
+          }
+        }
+      },
+      "fields": {
+        "className": {
+          "label": "Class Name"
+        },
+        "id": {
+          "label": "Component ID",
+          "description": "Unique within the blueprint.",
+          "duplicate": "ID already exists."
+        },
+        "icon": {
+          "label": "Icon",
+          "empty": "No icon selected"
+        },
+        "link": {
+          "destination": "Destination",
+          "destinationPlaceholder": "/path or https://example.com",
+          "target": "Target",
+          "rel": "Rel",
+          "title": "Title",
+          "titlePlaceholder": "Open docs"
+        }
+      },
+      "panels": {
+        "layout": {
+          "title": "Layout",
+          "description": "Configure Flex/Grid layout behavior.",
+          "fields": {
+            "gap": "Gap",
+            "gapHint": "Number (px) or CSS size.",
+            "margin": "Margin",
+            "padding": "Padding",
+            "spacingHint": "Use CSS shorthand (1, 2, 3, or 4 values), or expand to edit each side.",
+            "expand": "Expand",
+            "collapse": "Collapse",
+            "flexDirection": "Direction",
+            "justifyContent": "Justify",
+            "alignItems": "Align",
+            "gridColumns": "Columns",
+            "gridColumnsHint": "Sets gridTemplateColumns.",
+            "sides": {
+              "top": "Top",
+              "right": "Right",
+              "bottom": "Bottom",
+              "left": "Left"
+            }
+          },
+          "options": {
+            "direction": {
+              "row": "Row",
+              "rowReverse": "Row Reverse",
+              "column": "Column",
+              "columnReverse": "Column Reverse"
+            },
+            "justify": {
+              "start": "Start",
+              "center": "Center",
+              "end": "End",
+              "spaceBetween": "Space Between",
+              "spaceAround": "Space Around",
+              "spaceEvenly": "Space Evenly"
+            },
+            "align": {
+              "start": "Start",
+              "center": "Center",
+              "end": "End",
+              "stretch": "Stretch",
+              "baseline": "Baseline"
+            }
+          }
+        },
+        "text": {
+          "title": "Text",
+          "description": "Edit the text displayed by this component.",
+          "fields": {
+            "text": "Text",
+            "title": "Title",
+            "label": "Label",
+            "description": "Description"
+          }
+        }
+      },
+      "actions": {
+        "apply": "Apply"
+      },
+      "iconPicker": {
+        "title": "Select icon",
+        "subtitle": "Source + search. Ready for multiple icon providers.",
+        "close": "Close icon picker",
+        "source": "Source",
+        "search": "Search",
+        "searchPlaceholder": "Type icon name, e.g. sparkles",
+        "matched": "{{count}} matched",
+        "showingRange": "showing {{from}}-{{to}} / {{total}}",
+        "showingEmpty": "showing 0/0",
+        "empty": "No icons found.",
+        "page": "Page {{current}}/{{total}}",
+        "prev": "Prev",
+        "next": "Next",
+        "go": "Go",
+        "preview": "Preview",
+        "noIcon": "No icon",
+        "cancel": "Cancel",
+        "apply": "Use icon"
+      }
+    },
+    "sidebar": {
+      "title": "Component Library",
+      "libraries": {
+        "builtIn": "Built-in",
+        "headless": "Headless",
+        "external": "External"
+      },
+      "external": {
+        "loading": "Loading Ant Design from esm.sh...",
+        "error": "Failed to load remote components."
+      },
+      "toggleLibrary": "Toggle library",
+      "openSearch": "Search components",
+      "searchPlaceholder": "Search components...",
+      "clearSearch": "Clear search",
+      "collapseVariants": "Collapse variants",
+      "expandVariants": "Expand variants"
+    },
+    "tree": {
+      "title": "Component Tree",
+      "collapse": "Collapse component tree",
+      "expand": "Expand component tree",
+      "deleteSelected": "Delete selected component",
+      "empty": "No components yet."
+    },
+    "viewport": {
+      "label": "Viewport",
+      "zoom": "Zoom",
+      "reset": "Reset view",
+      "quickPresetMenu": "Presets",
+      "size": "Size {{width}}x{{height}}",
+      "moreDevices": "More devices",
+      "quickPresets": {
+        "desktop": "Desktop",
+        "hd": "HD",
+        "ipad": "iPad",
+        "iphone": "iPhone",
+        "se": "iPhone SE"
+      }
+    },
+    "componentLibrary": {
+      "groups": {
+        "base": {
+          "title": "Base Components"
+        },
+        "layout": {
+          "title": "Layout Components"
+        },
+        "form": {
+          "title": "Form Components"
+        },
+        "nav": {
+          "title": "Navigation Components"
+        },
+        "media": {
+          "title": "Media & Embed"
+        },
+        "data": {
+          "title": "Data Display"
+        },
+        "feedback": {
+          "title": "Feedback"
+        },
+        "radix": {
+          "title": "Radix UI"
+        }
+      },
+      "items": {}
+    },
+    "devices": {
+      "desktopFhd": "Desktop (FHD)",
+      "desktopHd": "Desktop (HD)",
+      "macbookAir13": "MacBook Air 13\"",
+      "macbookPro14": "MacBook Pro 14\"",
+      "ipadPro11": "iPad Pro 11\"",
+      "ipadMini": "iPad mini",
+      "pixel8": "Pixel 8",
+      "iphone15Pro": "iPhone 15 Pro",
+      "iphone13": "iPhone 13",
+      "iphoneSe": "iPhone SE",
+      "watch41": "Apple Watch 41mm",
+      "kinds": {
+        "desktop": "Desktop",
+        "laptop": "Laptop",
+        "tablet": "Tablet",
+        "phone": "Phone",
+        "watch": "Watch"
+      }
+    },
+    "unitInput": {
+      "groups": {
+        "absoluteLength": "Absolute length",
+        "fontRelative": "Font-relative",
+        "viewport": "Viewport",
+        "container": "Container",
+        "percentage": "Percentage",
+        "angle": "Angle",
+        "time": "Time",
+        "frequency": "Frequency",
+        "resolution": "Resolution",
+        "current": "Current"
+      },
+      "units": {
+        "px": "Pixel (CSS px, typically 1px = 1/96in)",
+        "cm": "Centimeter",
+        "mm": "Millimeter",
+        "Q": "Quarter-millimeter (1Q = 1/40cm)",
+        "in": "Inch",
+        "pt": "Point (1pt = 1/72in)",
+        "pc": "Pica (1pc = 12pt)",
+        "em": "Relative to current element font size",
+        "rem": "Relative to root element font size",
+        "ex": "Relative to x-height (font-dependent)",
+        "rex": "Relative to root element x-height",
+        "cap": "Relative to cap-height",
+        "rcap": "Relative to root element cap-height",
+        "ch": "Relative to width of \"0\" (font-dependent)",
+        "rch": "Relative to root element \"0\" width",
+        "ic": "Relative to full-width character (font-dependent)",
+        "ric": "Relative to root element full-width character",
+        "lh": "Relative to current element line height",
+        "rlh": "Relative to root element line height",
+        "vw": "1% of viewport width",
+        "vh": "1% of viewport height",
+        "vi": "1% of viewport inline direction",
+        "vb": "1% of viewport block direction",
+        "vmin": "1% of viewport smaller dimension",
+        "vmax": "1% of viewport larger dimension",
+        "svw": "1% of small viewport width",
+        "svh": "1% of small viewport height",
+        "svi": "1% of small viewport inline",
+        "svb": "1% of small viewport block",
+        "lvw": "1% of large viewport width",
+        "lvh": "1% of large viewport height",
+        "lvi": "1% of large viewport inline",
+        "lvb": "1% of large viewport block",
+        "dvw": "1% of dynamic viewport width",
+        "dvh": "1% of dynamic viewport height",
+        "dvi": "1% of dynamic viewport inline",
+        "dvb": "1% of dynamic viewport block",
+        "cqw": "1% of container query width",
+        "cqh": "1% of container query height",
+        "cqi": "1% of container query inline",
+        "cqb": "1% of container query block",
+        "cqmin": "1% of container smaller dimension",
+        "cqmax": "1% of container larger dimension",
+        "%": "Percentage (relative to parent/context, property-specific)",
+        "deg": "Degree",
+        "grad": "Gradian",
+        "rad": "Radian",
+        "turn": "Turn (1turn = 360deg)",
+        "s": "Second",
+        "ms": "Millisecond",
+        "Hz": "Hertz",
+        "kHz": "Kilohertz",
+        "dpi": "Dots per inch",
+        "dpcm": "Dots per centimeter",
+        "dppx": "Dots per pixel"
+      }
+    }
+  },
+  "auth": {
+    "title": "Account access",
+    "subtitle": "Sign in to manage your workspace settings and assets.",
+    "tabs": {
+      "login": "Sign in",
+      "register": "Create account"
+    },
+    "fields": {
+      "name": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "description": "Description"
+    },
+    "placeholders": {
+      "name": "e.g. Alex Rivera",
+      "email": "name@company.com",
+      "password": "At least 8 characters",
+      "description": "Tell us about your role or focus"
+    },
+    "hints": {
+      "password": "Use 8+ characters with a mix of letters and numbers."
+    },
+    "actions": {
+      "login": "Sign in",
+      "register": "Create account"
+    },
+    "panel": {
+      "title": "Workspace access",
+      "subtitle": "Use your credentials to continue editing."
+    },
+    "highlights": {
+      "speedTitle": "Move fast",
+      "speedBody": "Save layouts, experiments, and exports in one place.",
+      "workspaceTitle": "Stay organized",
+      "workspaceBody": "Keep personal and team projects under one account."
+    },
+    "footer": {
+      "hint": "Need inspiration? Jump back to the landing page.",
+      "backHome": "Back to home"
+    }
+  },
+  "profile": {
+    "subtitle": "Manage your personal details.",
+    "sections": {
+      "identity": "Identity",
+      "session": "Session"
+    },
+    "labels": {
+      "name": "Name",
+      "email": "Email",
+      "id": "User ID",
+      "created": "Created",
+      "description": "Description",
+      "token": "Token",
+      "expires": "Expires"
+    },
+    "actions": {
+      "refresh": "Refresh",
+      "logout": "Sign out",
+      "login": "Sign in",
+      "backHome": "Back home",
+      "copyId": "Copy ID",
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "edit": {
+      "title": "Edit profile"
+    },
+    "messages": {
+      "saved": "Profile saved.",
+      "copiedId": "User ID copied.",
+      "copiedEmail": "Email copied.",
+      "copyFailed": "Copy failed."
+    },
+    "empty": {
+      "title": "No active session",
+      "subtitle": "Sign in to view your personal profile.",
+      "panelTitle": "Account required",
+      "panelBody": "Sign in to see your account details and session status."
+    },
+    "description": {
+      "empty": "No description yet."
+    }
+  }
 }

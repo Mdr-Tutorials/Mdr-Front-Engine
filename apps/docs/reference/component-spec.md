@@ -22,16 +22,16 @@
 
 ```json
 {
-    "type": "MdrContainer",
-    "props": {
-        "layout": "flex",
-        "direction": "column",
-        "justify": "center",
-        "align": "center",
-        "wrap": "nowrap",
-        "gap": "16px",
-        "padding": "24px"
-    }
+  "type": "MdrContainer",
+  "props": {
+    "layout": "flex",
+    "direction": "column",
+    "justify": "center",
+    "align": "center",
+    "wrap": "nowrap",
+    "gap": "16px",
+    "padding": "24px"
+  }
 }
 ```
 
@@ -59,14 +59,14 @@
 
 ```json
 {
-    "type": "MdrGrid",
-    "props": {
-        "columns": 3,
-        "rows": "auto",
-        "gap": "16px",
-        "columnGap": "16px",
-        "rowGap": "16px"
-    }
+  "type": "MdrGrid",
+  "props": {
+    "columns": 3,
+    "rows": "auto",
+    "gap": "16px",
+    "columnGap": "16px",
+    "rowGap": "16px"
+  }
 }
 ```
 
@@ -87,13 +87,13 @@
 
 ```json
 {
-    "type": "MdrGridItem",
-    "props": {
-        "colSpan": 2,
-        "rowSpan": 1,
-        "colStart": 1,
-        "rowStart": 1
-    }
+  "type": "MdrGridItem",
+  "props": {
+    "colSpan": 2,
+    "rowSpan": 1,
+    "colStart": 1,
+    "rowStart": 1
+  }
 }
 ```
 
@@ -112,12 +112,12 @@
 
 ```json
 {
-    "type": "MdrStack",
-    "props": {
-        "direction": "vertical",
-        "spacing": "16px",
-        "divider": true
-    }
+  "type": "MdrStack",
+  "props": {
+    "direction": "vertical",
+    "spacing": "16px",
+    "divider": true
+  }
 }
 ```
 
@@ -136,14 +136,14 @@
 
 ```json
 {
-    "type": "MdrText",
-    "props": {
-        "variant": "body",
-        "color": "primary",
-        "align": "left",
-        "weight": "normal"
-    },
-    "children": ["文本内容"]
+  "type": "MdrText",
+  "props": {
+    "variant": "body",
+    "color": "primary",
+    "align": "left",
+    "weight": "normal"
+  },
+  "children": ["文本内容"]
 }
 ```
 
@@ -202,13 +202,13 @@
 
 ```json
 {
-    "type": "MdrLink",
-    "props": {
-        "href": "/about",
-        "target": "_self",
-        "underline": "hover"
-    },
-    "children": ["链接文本"]
+  "type": "MdrLink",
+  "props": {
+    "href": "/about",
+    "target": "_self",
+    "underline": "hover"
+  },
+  "children": ["链接文本"]
 }
 ```
 
@@ -226,14 +226,14 @@
 
 ```json
 {
-    "type": "MdrImage",
-    "props": {
-        "src": "/images/photo.jpg",
-        "alt": "描述文本",
-        "width": "100%",
-        "aspectRatio": "16/9",
-        "objectFit": "cover"
-    }
+  "type": "MdrImage",
+  "props": {
+    "src": "/images/photo.jpg",
+    "alt": "描述文本",
+    "width": "100%",
+    "aspectRatio": "16/9",
+    "objectFit": "cover"
+  }
 }
 ```
 
@@ -256,12 +256,12 @@
 
 ```json
 {
-    "type": "MdrIcon",
-    "props": {
-        "name": "check",
-        "size": "24px",
-        "color": "currentColor"
-    }
+  "type": "MdrIcon",
+  "props": {
+    "name": "check",
+    "size": "24px",
+    "color": "currentColor"
+  }
 }
 ```
 
@@ -332,12 +332,12 @@
 
 ```json
 {
-    "type": "MdrTextarea",
-    "props": {
-        "placeholder": "请输入内容",
-        "rows": 4,
-        "autosize": true
-    }
+  "type": "MdrTextarea",
+  "props": {
+    "placeholder": "请输入内容",
+    "rows": 4,
+    "autosize": true
+  }
 }
 ```
 
@@ -354,14 +354,14 @@
 
 ```json
 {
-    "type": "MdrSelect",
-    "props": {
-        "options": [
-            { "label": "选项 1", "value": "1" },
-            { "label": "选项 2", "value": "2", "disabled": true }
-        ],
-        "placeholder": "请选择"
-    }
+  "type": "MdrSelect",
+  "props": {
+    "options": [
+      { "label": "选项 1", "value": "1" },
+      { "label": "选项 2", "value": "2", "disabled": true }
+    ],
+    "placeholder": "请选择"
+  }
 }
 ```
 
@@ -383,12 +383,12 @@
 
 ```json
 {
-    "type": "MdrCheckbox",
-    "props": {
-        "checked": false,
-        "label": "同意协议",
-        "indeterminate": false
-    }
+  "type": "MdrCheckbox",
+  "props": {
+    "checked": false,
+    "label": "同意协议",
+    "indeterminate": false
+  }
 }
 ```
 
@@ -406,15 +406,15 @@
 
 ```json
 {
-    "type": "MdrRadio",
-    "props": {
-        "options": [
-            { "label": "选项 A", "value": "a" },
-            { "label": "选项 B", "value": "b" }
-        ],
-        "value": "a",
-        "direction": "horizontal"
-    }
+  "type": "MdrRadio",
+  "props": {
+    "options": [
+      { "label": "选项 A", "value": "a" },
+      { "label": "选项 B", "value": "b" }
+    ],
+    "value": "a",
+    "direction": "horizontal"
+  }
 }
 ```
 
@@ -431,11 +431,11 @@
 
 ```json
 {
-    "type": "MdrSwitch",
-    "props": {
-        "checked": false,
-        "size": "medium"
-    }
+  "type": "MdrSwitch",
+  "props": {
+    "checked": false,
+    "size": "medium"
+  }
 }
 ```
 
@@ -456,17 +456,17 @@
 
 ```json
 {
-    "type": "MdrTable",
-    "props": {
-        "columns": [
-            { "title": "姓名", "dataIndex": "name", "width": "150px" },
-            { "title": "年龄", "dataIndex": "age", "align": "center" },
-            { "title": "操作", "key": "action", "render": "..." }
-        ],
-        "dataSource": [],
-        "pagination": { "pageSize": 10 },
-        "bordered": true
-    }
+  "type": "MdrTable",
+  "props": {
+    "columns": [
+      { "title": "姓名", "dataIndex": "name", "width": "150px" },
+      { "title": "年龄", "dataIndex": "age", "align": "center" },
+      { "title": "操作", "key": "action", "render": "..." }
+    ],
+    "dataSource": [],
+    "pagination": { "pageSize": 10 },
+    "bordered": true
+  }
 }
 ```
 
@@ -503,14 +503,14 @@
 
 ```json
 {
-    "type": "MdrCard",
-    "props": {
-        "title": "卡片标题",
-        "cover": "/images/cover.jpg",
-        "hoverable": true,
-        "bordered": true
-    },
-    "children": ["卡片内容"]
+  "type": "MdrCard",
+  "props": {
+    "title": "卡片标题",
+    "cover": "/images/cover.jpg",
+    "hoverable": true,
+    "bordered": true
+  },
+  "children": ["卡片内容"]
 }
 ```
 
@@ -529,12 +529,12 @@
 
 ```json
 {
-    "type": "MdrList",
-    "props": {
-        "items": [],
-        "bordered": false,
-        "split": true
-    }
+  "type": "MdrList",
+  "props": {
+    "items": [],
+    "bordered": false,
+    "split": true
+  }
 }
 ```
 
@@ -587,13 +587,13 @@
 
 ```json
 {
-    "type": "MdrAlert",
-    "props": {
-        "type": "info",
-        "message": "提示信息",
-        "description": "详细描述",
-        "closable": true
-    }
+  "type": "MdrAlert",
+  "props": {
+    "type": "info",
+    "message": "提示信息",
+    "description": "详细描述",
+    "closable": true
+  }
 }
 ```
 
@@ -638,21 +638,21 @@
 
 ```json
 {
-    "type": "MdrNav",
-    "props": {
-        "items": [
-            { "label": "首页", "path": "/" },
-            { "label": "关于", "path": "/about" },
-            {
-                "label": "产品",
-                "children": [
-                    { "label": "产品 A", "path": "/products/a" },
-                    { "label": "产品 B", "path": "/products/b" }
-                ]
-            }
-        ],
-        "mode": "horizontal"
-    }
+  "type": "MdrNav",
+  "props": {
+    "items": [
+      { "label": "首页", "path": "/" },
+      { "label": "关于", "path": "/about" },
+      {
+        "label": "产品",
+        "children": [
+          { "label": "产品 A", "path": "/products/a" },
+          { "label": "产品 B", "path": "/products/b" }
+        ]
+      }
+    ],
+    "mode": "horizontal"
+  }
 }
 ```
 
@@ -693,15 +693,15 @@
 
 ```json
 {
-    "type": "MdrBreadcrumb",
-    "props": {
-        "items": [
-            { "label": "首页", "path": "/" },
-            { "label": "产品", "path": "/products" },
-            { "label": "详情" }
-        ],
-        "separator": "/"
-    }
+  "type": "MdrBreadcrumb",
+  "props": {
+    "items": [
+      { "label": "首页", "path": "/" },
+      { "label": "产品", "path": "/products" },
+      { "label": "详情" }
+    ],
+    "separator": "/"
+  }
 }
 ```
 

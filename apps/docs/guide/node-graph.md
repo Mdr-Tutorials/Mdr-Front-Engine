@@ -373,9 +373,9 @@
 // 输出: result
 
 const result = data
-    .filter((item) => item.active)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 10);
+  .filter((item) => item.active)
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 10);
 
 return { result };
 ```

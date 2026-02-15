@@ -1,4 +1,4 @@
-import Runtime from '/node_modules/.vite/deps/react_jsx-dev-runtime.js';
+import * as Runtime from 'react/jsx-dev-runtime';
 
 export default Runtime;
 export const Fragment = Runtime.Fragment;

@@ -39,12 +39,12 @@ MIR（Modular Intermediate Representation）是 MFE 的核心创新：
 
 ```json
 {
-    "type": "MdrButton",
-    "props": {
-        "variant": "primary",
-        "size": "medium"
-    },
-    "children": ["点击我"]
+  "type": "MdrButton",
+  "props": {
+    "variant": "primary",
+    "size": "medium"
+  },
+  "children": ["点击我"]
 }
 ```
 

@@ -117,20 +117,20 @@ pnpm init
 
 ```json
 {
-    "name": "@mdr/new-package",
-    "version": "0.0.1",
-    "private": true,
-    "main": "./dist/index.js",
-    "module": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
-    "scripts": {
-        "build": "tsup src/index.ts --format cjs,esm --dts",
-        "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
-    },
-    "devDependencies": {
-        "tsup": "^8.0.0",
-        "typescript": "^5.9.0"
-    }
+  "name": "@mdr/new-package",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.9.0"
+  }
 }
 ```
 
@@ -393,24 +393,24 @@ pnpm --filter @mdr/web exec tsc --noEmit
 
 ```json
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "chrome",
-            "request": "launch",
-            "name": "Debug Web",
-            "url": "http://localhost:5173",
-            "webRoot": "${workspaceFolder}/apps/web/src"
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Debug CLI",
-            "program": "${workspaceFolder}/apps/cli/src/cli.ts",
-            "runtimeExecutable": "pnpm",
-            "runtimeArgs": ["tsx"]
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Debug Web",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/apps/web/src"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug CLI",
+      "program": "${workspaceFolder}/apps/cli/src/cli.ts",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["tsx"]
+    }
+  ]
 }
 ```
 

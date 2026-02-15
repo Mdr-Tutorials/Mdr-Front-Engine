@@ -1,61 +1,61 @@
 .MdrCard {
-    box-sizing: border-box;
-    background-color: var(--color-0);
-    border-radius: var(--radius-md);
-    transition: all var(--transition-normal);
-    color: var(--color-10);
+  box-sizing: border-box;
+  background-color: var(--color-0);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
+  color: var(--color-10);
 
-    &.PaddingNone {
-        padding: 0;
+  &.PaddingNone {
+    padding: 0;
+  }
+
+  &.PaddingSmall {
+    padding: var(--spacing-sm);
+  }
+
+  &.PaddingMedium {
+    padding: var(--spacing-md);
+  }
+
+  &.PaddingLarge {
+    padding: var(--spacing-lg);
+  }
+
+  &.Default {
+    border: 1px solid var(--color-6);
+  }
+
+  &.Bordered {
+    border: 2px solid var(--color-6);
+  }
+
+  &.Elevated {
+    border: 1px solid var(--color-6);
+    box-shadow: var(--shadow-md);
+  }
+
+  &.Flat {
+    border: none;
+    background-color: var(--color-2);
+  }
+
+  &.Hoverable {
+    &:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+  }
+
+  &.Clickable {
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--color-9);
+      box-shadow: var(--shadow-md);
     }
 
-    &.PaddingSmall {
-        padding: var(--spacing-sm);
+    &:active {
+      transform: scale(0.98);
     }
-
-    &.PaddingMedium {
-        padding: var(--spacing-md);
-    }
-
-    &.PaddingLarge {
-        padding: var(--spacing-lg);
-    }
-
-    &.Default {
-        border: 1px solid var(--color-6);
-    }
-
-    &.Bordered {
-        border: 2px solid var(--color-6);
-    }
-
-    &.Elevated {
-        border: 1px solid var(--color-6);
-        box-shadow: var(--shadow-md);
-    }
-
-    &.Flat {
-        border: none;
-        background-color: var(--color-2);
-    }
-
-    &.Hoverable {
-        &:hover {
-            box-shadow: var(--shadow-lg);
-            transform: translateY(-2px);
-        }
-    }
-
-    &.Clickable {
-        cursor: pointer;
-
-        &:hover {
-            border-color: var(--color-9);
-            box-shadow: var(--shadow-md);
-        }
-
-        &:active {
-            transform: scale(0.98);
-        }
-    }
+  }
 }

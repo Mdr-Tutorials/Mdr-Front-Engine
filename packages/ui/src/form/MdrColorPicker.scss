@@ -1,51 +1,51 @@
 ﻿@use './MdrField.scss';
 
 .MdrColorPicker {
-    width: 100%;
+  width: 100%;
 }
 
 .MdrColorPickerControls {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
 }
 
 .MdrColorPickerInput {
-    width: 44px;
-    height: 36px;
-    border: none;
-    background: none;
-    padding: 0;
-    cursor: pointer;
+  width: 44px;
+  height: 36px;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
 }
 
 .MdrColorPickerText {
-    flex: 1;
-    border: 1px solid var(--color-6);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 14px;
-    background-color: var(--color-0);
-    color: var(--color-10);
+  flex: 1;
+  border: 1px solid var(--color-6);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 14px;
+  background-color: var(--color-0);
+  color: var(--color-10);
 }
 
 .MdrColorPickerSwatch {
-    width: 28px;
-    height: 28px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--color-4);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-4);
 }
 
 .MdrColorPicker.Disabled {
-    opacity: 0.6;
+  opacity: 0.6;
 }
 
 .MdrColorPicker.Small .MdrColorPickerInput {
-    width: 36px;
-    height: 30px;
+  width: 36px;
+  height: 30px;
 }
 
 .MdrColorPicker.Large .MdrColorPickerInput {
-    width: 52px;
-    height: 42px;
+  width: 52px;
+  height: 42px;
 }

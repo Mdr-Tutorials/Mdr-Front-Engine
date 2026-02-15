@@ -22,10 +22,10 @@ pnpm add @mdr/ui
 import { MdrButton } from '@mdr/ui';
 
 <MdrButton
-    text="点击我"
-    category="Primary"
-    size="Medium"
-    onClick={() => console.log('clicked')}
+  text="点击我"
+  category="Primary"
+  size="Medium"
+  onClick={() => console.log('clicked')}
 />;
 ```
 
@@ -60,10 +60,10 @@ import { MdrButton } from '@mdr/ui';
 import { MdrInput } from '@mdr/ui';
 
 <MdrInput
-    type="Text"
-    placeholder="请输入用户名"
-    size="Medium"
-    onChange={(e) => setValue(e.target.value)}
+  type="Text"
+  placeholder="请输入用户名"
+  size="Medium"
+  onChange={(e) => setValue(e.target.value)}
 />;
 ```
 
@@ -114,14 +114,14 @@ import { MdrInput } from '@mdr/ui';
 import { MdrSelect } from '@mdr/ui';
 
 <MdrSelect
-    label="选择城市"
-    options={[
-        { label: '北京', value: 'beijing' },
-        { label: '上海', value: 'shanghai' },
-        { label: '广州', value: 'guangzhou', disabled: true },
-    ]}
-    placeholder="请选择"
-    onChange={(value) => console.log(value)}
+  label="选择城市"
+  options={[
+    { label: '北京', value: 'beijing' },
+    { label: '上海', value: 'shanghai' },
+    { label: '广州', value: 'guangzhou', disabled: true },
+  ]}
+  placeholder="请选择"
+  onChange={(value) => console.log(value)}
 />;
 ```
 
@@ -144,9 +144,9 @@ import { MdrSelect } from '@mdr/ui';
 
 ```ts
 interface MdrSelectOption {
-    label: string;
-    value: string;
-    disabled?: boolean;
+  label: string;
+  value: string;
+  disabled?: boolean;
 }
 ```
 
@@ -158,11 +158,11 @@ interface MdrSelectOption {
 import { MdrFileUpload } from '@mdr/ui';
 
 <MdrFileUpload
-    label="上传文件"
-    accept=".pdf,.doc,.docx"
-    multiple
-    showList
-    onChange={(files) => console.log(files)}
+  label="上传文件"
+  accept=".pdf,.doc,.docx"
+  multiple
+  showList
+  onChange={(files) => console.log(files)}
 />;
 ```
 
@@ -190,10 +190,10 @@ import { MdrFileUpload } from '@mdr/ui';
 import { MdrRating } from '@mdr/ui';
 
 <MdrRating
-    label="评分"
-    max={5}
-    defaultValue={3}
-    onChange={(value) => console.log(value)}
+  label="评分"
+  max={5}
+  defaultValue={3}
+  onChange={(value) => console.log(value)}
 />;
 ```
 
@@ -238,25 +238,25 @@ import { MdrRating } from '@mdr/ui';
 import { MdrTable } from '@mdr/ui';
 
 interface User {
-    id: number;
-    name: string;
-    age: number;
+  id: number;
+  name: string;
+  age: number;
 }
 
 <MdrTable<User>
-    data={users}
-    columns={[
-        { key: 'name', title: '姓名', dataIndex: 'name' },
-        { key: 'age', title: '年龄', dataIndex: 'age', align: 'Center' },
-        {
-            key: 'action',
-            title: '操作',
-            render: (_, record) => <button>编辑 {record.name}</button>,
-        },
-    ]}
-    bordered
-    striped
-    hoverable
+  data={users}
+  columns={[
+    { key: 'name', title: '姓名', dataIndex: 'name' },
+    { key: 'age', title: '年龄', dataIndex: 'age', align: 'Center' },
+    {
+      key: 'action',
+      title: '操作',
+      render: (_, record) => <button>编辑 {record.name}</button>,
+    },
+  ]}
+  bordered
+  striped
+  hoverable
 />;
 ```
 
@@ -278,12 +278,12 @@ interface User {
 
 ```ts
 interface MdrTableColumn<T> {
-    key: string;
-    title: string;
-    dataIndex?: keyof T;
-    align?: 'Left' | 'Center' | 'Right';
-    width?: string | number;
-    render?: (value: any, record: T, index: number) => ReactNode;
+  key: string;
+  title: string;
+  dataIndex?: keyof T;
+  align?: 'Left' | 'Center' | 'Right';
+  width?: string | number;
+  render?: (value: any, record: T, index: number) => ReactNode;
 }
 ```
 
@@ -295,16 +295,16 @@ interface MdrTableColumn<T> {
 import { MdrList } from '@mdr/ui';
 
 <MdrList
-    items={[
-        { title: '项目 1', description: '描述文本' },
-        {
-            title: '项目 2',
-            description: '描述文本',
-            extra: <span>额外内容</span>,
-        },
-    ]}
-    bordered
-    split
+  items={[
+    { title: '项目 1', description: '描述文本' },
+    {
+      title: '项目 2',
+      description: '描述文本',
+      extra: <span>额外内容</span>,
+    },
+  ]}
+  bordered
+  split
 />;
 ```
 
@@ -368,18 +368,18 @@ import { MdrBadge } from '@mdr/ui';
 import { MdrTabs } from '@mdr/ui';
 
 <MdrTabs
-    items={[
-        { key: '1', label: '标签 1', content: <div>内容 1</div> },
-        { key: '2', label: '标签 2', content: <div>内容 2</div> },
-        {
-            key: '3',
-            label: '标签 3',
-            content: <div>内容 3</div>,
-            disabled: true,
-        },
-    ]}
-    defaultActiveKey="1"
-    onChange={(key) => console.log(key)}
+  items={[
+    { key: '1', label: '标签 1', content: <div>内容 1</div> },
+    { key: '2', label: '标签 2', content: <div>内容 2</div> },
+    {
+      key: '3',
+      label: '标签 3',
+      content: <div>内容 3</div>,
+      disabled: true,
+    },
+  ]}
+  defaultActiveKey="1"
+  onChange={(key) => console.log(key)}
 />;
 ```
 
@@ -396,10 +396,10 @@ import { MdrTabs } from '@mdr/ui';
 
 ```ts
 interface MdrTabItem {
-    key: string;
-    label: string;
-    content: ReactNode;
-    disabled?: boolean;
+  key: string;
+  label: string;
+  content: ReactNode;
+  disabled?: boolean;
 }
 ```
 
@@ -423,7 +423,7 @@ interface MdrTabItem {
 import { MdrPanel } from '@mdr/ui';
 
 <MdrPanel title="面板标题" variant="Bordered" padding="Medium" collapsible>
-    面板内容
+  面板内容
 </MdrPanel>;
 ```
 
@@ -456,7 +456,7 @@ import { MdrPanel } from '@mdr/ui';
 import { MdrHeading } from '@mdr/ui';
 
 <MdrHeading level={1} weight="Bold" color="Primary">
-    主标题
+  主标题
 </MdrHeading>;
 ```
 
@@ -529,22 +529,22 @@ import { FiCheck } from 'react-icons/fi';
 import { MdrModal } from '@mdr/ui';
 
 <MdrModal
-    open={isOpen}
-    title="确认操作"
-    size="Medium"
-    onClose={() => setIsOpen(false)}
-    footer={
-        <>
-            <MdrButton
-                text="取消"
-                category="Secondary"
-                onClick={() => setIsOpen(false)}
-            />
-            <MdrButton text="确认" category="Primary" onClick={handleConfirm} />
-        </>
-    }
+  open={isOpen}
+  title="确认操作"
+  size="Medium"
+  onClose={() => setIsOpen(false)}
+  footer={
+    <>
+      <MdrButton
+        text="取消"
+        category="Secondary"
+        onClick={() => setIsOpen(false)}
+      />
+      <MdrButton text="确认" category="Primary" onClick={handleConfirm} />
+    </>
+  }
 >
-    确定要执行此操作吗？
+  确定要执行此操作吗？
 </MdrModal>;
 ```
 
@@ -569,10 +569,10 @@ import { MdrModal } from '@mdr/ui';
 import { MdrMessage } from '@mdr/ui';
 
 <MdrMessage
-    text="操作成功"
-    type="Success"
-    closable
-    onClose={() => setShow(false)}
+  text="操作成功"
+  type="Success"
+  closable
+  onClose={() => setShow(false)}
 />;
 ```
 

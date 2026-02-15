@@ -6,9 +6,9 @@
 - 日期：2026-02-08
 - 关联任务：`MIR-001`
 - 关联文档：
-    - `specs/decisions/15.mir-data-scope-and-list-render.md`
-    - `specs/mir/mir-contract-v1.2.md`
-    - `specs/mir/MIR-v1.2.json`
+  - `specs/decisions/15.mir-data-scope-and-list-render.md`
+  - `specs/mir/mir-contract-v1.2.md`
+  - `specs/mir/MIR-v1.2.json`
 
 ## 评审目标
 

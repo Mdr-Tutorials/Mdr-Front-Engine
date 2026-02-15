@@ -1,7 +1,11 @@
-import ReactModule from '/node_modules/.vite/deps/react.js';
+import ReactModule from 'react';
 
 const React = ReactModule;
 
+/**
+ * Export host React symbols for remote esm modules (e.g. antd via esm.sh).
+ * 为远程 esm 模块（如 esm.sh 的 antd）导出宿主 React 符号。
+ */
 export default React;
 
 export const Children = React.Children;

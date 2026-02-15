@@ -23,22 +23,22 @@ v1.1 覆盖以下语义：
 
 ```ts
 type MIRDocumentV11 = {
-    version: '1.1';
-    metadata?: {
-        name?: string;
-        description?: string;
-        author?: string;
-        createdAt?: string;
-        updatedAt?: string;
-    };
-    ui: {
-        root: ComponentNode;
-    };
-    logic?: {
-        props?: Record<string, PropDef>;
-        state?: Record<string, StateDef>;
-        graphs?: GraphDef[];
-    };
+  version: '1.1';
+  metadata?: {
+    name?: string;
+    description?: string;
+    author?: string;
+    createdAt?: string;
+    updatedAt?: string;
+  };
+  ui: {
+    root: ComponentNode;
+  };
+  logic?: {
+    props?: Record<string, PropDef>;
+    state?: Record<string, StateDef>;
+    graphs?: GraphDef[];
+  };
 };
 ```
 
@@ -56,15 +56,15 @@ type MIRDocumentV11 = {
 
 ```json
 {
-    "error": "invalid_mir",
-    "message": "MIR validation failed.",
-    "details": [
-        {
-            "code": "MIR_EVENT_TRIGGER_REQUIRED",
-            "path": "/ui/root/children/1/events/click/trigger",
-            "message": "trigger is required"
-        }
-    ]
+  "error": "invalid_mir",
+  "message": "MIR validation failed.",
+  "details": [
+    {
+      "code": "MIR_EVENT_TRIGGER_REQUIRED",
+      "path": "/ui/root/children/1/events/click/trigger",
+      "message": "trigger is required"
+    }
+  ]
 }
 ```
 

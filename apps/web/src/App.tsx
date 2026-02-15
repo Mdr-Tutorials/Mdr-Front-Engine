@@ -15,78 +15,68 @@ import { CommunityPage } from './community/CommunityPage';
 import { CommunityDetailPage } from './community/CommunityDetailPage';
 
 export const createRoutes = (t: TFunction) => [
-    {
-        path: '/',
-        element: <Home />,
-    },
-    {
-        path: 'auth',
-        element: <AuthPage />,
-    },
-    {
-        path: 'profile',
-        element: <ProfilePage />,
-    },
-    {
-        path: 'editor',
-        element: <Editor />,
+  {
+    path: '/',
+    element: <Home />,
+  },
+  {
+    path: 'auth',
+    element: <AuthPage />,
+  },
+  {
+    path: 'profile',
+    element: <ProfilePage />,
+  },
+  {
+    path: 'editor',
+    element: <Editor />,
+    children: [
+      { index: true, element: <EditorHome /> },
+      {
+        path: 'project/:projectId',
         children: [
-            { index: true, element: <EditorHome /> },
-            {
-                path: 'project/:projectId',
-                children: [
-                    { index: true, element: <ProjectHome /> },
-                    { path: 'blueprint', element: <BlueprintEditor /> },
-                    {
-                        path: 'nodegraph',
-                        element: (
-                            <div>{t('nodeGraphEditor', { ns: 'routes' })}</div>
-                        ),
-                    },
-                    {
-                        path: 'component',
-                        element: (
-                            <div>{t('componentEditor', { ns: 'routes' })}</div>
-                        ),
-                    },
-                    {
-                        path: 'animation',
-                        element: (
-                            <div>{t('animationEditor', { ns: 'routes' })}</div>
-                        ),
-                    },
-                    { path: 'resources', element: <ProjectResources /> },
-                    {
-                        path: 'test',
-                        element: <div>{t('testing', { ns: 'routes' })}</div>,
-                    },
-                    { path: 'export', element: <ExportMirPage /> },
-                    {
-                        path: 'deployment',
-                        element: (
-                            <div>
-                                {t('deploymentSettings', { ns: 'routes' })}
-                            </div>
-                        ),
-                    },
-                    { path: 'settings', element: <ProjectSettingsPage /> },
-                ],
-            },
-            {
-                path: 'component',
-                element: <div>{t('componentEditor', { ns: 'routes' })}</div>,
-            },
-            { path: 'blueprint', element: <BlueprintEditor /> },
-            { path: 'settings', element: <EditorSettingsPage /> },
+          { index: true, element: <ProjectHome /> },
+          { path: 'blueprint', element: <BlueprintEditor /> },
+          {
+            path: 'nodegraph',
+            element: <div>{t('nodeGraphEditor', { ns: 'routes' })}</div>,
+          },
+          {
+            path: 'component',
+            element: <div>{t('componentEditor', { ns: 'routes' })}</div>,
+          },
+          {
+            path: 'animation',
+            element: <div>{t('animationEditor', { ns: 'routes' })}</div>,
+          },
+          { path: 'resources', element: <ProjectResources /> },
+          {
+            path: 'test',
+            element: <div>{t('testing', { ns: 'routes' })}</div>,
+          },
+          { path: 'export', element: <ExportMirPage /> },
+          {
+            path: 'deployment',
+            element: <div>{t('deploymentSettings', { ns: 'routes' })}</div>,
+          },
+          { path: 'settings', element: <ProjectSettingsPage /> },
         ],
-    },
-    {
-        path: 'community',
-        element: <CommunityPage />,
-    },
-    {
-        path: 'community/:projectId',
-        element: <CommunityDetailPage />,
-    },
-    { path: 'about', element: <div>{t('aboutPage', { ns: 'routes' })}</div> },
+      },
+      {
+        path: 'component',
+        element: <div>{t('componentEditor', { ns: 'routes' })}</div>,
+      },
+      { path: 'blueprint', element: <BlueprintEditor /> },
+      { path: 'settings', element: <EditorSettingsPage /> },
+    ],
+  },
+  {
+    path: 'community',
+    element: <CommunityPage />,
+  },
+  {
+    path: 'community/:projectId',
+    element: <CommunityDetailPage />,
+  },
+  { path: 'about', element: <div>{t('aboutPage', { ns: 'routes' })}</div> },
 ];

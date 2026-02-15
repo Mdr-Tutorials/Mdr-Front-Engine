@@ -1,10 +1,10 @@
 export {
-    registerNodeCapability as registerInspectorCapability,
-    resolveNodeCapabilities as resolveInspectorCapabilities,
+  registerNodeCapability as registerInspectorCapability,
+  resolveNodeCapabilities as resolveInspectorCapabilities,
 } from '@/mir/renderer/capabilities';
 
 export type {
-    NodeCapability as InspectorCapability,
-    LinkCapability as LinkInspectorCapability,
-    TriggerConflictPolicy,
+  NodeCapability as InspectorCapability,
+  LinkCapability as LinkInspectorCapability,
+  TriggerConflictPolicy,
 } from '@/mir/renderer/capabilities';

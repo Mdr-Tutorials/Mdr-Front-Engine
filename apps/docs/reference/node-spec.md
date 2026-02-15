@@ -60,15 +60,15 @@
 
 ```json
 {
-    "type": "trigger/onClick",
-    "config": {
-        "target": "component-id"
-    },
-    "outputs": {
-        "exec": { "type": "exec" },
-        "event": { "type": "object" },
-        "target": { "type": "object" }
-    }
+  "type": "trigger/onClick",
+  "config": {
+    "target": "component-id"
+  },
+  "outputs": {
+    "exec": { "type": "exec" },
+    "event": { "type": "object" },
+    "target": { "type": "object" }
+  }
 }
 ```
 
@@ -92,15 +92,15 @@
 
 ```json
 {
-    "type": "trigger/onChange",
-    "config": {
-        "target": "input-id"
-    },
-    "outputs": {
-        "exec": { "type": "exec" },
-        "value": { "type": "any" },
-        "event": { "type": "object" }
-    }
+  "type": "trigger/onChange",
+  "config": {
+    "target": "input-id"
+  },
+  "outputs": {
+    "exec": { "type": "exec" },
+    "value": { "type": "any" },
+    "event": { "type": "object" }
+  }
 }
 ```
 
@@ -134,15 +134,15 @@
 
 ```json
 {
-    "type": "trigger/onSubmit",
-    "config": {
-        "target": "form-id"
-    },
-    "outputs": {
-        "exec": { "type": "exec" },
-        "formData": { "type": "object" },
-        "event": { "type": "object" }
-    }
+  "type": "trigger/onSubmit",
+  "config": {
+    "target": "form-id"
+  },
+  "outputs": {
+    "exec": { "type": "exec" },
+    "formData": { "type": "object" },
+    "event": { "type": "object" }
+  }
 }
 ```
 
@@ -152,16 +152,16 @@
 
 ```json
 {
-    "type": "trigger/onKeyPress",
-    "config": {
-        "key": "Enter",
-        "modifiers": ["ctrl", "shift"]
-    },
-    "outputs": {
-        "exec": { "type": "exec" },
-        "key": { "type": "string" },
-        "event": { "type": "object" }
-    }
+  "type": "trigger/onKeyPress",
+  "config": {
+    "key": "Enter",
+    "modifiers": ["ctrl", "shift"]
+  },
+  "outputs": {
+    "exec": { "type": "exec" },
+    "key": { "type": "string" },
+    "event": { "type": "object" }
+  }
 }
 ```
 
@@ -178,17 +178,17 @@
 
 ```json
 {
-    "type": "trigger/onTimer",
-    "config": {
-        "interval": 1000,
-        "repeat": true,
-        "immediate": false
-    },
-    "outputs": {
-        "exec": { "type": "exec" },
-        "count": { "type": "number" },
-        "timestamp": { "type": "number" }
-    }
+  "type": "trigger/onTimer",
+  "config": {
+    "interval": 1000,
+    "repeat": true,
+    "immediate": false
+  },
+  "outputs": {
+    "exec": { "type": "exec" },
+    "count": { "type": "number" },
+    "timestamp": { "type": "number" }
+  }
 }
 ```
 
@@ -208,19 +208,19 @@
 
 ```json
 {
-    "type": "action/setState",
-    "config": {
-        "target": "stateName",
-        "mode": "replace"
-    },
-    "inputs": {
-        "exec": { "type": "exec" },
-        "value": { "type": "any" }
-    },
-    "outputs": {
-        "exec": { "type": "exec" },
-        "newValue": { "type": "any" }
-    }
+  "type": "action/setState",
+  "config": {
+    "target": "stateName",
+    "mode": "replace"
+  },
+  "inputs": {
+    "exec": { "type": "exec" },
+    "value": { "type": "any" }
+  },
+  "outputs": {
+    "exec": { "type": "exec" },
+    "newValue": { "type": "any" }
+  }
 }
 ```
 
@@ -246,18 +246,18 @@
 
 ```json
 {
-    "type": "action/navigate",
-    "config": {
-        "path": "/detail/${id}",
-        "mode": "push"
-    },
-    "inputs": {
-        "exec": { "type": "exec" },
-        "params": { "type": "object" }
-    },
-    "outputs": {
-        "exec": { "type": "exec" }
-    }
+  "type": "action/navigate",
+  "config": {
+    "path": "/detail/${id}",
+    "mode": "push"
+  },
+  "inputs": {
+    "exec": { "type": "exec" },
+    "params": { "type": "object" }
+  },
+  "outputs": {
+    "exec": { "type": "exec" }
+  }
 }
 ```
 
@@ -275,27 +275,27 @@ HTTP 请求节点。
 
 ```json
 {
-    "type": "action/http",
-    "config": {
-        "method": "GET",
-        "url": "/api/users",
-        "headers": {},
-        "timeout": 30000
-    },
-    "inputs": {
-        "exec": { "type": "exec" },
-        "url": { "type": "string" },
-        "body": { "type": "any" },
-        "params": { "type": "object" }
-    },
-    "outputs": {
-        "success": { "type": "exec" },
-        "error": { "type": "exec" },
-        "response": { "type": "object" },
-        "data": { "type": "any" },
-        "status": { "type": "number" },
-        "errorMessage": { "type": "string" }
-    }
+  "type": "action/http",
+  "config": {
+    "method": "GET",
+    "url": "/api/users",
+    "headers": {},
+    "timeout": 30000
+  },
+  "inputs": {
+    "exec": { "type": "exec" },
+    "url": { "type": "string" },
+    "body": { "type": "any" },
+    "params": { "type": "object" }
+  },
+  "outputs": {
+    "success": { "type": "exec" },
+    "error": { "type": "exec" },
+    "response": { "type": "object" },
+    "data": { "type": "any" },
+    "status": { "type": "number" },
+    "errorMessage": { "type": "string" }
+  }
 }
 ```
 
@@ -315,19 +315,19 @@ HTTP 请求节点。
 
 ```json
 {
-    "type": "action/showToast",
-    "config": {
-        "type": "success",
-        "duration": 3000,
-        "position": "top"
-    },
-    "inputs": {
-        "exec": { "type": "exec" },
-        "message": { "type": "string" }
-    },
-    "outputs": {
-        "exec": { "type": "exec" }
-    }
+  "type": "action/showToast",
+  "config": {
+    "type": "success",
+    "duration": 3000,
+    "position": "top"
+  },
+  "inputs": {
+    "exec": { "type": "exec" },
+    "message": { "type": "string" }
+  },
+  "outputs": {
+    "exec": { "type": "exec" }
+  }
 }
 ```
 
@@ -345,16 +345,16 @@ HTTP 请求节点。
 
 ```json
 {
-    "type": "action/showModal",
-    "config": {
-        "ref": "modal-id"
-    },
-    "inputs": {
-        "exec": { "type": "exec" }
-    },
-    "outputs": {
-        "exec": { "type": "exec" }
-    }
+  "type": "action/showModal",
+  "config": {
+    "ref": "modal-id"
+  },
+  "inputs": {
+    "exec": { "type": "exec" }
+  },
+  "outputs": {
+    "exec": { "type": "exec" }
+  }
 }
 ```
 
@@ -364,16 +364,16 @@ HTTP 请求节点。
 
 ```json
 {
-    "type": "action/hideModal",
-    "config": {
-        "ref": "modal-id"
-    },
-    "inputs": {
-        "exec": { "type": "exec" }
-    },
-    "outputs": {
-        "exec": { "type": "exec" }
-    }
+  "type": "action/hideModal",
+  "config": {
+    "ref": "modal-id"
+  },
+  "inputs": {
+    "exec": { "type": "exec" }
+  },
+  "outputs": {
+    "exec": { "type": "exec" }
+  }
 }
 ```
 
@@ -383,17 +383,17 @@ HTTP 请求节点。
 
 ```json
 {
-    "type": "action/console",
-    "config": {
-        "level": "log"
-    },
-    "inputs": {
-        "exec": { "type": "exec" },
-        "message": { "type": "any" }
-    },
-    "outputs": {
-        "exec": { "type": "exec" }
-    }
+  "type": "action/console",
+  "config": {
+    "level": "log"
+  },
+  "inputs": {
+    "exec": { "type": "exec" },
+    "message": { "type": "any" }
+  },
+  "outputs": {
+    "exec": { "type": "exec" }
+  }
 }
 ```
 
@@ -405,18 +405,18 @@ HTTP 请求节点。
 
 ```json
 {
-    "type": "logic/condition",
-    "config": {
-        "expression": "value > 0"
-    },
-    "inputs": {
-        "exec": { "type": "exec" },
-        "input": { "type": "any" }
-    },
-    "outputs": {
-        "true": { "type": "exec" },
-        "false": { "type": "exec" }
-    }
+  "type": "logic/condition",
+  "config": {
+    "expression": "value > 0"
+  },
+  "inputs": {
+    "exec": { "type": "exec" },
+    "input": { "type": "any" }
+  },
+  "outputs": {
+    "true": { "type": "exec" },
+    "false": { "type": "exec" }
+  }
 }
 ```
 
@@ -432,22 +432,22 @@ HTTP 请求节点。
 
 ```json
 {
-    "type": "logic/switch",
-    "config": {
-        "cases": [
-            { "value": "a", "label": "Case A" },
-            { "value": "b", "label": "Case B" }
-        ]
-    },
-    "inputs": {
-        "exec": { "type": "exec" },
-        "value": { "type": "any" }
-    },
-    "outputs": {
-        "case_a": { "type": "exec" },
-        "case_b": { "type": "exec" },
-        "default": { "type": "exec" }
-    }
+  "type": "logic/switch",
+  "config": {
+    "cases": [
+      { "value": "a", "label": "Case A" },
+      { "value": "b", "label": "Case B" }
+    ]
+  },
+  "inputs": {
+    "exec": { "type": "exec" },
+    "value": { "type": "any" }
+  },
+  "outputs": {
+    "case_a": { "type": "exec" },
+    "case_b": { "type": "exec" },
+    "default": { "type": "exec" }
+  }
 }
 ```
 
@@ -457,17 +457,17 @@ HTTP 请求节点。
 
 ```json
 {
-    "type": "logic/forEach",
-    "inputs": {
-        "exec": { "type": "exec" },
-        "array": { "type": "array" }
-    },
-    "outputs": {
-        "loop": { "type": "exec" },
-        "item": { "type": "any" },
-        "index": { "type": "number" },
-        "done": { "type": "exec" }
-    }
+  "type": "logic/forEach",
+  "inputs": {
+    "exec": { "type": "exec" },
+    "array": { "type": "array" }
+  },
+  "outputs": {
+    "loop": { "type": "exec" },
+    "item": { "type": "any" },
+    "index": { "type": "number" },
+    "done": { "type": "exec" }
+  }
 }
 ```
 
@@ -477,17 +477,17 @@ HTTP 请求节点。
 
 ```json
 {
-    "type": "logic/delay",
-    "config": {
-        "duration": 1000
-    },
-    "inputs": {
-        "exec": { "type": "exec" },
-        "duration": { "type": "number" }
-    },
-    "outputs": {
-        "exec": { "type": "exec" }
-    }
+  "type": "logic/delay",
+  "config": {
+    "duration": 1000
+  },
+  "inputs": {
+    "exec": { "type": "exec" },
+    "duration": { "type": "number" }
+  },
+  "outputs": {
+    "exec": { "type": "exec" }
+  }
 }
 ```
 
@@ -497,16 +497,16 @@ HTTP 请求节点。
 
 ```json
 {
-    "type": "logic/debounce",
-    "config": {
-        "wait": 300
-    },
-    "inputs": {
-        "exec": { "type": "exec" }
-    },
-    "outputs": {
-        "exec": { "type": "exec" }
-    }
+  "type": "logic/debounce",
+  "config": {
+    "wait": 300
+  },
+  "inputs": {
+    "exec": { "type": "exec" }
+  },
+  "outputs": {
+    "exec": { "type": "exec" }
+  }
 }
 ```
 
@@ -516,16 +516,16 @@ HTTP 请求节点。
 
 ```json
 {
-    "type": "logic/throttle",
-    "config": {
-        "limit": 1000
-    },
-    "inputs": {
-        "exec": { "type": "exec" }
-    },
-    "outputs": {
-        "exec": { "type": "exec" }
-    }
+  "type": "logic/throttle",
+  "config": {
+    "limit": 1000
+  },
+  "inputs": {
+    "exec": { "type": "exec" }
+  },
+  "outputs": {
+    "exec": { "type": "exec" }
+  }
 }
 ```
 
@@ -537,13 +537,13 @@ HTTP 请求节点。
 
 ```json
 {
-    "type": "data/variable",
-    "config": {
-        "name": "stateName"
-    },
-    "outputs": {
-        "value": { "type": "any" }
-    }
+  "type": "data/variable",
+  "config": {
+    "name": "stateName"
+  },
+  "outputs": {
+    "value": { "type": "any" }
+  }
 }
 ```
 
@@ -553,14 +553,14 @@ HTTP 请求节点。
 
 ```json
 {
-    "type": "data/constant",
-    "config": {
-        "type": "string",
-        "value": "Hello"
-    },
-    "outputs": {
-        "value": { "type": "string" }
-    }
+  "type": "data/constant",
+  "config": {
+    "type": "string",
+    "value": "Hello"
+  },
+  "outputs": {
+    "value": { "type": "string" }
+  }
 }
 ```
 
@@ -577,16 +577,16 @@ HTTP 请求节点。
 
 ```json
 {
-    "type": "data/transform",
-    "config": {
-        "expression": "data.map(item => item.name)"
-    },
-    "inputs": {
-        "data": { "type": "any" }
-    },
-    "outputs": {
-        "result": { "type": "any" }
-    }
+  "type": "data/transform",
+  "config": {
+    "expression": "data.map(item => item.name)"
+  },
+  "inputs": {
+    "data": { "type": "any" }
+  },
+  "outputs": {
+    "result": { "type": "any" }
+  }
 }
 ```
 
@@ -596,14 +596,14 @@ HTTP 请求节点。
 
 ```json
 {
-    "type": "data/merge",
-    "inputs": {
-        "obj1": { "type": "object" },
-        "obj2": { "type": "object" }
-    },
-    "outputs": {
-        "result": { "type": "object" }
-    }
+  "type": "data/merge",
+  "inputs": {
+    "obj1": { "type": "object" },
+    "obj2": { "type": "object" }
+  },
+  "outputs": {
+    "result": { "type": "object" }
+  }
 }
 ```
 
@@ -613,16 +613,16 @@ HTTP 请求节点。
 
 ```json
 {
-    "type": "data/pick",
-    "config": {
-        "path": "user.profile.name"
-    },
-    "inputs": {
-        "object": { "type": "object" }
-    },
-    "outputs": {
-        "value": { "type": "any" }
-    }
+  "type": "data/pick",
+  "config": {
+    "path": "user.profile.name"
+  },
+  "inputs": {
+    "object": { "type": "object" }
+  },
+  "outputs": {
+    "value": { "type": "any" }
+  }
 }
 ```
 
@@ -632,17 +632,17 @@ HTTP 请求节点。
 
 ```json
 {
-    "type": "data/arrayOperation",
-    "config": {
-        "operation": "filter",
-        "expression": "item.active === true"
-    },
-    "inputs": {
-        "array": { "type": "array" }
-    },
-    "outputs": {
-        "result": { "type": "array" }
-    }
+  "type": "data/arrayOperation",
+  "config": {
+    "operation": "filter",
+    "expression": "item.active === true"
+  },
+  "inputs": {
+    "array": { "type": "array" }
+  },
+  "outputs": {
+    "result": { "type": "array" }
+  }
 }
 ```
 
@@ -666,20 +666,20 @@ JavaScript 代码节点。
 
 ```json
 {
-    "type": "code/javascript",
-    "config": {
-        "code": "const result = inputs.a + inputs.b;\nreturn { result };",
-        "async": false
-    },
-    "inputs": {
-        "exec": { "type": "exec" },
-        "a": { "type": "number" },
-        "b": { "type": "number" }
-    },
-    "outputs": {
-        "exec": { "type": "exec" },
-        "result": { "type": "number" }
-    }
+  "type": "code/javascript",
+  "config": {
+    "code": "const result = inputs.a + inputs.b;\nreturn { result };",
+    "async": false
+  },
+  "inputs": {
+    "exec": { "type": "exec" },
+    "a": { "type": "number" },
+    "b": { "type": "number" }
+  },
+  "outputs": {
+    "exec": { "type": "exec" },
+    "result": { "type": "number" }
+  }
 }
 ```
 
@@ -714,18 +714,18 @@ console.log(); // 日志输出
 
 ```json
 {
-    "type": "subgraph/call",
-    "config": {
-        "graphId": "fetch-and-cache"
-    },
-    "inputs": {
-        "exec": { "type": "exec" },
-        "url": { "type": "string" }
-    },
-    "outputs": {
-        "exec": { "type": "exec" },
-        "data": { "type": "any" }
-    }
+  "type": "subgraph/call",
+  "config": {
+    "graphId": "fetch-and-cache"
+  },
+  "inputs": {
+    "exec": { "type": "exec" },
+    "url": { "type": "string" }
+  },
+  "outputs": {
+    "exec": { "type": "exec" },
+    "data": { "type": "any" }
+  }
 }
 ```
 
@@ -737,11 +737,11 @@ console.log(); // 日志输出
 
 ```json
 {
-    "type": "comment",
-    "config": {
-        "text": "这里处理用户登录逻辑",
-        "color": "#FFE066"
-    }
+  "type": "comment",
+  "config": {
+    "text": "这里处理用户登录逻辑",
+    "color": "#FFE066"
+  }
 }
 ```
 

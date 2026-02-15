@@ -4,11 +4,11 @@ import EditorHome from '../EditorHome';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 
 vi.mock('../features/newfile/NewResourceModal', () => ({
-    default: ({ open }: { open: boolean }) =>
-        open ? <div data-testid="resource-modal" /> : null,
+  default: ({ open }: { open: boolean }) =>
+    open ? <div data-testid="resource-modal" /> : null,
 }));
 vi.mock('react-router', () => ({
-    useNavigate: () => vi.fn(),
+  useNavigate: () => vi.fn(),
 }));
 
 const listProjectsMock = vi.fn();
@@ -16,128 +16,124 @@ const publishProjectMock = vi.fn();
 const deleteProjectMock = vi.fn();
 
 vi.mock('../editorApi', () => ({
-    editorApi: {
-        listProjects: (...args: unknown[]) => listProjectsMock(...args),
-        publishProject: (...args: unknown[]) => publishProjectMock(...args),
-        deleteProject: (...args: unknown[]) => deleteProjectMock(...args),
-    },
+  editorApi: {
+    listProjects: (...args: unknown[]) => listProjectsMock(...args),
+    publishProject: (...args: unknown[]) => publishProjectMock(...args),
+    deleteProject: (...args: unknown[]) => deleteProjectMock(...args),
+  },
 }));
 
 vi.mock('@/auth/useAuthStore', () => ({
-    useAuthStore: (selector: (state: { token: string | null }) => unknown) =>
-        selector({ token: 'token-1' }),
+  useAuthStore: (selector: (state: { token: string | null }) => unknown) =>
+    selector({ token: 'token-1' }),
 }));
 
 describe('EditorHome', () => {
-    beforeEach(() => {
-        listProjectsMock.mockReset();
-        publishProjectMock.mockReset();
-        deleteProjectMock.mockReset();
-        vi.spyOn(window, 'confirm').mockReturnValue(true);
-        useEditorStore.setState({ projectsById: {} });
+  beforeEach(() => {
+    listProjectsMock.mockReset();
+    publishProjectMock.mockReset();
+    deleteProjectMock.mockReset();
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    useEditorStore.setState({ projectsById: {} });
+  });
+
+  it('opens the new resource modal when clicking the create button', async () => {
+    listProjectsMock.mockResolvedValue({ projects: [] });
+    render(<EditorHome />);
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'home.actions.newProject' })
+    );
+
+    expect(screen.getByTestId('resource-modal')).toBeTruthy();
+  });
+
+  it('renders projects from backend sorted by updated time', async () => {
+    listProjectsMock.mockResolvedValue({
+      projects: [
+        {
+          id: 'p2',
+          resourceType: 'project',
+          name: 'Older Project',
+          updatedAt: '2026-01-01T00:00:00Z',
+          createdAt: '2026-01-01T00:00:00Z',
+        },
+        {
+          id: 'p1',
+          resourceType: 'project',
+          name: 'Latest Project',
+          updatedAt: '2026-02-01T00:00:00Z',
+          createdAt: '2026-02-01T00:00:00Z',
+        },
+      ],
     });
 
-    it('opens the new resource modal when clicking the create button', async () => {
-        listProjectsMock.mockResolvedValue({ projects: [] });
-        render(<EditorHome />);
+    render(<EditorHome />);
 
-        fireEvent.click(
-            screen.getByRole('button', { name: 'home.actions.newProject' })
-        );
+    await waitFor(() => {
+      const titles = screen
+        .getAllByRole('heading', { level: 3 })
+        .map((node) => node.textContent);
+      expect(titles[0]).toBe('Latest Project');
+    });
+  });
 
-        expect(screen.getByTestId('resource-modal')).toBeTruthy();
+  it('can publish and delete project from card actions', async () => {
+    listProjectsMock.mockResolvedValue({
+      projects: [
+        {
+          id: 'p1',
+          resourceType: 'project',
+          name: 'Project One',
+          description: 'Demo',
+          isPublic: false,
+          starsCount: 0,
+          updatedAt: '2026-02-01T00:00:00Z',
+          createdAt: '2026-02-01T00:00:00Z',
+        },
+      ],
+    });
+    publishProjectMock.mockResolvedValue({
+      project: {
+        id: 'p1',
+        ownerId: 'usr-1',
+        resourceType: 'project',
+        name: 'Project One',
+        description: 'Demo',
+        mir: {
+          version: '1.0',
+          ui: { root: { id: 'root', type: 'container' } },
+        },
+        isPublic: true,
+        starsCount: 0,
+        updatedAt: '2026-02-03T00:00:00Z',
+        createdAt: '2026-02-01T00:00:00Z',
+      },
+    });
+    deleteProjectMock.mockResolvedValue(undefined);
+
+    render(<EditorHome />);
+
+    await screen.findByText('Project One');
+    fireEvent.click(
+      screen.getByRole('button', { name: 'home.card.moreActions' })
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'home.card.publish' }));
+
+    await waitFor(() => {
+      expect(publishProjectMock).toHaveBeenCalledWith('token-1', 'p1');
     });
 
-    it('renders projects from backend sorted by updated time', async () => {
-        listProjectsMock.mockResolvedValue({
-            projects: [
-                {
-                    id: 'p2',
-                    resourceType: 'project',
-                    name: 'Older Project',
-                    updatedAt: '2026-01-01T00:00:00Z',
-                    createdAt: '2026-01-01T00:00:00Z',
-                },
-                {
-                    id: 'p1',
-                    resourceType: 'project',
-                    name: 'Latest Project',
-                    updatedAt: '2026-02-01T00:00:00Z',
-                    createdAt: '2026-02-01T00:00:00Z',
-                },
-            ],
-        });
+    if (!screen.queryByRole('button', { name: 'home.card.delete' })) {
+      fireEvent.click(
+        screen.getByRole('button', { name: 'home.card.moreActions' })
+      );
+    }
+    fireEvent.click(screen.getByRole('button', { name: 'home.card.delete' }));
 
-        render(<EditorHome />);
-
-        await waitFor(() => {
-            const titles = screen
-                .getAllByRole('heading', { level: 3 })
-                .map((node) => node.textContent);
-            expect(titles[0]).toBe('Latest Project');
-        });
+    await waitFor(() => {
+      expect(deleteProjectMock).toHaveBeenCalledWith('token-1', 'p1');
+      expect(screen.queryByText('Project One')).toBeNull();
     });
-
-    it('can publish and delete project from card actions', async () => {
-        listProjectsMock.mockResolvedValue({
-            projects: [
-                {
-                    id: 'p1',
-                    resourceType: 'project',
-                    name: 'Project One',
-                    description: 'Demo',
-                    isPublic: false,
-                    starsCount: 0,
-                    updatedAt: '2026-02-01T00:00:00Z',
-                    createdAt: '2026-02-01T00:00:00Z',
-                },
-            ],
-        });
-        publishProjectMock.mockResolvedValue({
-            project: {
-                id: 'p1',
-                ownerId: 'usr-1',
-                resourceType: 'project',
-                name: 'Project One',
-                description: 'Demo',
-                mir: {
-                    version: '1.0',
-                    ui: { root: { id: 'root', type: 'container' } },
-                },
-                isPublic: true,
-                starsCount: 0,
-                updatedAt: '2026-02-03T00:00:00Z',
-                createdAt: '2026-02-01T00:00:00Z',
-            },
-        });
-        deleteProjectMock.mockResolvedValue(undefined);
-
-        render(<EditorHome />);
-
-        await screen.findByText('Project One');
-        fireEvent.click(
-            screen.getByRole('button', { name: 'home.card.moreActions' })
-        );
-        fireEvent.click(
-            screen.getByRole('button', { name: 'home.card.publish' })
-        );
-
-        await waitFor(() => {
-            expect(publishProjectMock).toHaveBeenCalledWith('token-1', 'p1');
-        });
-
-        if (!screen.queryByRole('button', { name: 'home.card.delete' })) {
-            fireEvent.click(
-                screen.getByRole('button', { name: 'home.card.moreActions' })
-            );
-        }
-        fireEvent.click(
-            screen.getByRole('button', { name: 'home.card.delete' })
-        );
-
-        await waitFor(() => {
-            expect(deleteProjectMock).toHaveBeenCalledWith('token-1', 'p1');
-            expect(screen.queryByText('Project One')).toBeNull();
-        });
-    });
+  });
 });

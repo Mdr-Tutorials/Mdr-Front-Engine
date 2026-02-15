@@ -1,87 +1,87 @@
 ﻿@use './MdrField.scss';
 
 .MdrDatePicker {
-    width: 100%;
+  width: 100%;
 }
 
 .MdrDatePickerControl {
-    position: relative;
-    display: flex;
-    align-items: center;
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .MdrDatePickerInput {
-    width: 100%;
-    border: 1px solid var(--color-6);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-sm) var(--spacing-xl) var(--spacing-sm)
-        var(--spacing-md);
-    font-size: 16px;
-    line-height: 1.5;
-    transition:
-        border-color var(--transition-fast),
-        box-shadow var(--transition-fast);
-    background-color: var(--color-0);
-    color: var(--color-10);
-    outline: none;
+  width: 100%;
+  border: 1px solid var(--color-6);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-xl) var(--spacing-sm)
+    var(--spacing-md);
+  font-size: 16px;
+  line-height: 1.5;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+  background-color: var(--color-0);
+  color: var(--color-10);
+  outline: none;
 
-    &:focus {
-        border-color: var(--color-9);
-        box-shadow: 0 0 0 3px rgba(var(--color-9-rgb, 0, 0, 0), 0.08);
-    }
+  &:focus {
+    border-color: var(--color-9);
+    box-shadow: 0 0 0 3px rgba(var(--color-9-rgb, 0, 0, 0), 0.08);
+  }
 
-    &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        background-color: var(--color-2);
-    }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--color-2);
+  }
 
-    &:read-only {
-        background-color: var(--color-2);
-        cursor: default;
-    }
+  &:read-only {
+    background-color: var(--color-2);
+    cursor: default;
+  }
 }
 
 .MdrDatePickerIcon {
-    position: absolute;
-    right: var(--spacing-sm);
-    display: inline-flex;
-    color: var(--color-6);
-    pointer-events: none;
+  position: absolute;
+  right: var(--spacing-sm);
+  display: inline-flex;
+  color: var(--color-6);
+  pointer-events: none;
 }
 
 .MdrDatePicker.Small .MdrDatePickerInput {
-    padding: var(--spacing-xs) var(--spacing-lg) var(--spacing-xs)
-        var(--spacing-sm);
-    font-size: 14px;
+  padding: var(--spacing-xs) var(--spacing-lg) var(--spacing-xs)
+    var(--spacing-sm);
+  font-size: 14px;
 }
 
 .MdrDatePicker.Large .MdrDatePickerInput {
-    padding: var(--spacing-md) var(--spacing-xl) var(--spacing-md)
-        var(--spacing-md);
-    font-size: 18px;
+  padding: var(--spacing-md) var(--spacing-xl) var(--spacing-md)
+    var(--spacing-md);
+  font-size: 18px;
 }
 
 .MdrDatePicker.Error .MdrDatePickerInput {
-    border-color: var(--color-danger);
+  border-color: var(--color-danger);
 
-    &:focus {
-        box-shadow: 0 0 0 3px rgba(var(--color-danger-rgb), 0.1);
-    }
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(var(--color-danger-rgb), 0.1);
+  }
 }
 
 .MdrDatePicker.Warning .MdrDatePickerInput {
-    border-color: var(--color-warning);
+  border-color: var(--color-warning);
 
-    &:focus {
-        box-shadow: 0 0 0 3px rgba(var(--color-warning-rgb), 0.1);
-    }
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(var(--color-warning-rgb), 0.1);
+  }
 }
 
 .MdrDatePicker.Success .MdrDatePickerInput {
-    border-color: var(--color-success);
+  border-color: var(--color-success);
 
-    &:focus {
-        box-shadow: 0 0 0 3px rgba(var(--color-success-rgb), 0.1);
-    }
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(var(--color-success-rgb), 0.1);
+  }
 }

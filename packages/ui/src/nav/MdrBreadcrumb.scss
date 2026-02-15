@@ -1,23 +1,23 @@
 .MdrBreadcrumb {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6px;
-    color: var(--color-6);
-    font-size: 13px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: var(--color-6);
+  font-size: 13px;
 }
 
 .MdrBreadcrumbItem {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 
-    a {
-        color: inherit;
-        text-decoration: none;
-    }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
 .MdrBreadcrumbSeparator {
-    margin: 0 4px;
+  margin: 0 4px;
 }

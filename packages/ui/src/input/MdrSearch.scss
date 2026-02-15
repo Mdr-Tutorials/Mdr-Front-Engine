@@ -1,126 +1,126 @@
 .MdrSearch {
-    display: inline-flex;
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid;
+  border-radius: var(--radius-md);
+  background-color: var(--color-0);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+  border-color: var(--color-6);
+
+  &:focus-within {
+    border-color: var(--color-9);
+    box-shadow: 0 0 0 3px rgba(var(--color-9-rgb), 0.1);
+  }
+
+  &.Disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--color-2);
+  }
+
+  .MdrSearchIcon {
+    display: flex;
     align-items: center;
-    position: relative;
-    width: 100%;
-    max-width: 400px;
-    border: 1px solid;
-    border-radius: var(--radius-md);
-    background-color: var(--color-0);
+    justify-content: center;
+    color: var(--color-6);
+    pointer-events: none;
+    flex-shrink: 0;
+  }
+
+  input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--color-10);
+
+    &::placeholder {
+      color: var(--color-6);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  .MdrSearchClear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: var(--color-6);
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-sm);
     transition:
-        border-color var(--transition-fast),
-        box-shadow var(--transition-fast);
-    border-color: var(--color-6);
+      background-color var(--transition-fast),
+      color var(--transition-fast);
+    flex-shrink: 0;
 
-    &:focus-within {
-        border-color: var(--color-9);
-        box-shadow: 0 0 0 3px rgba(var(--color-9-rgb), 0.1);
+    &:hover {
+      background-color: var(--color-2);
+      color: var(--color-10);
     }
 
-    &.Disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        background-color: var(--color-2);
+    &:active {
+      background-color: var(--color-3);
     }
 
+    svg {
+      display: block;
+    }
+  }
+
+  &.Small {
     .MdrSearchIcon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--color-6);
-        pointer-events: none;
-        flex-shrink: 0;
+      padding: var(--spacing-xs) var(--spacing-sm);
     }
 
     input {
-        flex: 1;
-        border: none;
-        outline: none;
-        background: transparent;
-        font-size: 16px;
-        line-height: 1.5;
-        color: var(--color-10);
-
-        &::placeholder {
-            color: var(--color-6);
-        }
-
-        &:disabled {
-            cursor: not-allowed;
-        }
+      padding: var(--spacing-xs) var(--spacing-sm);
+      font-size: 14px;
     }
 
     .MdrSearchClear {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: none;
-        background: transparent;
-        color: var(--color-6);
-        cursor: pointer;
-        padding: var(--spacing-xs);
-        border-radius: var(--radius-sm);
-        transition:
-            background-color var(--transition-fast),
-            color var(--transition-fast);
-        flex-shrink: 0;
+      padding: var(--spacing-xs);
+    }
+  }
 
-        &:hover {
-            background-color: var(--color-2);
-            color: var(--color-10);
-        }
-
-        &:active {
-            background-color: var(--color-3);
-        }
-
-        svg {
-            display: block;
-        }
+  &.Medium {
+    .MdrSearchIcon {
+      padding: var(--spacing-sm) var(--spacing-md);
     }
 
-    &.Small {
-        .MdrSearchIcon {
-            padding: var(--spacing-xs) var(--spacing-sm);
-        }
-
-        input {
-            padding: var(--spacing-xs) var(--spacing-sm);
-            font-size: 14px;
-        }
-
-        .MdrSearchClear {
-            padding: var(--spacing-xs);
-        }
+    input {
+      padding: var(--spacing-sm) var(--spacing-md);
+      font-size: 16px;
     }
 
-    &.Medium {
-        .MdrSearchIcon {
-            padding: var(--spacing-sm) var(--spacing-md);
-        }
+    .MdrSearchClear {
+      padding: var(--spacing-xs) var(--spacing-sm);
+    }
+  }
 
-        input {
-            padding: var(--spacing-sm) var(--spacing-md);
-            font-size: 16px;
-        }
-
-        .MdrSearchClear {
-            padding: var(--spacing-xs) var(--spacing-sm);
-        }
+  &.Large {
+    .MdrSearchIcon {
+      padding: var(--spacing-md) var(--spacing-lg);
     }
 
-    &.Large {
-        .MdrSearchIcon {
-            padding: var(--spacing-md) var(--spacing-lg);
-        }
-
-        input {
-            padding: var(--spacing-md) var(--spacing-lg);
-            font-size: 18px;
-        }
-
-        .MdrSearchClear {
-            padding: var(--spacing-sm) var(--spacing-md);
-        }
+    input {
+      padding: var(--spacing-md) var(--spacing-lg);
+      font-size: 18px;
     }
+
+    .MdrSearchClear {
+      padding: var(--spacing-sm) var(--spacing-md);
+    }
+  }
 }

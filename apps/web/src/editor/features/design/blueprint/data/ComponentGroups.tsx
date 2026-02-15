@@ -9,12 +9,12 @@ import { FEEDBACK_GROUP } from './groups/FeedbackGroup';
 import { HEADLESS_GROUP } from './groups/HeadlessGroup';
 
 export const COMPONENT_GROUPS: ComponentGroup[] = [
-    { ...BASE_GROUP, source: 'builtIn' },
-    { ...LAYOUT_GROUP, source: 'builtIn' },
-    { ...FORM_GROUP, source: 'builtIn' },
-    { ...NAV_GROUP, source: 'builtIn' },
-    { ...MEDIA_GROUP, source: 'builtIn' },
-    { ...DATA_GROUP, source: 'builtIn' },
-    { ...FEEDBACK_GROUP, source: 'builtIn' },
-    { ...HEADLESS_GROUP, source: 'headless' },
+  { ...BASE_GROUP, source: 'builtIn' },
+  { ...LAYOUT_GROUP, source: 'builtIn' },
+  { ...FORM_GROUP, source: 'builtIn' },
+  { ...NAV_GROUP, source: 'builtIn' },
+  { ...MEDIA_GROUP, source: 'builtIn' },
+  { ...DATA_GROUP, source: 'builtIn' },
+  { ...FEEDBACK_GROUP, source: 'builtIn' },
+  { ...HEADLESS_GROUP, source: 'headless' },
 ];

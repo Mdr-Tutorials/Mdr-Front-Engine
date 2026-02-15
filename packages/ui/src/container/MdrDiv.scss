@@ -1,55 +1,55 @@
 .MdrDiv {
-    box-sizing: border-box;
+  box-sizing: border-box;
 
-    &.Block {
-        display: block;
-    }
+  &.Block {
+    display: block;
+  }
 
-    &.Inline {
-        display: inline;
-    }
+  &.Inline {
+    display: inline;
+  }
 
-    &.InlineBlock {
-        display: inline-block;
-    }
+  &.InlineBlock {
+    display: inline-block;
+  }
 
-    &.Flex {
-        display: flex;
-    }
+  &.Flex {
+    display: flex;
+  }
 
-    &.Grid {
-        display: grid;
-    }
+  &.Grid {
+    display: grid;
+  }
 
-    &.Visible {
-        overflow: visible;
-    }
+  &.Visible {
+    overflow: visible;
+  }
 
-    &.Hidden {
-        overflow: hidden;
-    }
+  &.Hidden {
+    overflow: hidden;
+  }
 
-    &.Auto {
-        overflow: auto;
-    }
+  &.Auto {
+    overflow: auto;
+  }
 
-    &.Scroll {
-        overflow: scroll;
-    }
+  &.Scroll {
+    overflow: scroll;
+  }
 
-    &.Left {
-        text-align: left;
-    }
+  &.Left {
+    text-align: left;
+  }
 
-    &.Center {
-        text-align: center;
-    }
+  &.Center {
+    text-align: center;
+  }
 
-    &.Right {
-        text-align: right;
-    }
+  &.Right {
+    text-align: right;
+  }
 
-    &.Justify {
-        text-align: justify;
-    }
+  &.Justify {
+    text-align: justify;
+  }
 }

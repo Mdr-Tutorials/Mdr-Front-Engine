@@ -32,31 +32,31 @@ MdrFrontEngine 支持多种部署方式，从传统静态托管到 Web3 去中�
 name: Deploy to GitHub Pages
 
 on:
-    push:
-        branches: [main]
+  push:
+    branches: [main]
 
 jobs:
-    deploy:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-            - uses: pnpm/action-setup@v2
-              with:
-                  version: 10
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 10
 
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: 20
-                  cache: 'pnpm'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
 
-            - run: pnpm install
-            - run: pnpm build
+      - run: pnpm install
+      - run: pnpm build
 
-            - uses: peaceiris/actions-gh-pages@v3
-              with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  publish_dir: ./dist
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
 ```
 
 4. 在仓库 Settings → Pages 中启用 GitHub Pages
@@ -98,19 +98,19 @@ vercel
 
 ```json
 {
-    "buildCommand": "pnpm build",
-    "outputDirectory": "dist",
-    "framework": "vite",
-    "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
-    "headers": [
-        {
-            "source": "/(.*)",
-            "headers": [
-                { "key": "X-Content-Type-Options", "value": "nosniff" },
-                { "key": "X-Frame-Options", "value": "DENY" }
-            ]
-        }
-    ]
+  "buildCommand": "pnpm build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" }
+      ]
+    }
+  ]
 }
 ```
 
@@ -162,10 +162,10 @@ VITE_APP_TITLE=My App
 ```javascript
 // netlify/functions/api.js
 exports.handler = async (event, context) => {
-    return {
-        statusCode: 200,
-        body: JSON.stringify({ message: 'Hello from Netlify Functions!' }),
-    };
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ message: 'Hello from Netlify Functions!' }),
+  };
 };
 ```
 
@@ -224,11 +224,11 @@ CMD ["nginx", "-g", "daemon off;"]
 # docker-compose.yml
 version: '3.8'
 services:
-    web:
-        build: .
-        ports:
-            - '80:80'
-        restart: unless-stopped
+  web:
+    build: .
+    ports:
+      - '80:80'
+    restart: unless-stopped
 ```
 
 ```bash
@@ -260,18 +260,18 @@ ipfs-car pack dist --output app.car
 ```javascript
 // vite.config.ts
 export default defineConfig({
-    base: './', // 使用相对路径
-    build: {
-        assetsDir: 'assets',
-        rollupOptions: {
-            output: {
-                // 确保文件名可预测
-                entryFileNames: 'assets/[name].[hash].js',
-                chunkFileNames: 'assets/[name].[hash].js',
-                assetFileNames: 'assets/[name].[hash].[ext]',
-            },
-        },
+  base: './', // 使用相对路径
+  build: {
+    assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        // 确保文件名可预测
+        entryFileNames: 'assets/[name].[hash].js',
+        chunkFileNames: 'assets/[name].[hash].js',
+        assetFileNames: 'assets/[name].[hash].[ext]',
+      },
     },
+  },
 });
 ```
 

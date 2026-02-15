@@ -86,20 +86,20 @@ CLI 工具支持通过配置文件自定义行为。创建 `mdr.config.json`：
 
 ```json
 {
-    "build": {
-        "outDir": "dist",
-        "target": "react",
-        "minify": true
-    },
-    "export": {
-        "framework": "react",
-        "typescript": true,
-        "cssModule": true
-    },
-    "deploy": {
-        "platform": "vercel",
-        "projectName": "my-app"
-    }
+  "build": {
+    "outDir": "dist",
+    "target": "react",
+    "minify": true
+  },
+  "export": {
+    "framework": "react",
+    "typescript": true,
+    "cssModule": true
+  },
+  "deploy": {
+    "platform": "vercel",
+    "projectName": "my-app"
+  }
 }
 ```
 

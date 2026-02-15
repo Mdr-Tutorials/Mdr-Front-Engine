@@ -1,44 +1,44 @@
 ﻿@use './MdrField.scss';
 
 .MdrRating {
-    width: 100%;
+  width: 100%;
 }
 
 .MdrRatingStars {
-    display: inline-flex;
-    gap: var(--spacing-xs);
+  display: inline-flex;
+  gap: var(--spacing-xs);
 }
 
 .MdrRatingStar {
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    color: var(--color-4);
-    padding: 0;
-    line-height: 1;
-    transition: color var(--transition-fast);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-4);
+  padding: 0;
+  line-height: 1;
+  transition: color var(--transition-fast);
 
-    &.Active {
-        color: var(--color-warning);
-    }
+  &.Active {
+    color: var(--color-warning);
+  }
 
-    &:disabled {
-        cursor: not-allowed;
-        opacity: 0.5;
-    }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 }
 
 .MdrRatingIcon {
-    width: 20px;
-    height: 20px;
+  width: 20px;
+  height: 20px;
 }
 
 .MdrRating.Small .MdrRatingIcon {
-    width: 16px;
-    height: 16px;
+  width: 16px;
+  height: 16px;
 }
 
 .MdrRating.Large .MdrRatingIcon {
-    width: 28px;
-    height: 28px;
+  width: 28px;
+  height: 28px;
 }

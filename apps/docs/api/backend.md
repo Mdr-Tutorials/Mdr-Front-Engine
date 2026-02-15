@@ -48,8 +48,8 @@ X-Auth-Token: <token>
 
 ```json
 {
-    "code": "error_code",
-    "message": "错误描述"
+  "code": "error_code",
+  "message": "错误描述"
 }
 ```
 
@@ -67,7 +67,7 @@ GET /api/ping
 
 ```json
 {
-    "message": "pong"
+  "message": "pong"
 }
 ```
 
@@ -87,10 +87,10 @@ POST /api/auth/register
 
 ```json
 {
-    "email": "user@example.com",
-    "password": "password123",
-    "name": "用户名",
-    "description": "个人简介"
+  "email": "user@example.com",
+  "password": "password123",
+  "name": "用户名",
+  "description": "个人简介"
 }
 ```
 
@@ -105,15 +105,15 @@ POST /api/auth/register
 
 ```json
 {
-    "user": {
-        "id": "usr_a1b2c3d4e5f6g7h8",
-        "email": "user@example.com",
-        "name": "用户名",
-        "description": "个人简介",
-        "createdAt": "2024-01-15T10:30:00Z"
-    },
-    "token": "abc123def456...",
-    "expiresAt": "2024-01-16T10:30:00Z"
+  "user": {
+    "id": "usr_a1b2c3d4e5f6g7h8",
+    "email": "user@example.com",
+    "name": "用户名",
+    "description": "个人简介",
+    "createdAt": "2024-01-15T10:30:00Z"
+  },
+  "token": "abc123def456...",
+  "expiresAt": "2024-01-16T10:30:00Z"
 }
 ```
 
@@ -141,8 +141,8 @@ POST /api/auth/login
 
 ```json
 {
-    "email": "user@example.com",
-    "password": "password123"
+  "email": "user@example.com",
+  "password": "password123"
 }
 ```
 
@@ -150,15 +150,15 @@ POST /api/auth/login
 
 ```json
 {
-    "user": {
-        "id": "usr_a1b2c3d4e5f6g7h8",
-        "email": "user@example.com",
-        "name": "用户名",
-        "description": "个人简介",
-        "createdAt": "2024-01-15T10:30:00Z"
-    },
-    "token": "abc123def456...",
-    "expiresAt": "2024-01-16T10:30:00Z"
+  "user": {
+    "id": "usr_a1b2c3d4e5f6g7h8",
+    "email": "user@example.com",
+    "name": "用户名",
+    "description": "个人简介",
+    "createdAt": "2024-01-15T10:30:00Z"
+  },
+  "token": "abc123def456...",
+  "expiresAt": "2024-01-16T10:30:00Z"
 }
 ```
 
@@ -199,13 +199,13 @@ GET /api/auth/me
 
 ```json
 {
-    "user": {
-        "id": "usr_a1b2c3d4e5f6g7h8",
-        "email": "user@example.com",
-        "name": "用户名",
-        "description": "个人简介",
-        "createdAt": "2024-01-15T10:30:00Z"
-    }
+  "user": {
+    "id": "usr_a1b2c3d4e5f6g7h8",
+    "email": "user@example.com",
+    "name": "用户名",
+    "description": "个人简介",
+    "createdAt": "2024-01-15T10:30:00Z"
+  }
 }
 ```
 
@@ -233,13 +233,13 @@ GET /api/users/:id
 
 ```json
 {
-    "user": {
-        "id": "usr_a1b2c3d4e5f6g7h8",
-        "email": "user@example.com",
-        "name": "用户名",
-        "description": "个人简介",
-        "createdAt": "2024-01-15T10:30:00Z"
-    }
+  "user": {
+    "id": "usr_a1b2c3d4e5f6g7h8",
+    "email": "user@example.com",
+    "name": "用户名",
+    "description": "个人简介",
+    "createdAt": "2024-01-15T10:30:00Z"
+  }
 }
 ```
 
@@ -265,14 +265,14 @@ POST /api/projects
 
 ```json
 {
-    "name": "My Project",
-    "description": "optional",
-    "resourceType": "project",
-    "isPublic": true,
-    "mir": {
-        "version": "1.0",
-        "ui": { "root": { "id": "root", "type": "container" } }
-    }
+  "name": "My Project",
+  "description": "optional",
+  "resourceType": "project",
+  "isPublic": true,
+  "mir": {
+    "version": "1.0",
+    "ui": { "root": { "id": "root", "type": "container" } }
+  }
 }
 ```
 
@@ -312,22 +312,22 @@ GET /api/community/projects
 
 ```json
 {
-    "projects": [
-        {
-            "id": "prj_xxx",
-            "resourceType": "project",
-            "name": "SaaS Dashboard",
-            "description": "Public template",
-            "authorId": "usr_xxx",
-            "authorName": "Alice",
-            "starsCount": 12,
-            "createdAt": "2026-02-07T09:30:00Z",
-            "updatedAt": "2026-02-07T10:00:00Z"
-        }
-    ],
-    "page": 1,
-    "pageSize": 20,
-    "sort": "latest"
+  "projects": [
+    {
+      "id": "prj_xxx",
+      "resourceType": "project",
+      "name": "SaaS Dashboard",
+      "description": "Public template",
+      "authorId": "usr_xxx",
+      "authorName": "Alice",
+      "starsCount": 12,
+      "createdAt": "2026-02-07T09:30:00Z",
+      "updatedAt": "2026-02-07T10:00:00Z"
+    }
+  ],
+  "page": 1,
+  "pageSize": 20,
+  "sort": "latest"
 }
 ```
 
@@ -355,8 +355,8 @@ PATCH /api/users/me
 
 ```json
 {
-    "name": "新用户名",
-    "description": "新的个人简介"
+  "name": "新用户名",
+  "description": "新的个人简介"
 }
 ```
 
@@ -369,13 +369,13 @@ PATCH /api/users/me
 
 ```json
 {
-    "user": {
-        "id": "usr_a1b2c3d4e5f6g7h8",
-        "email": "user@example.com",
-        "name": "新用户名",
-        "description": "新的个人简介",
-        "createdAt": "2024-01-15T10:30:00Z"
-    }
+  "user": {
+    "id": "usr_a1b2c3d4e5f6g7h8",
+    "email": "user@example.com",
+    "name": "新用户名",
+    "description": "新的个人简介",
+    "createdAt": "2024-01-15T10:30:00Z"
+  }
 }
 ```
 
@@ -395,11 +395,11 @@ PATCH /api/users/me
 
 ```typescript
 interface User {
-    id: string; // 格式: "usr_" + 16位随机十六进制
-    email: string; // 邮箱（小写标准化）
-    name: string; // 用户名
-    description: string; // 个人简介
-    createdAt: string; // ISO 8601 格式时间戳
+  id: string; // 格式: "usr_" + 16位随机十六进制
+  email: string; // 邮箱（小写标准化）
+  name: string; // 用户名
+  description: string; // 个人简介
+  createdAt: string; // ISO 8601 格式时间戳
 }
 ```
 
@@ -407,21 +407,21 @@ interface User {
 
 ```typescript
 interface Session {
-    token: string; // 32位十六进制字符串
-    userId: string; // 关联的用户 ID
-    createdAt: string; // 创建时间
-    expiresAt: string; // 过期时间
+  token: string; // 32位十六进制字符串
+  userId: string; // 关联的用户 ID
+  createdAt: string; // 创建时间
+  expiresAt: string; // 过期时间
 }
 
 interface ProjectSummary {
-    id: string;
-    resourceType: 'project' | 'component' | 'nodegraph';
-    name: string;
-    description: string;
-    isPublic: boolean;
-    starsCount: number;
-    createdAt: string;
-    updatedAt: string;
+  id: string;
+  resourceType: 'project' | 'component' | 'nodegraph';
+  name: string;
+  description: string;
+  isPublic: boolean;
+  starsCount: number;
+  createdAt: string;
+  updatedAt: string;
 }
 ```
 
@@ -466,33 +466,33 @@ Access-Control-Expose-Headers: Authorization, Content-Type
 ```typescript
 // 注册
 const registerResponse = await fetch(
-    'http://localhost:8080/api/auth/register',
-    {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            email: 'user@example.com',
-            password: 'password123',
-            name: '用户名',
-        }),
-    }
+  'http://localhost:8080/api/auth/register',
+  {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email: 'user@example.com',
+      password: 'password123',
+      name: '用户名',
+    }),
+  }
 );
 const { user, token } = await registerResponse.json();
 
 // 使用 Token 请求
 const meResponse = await fetch('http://localhost:8080/api/auth/me', {
-    headers: { Authorization: `Bearer ${token}` },
+  headers: { Authorization: `Bearer ${token}` },
 });
 const { user: currentUser } = await meResponse.json();
 
 // 更新用户信息
 const updateResponse = await fetch('http://localhost:8080/api/users/me', {
-    method: 'PATCH',
-    headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ name: '新名字' }),
+  method: 'PATCH',
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  },
+  body: JSON.stringify({ name: '新名字' }),
 });
 ```
 

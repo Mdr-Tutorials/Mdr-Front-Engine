@@ -55,11 +55,11 @@
 
 ```json
 {
-    "type": "page",
-    "meta": {
-        "route": "/home",
-        "title": "首页"
-    }
+  "type": "page",
+  "meta": {
+    "route": "/home",
+    "title": "首页"
+  }
 }
 ```
 
@@ -69,10 +69,10 @@
 
 ```json
 {
-    "type": "component",
-    "props": {
-        "title": { "type": "string", "required": true }
-    }
+  "type": "component",
+  "props": {
+    "title": { "type": "string", "required": true }
+  }
 }
 ```
 
@@ -82,11 +82,11 @@
 
 ```json
 {
-    "type": "template",
-    "meta": {
-        "name": "BlogLayout",
-        "description": "博客页面布局模板"
-    }
+  "type": "template",
+  "meta": {
+    "name": "BlogLayout",
+    "description": "博客页面布局模板"
+  }
 }
 ```
 
@@ -94,18 +94,18 @@
 
 ```json
 {
-    "meta": {
-        "name": "HomePage",
-        "title": "首页",
-        "description": "应用首页",
-        "author": "MFE Team",
-        "version": "1.0.0",
-        "created": "2024-01-01T00:00:00Z",
-        "modified": "2024-01-15T12:30:00Z",
-        "tags": ["home", "landing"],
-        "route": "/",
-        "layout": "default"
-    }
+  "meta": {
+    "name": "HomePage",
+    "title": "首页",
+    "description": "应用首页",
+    "author": "MFE Team",
+    "version": "1.0.0",
+    "created": "2024-01-01T00:00:00Z",
+    "modified": "2024-01-15T12:30:00Z",
+    "tags": ["home", "landing"],
+    "route": "/",
+    "layout": "default"
+  }
 }
 ```
 
@@ -128,14 +128,14 @@
 
 ```json
 {
-    "imports": [
-        {
-            "from": "source",
-            "components": ["Component1", "Component2"],
-            "default": "DefaultExport",
-            "named": { "originalName": "alias" }
-        }
-    ]
+  "imports": [
+    {
+      "from": "source",
+      "components": ["Component1", "Component2"],
+      "default": "DefaultExport",
+      "named": { "originalName": "alias" }
+    }
+  ]
 }
 ```
 
@@ -143,24 +143,24 @@
 
 ```json
 {
-    "imports": [
-        {
-            "from": "@mdr/ui",
-            "components": ["MdrButton", "MdrInput", "MdrModal"]
-        },
-        {
-            "from": "./components/CustomCard",
-            "components": ["CustomCard"]
-        },
-        {
-            "from": "lodash",
-            "named": { "debounce": "debounce", "throttle": "throttle" }
-        },
-        {
-            "from": "axios",
-            "default": "axios"
-        }
-    ]
+  "imports": [
+    {
+      "from": "@mdr/ui",
+      "components": ["MdrButton", "MdrInput", "MdrModal"]
+    },
+    {
+      "from": "./components/CustomCard",
+      "components": ["CustomCard"]
+    },
+    {
+      "from": "lodash",
+      "named": { "debounce": "debounce", "throttle": "throttle" }
+    },
+    {
+      "from": "axios",
+      "default": "axios"
+    }
+  ]
 }
 ```
 
@@ -170,13 +170,13 @@
 
 ```json
 {
-    "state": {
-        "stateName": {
-            "type": "string | number | boolean | array | object",
-            "default": "defaultValue",
-            "description": "状态描述"
-        }
+  "state": {
+    "stateName": {
+      "type": "string | number | boolean | array | object",
+      "default": "defaultValue",
+      "description": "状态描述"
     }
+  }
 }
 ```
 
@@ -184,30 +184,30 @@
 
 ```json
 {
-    "state": {
-        "count": {
-            "type": "number",
-            "default": 0,
-            "description": "计数器值"
-        },
-        "items": {
-            "type": "array",
-            "default": [],
-            "items": { "type": "object" }
-        },
-        "user": {
-            "type": "object",
-            "default": null,
-            "properties": {
-                "name": { "type": "string" },
-                "email": { "type": "string" }
-            }
-        },
-        "isLoading": {
-            "type": "boolean",
-            "default": false
-        }
+  "state": {
+    "count": {
+      "type": "number",
+      "default": 0,
+      "description": "计数器值"
+    },
+    "items": {
+      "type": "array",
+      "default": [],
+      "items": { "type": "object" }
+    },
+    "user": {
+      "type": "object",
+      "default": null,
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" }
+      }
+    },
+    "isLoading": {
+      "type": "boolean",
+      "default": false
     }
+  }
 }
 ```
 
@@ -217,12 +217,12 @@
 
 ```json
 {
-    "computed": {
-        "propertyName": {
-            "expression": "expression",
-            "dependencies": ["dep1", "dep2"]
-        }
+  "computed": {
+    "propertyName": {
+      "expression": "expression",
+      "dependencies": ["dep1", "dep2"]
     }
+  }
 }
 ```
 
@@ -230,20 +230,20 @@
 
 ```json
 {
-    "computed": {
-        "fullName": {
-            "expression": "state.firstName + ' ' + state.lastName",
-            "dependencies": ["firstName", "lastName"]
-        },
-        "itemCount": {
-            "expression": "state.items.length",
-            "dependencies": ["items"]
-        },
-        "isValid": {
-            "expression": "state.email.includes('@') && state.password.length >= 8",
-            "dependencies": ["email", "password"]
-        }
+  "computed": {
+    "fullName": {
+      "expression": "state.firstName + ' ' + state.lastName",
+      "dependencies": ["firstName", "lastName"]
+    },
+    "itemCount": {
+      "expression": "state.items.length",
+      "dependencies": ["items"]
+    },
+    "isValid": {
+      "expression": "state.email.includes('@') && state.password.length >= 8",
+      "dependencies": ["email", "password"]
     }
+  }
 }
 ```
 
@@ -253,13 +253,13 @@
 
 ```json
 {
-    "methods": {
-        "methodName": {
-            "params": ["param1", "param2"],
-            "body": "code or graph reference",
-            "async": false
-        }
+  "methods": {
+    "methodName": {
+      "params": ["param1", "param2"],
+      "body": "code or graph reference",
+      "async": false
     }
+  }
 }
 ```
 
@@ -267,15 +267,15 @@
 
 ```json
 {
-    "methods": {
-        "increment": {
-            "body": "setState({ count: state.count + 1 })"
-        },
-        "fetchData": {
-            "async": true,
-            "body": "const res = await fetch('/api/data'); return res.json();"
-        }
+  "methods": {
+    "increment": {
+      "body": "setState({ count: state.count + 1 })"
+    },
+    "fetchData": {
+      "async": true,
+      "body": "const res = await fetch('/api/data'); return res.json();"
     }
+  }
 }
 ```
 
@@ -283,12 +283,12 @@
 
 ```json
 {
-    "methods": {
-        "handleSubmit": {
-            "params": ["formData"],
-            "graph": "submit-handler"
-        }
+  "methods": {
+    "handleSubmit": {
+      "params": ["formData"],
+      "graph": "submit-handler"
     }
+  }
 }
 ```
 
@@ -298,15 +298,15 @@
 
 ```json
 {
-    "props": {
-        "propName": {
-            "type": "string | number | boolean | array | object | function",
-            "required": false,
-            "default": "defaultValue",
-            "description": "属性描述",
-            "validator": "expression"
-        }
+  "props": {
+    "propName": {
+      "type": "string | number | boolean | array | object | function",
+      "required": false,
+      "default": "defaultValue",
+      "description": "属性描述",
+      "validator": "expression"
     }
+  }
 }
 ```
 
@@ -314,39 +314,39 @@
 
 ```json
 {
-    "props": {
-        "title": {
-            "type": "string",
-            "required": true,
-            "description": "卡片标题"
-        },
-        "size": {
-            "type": "string",
-            "enum": ["small", "medium", "large"],
-            "default": "medium",
-            "description": "卡片尺寸"
-        },
-        "items": {
-            "type": "array",
-            "default": [],
-            "items": {
-                "type": "object",
-                "properties": {
-                    "id": { "type": "number" },
-                    "name": { "type": "string" }
-                }
-            }
-        },
-        "onClick": {
-            "type": "function",
-            "description": "点击回调"
-        },
-        "count": {
-            "type": "number",
-            "default": 0,
-            "validator": "value >= 0 && value <= 100"
+  "props": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "description": "卡片标题"
+    },
+    "size": {
+      "type": "string",
+      "enum": ["small", "medium", "large"],
+      "default": "medium",
+      "description": "卡片尺寸"
+    },
+    "items": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number" },
+          "name": { "type": "string" }
         }
+      }
+    },
+    "onClick": {
+      "type": "function",
+      "description": "点击回调"
+    },
+    "count": {
+      "type": "number",
+      "default": 0,
+      "validator": "value >= 0 && value <= 100"
     }
+  }
 }
 ```
 
@@ -369,24 +369,24 @@
 
 ```json
 {
-    "slots": {
-        "default": {
-            "description": "默认内容插槽"
-        },
-        "header": {
-            "description": "头部插槽"
-        },
-        "footer": {
-            "description": "底部插槽"
-        },
-        "item": {
-            "description": "列表项插槽",
-            "props": {
-                "item": { "type": "object" },
-                "index": { "type": "number" }
-            }
-        }
+  "slots": {
+    "default": {
+      "description": "默认内容插槽"
+    },
+    "header": {
+      "description": "头部插槽"
+    },
+    "footer": {
+      "description": "底部插槽"
+    },
+    "item": {
+      "description": "列表项插槽",
+      "props": {
+        "item": { "type": "object" },
+        "index": { "type": "number" }
+      }
     }
+  }
 }
 ```
 
@@ -432,7 +432,7 @@
 
 ```json
 {
-    "children": ["纯文本内容"]
+  "children": ["纯文本内容"]
 }
 ```
 
@@ -440,12 +440,12 @@
 
 ```json
 {
-    "children": [
-        {
-            "type": "MdrText",
-            "props": { "content": "文本" }
-        }
-    ]
+  "children": [
+    {
+      "type": "MdrText",
+      "props": { "content": "文本" }
+    }
+  ]
 }
 ```
 
@@ -453,10 +453,10 @@
 
 ```json
 {
-    "children": [
-        { "$expr": "user.name" },
-        { "$t": "greeting", "params": { "name": "${user.name}" } }
-    ]
+  "children": [
+    { "$expr": "user.name" },
+    { "$t": "greeting", "params": { "name": "${user.name}" } }
+  ]
 }
 ```
 
@@ -464,12 +464,12 @@
 
 ```json
 {
-    "children": [
-        "Hello, ",
-        { "$expr": "user.name" },
-        "!",
-        { "type": "MdrIcon", "props": { "name": "check" } }
-    ]
+  "children": [
+    "Hello, ",
+    { "$expr": "user.name" },
+    "!",
+    { "type": "MdrIcon", "props": { "name": "check" } }
+  ]
 }
 ```
 
@@ -479,13 +479,13 @@
 
 ```json
 {
-    "events": {
-        "onClick": {
-            "type": "graph",
-            "ref": "click-handler",
-            "params": { "id": "${item.id}" }
-        }
+  "events": {
+    "onClick": {
+      "type": "graph",
+      "ref": "click-handler",
+      "params": { "id": "${item.id}" }
     }
+  }
 }
 ```
 
@@ -493,18 +493,18 @@
 
 ```json
 {
-    "events": {
-        "onClick": {
-            "type": "action",
-            "action": "navigate",
-            "params": { "path": "/detail/${item.id}" }
-        },
-        "onChange": {
-            "type": "action",
-            "action": "setState",
-            "params": { "key": "value", "value": "$event.target.value" }
-        }
+  "events": {
+    "onClick": {
+      "type": "action",
+      "action": "navigate",
+      "params": { "path": "/detail/${item.id}" }
+    },
+    "onChange": {
+      "type": "action",
+      "action": "setState",
+      "params": { "key": "value", "value": "$event.target.value" }
     }
+  }
 }
 ```
 
@@ -512,12 +512,12 @@
 
 ```json
 {
-    "events": {
-        "onClick": {
-            "type": "code",
-            "code": "console.log('clicked', event)"
-        }
+  "events": {
+    "onClick": {
+      "type": "code",
+      "code": "console.log('clicked', event)"
     }
+  }
 }
 ```
 
@@ -525,13 +525,13 @@
 
 ```json
 {
-    "events": {
-        "onClick": {
-            "type": "method",
-            "name": "handleClick",
-            "params": ["${item.id}"]
-        }
+  "events": {
+    "onClick": {
+      "type": "method",
+      "name": "handleClick",
+      "params": ["${item.id}"]
     }
+  }
 }
 ```
 
@@ -554,12 +554,12 @@
 
 ```json
 {
-    "bindings": {
-        "value": {
-            "source": "state",
-            "path": "formData.username"
-        }
+  "bindings": {
+    "value": {
+      "source": "state",
+      "path": "formData.username"
     }
+  }
 }
 ```
 
@@ -567,12 +567,12 @@
 
 ```json
 {
-    "bindings": {
-        "title": {
-            "source": "props",
-            "path": "cardTitle"
-        }
+  "bindings": {
+    "title": {
+      "source": "props",
+      "path": "cardTitle"
     }
+  }
 }
 ```
 
@@ -580,12 +580,12 @@
 
 ```json
 {
-    "bindings": {
-        "label": {
-            "source": "computed",
-            "path": "fullName"
-        }
+  "bindings": {
+    "label": {
+      "source": "computed",
+      "path": "fullName"
     }
+  }
 }
 ```
 
@@ -593,12 +593,12 @@
 
 ```json
 {
-    "bindings": {
-        "disabled": {
-            "source": "expression",
-            "value": "!state.isValid || state.isLoading"
-        }
+  "bindings": {
+    "disabled": {
+      "source": "expression",
+      "value": "!state.isValid || state.isLoading"
     }
+  }
 }
 ```
 
@@ -606,15 +606,15 @@
 
 ```json
 {
-    "bindings": {
-        "items": {
-            "source": "api",
-            "endpoint": "/api/users",
-            "method": "GET",
-            "path": "data.list",
-            "refresh": "onMount"
-        }
+  "bindings": {
+    "items": {
+      "source": "api",
+      "endpoint": "/api/users",
+      "method": "GET",
+      "path": "data.list",
+      "refresh": "onMount"
     }
+  }
 }
 ```
 
@@ -624,10 +624,10 @@
 
 ```json
 {
-    "condition": {
-        "type": "expression",
-        "value": "isLoggedIn"
-    }
+  "condition": {
+    "type": "expression",
+    "value": "isLoggedIn"
+  }
 }
 ```
 
@@ -635,14 +635,14 @@
 
 ```json
 {
-    "condition": {
-        "type": "expression",
-        "value": "user !== null",
-        "else": {
-            "type": "MdrText",
-            "props": { "content": "请先登录" }
-        }
+  "condition": {
+    "type": "expression",
+    "value": "user !== null",
+    "else": {
+      "type": "MdrText",
+      "props": { "content": "请先登录" }
     }
+  }
 }
 ```
 
@@ -650,16 +650,16 @@
 
 ```json
 {
-    "condition": {
-        "type": "switch",
-        "value": "status",
-        "cases": {
-            "loading": { "type": "MdrSpinner" },
-            "error": { "type": "MdrAlert", "props": { "type": "error" } },
-            "success": { "type": "MdrText", "props": { "content": "成功" } }
-        },
-        "default": { "type": "MdrText", "props": { "content": "未知状态" } }
-    }
+  "condition": {
+    "type": "switch",
+    "value": "status",
+    "cases": {
+      "loading": { "type": "MdrSpinner" },
+      "error": { "type": "MdrAlert", "props": { "type": "error" } },
+      "success": { "type": "MdrText", "props": { "content": "成功" } }
+    },
+    "default": { "type": "MdrText", "props": { "content": "未知状态" } }
+  }
 }
 ```
 
@@ -669,15 +669,15 @@
 
 ```json
 {
-    "loop": {
-        "source": "items",
-        "item": "item",
-        "key": "item.id"
-    },
-    "type": "MdrCard",
-    "props": {
-        "title": { "$expr": "item.name" }
-    }
+  "loop": {
+    "source": "items",
+    "item": "item",
+    "key": "item.id"
+  },
+  "type": "MdrCard",
+  "props": {
+    "title": { "$expr": "item.name" }
+  }
 }
 ```
 
@@ -685,12 +685,12 @@
 
 ```json
 {
-    "loop": {
-        "source": "items",
-        "item": "item",
-        "index": "idx",
-        "key": "item.id"
-    }
+  "loop": {
+    "source": "items",
+    "item": "item",
+    "index": "idx",
+    "key": "item.id"
+  }
 }
 ```
 
@@ -698,12 +698,12 @@
 
 ```json
 {
-    "loop": {
-        "type": "range",
-        "start": 1,
-        "end": 10,
-        "item": "num"
-    }
+  "loop": {
+    "type": "range",
+    "start": 1,
+    "end": 10,
+    "item": "num"
+  }
 }
 ```
 
@@ -711,11 +711,11 @@
 
 ```json
 {
-    "loop": {
-        "source": "userMap",
-        "key": "userId",
-        "value": "userData"
-    }
+  "loop": {
+    "source": "userMap",
+    "key": "userId",
+    "value": "userData"
+  }
 }
 ```
 
@@ -830,7 +830,7 @@ https://mdr.dev/schemas/mir/1.0.json
 
 ```json
 {
-    "$schema": "https://mdr.dev/schemas/mir/1.0.json"
+  "$schema": "https://mdr.dev/schemas/mir/1.0.json"
 }
 ```
 

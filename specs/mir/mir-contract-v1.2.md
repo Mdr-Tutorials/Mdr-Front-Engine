@@ -5,8 +5,8 @@
 - Draft
 - 日期：2026-02-08
 - 关联 ADR：
-    - `specs/decisions/10.mir-contract-validation.md`
-    - `specs/decisions/15.mir-data-scope-and-list-render.md`
+  - `specs/decisions/10.mir-contract-validation.md`
+  - `specs/decisions/15.mir-data-scope-and-list-render.md`
 
 ## 1. 目标
 
@@ -36,63 +36,63 @@ type ItemReference = { $item: string };
 type IndexReference = { $index: true };
 
 type ValueOrRef =
+  | string
+  | number
+  | boolean
+  | null
+  | Record<string, unknown>
+  | unknown[]
+  | { $param: string }
+  | { $state: string }
+  | DataReference
+  | ItemReference
+  | IndexReference;
+
+type NodeDataScope = {
+  source?:
+    | { $param: string }
+    | { $state: string }
+    | DataReference
+    | ItemReference;
+  pick?: string;
+  extend?: Record<string, ValueOrRef>;
+};
+
+type NodeListRender = {
+  source:
+    | { $param: string }
+    | { $state: string }
+    | DataReference
+    | ItemReference;
+  itemAs?: string; // default: item
+  indexAs?: string; // default: index
+  keyBy?: string;
+  emptyNodeId?: string;
+};
+
+type ComponentNodeV12 = {
+  id: string;
+  type: string;
+  text?:
     | string
-    | number
-    | boolean
-    | null
-    | Record<string, unknown>
-    | unknown[]
     | { $param: string }
     | { $state: string }
     | DataReference
     | ItemReference
     | IndexReference;
-
-type NodeDataScope = {
-    source?:
-        | { $param: string }
-        | { $state: string }
-        | DataReference
-        | ItemReference;
-    pick?: string;
-    extend?: Record<string, ValueOrRef>;
-};
-
-type NodeListRender = {
-    source:
-        | { $param: string }
-        | { $state: string }
-        | DataReference
-        | ItemReference;
-    itemAs?: string; // default: item
-    indexAs?: string; // default: index
-    keyBy?: string;
-    emptyNodeId?: string;
-};
-
-type ComponentNodeV12 = {
-    id: string;
-    type: string;
-    text?:
-        | string
-        | { $param: string }
-        | { $state: string }
-        | DataReference
-        | ItemReference
-        | IndexReference;
-    style?: Record<string, ValueOrRef>;
-    props?: Record<string, ValueOrRef>;
-    data?: NodeDataScope;
-    list?: NodeListRender;
-    events?: Record<
-        string,
-        {
-            trigger: string;
-            action?: string;
-            params?: Record<string, ValueOrRef>;
-        }
-    >;
-    children?: ComponentNodeV12[];
+  style?: Record<string, ValueOrRef>;
+  props?: Record<string, ValueOrRef>;
+  data?: NodeDataScope;
+  list?: NodeListRender;
+  events?: Record<
+    string,
+    {
+      trigger: string;
+      action?: string;
+      params?: Record<string, ValueOrRef>;
+    }
+  >;
+  children?: ComponentNodeV12[];
 };
 ```
 
@@ -123,15 +123,15 @@ type ComponentNodeV12 = {
 
 ```json
 {
-    "error": "invalid_mir",
-    "message": "MIR validation failed.",
-    "details": [
-        {
-            "code": "MIR_LIST_SOURCE_NOT_ARRAY",
-            "path": "/ui/root/children/0/list/source",
-            "message": "list.source must resolve to an array"
-        }
-    ]
+  "error": "invalid_mir",
+  "message": "MIR validation failed.",
+  "details": [
+    {
+      "code": "MIR_LIST_SOURCE_NOT_ARRAY",
+      "path": "/ui/root/children/0/list/source",
+      "message": "list.source must resolve to an array"
+    }
+  ]
 }
 ```
 

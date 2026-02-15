@@ -1,184 +1,180 @@
 @mixin button-hover($bg, $color: null, $border: null) {
-    background-color: $bg;
+  background-color: $bg;
 
-    @if $color {
-        color: $color;
-    }
+  @if $color {
+    color: $color;
+  }
 
-    @if $border {
-        border-color: $border;
-    }
+  @if $border {
+    border-color: $border;
+  }
 }
 
 .MdrButton {
-    font-weight: 400;
-    border-radius: 6px;
-    cursor: pointer;
-    transition:
-        background-color 0.2s ease,
-        color 0.2s ease,
-        border-color 0.2s ease;
-    display: inline-block;
-    text-align: center;
-    text-decoration: none;
-    user-select: none;
-    border: 1px solid;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    gap: 0.3em;
+  font-weight: 400;
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  user-select: none;
+  border: 1px solid;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.3em;
 
+  &:active {
+    opacity: 0.9;
+  }
+
+  &.Disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    &:hover,
     &:active {
-        opacity: 0.9;
+      opacity: 0.5; // 禁用时无变化
+    }
+  }
+
+  &.Big {
+    font-weight: 500;
+    padding: 16px 32px;
+    font-size: 20px;
+    border-radius: 8px;
+  }
+
+  &.Medium {
+    font-weight: 500;
+    padding: 12px 24px;
+    font-size: 16px;
+  }
+
+  &.Small {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+  &.Tiny {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  &.Primary {
+    background-color: var(--color-9);
+    color: var(--color-1);
+    border-color: var(--color-9);
+
+    &:not(.Disabled):hover {
+      @include button-hover(var(--color-7), var(--color-0), var(--color-6));
+    }
+  }
+
+  &.Secondary {
+    background-color: var(--color-0);
+    color: var(--color-8);
+    border-color: var(--color-4);
+
+    &:not(.Disabled):hover {
+      @include button-hover(var(--color-2), var(--color-10));
     }
 
-    &.Disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-
-        &:hover,
-        &:active {
-            opacity: 0.5; // 禁用时无变化
-        }
+    &:not(.Disabled):active {
+      opacity: 0.75;
     }
+  }
 
-    &.Big {
-        font-weight: 500;
-        padding: 16px 32px;
-        font-size: 20px;
-        border-radius: 8px;
+  &.Danger {
+    background-color: var(--color-danger);
+    color: var(--color-0);
+    border-color: var(--color-danger);
+
+    &:not(.Disabled):hover {
+      @include button-hover(
+        var(--color-danger-hover),
+        null,
+        var(--color-danger-hover)
+      );
     }
+  }
 
-    &.Medium {
-        font-weight: 500;
-        padding: 12px 24px;
-        font-size: 16px;
+  &.Warning {
+    background-color: var(--color-warning);
+    color: var(--color-10);
+    border-color: var(--color-warning);
+
+    &:not(.Disabled):hover {
+      @include button-hover(
+        var(--color-warning-hover),
+        null,
+        var(--color-warning-hover)
+      );
     }
+  }
 
-    &.Small {
-        padding: 8px 16px;
-        font-size: 14px;
+  &.Ghost {
+    background-color: transparent;
+    color: var(--color-8);
+    border-color: var(--color-8);
+
+    &:not(.Disabled):hover {
+      background-color: rgba(var(--color-10-rgb), 0.1);
+      color: var(--color-7);
+      border-color: var(--color-7);
     }
+  }
 
-    &.Tiny {
-        padding: 5px 10px;
-        font-size: 12px;
+  &.SubtleDanger {
+    background-color: transparent;
+    color: var(--color-danger-subtle);
+    border-color: var(--color-danger-subtle);
+
+    &:not(.Disabled):hover {
+      @include button-hover(
+        var(--color-danger-subtle-hover),
+        var(--color-danger),
+        var(--color-danger-hover)
+      );
     }
+  }
 
-    &.Primary {
-        background-color: var(--color-9);
-        color: var(--color-1);
-        border-color: var(--color-9);
+  &.SubtleWarning {
+    background-color: transparent;
+    color: var(--color-subwarning);
+    border-color: var(--color-subwarning);
 
-        &:not(.Disabled):hover {
-            @include button-hover(
-                var(--color-7),
-                var(--color-0),
-                var(--color-6)
-            );
-        }
+    &:not(.Disabled):hover {
+      @include button-hover(
+        var(--color-subwarning-hover),
+        var(--color-warning),
+        var(--color-warning-hover)
+      );
     }
+  }
 
-    &.Secondary {
-        background-color: var(--color-0);
-        color: var(--color-8);
-        border-color: var(--color-4);
+  &.OnlyIcon {
+    padding: 8px;
+  }
 
-        &:not(.Disabled):hover {
-            @include button-hover(var(--color-2), var(--color-10));
-        }
+  &.OnlyIcon.Big {
+    font-size: 40px;
+  }
 
-        &:not(.Disabled):active {
-            opacity: 0.75;
-        }
-    }
+  &.OnlyIcon.Medium {
+    font-size: 32px;
+  }
 
-    &.Danger {
-        background-color: var(--color-danger);
-        color: var(--color-0);
-        border-color: var(--color-danger);
+  &.OnlyIcon.Small {
+    font-size: 24px;
+  }
 
-        &:not(.Disabled):hover {
-            @include button-hover(
-                var(--color-danger-hover),
-                null,
-                var(--color-danger-hover)
-            );
-        }
-    }
-
-    &.Warning {
-        background-color: var(--color-warning);
-        color: var(--color-10);
-        border-color: var(--color-warning);
-
-        &:not(.Disabled):hover {
-            @include button-hover(
-                var(--color-warning-hover),
-                null,
-                var(--color-warning-hover)
-            );
-        }
-    }
-
-    &.Ghost {
-        background-color: transparent;
-        color: var(--color-8);
-        border-color: var(--color-8);
-
-        &:not(.Disabled):hover {
-            background-color: rgba(var(--color-10-rgb), 0.1);
-            color: var(--color-7);
-            border-color: var(--color-7);
-        }
-    }
-
-    &.SubtleDanger {
-        background-color: transparent;
-        color: var(--color-danger-subtle);
-        border-color: var(--color-danger-subtle);
-
-        &:not(.Disabled):hover {
-            @include button-hover(
-                var(--color-danger-subtle-hover),
-                var(--color-danger),
-                var(--color-danger-hover)
-            );
-        }
-    }
-
-    &.SubtleWarning {
-        background-color: transparent;
-        color: var(--color-subwarning);
-        border-color: var(--color-subwarning);
-
-        &:not(.Disabled):hover {
-            @include button-hover(
-                var(--color-subwarning-hover),
-                var(--color-warning),
-                var(--color-warning-hover)
-            );
-        }
-    }
-
-    &.OnlyIcon {
-        padding: 8px;
-    }
-
-    &.OnlyIcon.Big {
-        font-size: 40px;
-    }
-
-    &.OnlyIcon.Medium {
-        font-size: 32px;
-    }
-
-    &.OnlyIcon.Small {
-        font-size: 24px;
-    }
-
-    &.OnlyIcon.Tiny {
-        font-size: 16px;
-    }
+  &.OnlyIcon.Tiny {
+    font-size: 16px;
+  }
 }

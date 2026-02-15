@@ -52,15 +52,15 @@ Card + List → CardList
 
 ```json
 {
-    "type": "MdrContainer",
-    "props": {
-        "layout": "flex",
-        "direction": "column",
-        "justify": "center",
-        "align": "center",
-        "gap": "16px",
-        "padding": "24px"
-    }
+  "type": "MdrContainer",
+  "props": {
+    "layout": "flex",
+    "direction": "column",
+    "justify": "center",
+    "align": "center",
+    "gap": "16px",
+    "padding": "24px"
+  }
 }
 ```
 
@@ -79,12 +79,12 @@ Card + List → CardList
 
 ```json
 {
-    "type": "MdrGrid",
-    "props": {
-        "columns": 3,
-        "gap": "16px",
-        "minChildWidth": "200px"
-    }
+  "type": "MdrGrid",
+  "props": {
+    "columns": 3,
+    "gap": "16px",
+    "minChildWidth": "200px"
+  }
 }
 ```
 
@@ -103,14 +103,14 @@ Card + List → CardList
 
 ```json
 {
-    "type": "MdrButton",
-    "props": {
-        "variant": "primary",
-        "size": "medium",
-        "disabled": false,
-        "loading": false
-    },
-    "children": ["提交"]
+  "type": "MdrButton",
+  "props": {
+    "variant": "primary",
+    "size": "medium",
+    "disabled": false,
+    "loading": false
+  },
+  "children": ["提交"]
 }
 ```
 
@@ -129,13 +129,13 @@ Card + List → CardList
 
 ```json
 {
-    "type": "MdrText",
-    "props": {
-        "variant": "h1",
-        "color": "primary",
-        "align": "center"
-    },
-    "children": ["标题文本"]
+  "type": "MdrText",
+  "props": {
+    "variant": "h1",
+    "color": "primary",
+    "align": "center"
+  },
+  "children": ["标题文本"]
 }
 ```
 
@@ -152,12 +152,12 @@ Card + List → CardList
 
 ```json
 {
-    "type": "MdrLink",
-    "props": {
-        "href": "/about",
-        "target": "_self"
-    },
-    "children": ["关于我们"]
+  "type": "MdrLink",
+  "props": {
+    "href": "/about",
+    "target": "_self"
+  },
+  "children": ["关于我们"]
 }
 ```
 
@@ -173,13 +173,13 @@ Card + List → CardList
 
 ```json
 {
-    "type": "MdrImage",
-    "props": {
-        "src": "/images/hero.jpg",
-        "alt": "Hero Image",
-        "objectFit": "cover",
-        "aspectRatio": "16/9"
-    }
+  "type": "MdrImage",
+  "props": {
+    "src": "/images/hero.jpg",
+    "alt": "Hero Image",
+    "objectFit": "cover",
+    "aspectRatio": "16/9"
+  }
 }
 ```
 
@@ -199,12 +199,12 @@ Card + List → CardList
 
 ```json
 {
-    "type": "MdrInput",
-    "props": {
-        "type": "text",
-        "placeholder": "请输入用户名",
-        "size": "medium"
-    }
+  "type": "MdrInput",
+  "props": {
+    "type": "text",
+    "placeholder": "请输入用户名",
+    "size": "medium"
+  }
 }
 ```
 
@@ -224,14 +224,14 @@ Card + List → CardList
 
 ```json
 {
-    "type": "MdrSelect",
-    "props": {
-        "options": [
-            { "label": "选项 1", "value": "1" },
-            { "label": "选项 2", "value": "2" }
-        ],
-        "placeholder": "请选择"
-    }
+  "type": "MdrSelect",
+  "props": {
+    "options": [
+      { "label": "选项 1", "value": "1" },
+      { "label": "选项 2", "value": "2" }
+    ],
+    "placeholder": "请选择"
+  }
 }
 ```
 
@@ -249,11 +249,11 @@ Card + List → CardList
 
 ```json
 {
-    "type": "MdrCheckbox",
-    "props": {
-        "checked": false,
-        "label": "同意用户协议"
-    }
+  "type": "MdrCheckbox",
+  "props": {
+    "checked": false,
+    "label": "同意用户协议"
+  }
 }
 ```
 
@@ -263,14 +263,14 @@ Card + List → CardList
 
 ```json
 {
-    "type": "MdrRadio",
-    "props": {
-        "options": [
-            { "label": "男", "value": "male" },
-            { "label": "女", "value": "female" }
-        ],
-        "value": "male"
-    }
+  "type": "MdrRadio",
+  "props": {
+    "options": [
+      { "label": "男", "value": "male" },
+      { "label": "女", "value": "female" }
+    ],
+    "value": "male"
+  }
 }
 ```
 
@@ -282,15 +282,15 @@ Card + List → CardList
 
 ```json
 {
-    "type": "MdrTable",
-    "props": {
-        "columns": [
-            { "title": "姓名", "dataIndex": "name" },
-            { "title": "年龄", "dataIndex": "age" },
-            { "title": "操作", "type": "action" }
-        ],
-        "dataSource": "$users"
-    }
+  "type": "MdrTable",
+  "props": {
+    "columns": [
+      { "title": "姓名", "dataIndex": "name" },
+      { "title": "年龄", "dataIndex": "age" },
+      { "title": "操作", "type": "action" }
+    ],
+    "dataSource": "$users"
+  }
 }
 ```
 
@@ -308,13 +308,13 @@ Card + List → CardList
 
 ```json
 {
-    "type": "MdrCard",
-    "props": {
-        "title": "卡片标题",
-        "cover": "/images/cover.jpg",
-        "hoverable": true
-    },
-    "children": ["卡片内容"]
+  "type": "MdrCard",
+  "props": {
+    "title": "卡片标题",
+    "cover": "/images/cover.jpg",
+    "hoverable": true
+  },
+  "children": ["卡片内容"]
 }
 ```
 
@@ -324,17 +324,17 @@ Card + List → CardList
 
 ```json
 {
-    "type": "MdrList",
-    "props": {
-        "items": "$todoList",
-        "renderItem": {
-            "type": "MdrListItem",
-            "props": {
-                "title": "${item.title}",
-                "description": "${item.description}"
-            }
-        }
+  "type": "MdrList",
+  "props": {
+    "items": "$todoList",
+    "renderItem": {
+      "type": "MdrListItem",
+      "props": {
+        "title": "${item.title}",
+        "description": "${item.description}"
+      }
     }
+  }
 }
 ```
 
@@ -346,17 +346,17 @@ Card + List → CardList
 
 ```json
 {
-    "type": "MdrModal",
-    "props": {
-        "open": "$showModal",
-        "title": "确认删除",
-        "onClose": {
-            "type": "action",
-            "action": "setState",
-            "params": { "showModal": false }
-        }
-    },
-    "children": ["确定要删除这条记录吗？"]
+  "type": "MdrModal",
+  "props": {
+    "open": "$showModal",
+    "title": "确认删除",
+    "onClose": {
+      "type": "action",
+      "action": "setState",
+      "params": { "showModal": false }
+    }
+  },
+  "children": ["确定要删除这条记录吗？"]
 }
 ```
 
@@ -366,13 +366,13 @@ Card + List → CardList
 
 ```json
 {
-    "type": "action",
-    "action": "showToast",
-    "params": {
-        "message": "操作成功",
-        "type": "success",
-        "duration": 3000
-    }
+  "type": "action",
+  "action": "showToast",
+  "params": {
+    "message": "操作成功",
+    "type": "success",
+    "duration": 3000
+  }
 }
 ```
 
@@ -382,12 +382,12 @@ Card + List → CardList
 
 ```json
 {
-    "type": "MdrTooltip",
-    "props": {
-        "content": "这是提示信息",
-        "placement": "top"
-    },
-    "children": [{ "type": "MdrButton", "children": ["悬停查看"] }]
+  "type": "MdrTooltip",
+  "props": {
+    "content": "这是提示信息",
+    "placement": "top"
+  },
+  "children": [{ "type": "MdrButton", "children": ["悬停查看"] }]
 }
 ```
 
@@ -400,65 +400,65 @@ Card + List → CardList
 ```json
 // components/UserCard.mir.json
 {
-    "$schema": "https://mdr.dev/schemas/mir/1.0.json",
-    "version": "1.0",
-    "type": "component",
-    "meta": {
-        "name": "UserCard",
-        "description": "用户卡片组件"
-    },
-    "props": {
-        "user": {
-            "type": "object",
-            "required": true,
-            "properties": {
-                "name": { "type": "string" },
-                "avatar": { "type": "string" },
-                "email": { "type": "string" }
-            }
-        }
-    },
-    "root": {
-        "type": "MdrCard",
-        "props": {
-            "hoverable": true
-        },
-        "children": [
-            {
-                "type": "MdrContainer",
-                "props": { "layout": "flex", "gap": "12px" },
-                "children": [
-                    {
-                        "type": "MdrImage",
-                        "props": {
-                            "src": "${props.user.avatar}",
-                            "alt": "${props.user.name}",
-                            "style": {
-                                "width": "48px",
-                                "height": "48px",
-                                "borderRadius": "50%"
-                            }
-                        }
-                    },
-                    {
-                        "type": "MdrContainer",
-                        "children": [
-                            {
-                                "type": "MdrText",
-                                "props": { "variant": "h4" },
-                                "children": ["${props.user.name}"]
-                            },
-                            {
-                                "type": "MdrText",
-                                "props": { "variant": "caption" },
-                                "children": ["${props.user.email}"]
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
+  "$schema": "https://mdr.dev/schemas/mir/1.0.json",
+  "version": "1.0",
+  "type": "component",
+  "meta": {
+    "name": "UserCard",
+    "description": "用户卡片组件"
+  },
+  "props": {
+    "user": {
+      "type": "object",
+      "required": true,
+      "properties": {
+        "name": { "type": "string" },
+        "avatar": { "type": "string" },
+        "email": { "type": "string" }
+      }
     }
+  },
+  "root": {
+    "type": "MdrCard",
+    "props": {
+      "hoverable": true
+    },
+    "children": [
+      {
+        "type": "MdrContainer",
+        "props": { "layout": "flex", "gap": "12px" },
+        "children": [
+          {
+            "type": "MdrImage",
+            "props": {
+              "src": "${props.user.avatar}",
+              "alt": "${props.user.name}",
+              "style": {
+                "width": "48px",
+                "height": "48px",
+                "borderRadius": "50%"
+              }
+            }
+          },
+          {
+            "type": "MdrContainer",
+            "children": [
+              {
+                "type": "MdrText",
+                "props": { "variant": "h4" },
+                "children": ["${props.user.name}"]
+              },
+              {
+                "type": "MdrText",
+                "props": { "variant": "caption" },
+                "children": ["${props.user.email}"]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
@@ -466,19 +466,17 @@ Card + List → CardList
 
 ```json
 {
-    "imports": [
-        { "from": "./components/UserCard", "components": ["UserCard"] }
-    ],
-    "root": {
-        "type": "UserCard",
-        "props": {
-            "user": {
-                "name": "张三",
-                "avatar": "/avatars/zhangsan.jpg",
-                "email": "zhangsan@example.com"
-            }
-        }
+  "imports": [{ "from": "./components/UserCard", "components": ["UserCard"] }],
+  "root": {
+    "type": "UserCard",
+    "props": {
+      "user": {
+        "name": "张三",
+        "avatar": "/avatars/zhangsan.jpg",
+        "email": "zhangsan@example.com"
+      }
     }
+  }
 }
 ```
 
@@ -486,23 +484,23 @@ Card + List → CardList
 
 ```json
 {
-    "props": {
-        "title": {
-            "type": "string",
-            "required": true,
-            "description": "卡片标题"
-        },
-        "size": {
-            "type": "string",
-            "enum": ["small", "medium", "large"],
-            "default": "medium",
-            "description": "卡片尺寸"
-        },
-        "onClick": {
-            "type": "function",
-            "description": "点击事件回调"
-        }
+  "props": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "description": "卡片标题"
+    },
+    "size": {
+      "type": "string",
+      "enum": ["small", "medium", "large"],
+      "default": "medium",
+      "description": "卡片尺寸"
+    },
+    "onClick": {
+      "type": "function",
+      "description": "点击事件回调"
     }
+  }
 }
 ```
 
@@ -512,19 +510,19 @@ Card + List → CardList
 
 ```json
 {
-    "slots": {
-        "header": { "description": "头部插槽" },
-        "footer": { "description": "底部插槽" },
-        "default": { "description": "默认插槽" }
-    },
-    "root": {
-        "type": "MdrCard",
-        "children": [
-            { "$slot": "header" },
-            { "$slot": "default" },
-            { "$slot": "footer" }
-        ]
-    }
+  "slots": {
+    "header": { "description": "头部插槽" },
+    "footer": { "description": "底部插槽" },
+    "default": { "description": "默认插槽" }
+  },
+  "root": {
+    "type": "MdrCard",
+    "children": [
+      { "$slot": "header" },
+      { "$slot": "default" },
+      { "$slot": "footer" }
+    ]
+  }
 }
 ```
 
@@ -532,12 +530,12 @@ Card + List → CardList
 
 ```json
 {
-    "type": "CustomCard",
-    "slots": {
-        "header": { "type": "MdrText", "children": ["头部内容"] },
-        "footer": { "type": "MdrButton", "children": ["底部按钮"] }
-    },
-    "children": ["主体内容"]
+  "type": "CustomCard",
+  "slots": {
+    "header": { "type": "MdrText", "children": ["头部内容"] },
+    "footer": { "type": "MdrButton", "children": ["底部按钮"] }
+  },
+  "children": ["主体内容"]
 }
 ```
 
@@ -549,10 +547,10 @@ Card + List → CardList
 
 ```json
 {
-    "state": {
-        "count": { "type": "number", "default": 0 },
-        "isOpen": { "type": "boolean", "default": false }
-    }
+  "state": {
+    "count": { "type": "number", "default": 0 },
+    "isOpen": { "type": "boolean", "default": false }
+  }
 }
 ```
 
@@ -562,15 +560,15 @@ Card + List → CardList
 
 ```json
 {
-    "events": {
-        "onClick": {
-            "type": "action",
-            "action": "setState",
-            "params": {
-                "count": "${state.count + 1}"
-            }
-        }
+  "events": {
+    "onClick": {
+      "type": "action",
+      "action": "setState",
+      "params": {
+        "count": "${state.count + 1}"
+      }
     }
+  }
 }
 ```
 
@@ -582,28 +580,28 @@ Card + List → CardList
 
 ```css
 :root {
-    /* 颜色 */
-    --mdr-color-primary: #5f67ee;
-    --mdr-color-secondary: #6b7280;
-    --mdr-color-success: #10b981;
-    --mdr-color-warning: #f59e0b;
-    --mdr-color-danger: #ef4444;
+  /* 颜色 */
+  --mdr-color-primary: #5f67ee;
+  --mdr-color-secondary: #6b7280;
+  --mdr-color-success: #10b981;
+  --mdr-color-warning: #f59e0b;
+  --mdr-color-danger: #ef4444;
 
-    /* 间距 */
-    --mdr-spacing-xs: 4px;
-    --mdr-spacing-sm: 8px;
-    --mdr-spacing-md: 16px;
-    --mdr-spacing-lg: 24px;
-    --mdr-spacing-xl: 32px;
+  /* 间距 */
+  --mdr-spacing-xs: 4px;
+  --mdr-spacing-sm: 8px;
+  --mdr-spacing-md: 16px;
+  --mdr-spacing-lg: 24px;
+  --mdr-spacing-xl: 32px;
 
-    /* 圆角 */
-    --mdr-radius-sm: 4px;
-    --mdr-radius-md: 8px;
-    --mdr-radius-lg: 12px;
+  /* 圆角 */
+  --mdr-radius-sm: 4px;
+  --mdr-radius-md: 8px;
+  --mdr-radius-lg: 12px;
 
-    /* 阴影 */
-    --mdr-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --mdr-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* 阴影 */
+  --mdr-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --mdr-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 ```
 
@@ -611,9 +609,9 @@ Card + List → CardList
 
 ```css
 [data-theme='dark'] {
-    --mdr-color-background: #1a1a1a;
-    --mdr-color-surface: #2d2d2d;
-    --mdr-color-text: #ffffff;
+  --mdr-color-background: #1a1a1a;
+  --mdr-color-surface: #2d2d2d;
+  --mdr-color-text: #ffffff;
 }
 ```
 

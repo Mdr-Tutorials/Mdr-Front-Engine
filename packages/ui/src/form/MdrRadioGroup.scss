@@ -1,55 +1,55 @@
 @use './MdrField.scss';
 
 .MdrRadioGroup {
-    width: 100%;
+  width: 100%;
 }
 
 .MdrRadioGroupList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
 }
 
 .MdrRadioGroup.Horizontal .MdrRadioGroupList {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
 }
 
 .MdrRadioGroupItem {
-    padding: var(--spacing-xs) 0;
+  padding: var(--spacing-xs) 0;
 }
 
 .MdrRadioGroupLabel {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--spacing-sm);
-    color: var(--color-8);
-    cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  color: var(--color-8);
+  cursor: pointer;
 }
 
 .MdrRadioGroupLabel input {
-    width: 16px;
-    height: 16px;
-    margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
 }
 
 .MdrRadioGroupLabel.Disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .MdrRadioGroupText {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
 }
 
 .MdrRadioGroupDescription {
-    font-size: 11px;
-    color: var(--color-6);
+  font-size: 11px;
+  color: var(--color-6);
 }
