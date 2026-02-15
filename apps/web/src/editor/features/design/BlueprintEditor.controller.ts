@@ -344,6 +344,11 @@ export const useBlueprintEditorController = () => {
         setInspectorCollapsed(false);
     }, [panelLayout]);
 
+    useEffect(() => {
+        if (!selectedId) return;
+        setInspectorCollapsed(false);
+    }, [selectedId]);
+
     const handleZoomChange = (value: number) => {
         const next = Math.min(
             VIEWPORT_ZOOM_RANGE.max,

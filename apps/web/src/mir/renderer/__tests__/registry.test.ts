@@ -59,4 +59,13 @@ describe('mir renderer registry', () => {
         expect(mappedIcon?.props?.icon).toBeTruthy();
         expect(mappedIcon?.props?.iconRef).toBeUndefined();
     });
+
+    it('registers Radix headless node types in ordered registry resolution', async () => {
+        const { createOrderedComponentRegistry } = await import('../registry');
+        const registry = createOrderedComponentRegistry();
+        const resolved = registry.resolve('RadixLabel');
+
+        expect(resolved.missing).toBeUndefined();
+        expect(resolved.type).toBe('RadixLabel');
+    });
 });

@@ -4,6 +4,16 @@
         <meta charset="UTF-8" />
         <link rel="icon" type="image/svg+xml" href="/mdr.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script id="mdr-esm-importmap" type="importmap">
+            {
+                "imports": {
+                    "react": "/src/esm-bridge/react-interop.mjs",
+                    "react-dom": "/src/esm-bridge/react-dom-interop.mjs",
+                    "react/jsx-runtime": "/src/esm-bridge/react-jsx-runtime-interop.mjs",
+                    "react/jsx-dev-runtime": "/src/esm-bridge/react-jsx-dev-runtime-interop.mjs"
+                }
+            }
+        </script>
         <title>mdr-front-engine</title>
     </head>
 

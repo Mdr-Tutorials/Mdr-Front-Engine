@@ -2,27 +2,210 @@ import React from 'react';
 import type { ComponentAdapter } from '@/mir/renderer/registry';
 import { registerRuntimeComponent } from '@/mir/renderer/registry';
 import { registerComponentGroup } from '../registry';
-import type { ComponentGroup } from '../../BlueprintEditor.types';
+import type {
+    ComponentGroup,
+    ComponentPreviewItem,
+} from '../../BlueprintEditor.types';
 
 type EsmLoadDiagnostic = {
     level: 'warning' | 'error';
     message: string;
 };
 
-type AntdModule = {
+type AntdModule = Record<string, unknown> & {
     Button?: React.ElementType;
     Input?: React.ElementType;
     Modal?: React.ElementType;
-    Form?: {
+    Form?: React.ElementType & {
         Item?: React.ElementType;
     };
 };
 
+type AntdGroupDefinition = {
+    id: string;
+    title: string;
+    components: string[];
+};
+
 const ANTD_ESM_URL_CANDIDATES = [
-    'https://esm.sh/antd@5.28.0?bundle&target=es2022&external=react,react-dom',
-    'https://esm.sh/antd@5.28.0?bundle',
-    'https://esm.sh/v135/antd@5.28.0?bundle',
+    'https://esm.sh/v135/antd@5.28.0/es2022/antd.mjs?external=react,react-dom',
+    'https://esm.sh/antd@5.28.0?target=es2022&external=react,react-dom&deps=@ant-design/colors@7.2.1',
 ];
+const ANTD_RUNTIME_LOG_PREFIX = '[antd-esm-runtime]';
+
+const ANTD_GROUPS: AntdGroupDefinition[] = [
+    {
+        id: 'antd-general',
+        title: 'Ant Design / General',
+        components: ['App', 'Button', 'FloatButton'],
+    },
+    {
+        id: 'antd-layout',
+        title: 'Ant Design / Layout',
+        components: [
+            'Divider',
+            'Flex',
+            'Layout',
+            'Layout.Header',
+            'Layout.Content',
+            'Layout.Footer',
+            'Layout.Sider',
+            'Space',
+            'Space.Compact',
+            'Splitter',
+        ],
+    },
+    {
+        id: 'antd-navigation',
+        title: 'Ant Design / Navigation',
+        components: [
+            'Affix',
+            'Anchor',
+            'Breadcrumb',
+            'Dropdown',
+            'Menu',
+            'Pagination',
+            'Steps',
+            'Tabs',
+        ],
+    },
+    {
+        id: 'antd-data-entry',
+        title: 'Ant Design / Data Entry',
+        components: [
+            'AutoComplete',
+            'Cascader',
+            'Checkbox',
+            'ColorPicker',
+            'DatePicker',
+            'Form',
+            'Form.Item',
+            'Input',
+            'Input.Password',
+            'Input.Search',
+            'Input.TextArea',
+            'InputNumber',
+            'Mentions',
+            'Radio',
+            'Rate',
+            'Select',
+            'Slider',
+            'Switch',
+            'TimePicker',
+            'Transfer',
+            'TreeSelect',
+            'Upload',
+        ],
+    },
+    {
+        id: 'antd-data-display',
+        title: 'Ant Design / Data Display',
+        components: [
+            'Avatar',
+            'Badge',
+            'Calendar',
+            'Card',
+            'Card.Meta',
+            'Carousel',
+            'Collapse',
+            'Descriptions',
+            'Descriptions.Item',
+            'Empty',
+            'Image',
+            'List',
+            'List.Item',
+            'List.Item.Meta',
+            'Popover',
+            'QRCode',
+            'Segmented',
+            'Statistic',
+            'Table',
+            'Tag',
+            'Timeline',
+            'Tooltip',
+            'Tour',
+            'Tree',
+            'Typography',
+            'Typography.Text',
+            'Typography.Title',
+            'Typography.Paragraph',
+            'Typography.Link',
+        ],
+    },
+    {
+        id: 'antd-feedback',
+        title: 'Ant Design / Feedback',
+        components: [
+            'Alert',
+            'Drawer',
+            'Modal',
+            'Popconfirm',
+            'Progress',
+            'Result',
+            'Skeleton',
+            'Spin',
+            'Watermark',
+        ],
+    },
+];
+
+const NON_COMPONENT_EXPORTS = new Set([
+    'default',
+    'message',
+    'notification',
+    'theme',
+    'version',
+    'unstableSetRender',
+]);
+
+const SIZE_OPTIONS = [
+    { id: 'small', label: 'S', value: 'small' },
+    { id: 'middle', label: 'M', value: 'middle' },
+    { id: 'large', label: 'L', value: 'large' },
+];
+
+const SIZE_SUPPORT_PATHS = new Set([
+    'Button',
+    'Input',
+    'Input.Password',
+    'Input.Search',
+    'Input.TextArea',
+    'Form.Item',
+    'Select',
+    'DatePicker',
+    'TimePicker',
+    'InputNumber',
+]);
+
+const INPUT_PATHS = new Set([
+    'Input',
+    'Input.Password',
+    'Input.Search',
+    'Input.TextArea',
+    'InputNumber',
+    'Mentions',
+    'Select',
+    'DatePicker',
+    'TimePicker',
+]);
+
+class AntdPreviewBoundary extends React.Component<
+    { children: React.ReactNode },
+    { hasError: boolean }
+> {
+    state = { hasError: false };
+
+    static getDerivedStateFromError() {
+        return { hasError: true };
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return <div className="text-[10px] text-(--color-7)">Preview</div>;
+        }
+        return this.props.children;
+    }
+}
 
 const antdTextAdapter: ComponentAdapter = {
     kind: 'custom',
@@ -49,144 +232,540 @@ const antdInputAdapter: ComponentAdapter = {
     },
 };
 
-const buildAntdGroup = (): ComponentGroup => ({
-    id: 'antd-esm',
-    title: 'Ant Design (esm.sh)',
-    source: 'external',
-    items: [
-        {
-            id: 'antd-button',
-            name: 'Button',
-            preview: <button type="button">Button</button>,
-            sizeOptions: [
-                { id: 'small', label: 'S', value: 'small' },
-                { id: 'middle', label: 'M', value: 'middle' },
-                { id: 'large', label: 'L', value: 'large' },
-            ],
-        },
-        {
-            id: 'antd-input',
-            name: 'Input',
-            preview: <input placeholder="Input" readOnly />,
-            sizeOptions: [
-                { id: 'small', label: 'S', value: 'small' },
-                { id: 'middle', label: 'M', value: 'middle' },
-                { id: 'large', label: 'L', value: 'large' },
-            ],
-        },
-        {
-            id: 'antd-modal',
-            name: 'Modal',
-            preview: <div>Modal</div>,
-        },
-        {
-            id: 'antd-form-item',
-            name: 'Form.Item',
-            preview: <div>Form.Item</div>,
-        },
-    ],
+const antdModalAdapter: ComponentAdapter = {
+    kind: 'custom',
+    supportsChildren: true,
+    mapProps: ({ resolvedProps, resolvedText }) => {
+        const props = { ...resolvedProps };
+        if (props.open === undefined) props.open = false;
+        if (props.getContainer === undefined) props.getContainer = false;
+        if (props.mask === undefined) props.mask = false;
+        if (props.footer === undefined) props.footer = null;
+        return {
+            props,
+            children:
+                props.children ?? (resolvedText ? String(resolvedText) : null),
+        };
+    },
+};
+
+const toPascalCase = (value: string) =>
+    value
+        .split(/[^a-zA-Z0-9]+/)
+        .filter(Boolean)
+        .map((segment) => `${segment[0]?.toUpperCase()}${segment.slice(1)}`)
+        .join('');
+
+const toKebabCase = (value: string) =>
+    value
+        .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+        .replace(/[^a-zA-Z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .toLowerCase();
+
+const pathToRuntimeType = (path: string) =>
+    `Antd${path.split('.').map(toPascalCase).join('')}`;
+
+const pathToItemId = (path: string) =>
+    `antd-${path.split('.').map(toKebabCase).join('-')}`;
+
+const getComponentByPath = (
+    module: AntdModule,
+    path: string
+): React.ElementType | undefined => {
+    const segments = path.split('.');
+    let cursor: unknown = module;
+    for (const segment of segments) {
+        if (!cursor || typeof cursor !== 'object') return undefined;
+        cursor = (cursor as Record<string, unknown>)[segment];
+    }
+    if (!cursor) return undefined;
+    if (typeof cursor !== 'function' && typeof cursor !== 'object')
+        return undefined;
+    return cursor as React.ElementType;
+};
+
+const getAdapterByPath = (path: string): ComponentAdapter => {
+    if (path === 'Modal') return antdModalAdapter;
+    if (INPUT_PATHS.has(path)) return antdInputAdapter;
+    return antdTextAdapter;
+};
+
+const isLikelyTopLevelComponent = (name: string, value: unknown) => {
+    if (NON_COMPONENT_EXPORTS.has(name)) return false;
+    if (!/^[A-Z]/.test(name)) return false;
+    return typeof value === 'function' || typeof value === 'object';
+};
+
+const renderAntdPreview = (
+    path: string,
+    module: AntdModule,
+    component: React.ElementType
+) => {
+    if (path === 'Button') {
+        return ({ size }: { size?: string; status?: string }) =>
+            React.createElement(
+                component,
+                { type: 'primary', size: size ?? 'middle' },
+                'Button'
+            );
+    }
+    if (path === 'Input') {
+        return ({ size }: { size?: string; status?: string }) =>
+            React.createElement(component, {
+                size: size ?? 'middle',
+                placeholder: 'Input',
+                value: '',
+                readOnly: true,
+            });
+    }
+    if (path === 'Modal') {
+        return () =>
+            React.createElement(
+                component,
+                {
+                    open: true,
+                    title: 'Modal',
+                    footer: null,
+                    width: 180,
+                    getContainer: false,
+                    mask: false,
+                },
+                'Modal content'
+            );
+    }
+    if (path === 'Form.Item') {
+        const formComponent = getComponentByPath(module, 'Form');
+        const inputComponent = getComponentByPath(module, 'Input');
+        if (!formComponent || !inputComponent) return undefined;
+        return ({ size }: { size?: string; status?: string }) =>
+            React.createElement(
+                formComponent,
+                { layout: 'vertical' },
+                React.createElement(
+                    component,
+                    { label: 'Field', name: 'field' },
+                    React.createElement(inputComponent, {
+                        size: size ?? 'middle',
+                        placeholder: 'Input',
+                    })
+                )
+            );
+    }
+    return undefined;
+};
+
+const renderAntdDefaultPreview = (
+    path: string,
+    module: AntdModule,
+    component: React.ElementType,
+    size?: string
+) => {
+    const commonSize = size ?? 'middle';
+    switch (path) {
+        case 'Select':
+            return React.createElement(component, {
+                size: commonSize,
+                defaultValue: 'a',
+                options: [
+                    { label: 'Option A', value: 'a' },
+                    { label: 'Option B', value: 'b' },
+                ],
+                style: { width: 120 },
+            });
+        case 'DatePicker':
+        case 'TimePicker':
+            return React.createElement(component, {
+                size: commonSize,
+                style: { width: 120 },
+            });
+        case 'InputNumber':
+            return React.createElement(component, {
+                size: commonSize,
+                defaultValue: 12,
+                style: { width: 120 },
+            });
+        case 'Checkbox':
+            return React.createElement(component, null, 'Check');
+        case 'Radio':
+            return React.createElement(component, null, 'Radio');
+        case 'Switch':
+            return React.createElement(component, { defaultChecked: true });
+        case 'Slider':
+            return React.createElement(component, {
+                defaultValue: 36,
+                style: { width: 120 },
+            });
+        case 'Rate':
+            return React.createElement(component, { defaultValue: 3 });
+        case 'Tag':
+            return React.createElement(component, null, 'Tag');
+        case 'Avatar':
+            return React.createElement(component, null, 'A');
+        case 'Badge':
+            return React.createElement(
+                component,
+                { count: 5 },
+                <span className="inline-block h-4 w-4 rounded bg-black/10 dark:bg-white/10" />
+            );
+        case 'Card':
+            return React.createElement(
+                component,
+                { title: 'Card', size: 'small', style: { width: 150 } },
+                'Body'
+            );
+        case 'Alert':
+            return React.createElement(component, {
+                message: 'Alert',
+                type: 'info',
+                showIcon: true,
+            });
+        case 'Progress':
+            return React.createElement(component, {
+                percent: 62,
+                size: 'small',
+                style: { width: 120 },
+            });
+        case 'Spin':
+            return React.createElement(
+                component,
+                { spinning: true },
+                <span className="text-[10px]">Loading</span>
+            );
+        case 'Result':
+            return React.createElement(component, {
+                status: 'success',
+                title: 'Done',
+                subTitle: '',
+            });
+        case 'Tooltip':
+            return React.createElement(
+                component,
+                { title: 'Tooltip' },
+                <span className="text-[10px]">Hover</span>
+            );
+        case 'Popover':
+            return React.createElement(
+                component,
+                { content: 'Popover' },
+                <span className="text-[10px]">Trigger</span>
+            );
+        case 'Dropdown':
+            return React.createElement(
+                component,
+                { menu: { items: [{ key: '1', label: 'Item' }] } },
+                <button type="button">Menu</button>
+            );
+        case 'Menu':
+            return React.createElement(component, {
+                mode: 'horizontal',
+                items: [{ key: '1', label: 'Menu' }],
+            });
+        case 'Tabs':
+            return React.createElement(component, {
+                size: 'small',
+                items: [{ key: '1', label: 'Tab', children: 'Content' }],
+            });
+        case 'Steps':
+            return React.createElement(component, {
+                size: 'small',
+                current: 1,
+                items: [{ title: 'A' }, { title: 'B' }],
+            });
+        case 'Collapse':
+            return React.createElement(component, {
+                size: 'small',
+                items: [{ key: '1', label: 'Panel', children: 'Content' }],
+            });
+        case 'Pagination':
+            return React.createElement(component, {
+                size: 'small',
+                total: 50,
+                current: 2,
+            });
+        case 'Breadcrumb':
+            return React.createElement(component, {
+                items: [{ title: 'Home' }, { title: 'Page' }],
+            });
+        case 'Table':
+            return React.createElement(component, {
+                size: 'small',
+                pagination: false,
+                columns: [{ title: 'Name', dataIndex: 'name', key: 'name' }],
+                dataSource: [{ key: '1', name: 'Row' }],
+                style: { width: 180 },
+            });
+        case 'List':
+            return React.createElement(component, {
+                size: 'small',
+                dataSource: ['Item A'],
+                renderItem: (item: string) => <span>{item}</span>,
+                style: { width: 140 },
+            });
+        case 'Tree':
+            return React.createElement(component, {
+                defaultExpandAll: true,
+                treeData: [{ key: '1', title: 'Node' }],
+            });
+        case 'TreeSelect':
+            return React.createElement(component, {
+                size: commonSize,
+                treeData: [{ value: '1', title: 'Node' }],
+                defaultValue: '1',
+                style: { width: 120 },
+            });
+        case 'Cascader':
+            return React.createElement(component, {
+                size: commonSize,
+                options: [
+                    {
+                        value: 'zhejiang',
+                        label: 'Zhejiang',
+                        children: [{ value: 'hangzhou', label: 'Hangzhou' }],
+                    },
+                ],
+                style: { width: 120 },
+            });
+        case 'Transfer':
+            return React.createElement(component, {
+                dataSource: [{ key: '1', title: 'Item 1' }],
+                targetKeys: ['1'],
+                render: (item: { title: string }) => item.title,
+                style: { width: 180 },
+            });
+        case 'Descriptions':
+            return React.createElement(component, {
+                size: 'small',
+                column: 1,
+                items: [{ key: '1', label: 'Label', children: 'Value' }],
+            });
+        case 'Image':
+            return React.createElement(component, {
+                width: 80,
+                height: 50,
+                src: 'https://picsum.photos/160/100',
+                alt: 'preview',
+                preview: false,
+            });
+        case 'Space':
+            return React.createElement(
+                component,
+                null,
+                <button type="button">A</button>,
+                <button type="button">B</button>
+            );
+        case 'Space.Compact':
+            return React.createElement(
+                component,
+                null,
+                <input
+                    className="w-20 rounded border border-black/15 px-1 py-[2px] text-[10px]"
+                    placeholder="Input"
+                />,
+                <button type="button">Go</button>
+            );
+        case 'Form': {
+            const formItem = getComponentByPath(module, 'Form.Item');
+            const input = getComponentByPath(module, 'Input');
+            if (!formItem || !input) return null;
+            return React.createElement(
+                component,
+                { layout: 'vertical' },
+                React.createElement(
+                    formItem,
+                    { label: 'Field', name: 'field' },
+                    React.createElement(input, {
+                        size: commonSize,
+                        placeholder: 'Input',
+                    })
+                )
+            );
+        }
+        default:
+            return React.createElement(component, {
+                size: commonSize,
+            });
+    }
+};
+
+const createPreviewItem = (
+    path: string,
+    module: AntdModule,
+    component: React.ElementType
+): ComponentPreviewItem => ({
+    id: pathToItemId(path),
+    name: path,
+    preview: <div className="text-[10px] text-(--color-7)">{path}</div>,
+    renderPreview: ({ size }) => (
+        <AntdPreviewBoundary>
+            {
+                (renderAntdPreview(path, module, component)?.({ size }) ??
+                    renderAntdDefaultPreview(path, module, component, size) ?? (
+                        <div className="text-[10px] text-(--color-7)">
+                            {path}
+                        </div>
+                    )) as React.ReactNode
+            }
+        </AntdPreviewBoundary>
+    ),
+    sizeOptions: SIZE_SUPPORT_PATHS.has(path) ? SIZE_OPTIONS : undefined,
 });
 
-let loadPromise: Promise<EsmLoadDiagnostic[]> | null = null;
-let styleInjected = false;
+const buildAntdGroups = (module: AntdModule): ComponentGroup[] => {
+    const knownPaths = new Set(
+        ANTD_GROUPS.flatMap((group) => group.components)
+    );
+    const extraPaths = Object.entries(module)
+        .filter(([name, value]) => isLikelyTopLevelComponent(name, value))
+        .map(([name]) => name)
+        .filter((name) => !knownPaths.has(name))
+        .sort();
 
-const ensureAntdStyle = () => {
-    if (styleInjected || typeof document === 'undefined') return;
-    const id = 'mdr-antd-esm-style';
-    if (document.getElementById(id)) {
-        styleInjected = true;
+    const groups: ComponentGroup[] = [];
+    ANTD_GROUPS.forEach((group) => {
+        const items = group.components
+            .map((path) => {
+                const component = getComponentByPath(module, path);
+                if (!component) return null;
+                return createPreviewItem(path, module, component);
+            })
+            .filter((item): item is ComponentPreviewItem => Boolean(item));
+
+        if (items.length > 0) {
+            groups.push({
+                id: group.id,
+                title: group.title,
+                source: 'external',
+                items,
+            });
+        }
+    });
+
+    if (extraPaths.length > 0) {
+        groups.push({
+            id: 'antd-other',
+            title: 'Ant Design / Other',
+            source: 'external',
+            items: extraPaths
+                .map((path) => {
+                    const component = getComponentByPath(module, path);
+                    if (!component) return null;
+                    return createPreviewItem(path, module, component);
+                })
+                .filter((item): item is ComponentPreviewItem => Boolean(item)),
+        });
+    }
+
+    return groups;
+};
+
+const registerAntdRuntimeComponents = (
+    module: AntdModule,
+    diagnostics: EsmLoadDiagnostic[]
+) => {
+    const groupPaths = ANTD_GROUPS.flatMap((group) => group.components);
+    const extraPaths = Object.entries(module)
+        .filter(([name, value]) => isLikelyTopLevelComponent(name, value))
+        .map(([name]) => name);
+    const allPaths = [...new Set([...groupPaths, ...extraPaths])];
+
+    let registered = 0;
+    allPaths.forEach((path) => {
+        const component = getComponentByPath(module, path);
+        if (!component) return;
+        registerRuntimeComponent(
+            pathToRuntimeType(path),
+            component,
+            getAdapterByPath(path)
+        );
+        registered += 1;
+    });
+
+    if (registered === 0) {
+        diagnostics.push({
+            level: 'error',
+            message:
+                'No runtime-renderable components were found in antd module.',
+        });
+    } else {
+        // eslint-disable-next-line no-console
+        console.info(
+            `${ANTD_RUNTIME_LOG_PREFIX} registered ${registered} components`
+        );
+    }
+};
+
+let loadPromise: Promise<EsmLoadDiagnostic[]> | null = null;
+let importMapInjected = false;
+
+const ensureHostReactImportMap = () => {
+    if (importMapInjected || typeof document === 'undefined') return;
+    const existingImportMap = document.getElementById('mdr-esm-importmap');
+    if (existingImportMap) {
+        importMapInjected = true;
         return;
     }
-    const link = document.createElement('link');
-    link.id = id;
-    link.rel = 'stylesheet';
-    link.href = 'https://esm.sh/antd@5.28.0/dist/reset.css';
-    document.head.appendChild(link);
-    styleInjected = true;
+    const script = document.createElement('script');
+    script.id = 'mdr-esm-importmap';
+    script.type = 'importmap';
+    script.textContent = JSON.stringify({
+        imports: {
+            react: '/src/esm-bridge/react-interop.mjs',
+            'react-dom': '/src/esm-bridge/react-dom-interop.mjs',
+            'react/jsx-runtime':
+                '/src/esm-bridge/react-jsx-runtime-interop.mjs',
+            'react/jsx-dev-runtime':
+                '/src/esm-bridge/react-jsx-dev-runtime-interop.mjs',
+        },
+    });
+    document.head.appendChild(script);
+    importMapInjected = true;
 };
 
 /**
  * Runtime external library registration chain:
- * Sidebar("External") -> ensureAntdEsmLibrary -> import(esm.sh antd) -> registerRuntimeComponent
- * -> createOrderedComponentRegistry(custom layer) -> MIRRenderer.
+ * Sidebar("External") -> ensureAntdEsmLibrary -> import(esm.sh antd) ->
+ * registerRuntimeComponent -> registerComponentGroup -> MIRRenderer.
  */
 export const ensureAntdEsmLibrary = async (): Promise<EsmLoadDiagnostic[]> => {
     if (loadPromise) return loadPromise;
 
     loadPromise = (async () => {
         const diagnostics: EsmLoadDiagnostic[] = [];
+        let module: AntdModule | null = null;
 
         try {
-            ensureAntdStyle();
-            let module: AntdModule | null = null;
+            ensureHostReactImportMap();
             let lastError: unknown = null;
             for (const url of ANTD_ESM_URL_CANDIDATES) {
                 try {
                     module = (await import(
                         /* @vite-ignore */ url
                     )) as AntdModule;
+                    // eslint-disable-next-line no-console
+                    console.info(
+                        `${ANTD_RUNTIME_LOG_PREFIX} import success`,
+                        url
+                    );
                     break;
                 } catch (error) {
                     lastError = error;
+                    // eslint-disable-next-line no-console
+                    console.warn(
+                        `${ANTD_RUNTIME_LOG_PREFIX} import failed`,
+                        url,
+                        error
+                    );
                 }
             }
 
-            if (!module) {
+            if (!module)
                 throw lastError ?? new Error('No reachable esm.sh antd URL.');
-            }
 
-            if (module.Button) {
-                registerRuntimeComponent(
-                    'AntdButton',
-                    module.Button,
-                    antdTextAdapter
-                );
-            } else {
-                diagnostics.push({
-                    level: 'warning',
-                    message: 'antd.Button is not available from esm.sh bundle.',
-                });
-            }
-
-            if (module.Input) {
-                registerRuntimeComponent(
-                    'AntdInput',
-                    module.Input,
-                    antdInputAdapter
-                );
-            } else {
-                diagnostics.push({
-                    level: 'warning',
-                    message: 'antd.Input is not available from esm.sh bundle.',
-                });
-            }
-
-            if (module.Modal) {
-                registerRuntimeComponent(
-                    'AntdModal',
-                    module.Modal,
-                    antdTextAdapter
-                );
-            } else {
-                diagnostics.push({
-                    level: 'warning',
-                    message: 'antd.Modal is not available from esm.sh bundle.',
-                });
-            }
-
-            if (module.Form?.Item) {
-                registerRuntimeComponent(
-                    'AntdFormItem',
-                    module.Form.Item,
-                    antdTextAdapter
-                );
-            } else {
-                diagnostics.push({
-                    level: 'warning',
-                    message:
-                        'antd.Form.Item is not available from esm.sh bundle.',
-                });
-            }
+            registerAntdRuntimeComponents(module, diagnostics);
+            buildAntdGroups(module).forEach((group) =>
+                registerComponentGroup(group)
+            );
         } catch (error) {
             diagnostics.push({
                 level: 'error',
@@ -194,7 +773,9 @@ export const ensureAntdEsmLibrary = async (): Promise<EsmLoadDiagnostic[]> => {
             });
         }
 
-        registerComponentGroup(buildAntdGroup());
+        if (diagnostics.some((item) => item.level === 'error')) {
+            loadPromise = null;
+        }
         return diagnostics;
     })();
 

@@ -30,6 +30,10 @@
     - `specs/mir/MIR-v1.2.json`
 6. **插件与安全扩展**
     - `specs/decisions/14.plugin-sandbox-and-capability.md`
+7. **样式协议编辑器**
+    - `specs/decisions/16.class-protocol-editor.md`
+8. **外部组件库接入**
+    - `specs/decisions/17.external-library-runtime-and-adapter.md`
 
 ## 实施主计划
 

@@ -1,6 +1,7 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdrInput, MdrSelect } from '@mdr/ui';
+import { ChevronDown } from 'lucide-react';
+import { MdrInput } from '@mdr/ui';
 import type { ComponentNode } from '@/core/types/engine.types';
 import type {
     InspectorPanelDefinition,
@@ -45,6 +46,26 @@ import {
 const isPlainObject = (value: unknown): value is Record<string, unknown> =>
     typeof value === 'object' && value !== null && !Array.isArray(value);
 
+type SpacingKey = 'margin' | 'padding';
+type BoxSpacing = {
+    top: string;
+    right: string;
+    bottom: string;
+    left: string;
+};
+
+const LAYOUT_COMPONENT_TYPES = new Set([
+    'MdrDiv',
+    'MdrSection',
+    'MdrCard',
+    'MdrPanel',
+    'div',
+    'section',
+]);
+
+const isLayoutComponent = (node: ComponentNode) =>
+    LAYOUT_COMPONENT_TYPES.has(node.type);
+
 const getDisplay = (node: ComponentNode) => {
     const display = node.props?.display;
     return typeof display === 'string' ? display : undefined;
@@ -54,6 +75,11 @@ const readString = (value: unknown) =>
     typeof value === 'string' ? value : undefined;
 const readNumber = (value: unknown) =>
     typeof value === 'number' ? value : undefined;
+const readCssValue = (value: unknown) => {
+    if (typeof value === 'string') return value;
+    if (typeof value === 'number') return `${value}px`;
+    return undefined;
+};
 
 const readGridColumnCount = (value: unknown) => {
     const template = readString(value);
@@ -80,10 +106,227 @@ const withStyle = (
     style: { ...(isPlainObject(node.style) ? node.style : {}), ...patch },
 });
 
+const parseBoxSpacing = (value: string): BoxSpacing => {
+    const tokens = value.trim().split(/\s+/).filter(Boolean);
+    if (tokens.length === 0) {
+        return { top: '', right: '', bottom: '', left: '' };
+    }
+    if (tokens.length === 1) {
+        return {
+            top: tokens[0],
+            right: tokens[0],
+            bottom: tokens[0],
+            left: tokens[0],
+        };
+    }
+    if (tokens.length === 2) {
+        return {
+            top: tokens[0],
+            right: tokens[1],
+            bottom: tokens[0],
+            left: tokens[1],
+        };
+    }
+    if (tokens.length === 3) {
+        return {
+            top: tokens[0],
+            right: tokens[1],
+            bottom: tokens[2],
+            left: tokens[1],
+        };
+    }
+    return {
+        top: tokens[0],
+        right: tokens[1],
+        bottom: tokens[2],
+        left: tokens[3],
+    };
+};
+
+const toBoxSpacingShorthand = (spacing: BoxSpacing) => {
+    const top = spacing.top.trim();
+    const right = spacing.right.trim();
+    const bottom = spacing.bottom.trim();
+    const left = spacing.left.trim();
+    const all = [top, right, bottom, left];
+    if (all.every((item) => !item)) return '';
+    if (all.some((item) => !item)) {
+        return all.filter(Boolean).join(' ');
+    }
+    if (top === right && top === bottom && top === left) return top;
+    if (top === bottom && right === left) return `${top} ${right}`;
+    if (right === left) return `${top} ${right} ${bottom}`;
+    return `${top} ${right} ${bottom} ${left}`;
+};
+
+const getSpacingValue = (node: ComponentNode, key: SpacingKey) => {
+    if (node.type === 'MdrDiv') {
+        const propValue = readCssValue(node.props?.[key]);
+        if (propValue !== undefined) return propValue;
+    }
+    return readCssValue(node.style?.[key]) ?? '';
+};
+
+const updateSpacingValue = (
+    node: ComponentNode,
+    key: SpacingKey,
+    nextValue: string
+): ComponentNode => {
+    const hasValue = nextValue.trim().length > 0;
+    if (node.type === 'MdrDiv') {
+        const nextProps = isPlainObject(node.props) ? { ...node.props } : {};
+        const nextStyle = isPlainObject(node.style) ? { ...node.style } : {};
+        if (hasValue) {
+            nextProps[key] = nextValue;
+        } else {
+            delete nextProps[key];
+        }
+        delete nextStyle[key];
+        return {
+            ...node,
+            props: Object.keys(nextProps).length ? nextProps : undefined,
+            style: Object.keys(nextStyle).length ? nextStyle : undefined,
+        };
+    }
+
+    const nextStyle = isPlainObject(node.style) ? { ...node.style } : {};
+    if (hasValue) {
+        nextStyle[key] = nextValue;
+    } else {
+        delete nextStyle[key];
+    }
+    return {
+        ...node,
+        style: Object.keys(nextStyle).length ? nextStyle : undefined,
+    };
+};
+
+type SpacingControlProps = {
+    keyName: SpacingKey;
+    value: string;
+    expanded: boolean;
+    onToggleExpand: () => void;
+    onChange: (nextValue: string) => void;
+    t: (key: string, options?: Record<string, unknown>) => string;
+};
+
+function SpacingControl({
+    keyName,
+    value,
+    expanded,
+    onToggleExpand,
+    onChange,
+    t,
+}: SpacingControlProps) {
+    const sides = useMemo(() => parseBoxSpacing(value), [value]);
+    return (
+        <div className="InspectorField flex flex-col gap-1.5">
+            <InspectorRow
+                label={t(`inspector.panels.layout.fields.${keyName}`, {
+                    defaultValue: keyName === 'margin' ? 'Margin' : 'Padding',
+                })}
+                control={
+                    <div className="flex items-center gap-1.5">
+                        <input
+                            className="h-7 w-full min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+                            value={value}
+                            onChange={(event) => onChange(event.target.value)}
+                            placeholder="0"
+                            data-testid={`inspector-${keyName}-shorthand`}
+                        />
+                        <button
+                            type="button"
+                            className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-black/10 bg-transparent text-(--color-7) hover:text-(--color-9) dark:border-white/16"
+                            onClick={onToggleExpand}
+                            data-testid={`inspector-${keyName}-toggle`}
+                            aria-label={t(
+                                expanded
+                                    ? 'inspector.panels.layout.fields.collapse'
+                                    : 'inspector.panels.layout.fields.expand',
+                                {
+                                    defaultValue: expanded
+                                        ? 'Collapse'
+                                        : 'Expand',
+                                }
+                            )}
+                            title={t(
+                                expanded
+                                    ? 'inspector.panels.layout.fields.collapse'
+                                    : 'inspector.panels.layout.fields.expand',
+                                {
+                                    defaultValue: expanded
+                                        ? 'Collapse'
+                                        : 'Expand',
+                                }
+                            )}
+                        >
+                            <ChevronDown
+                                size={14}
+                                className={expanded ? 'rotate-180' : 'rotate-0'}
+                            />
+                        </button>
+                    </div>
+                }
+            />
+            {expanded ? (
+                <div className="grid grid-cols-2 gap-1.5">
+                    {(
+                        [
+                            ['top', sides.top],
+                            ['right', sides.right],
+                            ['bottom', sides.bottom],
+                            ['left', sides.left],
+                        ] as const
+                    ).map(([side, sideValue]) => (
+                        <label
+                            key={side}
+                            className="grid gap-1 text-[10px] text-(--color-7)"
+                        >
+                            <span className="font-semibold">
+                                {t(
+                                    `inspector.panels.layout.fields.sides.${side}`,
+                                    {
+                                        defaultValue:
+                                            side.charAt(0).toUpperCase() +
+                                            side.slice(1),
+                                    }
+                                )}
+                            </span>
+                            <div data-testid={`inspector-${keyName}-${side}`}>
+                                <UnitInput
+                                    value={sideValue ? sideValue : undefined}
+                                    quantity="length-percentage"
+                                    placeholder="0"
+                                    onChange={(nextSideValue) => {
+                                        const nextValue =
+                                            readCssValue(nextSideValue) ?? '';
+                                        onChange(
+                                            toBoxSpacingShorthand({
+                                                ...sides,
+                                                [side]: nextValue,
+                                            })
+                                        );
+                                    }}
+                                />
+                            </div>
+                        </label>
+                    ))}
+                </div>
+            ) : null}
+        </div>
+    );
+}
+
 function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
     const { t } = useTranslation('blueprint');
     const display = getDisplay(node);
     const gapValue = node.props?.gap;
+    const marginValue = getSpacingValue(node, 'margin');
+    const paddingValue = getSpacingValue(node, 'padding');
+    const [expandedSpacing, setExpandedSpacing] = useState({
+        margin: false,
+        padding: false,
+    });
 
     const flexDirection = readString(node.props?.flexDirection) ?? 'Row';
     const justifyContent = readString(node.props?.justifyContent) ?? 'Start';
@@ -93,35 +336,79 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
     const gridColumnCount = readGridColumnCount(gridTemplateColumns);
     const gridColumnsDraft = gridColumnCount ? String(gridColumnCount) : '';
 
+    useEffect(() => {
+        setExpandedSpacing({ margin: false, padding: false });
+    }, [node.id]);
+
     return (
         <div className="InspectorSection flex flex-col gap-2">
-            <div className="InspectorField flex flex-col gap-1.5">
-                <InspectorRow
-                    label={t('inspector.panels.layout.fields.gap', {
-                        defaultValue: 'Gap',
-                    })}
-                    control={
-                        <UnitInput
-                            value={readNumber(gapValue) ?? readString(gapValue)}
-                            quantity="length-percentage"
-                            onChange={(next) => {
-                                updateNode((current) => {
-                                    if (next === undefined) {
-                                        const { gap, ...rest } = isPlainObject(
-                                            current.props
-                                        )
-                                            ? current.props
-                                            : {};
-                                        return { ...current, props: rest };
-                                    }
-                                    return withProps(current, { gap: next });
-                                });
-                            }}
-                            placeholder="8"
-                        />
-                    }
-                />
-            </div>
+            {display === 'Flex' || display === 'Grid' ? (
+                <div className="InspectorField flex flex-col gap-1.5">
+                    <InspectorRow
+                        label={t('inspector.panels.layout.fields.gap', {
+                            defaultValue: 'Gap',
+                        })}
+                        control={
+                            <UnitInput
+                                value={
+                                    readNumber(gapValue) ?? readString(gapValue)
+                                }
+                                quantity="length-percentage"
+                                onChange={(next) => {
+                                    updateNode((current) => {
+                                        if (next === undefined) {
+                                            const { gap, ...rest } =
+                                                isPlainObject(current.props)
+                                                    ? current.props
+                                                    : {};
+                                            return { ...current, props: rest };
+                                        }
+                                        return withProps(current, {
+                                            gap: next,
+                                        });
+                                    });
+                                }}
+                                placeholder="8"
+                            />
+                        }
+                    />
+                </div>
+            ) : null}
+
+            <SpacingControl
+                keyName="margin"
+                value={marginValue}
+                expanded={expandedSpacing.margin}
+                onToggleExpand={() =>
+                    setExpandedSpacing((current) => ({
+                        ...current,
+                        margin: !current.margin,
+                    }))
+                }
+                onChange={(nextValue) =>
+                    updateNode((current) =>
+                        updateSpacingValue(current, 'margin', nextValue)
+                    )
+                }
+                t={t}
+            />
+            <SpacingControl
+                keyName="padding"
+                value={paddingValue}
+                expanded={expandedSpacing.padding}
+                onToggleExpand={() =>
+                    setExpandedSpacing((current) => ({
+                        ...current,
+                        padding: !current.padding,
+                    }))
+                }
+                onChange={(nextValue) =>
+                    updateNode((current) =>
+                        updateSpacingValue(current, 'padding', nextValue)
+                    )
+                }
+                t={t}
+            />
 
             {display === 'Flex' && (
                 <>
@@ -598,9 +885,6 @@ export const layoutPanel: InspectorPanelDefinition = {
     key: 'layout',
     title: 'Layout',
     description: 'Flex / Grid layout details',
-    match: (node) => {
-        const display = getDisplay(node);
-        return display === 'Flex' || display === 'Grid';
-    },
+    match: (node) => isLayoutComponent(node),
     render: (props) => <LayoutPanelView {...props} />,
 };

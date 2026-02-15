@@ -186,6 +186,37 @@ describe('BlueprintEditorComponentTree', () => {
         vi.useRealTimers();
     });
 
+    it('double-clicks an expanded node to collapse it', () => {
+        resetEditorStore({
+            mirDoc: createMirDoc([
+                {
+                    id: 'child-2',
+                    type: 'MdrDiv',
+                    children: [
+                        { id: 'child-2a', type: 'MdrText', text: 'Nested' },
+                    ],
+                },
+            ]),
+        });
+
+        render(
+            <BlueprintEditorComponentTree
+                isCollapsed={false}
+                selectedId={undefined}
+                onToggleCollapse={() => {}}
+                onSelectNode={() => {}}
+                onDeleteSelected={() => {}}
+                onDeleteNode={() => {}}
+                onCopyNode={() => {}}
+                onMoveNode={() => {}}
+            />
+        );
+
+        expect(screen.getByTitle('MdrText (child-2a)')).toBeTruthy();
+        fireEvent.doubleClick(screen.getByTitle('MdrDiv (child-2)'));
+        expect(screen.queryByTitle('MdrText (child-2a)')).toBeNull();
+    });
+
     describe('Drag and Drop Behavior', () => {
         it('applies isDragging state and reduces opacity when dragging', () => {
             resetEditorStore({

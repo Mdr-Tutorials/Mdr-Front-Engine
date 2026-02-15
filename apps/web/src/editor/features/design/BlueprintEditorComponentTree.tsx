@@ -223,7 +223,7 @@ function BlueprintTreeNode({
                         onSelect(node.id);
                     }}
                     onDoubleClick={(event) => {
-                        if (!hasChildren || isExpanded) return;
+                        if (!hasChildren) return;
                         event.preventDefault();
                         event.stopPropagation();
                         if (
@@ -472,10 +472,10 @@ export function BlueprintEditorComponentTree({
 
     if (isCollapsed) {
         return (
-            <aside className="BlueprintEditorComponentTree Collapsed h-0 w-0 overflow-visible border-0 bg-transparent shadow-none">
+            <aside className="BlueprintEditorComponentTree Collapsed absolute bottom-10 left-0 z-[6] h-0 w-0 overflow-visible border-0 bg-transparent shadow-none">
                 <button
                     type="button"
-                    className="BlueprintEditorTreeExpand absolute bottom-2.5 left-2.5 inline-flex h-[26px] w-[26px] items-center justify-center rounded-full border-0 bg-(--color-0) text-(--color-6) shadow-[0_8px_16px_rgba(0,0,0,0.12)] hover:text-(--color-9) dark:shadow-[0_10px_20px_rgba(0,0,0,0.45)]"
+                    className="BlueprintEditorTreeExpand inline-flex h-8 w-6 items-center justify-center rounded-r-full rounded-l-none border border-l-0 border-black/8 bg-(--color-0) pr-0.5 text-(--color-6) shadow-[0_10px_22px_rgba(0,0,0,0.14)] hover:text-(--color-9) dark:border-white/16 dark:shadow-[0_12px_24px_rgba(0,0,0,0.45)]"
                     onClick={onToggleCollapse}
                     aria-label={t('tree.expand', {
                         defaultValue: 'Expand component tree',
@@ -491,7 +491,7 @@ export function BlueprintEditorComponentTree({
         <aside
             className={`BlueprintEditorComponentTree absolute bottom-0 left-0 z-[3] flex h-[var(--component-tree-height)] w-[var(--tree-width)] min-h-0 flex-col overflow-hidden rounded-xl border-0 bg-(--color-0) shadow-[0_10px_20px_rgba(0,0,0,0.06)] ${!isTreeCollapsed ? 'rounded-t-none' : ''}`}
         >
-            <div className="BlueprintEditorTreeHeader flex items-center justify-between bg-transparent px-2.5 py-1.5 text-[13px] font-semibold">
+            <div className="BlueprintEditorTreeHeader flex items-center justify-between bg-transparent px-2.5 pb-1.5 pt-2.5 text-[13px] font-semibold">
                 <div className="BlueprintEditorTreeHeaderLeft inline-flex min-w-0 items-center gap-2">
                     <span
                         className="BlueprintEditorTreeHeaderIcon inline-flex h-[18px] w-[18px] flex-none items-center justify-center rounded-md bg-transparent text-(--color-7)"

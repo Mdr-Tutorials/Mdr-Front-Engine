@@ -130,4 +130,69 @@ describe('BlueprintEditorInspector layout panel', () => {
             'repeat(3, minmax(0, 1fr))'
         );
     });
+
+    it('keeps margin shorthand and per-side inputs in sync', () => {
+        resetEditorStore({
+            mirDoc: createMirDoc([
+                {
+                    id: 'layout-1',
+                    type: 'MdrDiv',
+                    children: [],
+                },
+            ]),
+            blueprintStateByProject: {
+                [PROJECT_ID]: {
+                    ...DEFAULT_BLUEPRINT_STATE,
+                    selectedId: 'layout-1',
+                },
+            },
+        });
+
+        render(
+            <BlueprintEditorInspector
+                isCollapsed={false}
+                onToggleCollapse={() => {}}
+            />
+        );
+
+        const shorthandInput = screen.getByTestId(
+            'inspector-margin-shorthand'
+        ) as HTMLInputElement;
+        fireEvent.change(shorthandInput, { target: { value: '10px 20px' } });
+
+        fireEvent.click(screen.getByTestId('inspector-margin-toggle'));
+
+        const topInput = screen
+            .getByTestId('inspector-margin-top')
+            .querySelector('input') as HTMLInputElement;
+        const rightInput = screen
+            .getByTestId('inspector-margin-right')
+            .querySelector('input') as HTMLInputElement;
+        const bottomInput = screen
+            .getByTestId('inspector-margin-bottom')
+            .querySelector('input') as HTMLInputElement;
+        const leftInput = screen
+            .getByTestId('inspector-margin-left')
+            .querySelector('input') as HTMLInputElement;
+
+        expect(topInput.value).toBe('10');
+        expect(rightInput.value).toBe('20');
+        expect(bottomInput.value).toBe('10');
+        expect(leftInput.value).toBe('20');
+
+        fireEvent.change(leftInput, {
+            target: { value: '30' },
+        });
+
+        expect(
+            (
+                screen.getByTestId(
+                    'inspector-margin-shorthand'
+                ) as HTMLInputElement
+            ).value
+        ).toBe('10px 20px 10px 30px');
+
+        const child = useEditorStore.getState().mirDoc.ui.root.children?.[0];
+        expect(child?.props?.margin).toBe('10px 20px 10px 30px');
+    });
 });

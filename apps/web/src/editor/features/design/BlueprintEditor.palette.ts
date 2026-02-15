@@ -321,41 +321,6 @@ export const createNodeFromPaletteItem = (
             },
         };
     }
-    if (itemId === 'antd-button') {
-        return {
-            id: createId('AntdButton'),
-            type: 'AntdButton',
-            text: 'Button',
-            props: {
-                type: 'primary',
-                size: selectedSize ?? 'middle',
-                ...variantProps,
-            },
-        };
-    }
-    if (itemId === 'antd-input') {
-        return {
-            id: createId('AntdInput'),
-            type: 'AntdInput',
-            props: {
-                placeholder: 'Input',
-                size: selectedSize ?? 'middle',
-                ...variantProps,
-            },
-        };
-    }
-    if (itemId === 'antd-modal') {
-        return {
-            id: createId('AntdModal'),
-            type: 'AntdModal',
-            text: 'Modal content',
-            props: {
-                open: true,
-                title: 'Modal Title',
-                ...variantProps,
-            },
-        };
-    }
     if (itemId === 'antd-form-item') {
         return {
             id: createId('AntdFormItem'),
@@ -374,6 +339,32 @@ export const createNodeFromPaletteItem = (
                     },
                 },
             ],
+        };
+    }
+    if (itemId.startsWith('antd-')) {
+        const runtimeType = `Antd${itemId
+            .slice('antd-'.length)
+            .split('-')
+            .map((segment) =>
+                segment ? `${segment[0].toUpperCase()}${segment.slice(1)}` : ''
+            )
+            .join('')}`;
+
+        const defaultPropsByType: Record<string, Record<string, unknown>> = {
+            AntdButton: { type: 'primary', size: selectedSize ?? 'middle' },
+            AntdInput: { placeholder: 'Input', size: selectedSize ?? 'middle' },
+            AntdModal: { open: false, title: 'Modal Title' },
+            AntdDrawer: { open: false, title: 'Drawer Title' },
+        };
+
+        return {
+            id: createId(runtimeType),
+            type: runtimeType,
+            props: {
+                ...(selectedSize ? { size: selectedSize } : {}),
+                ...(defaultPropsByType[runtimeType] ?? {}),
+                ...(variantProps ?? {}),
+            },
         };
     }
 

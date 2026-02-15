@@ -1,5 +1,4 @@
-import { createElement } from 'react';
-import type React from 'react';
+import React, { createElement } from 'react';
 import * as MdrUi from '@mdr/ui';
 import type { ComponentNode } from '@/core/types/engine.types';
 import { isIconRef, resolveIconRef } from './iconRegistry';
@@ -55,6 +54,64 @@ export type ComponentRegistry = {
 const runtimeEntries = new Map<string, RegistryEntry>();
 const RUNTIME_REGISTRY_UPDATED_EVENT = 'mdr:runtime-registry-updated';
 let runtimeRegistryRevision = 0;
+
+type RuntimeBoundaryState = { hasError: boolean };
+
+class RuntimeComponentBoundary extends React.Component<
+    { typeName: string; children: React.ReactNode },
+    RuntimeBoundaryState
+> {
+    state: RuntimeBoundaryState = { hasError: false };
+
+    static getDerivedStateFromError(): RuntimeBoundaryState {
+        return { hasError: true };
+    }
+
+    componentDidCatch(error: unknown) {
+        console.warn(
+            '[runtime-component] render failed',
+            this.props.typeName,
+            error
+        );
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return createElement(
+                'span',
+                {
+                    'data-runtime-error': this.props.typeName,
+                    style: {
+                        display: 'inline-flex',
+                        minHeight: 24,
+                        alignItems: 'center',
+                        padding: '0 8px',
+                        border: '1px dashed rgba(0,0,0,0.25)',
+                        borderRadius: 8,
+                        fontSize: 11,
+                        color: 'var(--color-7)',
+                    },
+                },
+                `${this.props.typeName} (runtime fallback)`
+            );
+        }
+        return this.props.children;
+    }
+}
+
+const createGuardedRuntimeComponent = (
+    type: string,
+    component: React.ElementType
+): React.ElementType => {
+    const GuardedRuntimeComponent = (props: Record<string, unknown>) =>
+        createElement(
+            RuntimeComponentBoundary,
+            { typeName: type },
+            createElement(component, props)
+        );
+    GuardedRuntimeComponent.displayName = `Guarded${type}`;
+    return GuardedRuntimeComponent;
+};
 
 const normalizeSelectionData = (selectionData?: Record<string, string>) =>
     selectionData ?? {};
@@ -396,7 +453,10 @@ export const registerRuntimeComponent = (
     component: React.ElementType,
     adapter: ComponentAdapter = htmlAdapter
 ) => {
-    runtimeEntries.set(type, { component, adapter });
+    runtimeEntries.set(type, {
+        component: createGuardedRuntimeComponent(type, component),
+        adapter,
+    });
     runtimeRegistryRevision += 1;
     if (typeof window !== 'undefined') {
         window.dispatchEvent(

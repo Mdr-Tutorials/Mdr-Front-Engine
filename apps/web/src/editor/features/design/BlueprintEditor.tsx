@@ -52,7 +52,7 @@ function BlueprintEditor() {
                 onDragEnd={dnd.handleDragEnd}
             >
                 <div
-                    className={`BlueprintEditorBody relative flex min-h-0 flex-1 p-[14px_20px_20px] [--sidebar-width:400px] [--tree-width:400px] [--inspector-width:360px] [--collapsed-panel-width:36px] [--component-tree-height:450px] max-[1100px]:p-[12px_16px_16px] max-[1100px]:[--sidebar-width:220px] max-[1100px]:[--tree-width:220px] max-[1100px]:[--inspector-width:240px] max-[1100px]:[--component-tree-height:340px] ${sidebar.isCollapsed ? '[--sidebar-width:var(--collapsed-panel-width)]' : ''} $`}
+                    className={`BlueprintEditorBody relative flex min-h-0 flex-1 overflow-hidden p-[14px_20px_20px] [--sidebar-width:400px] [--tree-width:400px] [--inspector-width:360px] [--collapsed-panel-width:36px] [--component-tree-height:450px] max-[1100px]:p-[12px_16px_16px] max-[1100px]:[--sidebar-width:220px] max-[1100px]:[--tree-width:220px] max-[1100px]:[--inspector-width:240px] max-[1100px]:[--component-tree-height:340px] ${sidebar.isCollapsed ? '[--sidebar-width:var(--collapsed-panel-width)]' : ''}`}
                 >
                     <BlueprintEditorSidebar
                         isCollapsed={sidebar.isCollapsed}

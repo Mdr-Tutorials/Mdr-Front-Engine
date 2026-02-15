@@ -320,4 +320,43 @@ describe('BlueprintEditorInspector', () => {
             });
         });
     });
+
+    it('updates className for Radix nodes', () => {
+        resetEditorStore({
+            mirDoc: createMirDoc([
+                {
+                    id: 'radix-switch-1',
+                    type: 'RadixSwitch',
+                    props: {},
+                },
+            ]),
+            blueprintStateByProject: {
+                [PROJECT_ID]: {
+                    ...DEFAULT_BLUEPRINT_STATE,
+                    selectedId: 'radix-switch-1',
+                },
+            },
+        });
+
+        render(
+            <BlueprintEditorInspector
+                isCollapsed={false}
+                onToggleCollapse={() => {}}
+            />
+        );
+
+        const input = screen.getByTestId(
+            'inspector-classname-input'
+        ) as HTMLInputElement;
+        fireEvent.change(input, {
+            target: { value: 'p-4 flex items-center gap-2' },
+        });
+
+        const node = useEditorStore
+            .getState()
+            .mirDoc.ui.root.children?.find(
+                (item) => item.id === 'radix-switch-1'
+            );
+        expect(node?.props?.className).toBe('p-4 flex items-center gap-2');
+    });
 });

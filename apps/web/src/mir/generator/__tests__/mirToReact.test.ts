@@ -142,8 +142,12 @@ describe('mirToReact generator', () => {
             },
         });
 
-        expect(code).toContain("import { Form } from 'https://esm.sh/antd@5.28.0';");
-        expect(code).toContain("import { Input } from 'https://esm.sh/antd@5.28.0';");
+        expect(code).toContain(
+            "import { Form } from 'https://esm.sh/antd@5.28.0';"
+        );
+        expect(code).toContain(
+            "import { Input } from 'https://esm.sh/antd@5.28.0';"
+        );
         expect(code).toContain('<Form.Item>');
         expect(code).toContain('<Input>');
     });

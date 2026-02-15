@@ -6,13 +6,15 @@ import { NAV_GROUP } from './groups/NavGroup';
 import { MEDIA_GROUP } from './groups/MediaGroup';
 import { DATA_GROUP } from './groups/DataGroup';
 import { FEEDBACK_GROUP } from './groups/FeedbackGroup';
+import { HEADLESS_GROUP } from './groups/HeadlessGroup';
 
 export const COMPONENT_GROUPS: ComponentGroup[] = [
-    BASE_GROUP,
-    LAYOUT_GROUP,
-    FORM_GROUP,
-    NAV_GROUP,
-    MEDIA_GROUP,
-    DATA_GROUP,
-    FEEDBACK_GROUP,
+    { ...BASE_GROUP, source: 'builtIn' },
+    { ...LAYOUT_GROUP, source: 'builtIn' },
+    { ...FORM_GROUP, source: 'builtIn' },
+    { ...NAV_GROUP, source: 'builtIn' },
+    { ...MEDIA_GROUP, source: 'builtIn' },
+    { ...DATA_GROUP, source: 'builtIn' },
+    { ...FEEDBACK_GROUP, source: 'builtIn' },
+    { ...HEADLESS_GROUP, source: 'headless' },
 ];
