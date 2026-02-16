@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { DndContext, DragOverlay } from '@dnd-kit/core';
 import { BlueprintEditorAddressBar } from './BlueprintEditorAddressBar';
 import { BlueprintEditorCanvas } from './BlueprintEditorCanvas';
@@ -22,6 +23,42 @@ function BlueprintEditor() {
     sidebar,
     viewportBar,
   } = useBlueprintEditorController();
+
+  useEffect(() => {
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.defaultPrevented) return;
+      if (!event.ctrlKey || !event.altKey || event.metaKey) return;
+      const key = event.key.toLowerCase();
+      if (key === 'j') {
+        event.preventDefault();
+        sidebar.onToggleCollapse();
+        return;
+      }
+      if (key === 'k') {
+        event.preventDefault();
+        componentTree.onToggleCollapse();
+        return;
+      }
+      if (key === 'l') {
+        event.preventDefault();
+        inspector.onToggleCollapse();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [
+    componentTree.onToggleCollapse,
+    inspector.onToggleCollapse,
+    sidebar.onToggleCollapse,
+  ]);
+
+  useEffect(() => {
+    void import('./blueprint/external/antdEsmLibrary')
+      .then((mod) => mod.ensureAntdEsmLibrary())
+      .catch((error) => {
+        console.warn('[blueprint] failed to preload antd runtime', error);
+      });
+  }, []);
 
   return (
     <div className="relative flex h-full min-h-screen flex-col text-(--color-10)">

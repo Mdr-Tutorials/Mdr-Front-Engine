@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -202,6 +203,17 @@ func (server *Server) getWorkspaceSnapshotForUser(
 func (server *Server) handleSaveWorkspaceDocument(c *gin.Context) {
 	workspaceID := strings.TrimSpace(c.Param("workspaceId"))
 	documentID := strings.TrimSpace(c.Param("documentId"))
+	user := getAuthUser(c)
+	if user == nil {
+		sendWorkspaceFailure(c, &workspaceRequestFailure{
+			status: http.StatusUnauthorized,
+			payload: gin.H{
+				"error":   "unauthorized",
+				"message": "Authentication required.",
+			},
+		})
+		return
+	}
 
 	var request saveWorkspaceDocumentRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -226,10 +238,23 @@ func (server *Server) handleSaveWorkspaceDocument(c *gin.Context) {
 		Command:            command,
 	})
 	if err != nil {
-		sendWorkspaceFailure(c, mapWorkspaceStoreError(err))
+		failure := mapWorkspaceStoreError(err)
+		logWorkspaceConflictFailure(
+			c,
+			"saveDocument",
+			workspaceID,
+			documentID,
+			request.ExpectedWorkspaceRev,
+			request.ExpectedRouteRev,
+			request.ExpectedContentRev,
+			request.ClientMutationID,
+			failure,
+		)
+		sendWorkspaceFailure(c, failure)
 		return
 	}
 
+	server.trySyncProjectMirrorFromWorkspace(c.Request.Context(), user.ID, workspaceID)
 	respondWorkspaceMutationSuccess(c, result, strings.TrimSpace(request.ClientMutationID))
 }
 
@@ -244,6 +269,17 @@ func (server *Server) handleApplyWorkspaceIntent(c *gin.Context) {
 
 	result, failure := server.applyIntentMutation(c.Request.Context(), workspaceID, request)
 	if failure != nil {
+		logWorkspaceConflictFailure(
+			c,
+			"applyIntent",
+			workspaceID,
+			"",
+			request.ExpectedWorkspaceRev,
+			request.ExpectedRouteRev,
+			0,
+			request.ClientMutationID,
+			failure,
+		)
 		sendWorkspaceFailure(c, failure)
 		return
 	}
@@ -253,6 +289,17 @@ func (server *Server) handleApplyWorkspaceIntent(c *gin.Context) {
 
 func (server *Server) handleApplyWorkspaceBatch(c *gin.Context) {
 	workspaceID := strings.TrimSpace(c.Param("workspaceId"))
+	user := getAuthUser(c)
+	if user == nil {
+		sendWorkspaceFailure(c, &workspaceRequestFailure{
+			status: http.StatusUnauthorized,
+			payload: gin.H{
+				"error":   "unauthorized",
+				"message": "Authentication required.",
+			},
+		})
+		return
+	}
 
 	var request applyWorkspaceBatchRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -334,7 +381,19 @@ func (server *Server) handleApplyWorkspaceBatch(c *gin.Context) {
 				Command:            command,
 			})
 			if err != nil {
-				sendWorkspaceFailure(c, mapWorkspaceStoreError(err))
+				failure := mapWorkspaceStoreError(err)
+				logWorkspaceConflictFailure(
+					c,
+					"batch.saveDocument",
+					workspaceID,
+					documentID,
+					currentWorkspaceRev,
+					currentRouteRev,
+					operation.ExpectedContentRev,
+					request.ClientBatchID,
+					failure,
+				)
+				sendWorkspaceFailure(c, failure)
 				return
 			}
 			latest = result
@@ -357,6 +416,17 @@ func (server *Server) handleApplyWorkspaceBatch(c *gin.Context) {
 				Intent:               operation.Intent,
 			})
 			if failure != nil {
+				logWorkspaceConflictFailure(
+					c,
+					"batch.intent",
+					workspaceID,
+					"",
+					currentWorkspaceRev,
+					currentRouteRev,
+					0,
+					request.ClientBatchID,
+					failure,
+				)
 				sendWorkspaceFailure(c, failure)
 				return
 			}
@@ -379,7 +449,55 @@ func (server *Server) handleApplyWorkspaceBatch(c *gin.Context) {
 		return
 	}
 
+	server.trySyncProjectMirrorFromWorkspace(c.Request.Context(), user.ID, workspaceID)
 	respondWorkspaceMutationSuccess(c, latest, strings.TrimSpace(request.ClientBatchID))
+}
+
+func (server *Server) trySyncProjectMirrorFromWorkspace(
+	ctx context.Context,
+	userID string,
+	workspaceID string,
+) {
+	if server == nil || server.projects == nil || server.workspaces == nil {
+		return
+	}
+	snapshot, err := server.getWorkspaceSnapshotForUser(ctx, userID, workspaceID)
+	if err != nil {
+		log.Printf("[workspace] mirror sync skipped workspace=%s reason=%v", workspaceID, err)
+		return
+	}
+	mir, ok := resolveCanonicalWorkspaceMIR(snapshot)
+	if !ok {
+		log.Printf("[workspace] mirror sync skipped workspace=%s reason=no_canonical_document", workspaceID)
+		return
+	}
+	projectID := strings.TrimSpace(snapshot.Workspace.ProjectID)
+	if projectID == "" {
+		projectID = strings.TrimSpace(workspaceID)
+	}
+	if _, err := server.projects.SaveMIR(strings.TrimSpace(userID), projectID, mir); err != nil {
+		log.Printf("[workspace] mirror sync failed workspace=%s project=%s err=%v", workspaceID, projectID, err)
+		return
+	}
+	log.Printf("[workspace] mirror sync success workspace=%s project=%s", workspaceID, projectID)
+}
+
+func resolveCanonicalWorkspaceMIR(snapshot *WorkspaceSnapshot) (json.RawMessage, bool) {
+	if snapshot == nil || len(snapshot.Documents) == 0 {
+		return nil, false
+	}
+	for _, document := range snapshot.Documents {
+		if document.Type == WorkspaceDocumentTypeMIRPage &&
+			(strings.TrimSpace(document.Path) == "/" || strings.TrimSpace(document.Path) == "") {
+			return document.Content, true
+		}
+	}
+	for _, document := range snapshot.Documents {
+		if document.Type == WorkspaceDocumentTypeMIRPage {
+			return document.Content, true
+		}
+	}
+	return snapshot.Documents[0].Content, true
 }
 
 func (server *Server) applyIntentMutation(
@@ -483,6 +601,17 @@ func mapWorkspaceStoreError(err error) *workspaceRequestFailure {
 
 	var conflictErr *WorkspaceRevisionConflictError
 	if errors.As(err, &conflictErr) {
+		log.Printf(
+			"[workspace] conflict mapped type=%s workspace=%s document=%s serverWorkspaceRev=%d serverRouteRev=%d serverContentRev=%d serverMetaRev=%d serverOpSeq=%d",
+			conflictErr.ConflictType,
+			conflictErr.WorkspaceID,
+			conflictErr.DocumentID,
+			conflictErr.ServerWorkspaceRev,
+			conflictErr.ServerRouteRev,
+			conflictErr.ServerContentRev,
+			conflictErr.ServerMetaRev,
+			conflictErr.ServerOpSeq,
+		)
 		return &workspaceRequestFailure{
 			status:  http.StatusConflict,
 			payload: buildWorkspaceConflictPayload(conflictErr),
@@ -570,6 +699,42 @@ func sendWorkspaceFailure(c *gin.Context, failure *workspaceRequestFailure) {
 		return
 	}
 	c.JSON(failure.status, failure.payload)
+}
+
+func logWorkspaceConflictFailure(
+	c *gin.Context,
+	action string,
+	workspaceID string,
+	documentID string,
+	expectedWorkspaceRev int64,
+	expectedRouteRev int64,
+	expectedContentRev int64,
+	clientMutationID string,
+	failure *workspaceRequestFailure,
+) {
+	if failure == nil || failure.status != http.StatusConflict {
+		return
+	}
+	conflictType, _ := failure.payload["conflictType"]
+	serverWorkspaceRev, _ := failure.payload["serverWorkspaceRev"]
+	serverRouteRev, _ := failure.payload["serverRouteRev"]
+	opSeq, _ := failure.payload["opSeq"]
+	log.Printf(
+		"[workspace] 409 action=%s method=%s path=%s workspace=%s document=%s clientMutationId=%s expectedWorkspaceRev=%d expectedRouteRev=%d expectedContentRev=%d conflictType=%v serverWorkspaceRev=%v serverRouteRev=%v serverOpSeq=%v",
+		action,
+		c.Request.Method,
+		c.FullPath(),
+		workspaceID,
+		documentID,
+		strings.TrimSpace(clientMutationID),
+		expectedWorkspaceRev,
+		expectedRouteRev,
+		expectedContentRev,
+		conflictType,
+		serverWorkspaceRev,
+		serverRouteRev,
+		opSeq,
+	)
 }
 
 func newWorkspaceRequestFailure(status int, code string, message string, details any) *workspaceRequestFailure {

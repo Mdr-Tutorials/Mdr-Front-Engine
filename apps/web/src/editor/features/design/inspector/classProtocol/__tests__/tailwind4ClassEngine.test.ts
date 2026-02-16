@@ -92,6 +92,22 @@ describe('tailwind4ClassEngine', () => {
     expect(template?.hint?.type).toBe('color-shade-template');
     expect(template?.hint?.prefix).toBe('border-red');
     expect(template?.insertText).toMatch(/^border-red-\d+$/);
+    expect(
+      suggestions.some(
+        (item) =>
+          item.kind === 'hint' &&
+          item.hint?.type === 'arbitrary-length-template'
+      )
+    ).toBe(false);
+  });
+
+  it('returns no suggestions for invalid color shade literals with unit suffix', () => {
+    const suggestions = tailwind4ClassEngine.suggest({
+      query: 'border-red-500p',
+      tokens: [],
+      limit: 12,
+    });
+    expect(suggestions).toEqual([]);
   });
 
   it('normalizes unit literals to bracket arbitrary syntax', () => {

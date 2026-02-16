@@ -1,5 +1,4 @@
 import { ApiError } from '@/auth/authApi';
-import type { MIRDocument } from '@/core/types/engine.types';
 
 export type CommunityResourceType = 'project' | 'component' | 'nodegraph';
 
@@ -21,7 +20,7 @@ export type CommunityProjectDetail = {
   resourceType: CommunityResourceType;
   name: string;
   description: string;
-  mir: MIRDocument;
+  mir: unknown;
   isPublic: boolean;
   starsCount: number;
   createdAt: string;

@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdrIcon, MdrIconLink } from '@mdr/ui';
-import { useNavigate, useParams } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
 import {
   LogIn,
@@ -21,6 +21,7 @@ import { EditorBarExitModal } from './EditorBarExitModal';
 function EditorBar() {
   const { t } = useTranslation(['editor', 'routes']);
   const { projectId } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const [isExitOpen, setExitOpen] = useState(false);
   const confirmPrompts = useSettingsStore(
@@ -34,6 +35,21 @@ function EditorBar() {
     : t('editorSettings', { ns: 'routes' });
   const barIconGroupClassName =
     'flex flex-col items-center gap-[14px] [&_.MdrIconLink]:!text-[var(--color-9)] [&_.MdrIconLink:hover]:!text-[var(--color-10)]';
+  const isBlueprintRoute = location.pathname.includes('/blueprint');
+
+  useEffect(() => {
+    if (!isBlueprintRoute) return;
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.defaultPrevented) return;
+      if (event.key !== 'Escape') return;
+      if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) {
+        return;
+      }
+      setExitOpen(true);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isBlueprintRoute]);
 
   return (
     <>

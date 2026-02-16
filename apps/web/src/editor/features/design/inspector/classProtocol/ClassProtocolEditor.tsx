@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ExternalLink,
   LayoutGrid,
@@ -60,6 +60,9 @@ export function ClassProtocolEditor({
   const [draft, setDraft] = useState('');
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
   const [mode, setMode] = useState<EditMode>('token');
+  const [inlineDraft, setInlineDraft] = useState(value);
+  const draftInputRef = useRef<HTMLInputElement | null>(null);
+  const inlineTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const tokens = useMemo(() => parseClassTokens(value), [value]);
   const resolveOverrideTarget = (index: number) => {
@@ -169,6 +172,25 @@ export function ClassProtocolEditor({
     setActiveSuggestionIndex(0);
   }, [draft, suggestions.length]);
 
+  useEffect(() => {
+    if (mode !== 'inline') {
+      setInlineDraft(value);
+    }
+  }, [mode, value]);
+
+  useEffect(() => {
+    if (mode !== 'inline') return;
+    setInlineDraft(value);
+  }, [mode]);
+
+  useEffect(() => {
+    if (mode !== 'inline') return;
+    const textarea = inlineTextareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = 'auto';
+    textarea.style.height = `${Math.max(textarea.scrollHeight, 32)}px`;
+  }, [mode, inlineDraft]);
+
   const emitTokens = (nextTokens: string[]) => {
     onChange(toClassNameValue(nextTokens));
   };
@@ -191,11 +213,24 @@ export function ClassProtocolEditor({
     emitTokens(tokens.filter((_, current) => current !== index));
   };
 
+  const rollbackTokenToDraft = (index: number) => {
+    const token = tokens[index];
+    if (!token) return;
+    emitTokens(tokens.filter((_, current) => current !== index));
+    setDraft(token);
+    requestAnimationFrame(() => {
+      const input = draftInputRef.current;
+      if (!input) return;
+      input.focus();
+      input.setSelectionRange(token.length, token.length);
+    });
+  };
+
   const ModeIcon = mode === 'token' ? Tags : PenLine;
   const nextMode: EditMode = mode === 'token' ? 'inline' : 'token';
 
   const tokenEditor = (
-    <div className="InspectorClassProtocol relative grid gap-1.5">
+    <div className="InspectorClassProtocol relative grid w-full gap-1.5">
       <div className="flex min-h-8 flex-wrap items-center gap-1.5 rounded-md border border-black/10 px-1.5 py-1 pr-7 dark:border-white/16">
         {tokens.map((token, index) => {
           const tokenSwatch = resolveClassTokenColorSwatch(token);
@@ -213,10 +248,16 @@ export function ClassProtocolEditor({
               className={`inline-flex min-h-6 items-center gap-1 rounded-md border border-black/10 bg-black/[0.03] py-[2px] pl-1.5 pr-1 text-[11px] leading-[1.25] text-(--color-8) dark:border-white/16 dark:bg-white/6 ${
                 isOverridden ? 'opacity-60' : ''
               }`}
+              onDoubleClick={(event) => {
+                const target = event.target as HTMLElement;
+                if (target.closest('button')) return;
+                event.preventDefault();
+                rollbackTokenToDraft(index);
+              }}
               data-testid={
                 isOverridden
                   ? `inspector-classname-token-overridden-${index}`
-                  : undefined
+                  : `inspector-classname-token-${index}`
               }
               title={
                 isOverridden
@@ -292,6 +333,7 @@ export function ClassProtocolEditor({
           );
         })}
         <input
+          ref={draftInputRef}
           className="h-6 min-w-24 flex-1 border-0 bg-transparent px-1 text-xs text-(--color-9) outline-none placeholder:text-(--color-5)"
           value={draft}
           onChange={(event) => {
@@ -404,17 +446,21 @@ export function ClassProtocolEditor({
   );
 
   return (
-    <div className="grid gap-1">
+    <div className="grid w-full gap-1">
       {mode === 'token' ? (
         tokenEditor
       ) : (
-        <div className="relative">
-          <input
-            className="h-7 w-full min-w-0 rounded-md border border-black/10 bg-transparent px-2 pr-7 text-xs text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
-            value={value}
-            onChange={(event) =>
-              onChange(toClassNameValue(parseClassTokens(event.target.value)))
-            }
+        <div className="relative w-full">
+          <textarea
+            ref={inlineTextareaRef}
+            className="min-h-8 w-full min-w-0 resize-none overflow-hidden rounded-md border border-black/10 bg-transparent px-2 py-1 pr-7 text-xs leading-[1.35] text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+            rows={2}
+            value={inlineDraft}
+            onChange={(event) => {
+              const nextRawValue = event.target.value;
+              setInlineDraft(nextRawValue);
+              onChange(toClassNameValue(parseClassTokens(nextRawValue)));
+            }}
             placeholder={placeholder}
             data-testid={inputTestId}
           />

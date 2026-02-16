@@ -210,6 +210,93 @@ type SpacingControlProps = {
   t: (key: string, options?: Record<string, unknown>) => string;
 };
 
+function SpacingSidePreview({
+  side,
+  spacingKey,
+}: {
+  side: keyof BoxSpacing;
+  spacingKey: SpacingKey;
+}) {
+  const border =
+    spacingKey === 'margin'
+      ? { x: 13, y: 13, size: 14, opacity: 0.64 }
+      : { x: 8, y: 8, size: 24, opacity: 0.7 };
+  const content = { x: 16, y: 16, size: 8 };
+  const arrow =
+    spacingKey === 'margin'
+      ? side === 'top'
+        ? { x1: 20, y1: 12, x2: 20, y2: 4, points: '20,3 17.5,6 22.5,6' }
+        : side === 'right'
+          ? { x1: 28, y1: 20, x2: 36, y2: 20, points: '37,20 34,17.5 34,22.5' }
+          : side === 'bottom'
+            ? {
+                x1: 20,
+                y1: 28,
+                x2: 20,
+                y2: 36,
+                points: '20,37 17.5,34 22.5,34',
+              }
+            : { x1: 12, y1: 20, x2: 4, y2: 20, points: '3,20 6,17.5 6,22.5' }
+      : side === 'top'
+        ? { x1: 20, y1: 9, x2: 20, y2: 15, points: '20,16 17.5,13 22.5,13' }
+        : side === 'right'
+          ? { x1: 31, y1: 20, x2: 25, y2: 20, points: '24,20 27,17.5 27,22.5' }
+          : side === 'bottom'
+            ? {
+                x1: 20,
+                y1: 31,
+                x2: 20,
+                y2: 25,
+                points: '20,24 17.5,27 22.5,27',
+              }
+            : {
+                x1: 9,
+                y1: 20,
+                x2: 15,
+                y2: 20,
+                points: '16,20 13,17.5 13,22.5',
+              };
+
+  return (
+    <svg
+      className="h-14 w-16 shrink-0 text-(--color-6)"
+      viewBox="0 0 40 40"
+      aria-hidden="true"
+    >
+      <rect
+        x={border.x}
+        y={border.y}
+        width={border.size}
+        height={border.size}
+        rx="2"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="0.8"
+        opacity={border.opacity}
+      />
+      <rect
+        x={content.x}
+        y={content.y}
+        width={content.size}
+        height={content.size}
+        rx="1.5"
+        fill="currentColor"
+        opacity="0.95"
+      />
+      <line
+        x1={arrow.x1}
+        y1={arrow.y1}
+        x2={arrow.x2}
+        y2={arrow.y2}
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <polygon points={arrow.points} fill="currentColor" />
+    </svg>
+  );
+}
+
 function SpacingControl({
   keyName,
   value,
@@ -276,28 +363,31 @@ function SpacingControl({
           ).map(([side, sideValue]) => (
             <label
               key={side}
-              className="grid gap-1 text-[10px] text-(--color-7)"
+              className="flex items-start gap-2.5 py-1 text-(--color-7)"
             >
-              <span className="font-semibold">
-                {t(`inspector.panels.layout.fields.sides.${side}`, {
-                  defaultValue: side.charAt(0).toUpperCase() + side.slice(1),
-                })}
-              </span>
-              <div data-testid={`inspector-${keyName}-${side}`}>
-                <UnitInput
-                  value={sideValue ? sideValue : undefined}
-                  quantity="length-percentage"
-                  placeholder="0"
-                  onChange={(nextSideValue) => {
-                    const nextValue = readCssValue(nextSideValue) ?? '';
-                    onChange(
-                      toBoxSpacingShorthand({
-                        ...sides,
-                        [side]: nextValue,
-                      })
-                    );
-                  }}
-                />
+              <SpacingSidePreview side={side} spacingKey={keyName} />
+              <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <span className="text-[10px] font-semibold leading-none">
+                  {t(`inspector.panels.layout.fields.sides.${side}`, {
+                    defaultValue: side.charAt(0).toUpperCase() + side.slice(1),
+                  })}
+                </span>
+                <div data-testid={`inspector-${keyName}-${side}`}>
+                  <UnitInput
+                    value={sideValue ? sideValue : undefined}
+                    quantity="length-percentage"
+                    placeholder="0"
+                    onChange={(nextSideValue) => {
+                      const nextValue = readCssValue(nextSideValue) ?? '';
+                      onChange(
+                        toBoxSpacingShorthand({
+                          ...sides,
+                          [side]: nextValue,
+                        })
+                      );
+                    }}
+                  />
+                </div>
               </div>
             </label>
           ))}

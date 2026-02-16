@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { CornerDownLeft, Delete } from 'lucide-react';
 import { MdrButton } from '@mdr/ui';
 
 type EditorBarExitModalProps = {
@@ -19,6 +21,27 @@ export function EditorBarExitModal({
   onClose,
   onConfirm,
 }: EditorBarExitModalProps) {
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.defaultPrevented) return;
+      if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) {
+        return;
+      }
+      if (event.key === 'Backspace' || event.key === 'Escape') {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        onConfirm();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onClose, onConfirm]);
+
   if (!isOpen) return null;
 
   return (
@@ -41,12 +64,16 @@ export function EditorBarExitModal({
             text={cancelLabel}
             category="Ghost"
             size="Small"
+            icon={<Delete size={15} className="opacity-60" />}
+            iconPosition="Right"
             onClick={onClose}
           />
           <MdrButton
             text={exitText}
             category="Primary"
             size="Small"
+            icon={<CornerDownLeft size={15} className="opacity-60" />}
+            iconPosition="Right"
             onClick={onConfirm}
           />
         </div>

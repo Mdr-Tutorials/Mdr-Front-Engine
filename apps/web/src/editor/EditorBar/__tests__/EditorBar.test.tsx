@@ -6,10 +6,12 @@ import { resetSettingsStore } from '@/test-utils/editorStore';
 
 const navigateMock = vi.fn();
 let params: { projectId?: string } = { projectId: 'project-123' };
+let location = { pathname: '/editor/project/project-123/blueprint' };
 
 vi.mock('react-router', () => ({
   useNavigate: () => navigateMock,
   useParams: () => params,
+  useLocation: () => location,
 }));
 
 vi.mock('@mdr/ui', () => ({
@@ -41,6 +43,7 @@ describe('EditorBar', () => {
   beforeEach(() => {
     navigateMock.mockClear();
     params = { projectId: 'project-123' };
+    location = { pathname: '/editor/project/project-123/blueprint' };
     resetSettingsStore();
   });
 
@@ -71,6 +74,27 @@ describe('EditorBar', () => {
     expect(screen.getByText('bar.exitTitle')).toBeTruthy();
     fireEvent.click(screen.getByText('bar.exit'));
 
+    expect(navigateMock).toHaveBeenCalledWith('/editor');
+  });
+
+  it('opens confirmation modal on Escape in blueprint route', () => {
+    render(<EditorBar />);
+
+    fireEvent.keyDown(window, { key: 'Escape' });
+
+    expect(screen.getByText('bar.exitTitle')).toBeTruthy();
+  });
+
+  it('supports Enter confirm and Backspace cancel in exit modal', () => {
+    resetSettingsStore({ confirmPrompts: ['leave'] });
+    render(<EditorBar />);
+
+    fireEvent.click(screen.getByLabelText('bar.exitAria'));
+    fireEvent.keyDown(window, { key: 'Backspace' });
+    expect(screen.queryByText('bar.exitTitle')).toBeNull();
+
+    fireEvent.click(screen.getByLabelText('bar.exitAria'));
+    fireEvent.keyDown(window, { key: 'Enter' });
     expect(navigateMock).toHaveBeenCalledWith('/editor');
   });
 

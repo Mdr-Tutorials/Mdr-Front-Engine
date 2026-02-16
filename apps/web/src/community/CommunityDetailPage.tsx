@@ -5,6 +5,11 @@ import { ArrowLeft, Boxes, Component, Flame, Workflow } from 'lucide-react';
 import { MdrEmpty } from '@mdr/ui';
 import { communityApi, type CommunityProjectDetail } from './communityApi';
 import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
+import {
+  getRuntimeRegistryRevision,
+  runtimeRegistryUpdatedEvent,
+} from '@/mir/renderer/registry';
+import { resolveMirDocument } from '@/mir/resolveMirDocument';
 import { useAuthStore } from '@/auth/useAuthStore';
 import { editorApi } from '@/editor/editorApi';
 import { useEditorStore } from '@/editor/store/useEditorStore';
@@ -29,6 +34,18 @@ const formatTime = (value: string) =>
     minute: '2-digit',
   });
 
+const hasAntdNode = (
+  node: { type?: string; children?: unknown[] } | undefined
+) => {
+  if (!node) return false;
+  if (typeof node.type === 'string' && node.type.startsWith('Antd'))
+    return true;
+  if (!Array.isArray(node.children)) return false;
+  return node.children.some((child) =>
+    hasAntdNode(child as { type?: string; children?: unknown[] })
+  );
+};
+
 export function CommunityDetailPage() {
   const { t } = useTranslation('community');
   const { projectId } = useParams();
@@ -43,6 +60,9 @@ export function CommunityDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [isCloning, setCloning] = useState(false);
   const [cloneError, setCloneError] = useState<string | null>(null);
+  const [runtimeRegistryRevision, setRuntimeRegistryRevision] = useState(() =>
+    getRuntimeRegistryRevision()
+  );
 
   useEffect(() => {
     if (!projectId) {
@@ -78,9 +98,42 @@ export function CommunityDetailPage() {
   }, [projectId, t]);
 
   const mirText = useMemo(
-    () => (project ? JSON.stringify(project.mir, null, 2) : ''),
+    () =>
+      project ? JSON.stringify(resolveMirDocument(project.mir), null, 2) : '',
     [project]
   );
+  const previewMirDoc = useMemo(
+    () => resolveMirDocument(project?.mir),
+    [project?.mir]
+  );
+  const shouldLoadAntdRuntime = useMemo(
+    () => hasAntdNode(previewMirDoc.ui.root),
+    [previewMirDoc]
+  );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handleRegistryUpdate = () =>
+      setRuntimeRegistryRevision(getRuntimeRegistryRevision());
+    window.addEventListener(runtimeRegistryUpdatedEvent, handleRegistryUpdate);
+    return () =>
+      window.removeEventListener(
+        runtimeRegistryUpdatedEvent,
+        handleRegistryUpdate
+      );
+  }, []);
+
+  useEffect(() => {
+    if (!shouldLoadAntdRuntime) return;
+    void import('@/editor/features/design/blueprint/external/antdEsmLibrary')
+      .then((mod) => mod.ensureAntdEsmLibrary())
+      .catch((runtimeError) => {
+        console.warn(
+          '[community-preview] failed to load antd runtime',
+          runtimeError
+        );
+      });
+  }, [shouldLoadAntdRuntime]);
 
   const handleClone = async () => {
     if (!project || isCloning) return;
@@ -100,7 +153,7 @@ export function CommunityDetailPage() {
 
     setCloning(true);
     setCloneError(null);
-    const mirDoc = JSON.parse(JSON.stringify(project.mir));
+    const mirDoc = JSON.parse(JSON.stringify(previewMirDoc));
     const fallbackName = t('card.untitled', 'Untitled');
 
     try {
@@ -233,20 +286,21 @@ export function CommunityDetailPage() {
               )}
             </header>
 
-            <section className="grid gap-5 lg:grid-cols-[1.1fr_1fr]">
-              <article className="rounded-3xl border border-black/10 bg-white p-4 shadow-[0_10px_20px_rgba(0,0,0,0.04)]">
+            <section className="grid gap-5 lg:grid-cols-2">
+              <article className="min-w-0 w-full rounded-3xl border border-black/10 bg-white p-4 shadow-[0_10px_20px_rgba(0,0,0,0.04)]">
                 <h2 className="mb-3 text-sm font-bold uppercase tracking-[0.12em] text-black/70">
                   {t('detail.preview', 'Read-only Preview')}
                 </h2>
-                <div className="overflow-hidden rounded-2xl border border-black/10 bg-white p-3">
+                <div className="max-w-full overflow-auto rounded-2xl border border-black/10 bg-white p-3">
                   <MIRRenderer
-                    node={project.mir.ui.root}
-                    mirDoc={project.mir}
+                    key={`community-preview-${runtimeRegistryRevision}`}
+                    node={previewMirDoc.ui.root}
+                    mirDoc={previewMirDoc}
                   />
                 </div>
               </article>
 
-              <article className="rounded-3xl border border-black/10 bg-white p-4 shadow-[0_10px_20px_rgba(0,0,0,0.04)]">
+              <article className="min-w-0 w-full rounded-3xl border border-black/10 bg-white p-4 shadow-[0_10px_20px_rgba(0,0,0,0.04)]">
                 <h2 className="mb-3 text-sm font-bold uppercase tracking-[0.12em] text-black/70">
                   {t('detail.mir', 'MIR Document')}
                 </h2>

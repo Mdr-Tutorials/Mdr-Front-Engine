@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
+import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { ClassProtocolEditor } from '../ClassProtocolEditor';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
@@ -182,6 +183,24 @@ describe('ClassProtocolEditor', () => {
     expect(handleChange).toHaveBeenCalledWith('p-4');
   });
 
+  it('rolls back a token into draft input on double click', () => {
+    const handleChange = vi.fn();
+    render(
+      <ClassProtocolEditor
+        value="p-4 flex"
+        onChange={handleChange}
+        inputTestId="class-protocol-input"
+      />
+    );
+
+    fireEvent.dblClick(screen.getByTestId('inspector-classname-token-0'));
+
+    expect(handleChange).toHaveBeenCalledWith('flex');
+    expect(
+      (screen.getByTestId('class-protocol-input') as HTMLInputElement).value
+    ).toBe('p-4');
+  });
+
   it('does not keep removing tokens on repeated backspace keydown events', () => {
     const handleChange = vi.fn();
     render(
@@ -273,5 +292,27 @@ describe('ClassProtocolEditor', () => {
     });
 
     expect(handleChange).toHaveBeenCalledWith('p-4 p-6 flex');
+  });
+
+  it('keeps trailing whitespace while typing in inline mode', () => {
+    function Harness() {
+      const [value, setValue] = useState('');
+      return (
+        <ClassProtocolEditor
+          value={value}
+          onChange={setValue}
+          inputTestId="class-protocol-input"
+        />
+      );
+    }
+
+    render(<Harness />);
+    fireEvent.click(screen.getByTestId('inspector-classname-mode-toggle'));
+    const input = screen.getByTestId(
+      'class-protocol-input'
+    ) as HTMLTextAreaElement;
+    fireEvent.change(input, { target: { value: 'p-4 ' } });
+
+    expect(input.value).toBe('p-4 ');
   });
 });

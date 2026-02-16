@@ -503,6 +503,26 @@ describe('BlueprintEditor', () => {
     });
   });
 
+  it('toggles sidebar, tree, and inspector with Ctrl+Alt+J/K/L', () => {
+    render(<BlueprintEditor />);
+
+    const sidebar = screen.getByTestId('sidebar');
+    const tree = screen.getByTestId('component-tree');
+    const inspector = screen.getByTestId('inspector');
+
+    expect(sidebar.getAttribute('data-collapsed')).toBe('false');
+    expect(tree.getAttribute('data-collapsed')).toBe('false');
+    expect(inspector.getAttribute('data-collapsed')).toBe('false');
+
+    fireEvent.keyDown(window, { key: 'j', ctrlKey: true, altKey: true });
+    fireEvent.keyDown(window, { key: 'k', ctrlKey: true, altKey: true });
+    fireEvent.keyDown(window, { key: 'l', ctrlKey: true, altKey: true });
+
+    expect(sidebar.getAttribute('data-collapsed')).toBe('true');
+    expect(tree.getAttribute('data-collapsed')).toBe('true');
+    expect(inspector.getAttribute('data-collapsed')).toBe('true');
+  });
+
   it('toggles preview and group state from the sidebar', () => {
     render(<BlueprintEditor />);
 

@@ -7,8 +7,9 @@ vi.mock('../features/newfile/NewResourceModal', () => ({
   default: ({ open }: { open: boolean }) =>
     open ? <div data-testid="resource-modal" /> : null,
 }));
+const navigateMock = vi.fn();
 vi.mock('react-router', () => ({
-  useNavigate: () => vi.fn(),
+  useNavigate: () => navigateMock,
 }));
 
 const listProjectsMock = vi.fn();
@@ -33,6 +34,7 @@ describe('EditorHome', () => {
     listProjectsMock.mockReset();
     publishProjectMock.mockReset();
     deleteProjectMock.mockReset();
+    navigateMock.mockReset();
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     useEditorStore.setState({ projectsById: {} });
   });
@@ -134,6 +136,19 @@ describe('EditorHome', () => {
     await waitFor(() => {
       expect(deleteProjectMock).toHaveBeenCalledWith('token-1', 'p1');
       expect(screen.queryByText('Project One')).toBeNull();
+    });
+  });
+
+  it('opens exit modal on Escape and returns home on confirm', async () => {
+    listProjectsMock.mockResolvedValue({ projects: [] });
+    render(<EditorHome />);
+
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(screen.getByText('bar.exitTitle')).toBeTruthy();
+
+    fireEvent.keyDown(window, { key: 'Enter' });
+    await waitFor(() => {
+      expect(navigateMock).toHaveBeenCalledWith('/');
     });
   });
 });

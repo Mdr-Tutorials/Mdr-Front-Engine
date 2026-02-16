@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
+import { EditorBarExitModal } from './EditorBar/EditorBarExitModal';
 import { TIPS, type TipId } from './tips';
 import { truncate } from '@/utils/truncate';
 import NewResourceModal from './features/newfile/NewResourceModal';
@@ -203,6 +204,7 @@ function EditorHome() {
   const navigate = useNavigate();
   const token = useAuthStore((state) => state.token);
   const [isResourceModalOpen, setResourceModalOpen] = useState(false);
+  const [isExitModalOpen, setExitModalOpen] = useState(false);
   const [projects, setProjects] = useState<ProjectSummary[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -212,6 +214,21 @@ function EditorHome() {
   const setProjectsInStore = useEditorStore((state) => state.setProjects);
   const setProjectInStore = useEditorStore((state) => state.setProject);
   const removeProjectInStore = useEditorStore((state) => state.removeProject);
+
+  useEffect(() => {
+    if (isResourceModalOpen || isExitModalOpen) return;
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.defaultPrevented) return;
+      if (event.key !== 'Escape') return;
+      if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) {
+        return;
+      }
+      event.preventDefault();
+      setExitModalOpen(true);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isResourceModalOpen, isExitModalOpen]);
 
   useEffect(() => {
     if (!token) {
@@ -403,6 +420,18 @@ function EditorHome() {
       <NewResourceModal
         open={isResourceModalOpen}
         onClose={() => setResourceModalOpen(false)}
+      />
+      <EditorBarExitModal
+        isOpen={isExitModalOpen}
+        exitLabel={t('bar.exitToHome')}
+        cancelLabel={t('bar.cancel')}
+        exitText={t('bar.exit')}
+        title={t('bar.exitTitle')}
+        onClose={() => setExitModalOpen(false)}
+        onConfirm={() => {
+          setExitModalOpen(false);
+          navigate('/');
+        }}
       />
     </div>
   );

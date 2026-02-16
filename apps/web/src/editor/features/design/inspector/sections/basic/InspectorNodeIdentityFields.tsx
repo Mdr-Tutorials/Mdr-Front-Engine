@@ -1,5 +1,13 @@
-import { AlertTriangle, Check, Type, WandSparkles } from 'lucide-react';
+import {
+  AlertTriangle,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  Type,
+  WandSparkles,
+} from 'lucide-react';
 import { MdrInput, MdrRichTextEditor } from '@mdr/ui';
+import { useState } from 'react';
 import { InspectorRow } from '../../components/InspectorRow';
 import { getTextFieldLabel } from '../../../BlueprintEditorInspector.utils';
 import {
@@ -9,6 +17,16 @@ import {
 } from '../../../blueprintText';
 import { useInspectorSectionContext } from '../InspectorSectionContext';
 
+const INSPECTOR_ACTION_ICON_BUTTON_CLASS =
+  'inline-flex h-5 w-4.5 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)';
+
+/**
+ * 调用链路 / Call chain:
+ * 1) BlueprintEditorInspector 通过 InspectorSectionContext 提供 selectedNode、primaryTextField、updateSelectedNode。
+ * 2) InspectorBasicSection 渲染本组件，作为「基础信息」中的文本编辑入口。
+ * 3) 组件根据 getNodeTextFieldMode 在单行输入与富文本输入间切换。
+ * 4) 更新统一走 updateNodeTextField / updateNodeTextFieldMode，最终写回同一份节点状态。
+ */
 export function InspectorNodeIdentityFields() {
   const {
     t,
@@ -22,6 +40,7 @@ export function InspectorNodeIdentityFields() {
     primaryTextField,
     updateSelectedNode,
   } = useInspectorSectionContext();
+  const [isRichEditorCollapsed, setIsRichEditorCollapsed] = useState(false);
 
   return (
     <>
@@ -93,11 +112,44 @@ export function InspectorNodeIdentityFields() {
             control={
               primaryTextField.key === 'text' &&
               getNodeTextFieldMode(selectedNode, 'text') === 'rich' ? (
+                // 富文本框 + 俩按钮
                 <div className="flex w-full flex-col gap-1.5">
-                  <div className="inline-flex items-center justify-end">
+                  <div className="inline-flex items-center justify-end gap-1">
                     <button
                       type="button"
-                      className="inline-flex h-6 w-6 items-center justify-center rounded-md border-0 bg-transparent text-(--color-7) hover:text-(--color-9)"
+                      className={INSPECTOR_ACTION_ICON_BUTTON_CLASS}
+                      title={
+                        isRichEditorCollapsed
+                          ? t('inspector.panels.text.expandRich', {
+                              defaultValue: 'Expand rich text editor',
+                            })
+                          : t('inspector.panels.text.collapseRich', {
+                              defaultValue: 'Collapse rich text editor',
+                            })
+                      }
+                      aria-label={
+                        isRichEditorCollapsed
+                          ? t('inspector.panels.text.expandRich', {
+                              defaultValue: 'Expand rich text editor',
+                            })
+                          : t('inspector.panels.text.collapseRich', {
+                              defaultValue: 'Collapse rich text editor',
+                            })
+                      }
+                      onClick={() =>
+                        setIsRichEditorCollapsed((current) => !current)
+                      }
+                      data-testid="inspector-text-rich-collapse-toggle"
+                    >
+                      {isRichEditorCollapsed ? (
+                        <ChevronDown size={14} />
+                      ) : (
+                        <ChevronUp size={14} />
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      className={INSPECTOR_ACTION_ICON_BUTTON_CLASS}
                       title={t('inspector.panels.text.switchToPlain', {
                         defaultValue: 'Switch to plain text input',
                       })}
@@ -110,20 +162,23 @@ export function InspectorNodeIdentityFields() {
                         );
                       }}
                     >
-                      <Type size={12} />
+                      <Type size={14} />
                     </button>
                   </div>
-                  <MdrRichTextEditor
-                    className="w-full"
-                    value={primaryTextField.value}
-                    onChange={(value) => {
-                      updateSelectedNode((current: any) =>
-                        updateNodeTextField(current, primaryTextField, value)
-                      );
-                    }}
-                  />
+                  {isRichEditorCollapsed ? null : (
+                    <MdrRichTextEditor
+                      className="w-full"
+                      value={primaryTextField.value}
+                      onChange={(value) => {
+                        updateSelectedNode((current: any) =>
+                          updateNodeTextField(current, primaryTextField, value)
+                        );
+                      }}
+                    />
+                  )}
                 </div>
               ) : (
+                // 单行输入框 + 一个按钮
                 <div className="InspectorInputRow InspectorSingleInput relative flex w-full items-center">
                   <MdrInput
                     size="Small"
@@ -138,25 +193,27 @@ export function InspectorNodeIdentityFields() {
                     }}
                   />
                   {primaryTextField.key === 'text' ? (
-                    <button
-                      type="button"
-                      className="absolute right-1 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-md border-0 bg-transparent text-(--color-7) hover:text-(--color-9)"
-                      title={t('inspector.panels.text.switchToRich', {
-                        defaultValue:
-                          'Switch to rich text editor (bold/italic/color/size)',
-                      })}
-                      aria-label={t('inspector.panels.text.switchToRich', {
-                        defaultValue:
-                          'Switch to rich text editor (bold/italic/color/size)',
-                      })}
-                      onClick={() => {
-                        updateSelectedNode((current: any) =>
-                          updateNodeTextFieldMode(current, 'text', 'rich')
-                        );
-                      }}
-                    >
-                      <WandSparkles size={12} />
-                    </button>
+                    <div className="absolute right-1 top-1/2 inline-flex -translate-y-1/2 items-center gap-1">
+                      <button
+                        type="button"
+                        className={INSPECTOR_ACTION_ICON_BUTTON_CLASS}
+                        title={t('inspector.panels.text.switchToRich', {
+                          defaultValue:
+                            'Switch to rich text editor (bold/italic/color/size)',
+                        })}
+                        aria-label={t('inspector.panels.text.switchToRich', {
+                          defaultValue:
+                            'Switch to rich text editor (bold/italic/color/size)',
+                        })}
+                        onClick={() => {
+                          updateSelectedNode((current: any) =>
+                            updateNodeTextFieldMode(current, 'text', 'rich')
+                          );
+                        }}
+                      >
+                        <WandSparkles size={14} />
+                      </button>
+                    </div>
                   ) : null}
                 </div>
               )

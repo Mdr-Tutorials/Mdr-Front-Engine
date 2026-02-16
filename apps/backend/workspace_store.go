@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 )
@@ -431,6 +432,17 @@ FOR UPDATE OF d, w`
 
 	if currentContentRev != params.ExpectedContentRev {
 		_ = tx.Rollback()
+		log.Printf(
+			"[workspace] conflict save_document workspace=%s document=%s expectedContentRev=%d serverContentRev=%d serverMetaRev=%d serverWorkspaceRev=%d serverRouteRev=%d serverOpSeq=%d",
+			params.WorkspaceID,
+			params.DocumentID,
+			params.ExpectedContentRev,
+			currentContentRev,
+			currentMetaRev,
+			currentWorkspaceRev,
+			currentRouteRev,
+			currentOpSeq,
+		)
 		return nil, &WorkspaceRevisionConflictError{
 			ConflictType:       WorkspaceConflictDocument,
 			WorkspaceID:        params.WorkspaceID,
@@ -557,6 +569,16 @@ FOR UPDATE`
 
 	if currentWorkspaceRev != params.ExpectedWorkspaceRev {
 		_ = tx.Rollback()
+		log.Printf(
+			"[workspace] conflict save_route_manifest workspace=%s type=%s expectedWorkspaceRev=%d serverWorkspaceRev=%d expectedRouteRev=%d serverRouteRev=%d serverOpSeq=%d",
+			params.WorkspaceID,
+			WorkspaceConflictWorkspace,
+			params.ExpectedWorkspaceRev,
+			currentWorkspaceRev,
+			params.ExpectedRouteRev,
+			currentRouteRev,
+			currentOpSeq,
+		)
 		return nil, &WorkspaceRevisionConflictError{
 			ConflictType:       WorkspaceConflictWorkspace,
 			WorkspaceID:        params.WorkspaceID,
@@ -567,6 +589,16 @@ FOR UPDATE`
 	}
 	if currentRouteRev != params.ExpectedRouteRev {
 		_ = tx.Rollback()
+		log.Printf(
+			"[workspace] conflict save_route_manifest workspace=%s type=%s expectedWorkspaceRev=%d serverWorkspaceRev=%d expectedRouteRev=%d serverRouteRev=%d serverOpSeq=%d",
+			params.WorkspaceID,
+			WorkspaceConflictRoute,
+			params.ExpectedWorkspaceRev,
+			currentWorkspaceRev,
+			params.ExpectedRouteRev,
+			currentRouteRev,
+			currentOpSeq,
+		)
 		return nil, &WorkspaceRevisionConflictError{
 			ConflictType:       WorkspaceConflictRoute,
 			WorkspaceID:        params.WorkspaceID,

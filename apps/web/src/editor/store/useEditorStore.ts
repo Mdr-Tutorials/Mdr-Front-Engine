@@ -4,7 +4,14 @@ import type {
   WorkspaceMutationResponse,
   WorkspaceSnapshot,
 } from '@/editor/editorApi';
+import {
+  createDefaultMirDoc,
+  normalizeMirDocument,
+  resolveCanonicalWorkspaceDocumentId,
+} from '@/mir/resolveMirDocument';
 import { create } from 'zustand';
+
+export { createDefaultMirDoc } from '@/mir/resolveMirDocument';
 
 export type BlueprintState = {
   viewportWidth: string;
@@ -22,27 +29,10 @@ export const DEFAULT_BLUEPRINT_STATE: BlueprintState = {
   selectedId: undefined,
 };
 
-export const createDefaultMirDoc = (): MIRDocument => ({
-  version: '1.0',
-  ui: {
-    root: {
-      id: 'root',
-      type: 'container',
-    },
-  },
-});
-
 const normalizeMirContent = (
   content: WorkspaceDocumentRecord['content'] | undefined
 ): MIRDocument => {
-  if (!content || typeof content !== 'object') {
-    return createDefaultMirDoc();
-  }
-  const root = (content as { ui?: { root?: unknown } }).ui?.root;
-  if (!root || typeof root !== 'object') {
-    return createDefaultMirDoc();
-  }
-  return content as MIRDocument;
+  return normalizeMirDocument(content);
 };
 
 const normalizeWorkspaceDocument = (
@@ -51,24 +41,6 @@ const normalizeWorkspaceDocument = (
   ...document,
   content: normalizeMirContent(document.content),
 });
-
-const resolveCanonicalWorkspaceDocumentId = (
-  documents: WorkspaceDocumentRecord[]
-): string | undefined => {
-  if (!documents.length) return undefined;
-
-  const rootPage = documents.find(
-    (document) =>
-      document.type === 'mir-page' &&
-      (document.path.trim() === '/' || document.path.trim() === '')
-  );
-  if (rootPage) return rootPage.id;
-
-  const firstPage = documents.find((document) => document.type === 'mir-page');
-  if (firstPage) return firstPage.id;
-
-  return documents[0]?.id;
-};
 
 interface EditorStore {
   mirDoc: MIRDocument;

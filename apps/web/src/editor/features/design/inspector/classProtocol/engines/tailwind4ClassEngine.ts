@@ -146,6 +146,19 @@ const pickPreferredShade = (shades: string[]) => {
   return shades[Math.floor(shades.length / 2)] ?? shades[0] ?? '500';
 };
 
+const isLengthHintEligiblePrefix = (prefix: string) =>
+  ARBITRARY_LENGTH_PREFIXES.has(prefix) && !COLOR_SHADE_PREFIXES.has(prefix);
+
+const isInvalidColorShadeLiteral = (utilityDraft: string) => {
+  const draft = utilityDraft.trim().toLowerCase();
+  if (!draft) return false;
+  const invalidShadeMatch = draft.match(/^(.+)-(\d{1,4})([a-z%]+)$/);
+  if (!invalidShadeMatch) return false;
+  const prefix = invalidShadeMatch[1]?.trim();
+  if (!prefix) return false;
+  return COLOR_SHADE_PREFIXES.has(prefix);
+};
+
 const isArbitraryVariant = (value: string) => {
   const token = value.trim();
   if (!token) return false;
@@ -163,7 +176,7 @@ const toArbitraryLengthUtilitySuggestions = (
   const templateMatch = draft.match(/^(.*)-\[$/);
   if (templateMatch) {
     const prefix = templateMatch[1]?.trim();
-    if (!prefix || !ARBITRARY_LENGTH_PREFIXES.has(prefix)) return [];
+    if (!prefix || !isLengthHintEligiblePrefix(prefix)) return [];
     return [
       {
         token: `${prefix}-[<length>]`,
@@ -181,7 +194,7 @@ const toArbitraryLengthUtilitySuggestions = (
 
   if (draft.endsWith('-')) {
     const prefix = draft.slice(0, -1);
-    if (!ARBITRARY_LENGTH_PREFIXES.has(prefix)) return [];
+    if (!isLengthHintEligiblePrefix(prefix)) return [];
     return [
       {
         token: `${prefix}-[<length>]`,
@@ -204,7 +217,7 @@ const toArbitraryLengthUtilitySuggestions = (
     const prefix = bracketValueMatch[1]?.trim();
     const amount = bracketValueMatch[2] ?? '';
     const unitDraft = (bracketValueMatch[3] ?? '').toLowerCase();
-    if (!prefix || !ARBITRARY_LENGTH_PREFIXES.has(prefix)) return [];
+    if (!prefix || !isLengthHintEligiblePrefix(prefix)) return [];
     if (!amount || !NUMERIC_LITERAL_PATTERN.test(amount)) return [];
     const unitCandidates = CSS_LENGTH_OR_PERCENTAGE_UNITS.filter((unit) =>
       unit.toLowerCase().startsWith(unitDraft)
@@ -224,7 +237,7 @@ const toArbitraryLengthUtilitySuggestions = (
   const prefix = normalizedValueMatch[1]?.trim();
   const amount = normalizedValueMatch[2] ?? '';
   const unitDraft = (normalizedValueMatch[3] ?? '').toLowerCase();
-  if (!prefix || !ARBITRARY_LENGTH_PREFIXES.has(prefix)) return [];
+  if (!prefix || !isLengthHintEligiblePrefix(prefix)) return [];
   if (!amount || !NUMERIC_LITERAL_PATTERN.test(amount)) return [];
 
   const unitCandidates = CSS_LENGTH_OR_PERCENTAGE_UNITS.filter((unit) =>
@@ -511,6 +524,7 @@ export const tailwind4ClassEngine: ClassProtocolEngine = {
     const hasGrid = tokenSet.has('grid');
     const baseSuggestions: ClassSuggestion[] = [];
     const trimmedQuery = query.trim();
+    if (isInvalidColorShadeLiteral(trimmedQuery)) return [];
 
     for (const token of TAILWIND_CLASSES) {
       const score = rankTailwindToken(
