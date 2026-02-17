@@ -9,11 +9,11 @@ export const SPLIT_LAYOUT_PATTERN: LayoutPatternDefinition<{
     options: { label: string; value: string }[];
   };
   gap: { kind: 'length'; label: 'Gap'; defaultValue: string };
-    ratio: {
-      kind: 'enum';
-      label: 'Split Ratio';
-      defaultValue: string;
-      options: { label: string; value: string }[];
+  ratio: {
+    kind: 'enum';
+    label: 'Split Ratio';
+    defaultValue: string;
+    options: { label: string; value: string }[];
   };
 }> = {
   id: 'split',
@@ -126,16 +126,18 @@ const applySplitLayoutPreset = (
   params: { category: string; gap: string | number; ratio: string }
 ) => {
   const isThreeColumns = params.category === '3-columns';
-  const templates = isThreeColumns ? THREE_COLUMN_TEMPLATES : TWO_COLUMN_TEMPLATES;
+  const templates = isThreeColumns
+    ? THREE_COLUMN_TEMPLATES
+    : TWO_COLUMN_TEMPLATES;
   const fallback = isThreeColumns ? '1-1-1' : '1-1';
   const gridTemplateColumns =
     templates[params.ratio] ??
     parseRatioToTemplate(params.ratio, isThreeColumns ? 3 : 2) ??
     templates[fallback];
   const nextChildren = (root.children ?? []).map((child) => {
-    const role = (child.props?.dataAttributes as Record<string, string> | undefined)?.[
-      'data-layout-role'
-    ];
+    const role = (
+      child.props?.dataAttributes as Record<string, string> | undefined
+    )?.['data-layout-role'];
     if (role !== 'content') {
       return child;
     }

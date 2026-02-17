@@ -15,6 +15,7 @@ import { syntaxTree } from '@codemirror/language';
 import { css } from '@codemirror/lang-css';
 import { linter, lintGutter, type Diagnostic } from '@codemirror/lint';
 import { X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 type MountedCssEditorModalProps = {
   isOpen: boolean;
@@ -72,6 +73,7 @@ export function MountedCssEditorModal({
   onClose,
   onSave,
 }: MountedCssEditorModalProps) {
+  const { t } = useTranslation('blueprint');
   const extensions = useMemo(() => {
     const colorGutter = gutter({
       class: 'MountedCssColorGutter',
@@ -100,7 +102,9 @@ export function MountedCssEditorModal({
             from: node.from,
             to: Math.max(node.to, node.from + 1),
             severity: 'error',
-            message: 'Invalid CSS syntax',
+            message: t('inspector.classProtocol.mountedCss.invalidSyntax', {
+              defaultValue: 'Invalid CSS syntax',
+            }),
           });
         },
       });
@@ -128,7 +132,7 @@ export function MountedCssEditorModal({
       },
     });
     return [css(), colorGutter, syntaxLinter, lintGutter(), lintTheme];
-  }, []);
+  }, [t]);
   const editorRef = useRef<EditorView | null>(null);
 
   useEffect(() => {
@@ -175,17 +179,24 @@ export function MountedCssEditorModal({
         <header className="flex items-center justify-between border-b border-black/8 px-3 py-2 dark:border-white/12">
           <div className="min-w-0">
             <div className="text-xs font-semibold text-(--color-9)">
-              Mounted CSS
+              {t('inspector.classProtocol.mountedCss.title', {
+                defaultValue: 'Mounted CSS',
+              })}
             </div>
             <div className="truncate text-[11px] text-(--color-6)">
-              {path || 'untitled.css'}
+              {path ||
+                t('inspector.classProtocol.mountedCss.untitled', {
+                  defaultValue: 'untitled.css',
+                })}
             </div>
           </div>
           <button
             type="button"
             className="inline-flex h-7 w-7 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
             onClick={onClose}
-            aria-label="Close mounted CSS editor"
+            aria-label={t('inspector.classProtocol.mountedCss.close', {
+              defaultValue: 'Close mounted CSS editor',
+            })}
           >
             <X size={14} />
           </button>
@@ -193,7 +204,10 @@ export function MountedCssEditorModal({
         <div className="min-h-0 overflow-hidden px-3 py-2">
           {highlightedClassName ? (
             <div className="mb-2 text-[11px] text-(--color-6)">
-              Focus class: <code>.{highlightedClassName}</code>
+              {t('inspector.classProtocol.mountedCss.focusClass', {
+                defaultValue: 'Focus class',
+              })}
+              : <code>.{highlightedClassName}</code>
             </div>
           ) : null}
           <div className="h-[calc(100%-2px)] overflow-hidden rounded-md border border-black/10 dark:border-white/14">
@@ -221,7 +235,9 @@ export function MountedCssEditorModal({
             className="h-7 rounded-md border border-black/12 px-3 text-xs text-(--color-7) hover:text-(--color-9)"
             onClick={onClose}
           >
-            Cancel
+            {t('inspector.classProtocol.mountedCss.cancel', {
+              defaultValue: 'Cancel',
+            })}
           </button>
           <button
             type="button"
@@ -229,7 +245,9 @@ export function MountedCssEditorModal({
             onClick={onSave}
             data-testid="mounted-css-save"
           >
-            Save CSS
+            {t('inspector.classProtocol.mountedCss.save', {
+              defaultValue: 'Save CSS',
+            })}
           </button>
         </footer>
       </div>

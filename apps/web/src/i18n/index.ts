@@ -1,7 +1,7 @@
 import { createI18nInstance } from '@mdr/i18n';
 import { initReactI18next } from 'react-i18next';
-import en from './resources/en.json';
-import zhCN from './resources/zh-CN.json';
+import en from './resources/en/index';
+import zhCN from './resources/zh-CN/index';
 
 const appResources = {
   en,

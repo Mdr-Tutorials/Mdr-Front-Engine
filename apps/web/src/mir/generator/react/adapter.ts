@@ -33,6 +33,50 @@ export const reactAdapter: TargetAdapter = {
       };
     }
 
+    if (node.type.startsWith('Antd')) {
+      const bareType = node.type.slice('Antd'.length);
+      if (bareType === 'FormItem') {
+        return {
+          element: 'Form.Item',
+          imports: [
+            {
+              source: 'antd',
+              kind: 'named',
+              imported: 'Form',
+            },
+          ],
+        };
+      }
+      return {
+        element: bareType || 'div',
+        imports: bareType
+          ? [
+              {
+                source: 'antd',
+                kind: 'named',
+                imported: bareType,
+              },
+            ]
+          : undefined,
+      };
+    }
+
+    if (node.type.startsWith('Mui')) {
+      const bareType = node.type.slice('Mui'.length);
+      return {
+        element: bareType || 'div',
+        imports: bareType
+          ? [
+              {
+                source: `@mui/material/${bareType}`,
+                kind: 'default',
+                imported: bareType,
+              },
+            ]
+          : undefined,
+      };
+    }
+
     if (node.type.startsWith('Radix')) {
       return {
         element: 'div',

@@ -6,6 +6,8 @@ import type { IconRef } from '@/mir/renderer/iconRegistry';
 import { createDefaultActionParams } from '@/mir/actions/registry';
 import { isIconRef, resolveIconRef } from '@/mir/renderer/iconRegistry';
 import { useEditorStore } from '@/editor/store/useEditorStore';
+import type { WorkspaceRouteNode } from '@/editor/store/useEditorStore';
+import { flattenRouteItems } from '@/editor/store/routeManifest';
 import { resolveLinkCapability } from '@/mir/renderer/capabilities';
 import {
   getLayoutPatternId,
@@ -46,6 +48,9 @@ export const useBlueprintEditorInspectorController = () => {
   const blueprintKey = projectId ?? 'global';
   const mirDoc = useEditorStore((state) => state.mirDoc);
   const updateMirDoc = useEditorStore((state) => state.updateMirDoc);
+  const routeManifest = useEditorStore((state) => state.routeManifest);
+  const activeRouteNodeId = useEditorStore((state) => state.activeRouteNodeId);
+  const bindOutletToRoute = useEditorStore((state) => state.bindOutletToRoute);
   const setBlueprintState = useEditorStore((state) => state.setBlueprintState);
   const selectedId = useEditorStore(
     (state) => state.blueprintStateByProject[blueprintKey]?.selectedId
@@ -54,6 +59,27 @@ export const useBlueprintEditorInspectorController = () => {
     () => (selectedId ? findNodeById(mirDoc.ui.root, selectedId) : null),
     [mirDoc.ui.root, selectedId]
   );
+  const selectedParentNode = useMemo(() => {
+    if (!selectedId) return null;
+    return findParentNodeById(mirDoc.ui.root, selectedId);
+  }, [mirDoc.ui.root, selectedId]);
+  const routeOptions = useMemo(
+    () => flattenRouteItems(routeManifest.root, '/'),
+    [routeManifest.root]
+  );
+  const outletRouteNodeId = useMemo(() => {
+    if (!selectedNode || selectedNode.type !== 'MdrOutlet') return '';
+    const findBinding = (node: WorkspaceRouteNode): string => {
+      if (node?.outletNodeId === selectedNode.id) return node.id;
+      const children = node.children ?? [];
+      for (const child of children) {
+        const found = findBinding(child);
+        if (found) return found;
+      }
+      return '';
+    };
+    return findBinding(routeManifest.root);
+  }, [routeManifest.root, selectedNode]);
   const matchedPanels = useMemo(
     () =>
       selectedNode
@@ -421,6 +447,11 @@ export const useBlueprintEditorInspectorController = () => {
       graphOptions,
       updateTrigger,
       removeTrigger,
+      routeOptions,
+      outletRouteNodeId,
+      activeRouteNodeId,
+      bindOutletToRoute,
+      selectedParentNode,
     }),
     [
       t,
@@ -453,6 +484,11 @@ export const useBlueprintEditorInspectorController = () => {
       hasLinkTriggerConflict,
       triggerEntries,
       graphOptions,
+      routeOptions,
+      outletRouteNodeId,
+      activeRouteNodeId,
+      bindOutletToRoute,
+      selectedParentNode,
     ]
   );
 
@@ -479,6 +515,19 @@ const findLayoutPatternRootId = (
   for (const child of children) {
     const found = findLayoutPatternRootId(child, patternId);
     if (found) return found;
+  }
+  return null;
+};
+
+const findParentNodeById = (
+  node: ComponentNode,
+  targetId: string
+): ComponentNode | null => {
+  const children = node.children ?? [];
+  for (const child of children) {
+    if (child.id === targetId) return node;
+    const nested = findParentNodeById(child, targetId);
+    if (nested) return nested;
   }
   return null;
 };

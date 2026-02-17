@@ -320,6 +320,7 @@ export const muiExternalLibraryProfile: ExternalLibraryProfile = {
   descriptor: createMuiLibraryDescriptor,
   includePaths: MUI_GROUPS.flatMap((group) => group.components),
   excludeExports: NON_COMPONENT_EXPORTS,
+  scanMode: 'include-only',
   manifest: muiLibraryManifest,
   toCanonicalComponents: (module, paths) =>
     collectCanonicalComponents(module, paths),

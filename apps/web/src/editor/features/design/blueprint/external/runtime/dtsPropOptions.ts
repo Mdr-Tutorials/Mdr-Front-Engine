@@ -91,13 +91,16 @@ const parsePropOptionsFromDts = (dts: string, propName: string) => {
   return parseTypeAliasUnion(dts, aliasMatch[1]);
 };
 
+const toKebabCaseSegment = (value: string) =>
+  value
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2')
+    .toLowerCase();
+
 const toAntdPathCandidates = (componentPath: string) => {
-  const base = componentPath.split('.')[0].toLowerCase();
-  return [
-    `${base}/index.d.ts`,
-    `${base}/${base}.d.ts`,
-    `${base}/${componentPath.toLowerCase()}.d.ts`,
-  ];
+  const base = componentPath.split('.')[0];
+  const directory = toKebabCaseSegment(base);
+  return [`${directory}/index.d.ts`, `${directory}/${base}.d.ts`];
 };
 
 const resolveDtsUrls = (
@@ -110,15 +113,13 @@ const resolveDtsUrls = (
     const base = componentPath.split('.')[0];
     return [
       `https://cdn.jsdelivr.net/npm/@mui/material@${version}/${base}/${base}.d.ts`,
-      `https://unpkg.com/@mui/material@${version}/${base}/${base}.d.ts`,
     ];
   }
   if (packageName === 'antd') {
     const paths = toAntdPathCandidates(componentPath);
-    return paths.flatMap((path) => [
-      `https://cdn.jsdelivr.net/npm/antd@${version}/es/${path}`,
-      `https://unpkg.com/antd@${version}/es/${path}`,
-    ]);
+    return paths.map(
+      (path) => `https://cdn.jsdelivr.net/npm/antd@${version}/es/${path}`
+    );
   }
   return [];
 };

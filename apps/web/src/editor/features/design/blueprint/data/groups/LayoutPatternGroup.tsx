@@ -1,4 +1,4 @@
-import { MdrDiv, MdrText } from '@mdr/ui';
+import { MdrDiv } from '@mdr/ui';
 import type { ComponentGroup } from '../../../BlueprintEditor.types';
 
 const PATTERN_PREVIEW_STYLE = {
@@ -80,7 +80,9 @@ export const LAYOUT_PATTERN_GROUP: ComponentGroup = {
               {null}
             </MdrDiv>
           </MdrDiv>
-          <MdrText size="Tiny">Detail</MdrText>
+          <MdrDiv height="10px" style={PATTERN_PREVIEW_STYLE}>
+            {null}
+          </MdrDiv>
         </MdrDiv>
       ),
       defaultProps: {

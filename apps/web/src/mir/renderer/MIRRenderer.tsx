@@ -50,6 +50,8 @@ type RenderContext = {
   onNodeSelect?: (nodeId: string, event: React.SyntheticEvent) => void;
   selectedId?: string;
   renderMode: 'strict' | 'tolerant';
+  outletContentNode?: ComponentNode | null;
+  outletTargetNodeId?: string;
 };
 
 const resolveValue = (value: any, state: RenderState, params: RenderParams) => {
@@ -230,6 +232,8 @@ interface MIRRendererProps {
       payload?: unknown;
     }) => void
   >;
+  outletContentNode?: ComponentNode | null;
+  outletTargetNodeId?: string;
 }
 
 const MIRNode: React.FC<{
@@ -244,8 +248,15 @@ const MIRNode: React.FC<{
         p[key] = resolveValue(val, context.state, context.params);
       });
     }
+    if (
+      node.type === 'MdrRoute' &&
+      p.currentPath === undefined &&
+      typeof context.params.currentPath === 'string'
+    ) {
+      p.currentPath = context.params.currentPath;
+    }
     return p;
-  }, [node.props, context.state, context.params]);
+  }, [node.props, node.type, context.state, context.params]);
 
   const resolvedStyle = useMemo(() => {
     const s: Record<string, any> = {};
@@ -383,6 +394,18 @@ const MIRNode: React.FC<{
       true) &&
     !isVoid;
 
+  const outletChildren =
+    node.type === 'MdrOutlet' &&
+    context.outletContentNode &&
+    (!context.outletTargetNodeId || context.outletTargetNodeId === node.id) ? (
+      <MIRNode
+        key={context.outletContentNode.id}
+        node={context.outletContentNode}
+        context={context}
+        registry={registry}
+      />
+    ) : null;
+
   const { style: propStyle, ...restProps } = finalProps;
   const mergedStyle = propStyle
     ? { ...(propStyle as Record<string, any>), ...resolvedStyle }
@@ -400,14 +423,15 @@ const MIRNode: React.FC<{
     <span style={{ display: 'contents' }} data-mir-node-id={node.id}>
       <Component {...restProps} style={mergedStyle}>
         {adapterResult.children}
-        {node.children?.map((child) => (
-          <MIRNode
-            key={child.id}
-            node={child}
-            context={context}
-            registry={registry}
-          />
-        ))}
+        {outletChildren ??
+          node.children?.map((child) => (
+            <MIRNode
+              key={child.id}
+              node={child}
+              context={context}
+              registry={registry}
+            />
+          ))}
       </Component>
     </span>
   );
@@ -424,6 +448,8 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
   renderMode = 'tolerant',
   allowExternalProps = true,
   builtInActions,
+  outletContentNode,
+  outletTargetNodeId,
 }) => {
   const effectiveParams = useMemo(() => {
     const result: RenderParams = {};
@@ -638,6 +664,8 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
       selectedId,
       onNodeSelect,
       renderMode,
+      outletContentNode,
+      outletTargetNodeId,
     }),
     [
       state,
@@ -647,6 +675,8 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
       selectedId,
       onNodeSelect,
       renderMode,
+      outletContentNode,
+      outletTargetNodeId,
     ]
   );
 

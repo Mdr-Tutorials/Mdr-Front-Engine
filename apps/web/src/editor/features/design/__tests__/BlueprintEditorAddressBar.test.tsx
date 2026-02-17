@@ -70,8 +70,8 @@ describe('BlueprintEditorAddressBar', () => {
         currentPath="/"
         newPath=""
         routes={[
-          { id: 'home', path: '/' },
-          { id: 'about', path: '/about' },
+          { id: 'home', path: '/', depth: 0, label: '(index)' },
+          { id: 'about', path: '/about', depth: 1, label: 'about' },
         ]}
         onCurrentPathChange={() => {}}
         onNewPathChange={() => {}}
@@ -79,10 +79,11 @@ describe('BlueprintEditorAddressBar', () => {
       />
     );
 
-    const options = screen.getAllByRole('option');
-    expect(options.map((option) => option.textContent)).toEqual([
-      '/',
-      '/about',
+    fireEvent.click(screen.getByTestId('address-route-menu-trigger'));
+    const routeButtons = screen.getAllByTestId(/address-route-item-/);
+    expect(routeButtons.map((item) => item.textContent)).toEqual([
+      '(index)/',
+      'about/about',
     ]);
   });
 

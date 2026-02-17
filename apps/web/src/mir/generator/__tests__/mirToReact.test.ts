@@ -149,4 +149,124 @@ describe('mirToReact generator', () => {
     expect(code).toContain('<Form.Item>');
     expect(code).toContain('<Input>');
   });
+
+  it('maps Antd runtime types to production imports in default export mode', () => {
+    const doc = createDoc();
+    doc.ui.root = {
+      id: 'root',
+      type: 'AntdButton',
+      text: 'Button',
+      props: {
+        type: 'primary',
+        size: 'small',
+      },
+      children: [
+        {
+          id: 'form-item',
+          type: 'AntdFormItem',
+          props: {
+            label: 'Field',
+          },
+        },
+      ],
+    };
+
+    const code = generateReactCode(doc, { resourceType: 'component' });
+    expect(code).toContain("import { Button } from 'antd';");
+    expect(code).toContain("import { Form } from 'antd';");
+    expect(code).toContain('<Button');
+    expect(code).toContain('<Form.Item');
+  });
+
+  it('maps Mui runtime types to production imports in default export mode', () => {
+    const doc = createDoc();
+    doc.ui.root = {
+      id: 'root',
+      type: 'MuiButton',
+      text: 'Button',
+      props: {
+        variant: 'contained',
+        size: 'small',
+      },
+    };
+
+    const code = generateReactCode(doc, { resourceType: 'component' });
+    expect(code).toContain("import Button from '@mui/material/Button';");
+    expect(code).toContain('<Button');
+  });
+
+  it('adds prefixes when multiple libraries import same component name', () => {
+    const doc = createDoc();
+    doc.ui.root = {
+      id: 'root',
+      type: 'div',
+      children: [
+        {
+          id: 'mui-btn',
+          type: 'MuiButton',
+          text: 'MUI',
+        },
+        {
+          id: 'antd-btn',
+          type: 'AntdButton',
+          text: 'Antd',
+        },
+      ],
+    };
+
+    const code = generateReactCode(doc, { resourceType: 'component' });
+    expect(code).toContain("import MuiButton from '@mui/material/Button';");
+    expect(code).toContain("import { Button as AntdButton } from 'antd';");
+    expect(code).toContain('<MuiButton>');
+    expect(code).toContain('<AntdButton>');
+  });
+
+  it('extracts mounted css into external css files', () => {
+    const doc = createDoc();
+    doc.ui.root = {
+      id: 'root',
+      type: 'div',
+      props: {
+        className: 'hero',
+        mountedCss: [
+          {
+            path: 'src/styles/mounted/hero.css',
+            content: '.hero { color: red; }',
+          },
+        ],
+      },
+    };
+
+    const bundle = generateReactBundle(doc, { resourceType: 'project' });
+    const appFile = bundle.files.find((file) => file.path === 'src/App.tsx');
+    const cssFile = bundle.files.find(
+      (file) => file.path === 'src/styles/mounted/hero.css'
+    );
+
+    expect(appFile?.content).toContain("import './styles/mounted/hero.css';");
+    expect(appFile?.content).not.toContain('mountedCss=');
+    expect(cssFile?.content).toContain('.hero { color: red; }');
+  });
+
+  it('strips editor-only data attributes from exported props', () => {
+    const doc = createDoc();
+    doc.ui.root = {
+      id: 'root',
+      type: 'div',
+      props: {
+        'data-layout-role': 'main',
+        'data-testid': 'keep-me',
+        dataAttributes: {
+          'data-layout-pattern': 'split',
+          'data-theme': 'light',
+        },
+      },
+    };
+
+    const code = generateReactCode(doc, { resourceType: 'component' });
+    expect(code).not.toContain('data-layout-role');
+    expect(code).not.toContain('data-layout-pattern');
+    expect(code).toContain('data-testid="keep-me"');
+    expect(code).toContain('dataAttributes={{"data-theme":"light"}}');
+  });
 });

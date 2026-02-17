@@ -522,6 +522,94 @@ describe('BlueprintEditorInspector', () => {
     expect(node?.props?.variant).toBe('outlined');
   });
 
+  it('shows and updates MdrRoute inspector fields', () => {
+    resetEditorStore({
+      mirDoc: createMirDoc([
+        {
+          id: 'route-1',
+          type: 'MdrRoute',
+          props: {
+            currentPath: '/old',
+          },
+        },
+      ]),
+      blueprintStateByProject: {
+        [PROJECT_ID]: {
+          ...DEFAULT_BLUEPRINT_STATE,
+          selectedId: 'route-1',
+        },
+      },
+    });
+
+    render(
+      <BlueprintEditorInspector
+        isCollapsed={false}
+        onToggleCollapse={() => {}}
+      />
+    );
+
+    const currentPathInput = screen.getByTestId(
+      'inspector-route-current-path'
+    ) as HTMLInputElement;
+    const emptyTextInput = screen.getByTestId(
+      'inspector-route-empty-text'
+    ) as HTMLInputElement;
+    fireEvent.change(currentPathInput, { target: { value: '/about' } });
+    fireEvent.change(emptyTextInput, { target: { value: 'No match' } });
+
+    const node = useEditorStore
+      .getState()
+      .mirDoc.ui.root.children?.find((item) => item.id === 'route-1');
+    expect(node?.props?.currentPath).toBe('/about');
+    expect(node?.props?.emptyText).toBe('No match');
+  });
+
+  it('marks direct route child as index route from inspector', () => {
+    resetEditorStore({
+      mirDoc: createMirDoc([
+        {
+          id: 'route-1',
+          type: 'MdrRoute',
+          children: [
+            {
+              id: 'route-child-1',
+              type: 'MdrText',
+              text: 'Child',
+              props: { 'data-route-path': '/about' },
+            },
+          ],
+        },
+      ]),
+      blueprintStateByProject: {
+        [PROJECT_ID]: {
+          ...DEFAULT_BLUEPRINT_STATE,
+          selectedId: 'route-child-1',
+        },
+      },
+    });
+
+    render(
+      <BlueprintEditorInspector
+        isCollapsed={false}
+        onToggleCollapse={() => {}}
+      />
+    );
+
+    const indexToggle = screen.getByTestId(
+      'inspector-route-child-index'
+    ) as HTMLInputElement;
+    fireEvent.click(indexToggle);
+
+    const routeNode = useEditorStore
+      .getState()
+      .mirDoc.ui.root.children?.find((item) => item.id === 'route-1');
+    const routeChild = routeNode?.children?.find(
+      (item) => item.id === 'route-child-1'
+    );
+    expect(routeChild?.props?.['data-route-index']).toBe(true);
+    expect(routeChild?.props?.['data-route-path']).toBeUndefined();
+  });
+
   it('updates and resets external boolean/number props through inspector fields', async () => {
     setExternalRuntimeMeta('MuiDialog', {
       libraryId: 'mui',

@@ -8,7 +8,7 @@ export type ExportResourceType = 'project' | 'component' | 'nodegraph';
 
 export type ReactExportFile = {
   path: string;
-  language: 'typescript' | 'json' | 'html';
+  language: 'typescript' | 'json' | 'html' | 'css';
   content: string;
 };
 
@@ -17,6 +17,11 @@ export type ReactExportBundle = {
   entryFilePath: string;
   files: ReactExportFile[];
   diagnostics?: CompileDiagnostic[];
+};
+
+export type MountedCssFile = {
+  path: string;
+  content: string;
 };
 
 export type ReactGeneratorOptions = {
@@ -37,6 +42,7 @@ export type ReactComponentCompileResult = {
   diagnostics: CompileDiagnostic[];
   canonicalIR: CanonicalIRDocument;
   dependencies: Record<string, string>;
+  mountedCssFiles: MountedCssFile[];
 };
 
 export type MirDocLike = MIRDocument;

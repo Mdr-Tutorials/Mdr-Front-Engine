@@ -1,0 +1,200 @@
+{
+  "inspector": {
+    "classProtocol": {
+      "mountedCss": {
+        "title": "Mounted CSS",
+        "untitled": "untitled.css",
+        "close": "Close mounted CSS editor",
+        "focusClass": "Focus class",
+        "cancel": "Cancel",
+        "save": "Save CSS",
+        "invalidSyntax": "Invalid CSS syntax"
+      }
+    },
+    "fields": {
+      "className": {
+        "placeholder": "e.g. p-4 flex items-center"
+      },
+      "link": {
+        "relPlaceholder": "noopener noreferrer"
+      },
+      "colorInput": {
+        "placeholder": "#RRGGBB / var(--color-x)",
+        "pickerAria": "Color picker"
+      },
+      "presetInput": {
+        "toggle": "Toggle presets"
+      }
+    },
+    "panels": {
+      "layout": {
+        "fields": {
+          "display": "Display",
+          "gridRows": "Rows",
+          "gridAutoFlow": "Auto Flow",
+          "justifyItems": "Justify Items",
+          "alignContent": "Align Content",
+          "gap": "Gap",
+          "margin": "Margin",
+          "padding": "Padding",
+          "collapse": "Collapse",
+          "expand": "Expand",
+          "sides": {
+            "top": "Top",
+            "right": "Right",
+            "bottom": "Bottom",
+            "left": "Left"
+          },
+          "width": "Width",
+          "height": "Height",
+          "backgroundColor": "Background",
+          "border": "Border",
+          "borderRadius": "Radius",
+          "flexDirection": "Direction",
+          "justifyContent": "Justify",
+          "alignItems": "Align Items",
+          "gridColumns": "Columns",
+          "gridColumnsHint": "Sets gridTemplateColumns."
+        },
+        "placeholders": {
+          "auto": "auto",
+          "backgroundColor": "var(--color-2)",
+          "gridRows": "repeat(2, minmax(0, 1fr))"
+        },
+        "options": {
+          "display": {
+            "block": "Block",
+            "flex": "Flex",
+            "grid": "Grid",
+            "inline": "Inline",
+            "inlineBlock": "InlineBlock"
+          },
+          "gridAutoFlow": {
+            "row": "Row",
+            "column": "Column",
+            "rowDense": "Row Dense",
+            "columnDense": "Col Dense"
+          },
+          "direction": {
+            "row": "Row",
+            "rowReverse": "Row Reverse",
+            "column": "Column",
+            "columnReverse": "Column Reverse"
+          },
+          "justify": {
+            "start": "Start",
+            "center": "Center",
+            "end": "End",
+            "spaceBetween": "Space Between",
+            "spaceAround": "Space Around",
+            "spaceEvenly": "Space Evenly"
+          },
+          "align": {
+            "start": "Start",
+            "center": "Center",
+            "end": "End",
+            "stretch": "Stretch",
+            "baseline": "Baseline"
+          }
+        },
+        "title": "Layout",
+        "description": "Flex / Grid layout details",
+        "patternControlled": "Layout structure is controlled by pattern params.",
+        "groups": {
+          "spacing": "Spacing",
+          "size": "Size",
+          "appearance": "Appearance",
+          "flex": "Flex",
+          "grid": "Grid"
+        }
+      },
+      "layoutPattern": {
+        "title": "Pattern",
+        "description": "Layout pattern parameters",
+        "splitThirdColumnHint": "Third column is hidden in 2 columns mode (not deleted).",
+        "patterns": {
+          "split": {
+            "name": "Split Layout",
+            "description": "Two-column split layout with ratio presets."
+          },
+          "holy-grail": {
+            "name": "Holy Grail",
+            "description": "Header + sidebar + main + footer layout."
+          },
+          "dashboard-shell": {
+            "name": "Dashboard Shell",
+            "description": "Top bar + cards grid + detail section."
+          }
+        },
+        "fields": {
+          "split": {
+            "category": {
+              "label": "Category",
+              "options": {
+                "2-columns": "2 Columns",
+                "3-columns": "3 Columns"
+              }
+            },
+            "gap": {
+              "label": "Gap"
+            },
+            "ratio": {
+              "label": "Split Ratio",
+              "options": {
+                "1-1": "1 : 1",
+                "3-7": "3 : 7",
+                "7-3": "7 : 3",
+                "1-1-1": "1 : 1 : 1",
+                "2-5-3": "2 : 5 : 3",
+                "3-5-2": "3 : 5 : 2"
+              }
+            }
+          },
+          "holy-grail": {
+            "gap": {
+              "label": "Gap"
+            },
+            "sidebarWidth": {
+              "label": "Sidebar Width"
+            }
+          },
+          "dashboard-shell": {
+            "gap": {
+              "label": "Gap"
+            },
+            "columns": {
+              "label": "Main Columns",
+              "options": {
+                "2": "2 columns",
+                "3": "3 columns",
+                "4": "4 columns"
+              }
+            }
+          }
+        }
+      },
+      "layout-pattern": {
+        "title": "Pattern",
+        "description": "Layout pattern parameters"
+      }
+    }
+  },
+  "componentLibrary": {
+    "groups": {
+      "layout-pattern": {
+        "title": "Layout Patterns"
+      }
+    },
+    "items": {
+      "layout-pattern-split": {
+        "name": "Split Layout"
+      },
+      "layout-pattern-holy-grail": {
+        "name": "Holy Grail"
+      },
+      "layout-pattern-dashboard-shell": {
+        "name": "Dashboard Shell"
+      }
+    }
+  }
+}

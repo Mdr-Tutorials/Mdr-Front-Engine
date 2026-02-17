@@ -80,6 +80,7 @@ export type WorkspaceSnapshot = {
   tree: Record<string, unknown>;
   documents: WorkspaceDocumentRecord[];
   routeManifest: Record<string, unknown>;
+  activeRouteNodeId?: string;
 };
 
 export type WorkspaceMutationDocumentRevision = {

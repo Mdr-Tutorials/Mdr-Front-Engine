@@ -51,6 +51,17 @@
 5. 已落地 `LPAT-105`：组件组注册与宽预览缩放策略接入 `layout-pattern`。
    - 结果：`apps/web/src/editor/features/design/blueprint/data/ComponentGroups.tsx`、`apps/web/src/editor/features/design/blueprint/data/helpers.ts`
 
+## 0.4 Gate C 落地进展（2026-02-17）
+
+1. 已落地 `LPAT-201`：新增 `LayoutPatternPanel`，仅匹配范式 root 节点。
+   - 结果：`apps/web/src/editor/features/design/inspector/panels/LayoutPatternPanel.tsx`
+2. 已落地 `LPAT-202`：`layout-pattern` 面板已注册至 `INSPECTOR_PANELS`。
+   - 结果：`apps/web/src/editor/features/design/inspector/panels/registry.ts`
+3. 已落地 `LPAT-203`：参数回写已接入 preset `update` 链路并通过 `updateMirDoc` 生效。
+   - 结果：`apps/web/src/editor/features/design/blueprint/layoutPatterns/presets/*`、`apps/web/src/editor/features/design/BlueprintEditorInspector.controller.ts`
+4. 已落地 `LPAT-204`：子树更新后选中态回退策略已接入（回退到 pattern root）。
+   - 结果：`apps/web/src/editor/features/design/BlueprintEditorInspector.controller.ts`
+
 ## 1. 里程碑与 Gate
 
 1. `M1 / Gate A`：协议与类型冻结（Pattern + BuiltIn Schema）
@@ -113,22 +124,22 @@
 
 ### C. LayoutPatternPanel 参数回写（Gate C）
 
-- [ ] `LPAT-201` 新增 `LayoutPatternPanel`（匹配 pattern root）。
+- [x] `LPAT-201` 新增 `LayoutPatternPanel`（匹配 pattern root）。
   - 产出：`LayoutPatternPanel.tsx`
   - 依赖：`LPAT-102`
   - 验收：仅范式根节点出现面板
 
-- [ ] `LPAT-202` 将 panel 注册到 `INSPECTOR_PANELS`。
+- [x] `LPAT-202` 将 panel 注册到 `INSPECTOR_PANELS`。
   - 产出：`inspector/panels/registry.ts`
   - 依赖：`LPAT-201`
   - 验收：面板折叠/展开状态稳定
 
-- [ ] `LPAT-203` 实现 `update(root, patch)` 参数回写链路。
+- [x] `LPAT-203` 实现 `update(root, patch)` 参数回写链路。
   - 产出：preset `update` + controller 回写适配
   - 依赖：`LPAT-201`
   - 验收：`gap/padding/sidebarWidth/columns` 调整后结构与样式同步更新
 
-- [ ] `LPAT-204` 处理选中节点稳定性（子树重写时 fallback root）。
+- [x] `LPAT-204` 处理选中节点稳定性（子树重写时 fallback root）。
   - 产出：inspector controller 选中策略
   - 依赖：`LPAT-203`
   - 验收：参数更新不出现“选中丢失”或空 inspector

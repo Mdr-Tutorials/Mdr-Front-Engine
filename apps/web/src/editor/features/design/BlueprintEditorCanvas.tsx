@@ -10,8 +10,10 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useDroppable } from '@dnd-kit/core';
 import { useEditorStore } from '@/editor/store/useEditorStore';
+import type { WorkspaceRouteNode } from '@/editor/store/useEditorStore';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
 import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
+import type { ComponentNode } from '@/core/types/engine.types';
 import {
   createOrderedComponentRegistry,
   getRuntimeRegistryRevision,
@@ -21,6 +23,7 @@ import {
 import { VIEWPORT_ZOOM_RANGE } from './BlueprintEditor.data';
 
 type BlueprintEditorCanvasProps = {
+  currentPath: string;
   viewportWidth: string;
   viewportHeight: string;
   zoom: number;
@@ -99,12 +102,36 @@ const normalizeWheelDelta = (event: WheelEvent) => {
   return { x: event.deltaX, y: event.deltaY };
 };
 
+type RouteCanvasDiagnostic = {
+  code: string;
+  message: string;
+};
+
+const countOutletNodes = (node: ComponentNode): number => {
+  if (!node || typeof node !== 'object') return 0;
+  const selfCount = node.type === 'MdrOutlet' ? 1 : 0;
+  const childCount = Array.isArray(node.children)
+    ? node.children.reduce(
+        (total: number, child: unknown) => total + countOutletNodes(child),
+        0
+      )
+    : 0;
+  return selfCount + childCount;
+};
+
+const hasNodeId = (node: ComponentNode, nodeId: string): boolean => {
+  if (node.id === nodeId) return true;
+  const children = node.children ?? [];
+  return children.some((child) => hasNodeId(child, nodeId));
+};
+
 /**
  * 交互链路：
  * 节点点击 -> MIRRenderer -> onSelectNode -> controller；
  * 节点内置动作 -> builtInActions -> controller。
  */
 export function BlueprintEditorCanvas({
+  currentPath,
   viewportWidth,
   viewportHeight,
   zoom,
@@ -131,6 +158,66 @@ export function BlueprintEditorCanvas({
     getRuntimeRegistryRevision()
   );
   const mirDoc = useEditorStore((state) => state.mirDoc);
+  const routeManifest = useEditorStore((state) => state.routeManifest);
+  const activeRouteNodeId = useEditorStore((state) => state.activeRouteNodeId);
+  const workspaceDocumentsById = useEditorStore(
+    (state) => state.workspaceDocumentsById
+  );
+  const activeRouteNode = useMemo(() => {
+    const walk = (node: WorkspaceRouteNode): WorkspaceRouteNode | null => {
+      if (!node) return null;
+      if (node.id === activeRouteNodeId) return node;
+      const children = node.children ?? [];
+      for (const child of children) {
+        const found = walk(child);
+        if (found) return found;
+      }
+      return null;
+    };
+    return walk(routeManifest.root);
+  }, [activeRouteNodeId, routeManifest.root]);
+  const outletContentNode = useMemo(() => {
+    const pageDocId = activeRouteNode?.pageDocId;
+    if (!pageDocId) return null;
+    const pageDoc = workspaceDocumentsById[pageDocId];
+    return pageDoc?.content?.ui?.root ?? null;
+  }, [activeRouteNode, workspaceDocumentsById]);
+  const routeDiagnostics = useMemo<RouteCanvasDiagnostic[]>(() => {
+    const diagnosticsList: RouteCanvasDiagnostic[] = [];
+    if (!activeRouteNode?.layoutDocId) return diagnosticsList;
+    const outletCount = countOutletNodes(mirDoc.ui.root);
+    if (outletCount === 0) {
+      diagnosticsList.push({
+        code: 'route-layout-missing-outlet',
+        message:
+          'Active route layout has no MdrOutlet. Add one to mount child route content.',
+      });
+    }
+    if (outletCount > 1) {
+      diagnosticsList.push({
+        code: 'route-layout-multi-outlet',
+        message:
+          'Active layout has multiple MdrOutlet nodes. Only one outlet is supported in preview.',
+      });
+    }
+    if (!activeRouteNode.pageDocId) {
+      diagnosticsList.push({
+        code: 'route-layout-missing-page',
+        message: 'Active route layout is missing pageDocId for outlet content.',
+      });
+    }
+    if (
+      activeRouteNode.outletNodeId &&
+      !hasNodeId(mirDoc.ui.root, activeRouteNode.outletNodeId)
+    ) {
+      diagnosticsList.push({
+        code: 'route-layout-outlet-node-missing',
+        message:
+          'Bound outletNodeId is not found in current layout document. Rebind the outlet in Inspector.',
+      });
+    }
+    return diagnosticsList;
+  }, [activeRouteNode, mirDoc.ui.root]);
   const surfaceRef = useRef<HTMLDivElement | null>(null);
   const panState = useRef<PanState>({
     pointerId: null,
@@ -418,6 +505,9 @@ export function BlueprintEditorCanvas({
                 <MIRRenderer
                   node={mirDoc.ui.root}
                   mirDoc={mirDoc}
+                  overrides={{ currentPath }}
+                  outletContentNode={outletContentNode}
+                  outletTargetNodeId={activeRouteNode?.outletNodeId}
                   selectedId={selectedId}
                   onNodeSelect={handleNodeSelect}
                   registry={registry}
@@ -445,6 +535,15 @@ export function BlueprintEditorCanvas({
                   </p>
                 </div>
               )}
+              {routeDiagnostics.length > 0 ? (
+                <div className="pointer-events-none absolute right-3 top-3 z-10 flex max-w-96 flex-col gap-1 rounded-md border border-amber-400/60 bg-amber-100/90 p-2 text-[11px] text-amber-900 shadow-sm dark:border-amber-300/30 dark:bg-amber-950/70 dark:text-amber-100">
+                  {routeDiagnostics.map((item) => (
+                    <p key={item.code} className="m-0 leading-4">
+                      {item.message}
+                    </p>
+                  ))}
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

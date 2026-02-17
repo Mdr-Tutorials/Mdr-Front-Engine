@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { MdrInput } from '@mdr/ui';
+import { useTranslation } from 'react-i18next';
 
 type ColorInputProps = {
   value: string | undefined;
@@ -22,6 +23,7 @@ export function ColorInput({
   placeholder,
   disabled = false,
 }: ColorInputProps) {
+  const { t } = useTranslation('blueprint');
   const swatchValue = useMemo(() => normalizeHex(value ?? ''), [value]);
 
   return (
@@ -31,7 +33,12 @@ export function ColorInput({
           size="Small"
           value={value ?? ''}
           onChange={(next) => onChange(next.trim() ? next : undefined)}
-          placeholder={placeholder ?? '#RRGGBB / var(--color-x)'}
+          placeholder={
+            placeholder ??
+            t('inspector.fields.colorInput.placeholder', {
+              defaultValue: '#RRGGBB / var(--color-x)',
+            })
+          }
           disabled={disabled}
         />
       </div>
@@ -41,7 +48,9 @@ export function ColorInput({
         disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
         className="h-8 w-9 cursor-pointer rounded-[10px] border border-[rgba(0,0,0,0.12)] bg-transparent p-0 in-data-[theme='dark']:border-[rgba(255,255,255,0.16)]"
-        aria-label="color"
+        aria-label={t('inspector.fields.colorInput.pickerAria', {
+          defaultValue: 'Color picker',
+        })}
       />
     </div>
   );

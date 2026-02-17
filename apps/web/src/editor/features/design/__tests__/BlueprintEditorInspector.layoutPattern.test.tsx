@@ -113,8 +113,7 @@ describe('BlueprintEditorInspector layout pattern panel', () => {
       fireEvent.click(screen.getByText('Pattern'));
     }
 
-    const ratioInput = screen
-      .getByPlaceholderText('1-1') as HTMLInputElement;
+    const ratioInput = screen.getByPlaceholderText('1-1') as HTMLInputElement;
     fireEvent.change(ratioInput, {
       target: { value: '3-7' },
     });

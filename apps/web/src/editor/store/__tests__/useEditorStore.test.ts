@@ -5,7 +5,8 @@ import { useEditorStore } from '../useEditorStore';
 
 const createWorkspaceSnapshot = (
   workspaceId: string,
-  documents: WorkspaceSnapshot['documents']
+  documents: WorkspaceSnapshot['documents'],
+  overrides: Partial<WorkspaceSnapshot> = {}
 ): WorkspaceSnapshot => ({
   id: workspaceId,
   workspaceRev: 1,
@@ -13,7 +14,9 @@ const createWorkspaceSnapshot = (
   opSeq: 1,
   tree: {},
   routeManifest: {},
+  activeRouteNodeId: undefined,
   documents,
+  ...overrides,
 });
 
 const createDocumentContent = (nodeId: string) =>
@@ -142,5 +145,289 @@ describe('useEditorStore workspace state', () => {
     expect(state.workspaceId).toBe('ws-2');
     expect(state.workspaceCapabilitiesLoaded).toBe(false);
     expect(state.workspaceCapabilities).toEqual({});
+  });
+
+  it('prefers workspace activeRouteNodeId when it exists in routeManifest', () => {
+    const store = useEditorStore.getState();
+    store.setWorkspaceSnapshot(
+      createWorkspaceSnapshot(
+        'ws-1',
+        [
+          {
+            id: 'page-root',
+            type: 'mir-page',
+            path: '/',
+            contentRev: 1,
+            metaRev: 1,
+            content: createDocumentContent('root'),
+          },
+        ],
+        {
+          routeManifest: {
+            version: '1',
+            root: {
+              id: 'custom-root-id-ignored',
+              children: [
+                { id: 'route-home', index: true },
+                { id: 'route-about', segment: 'about' },
+              ],
+            },
+          },
+          activeRouteNodeId: 'route-about',
+        }
+      )
+    );
+
+    const state = useEditorStore.getState();
+    expect(state.routeManifest.root.id).toBe('root');
+    expect(state.activeRouteNodeId).toBe('route-about');
+  });
+
+  it('falls back to first route when workspace activeRouteNodeId is invalid', () => {
+    const store = useEditorStore.getState();
+    store.setWorkspaceSnapshot(
+      createWorkspaceSnapshot(
+        'ws-1',
+        [
+          {
+            id: 'page-root',
+            type: 'mir-page',
+            path: '/',
+            contentRev: 1,
+            metaRev: 1,
+            content: createDocumentContent('root'),
+          },
+        ],
+        {
+          routeManifest: {
+            version: '1',
+            root: {
+              id: 'root',
+              children: [{ id: 'route-home', index: true }],
+            },
+          },
+          activeRouteNodeId: 'missing-route',
+        }
+      )
+    );
+
+    const state = useEditorStore.getState();
+    expect(state.activeRouteNodeId).toBe('route-home');
+  });
+
+  it('normalizes workspace tree and drops unknown doc references', () => {
+    const store = useEditorStore.getState();
+    store.setWorkspaceSnapshot(
+      createWorkspaceSnapshot(
+        'ws-1',
+        [
+          {
+            id: 'page-root',
+            type: 'mir-page',
+            path: '/',
+            contentRev: 1,
+            metaRev: 1,
+            content: createDocumentContent('root'),
+          },
+        ],
+        {
+          tree: {
+            treeRootId: 'root-node',
+            treeById: {
+              'root-node': {
+                id: 'root-node',
+                kind: 'dir',
+                name: 'root',
+                parentId: null,
+                children: ['doc-valid', 'doc-missing'],
+              },
+              'doc-valid': {
+                id: 'doc-valid',
+                kind: 'doc',
+                name: 'home',
+                parentId: 'root-node',
+                docId: 'page-root',
+              },
+              'doc-missing': {
+                id: 'doc-missing',
+                kind: 'doc',
+                name: 'ghost',
+                parentId: 'root-node',
+                docId: 'not-found',
+              },
+            },
+          },
+        }
+      )
+    );
+
+    const state = useEditorStore.getState();
+    expect(state.treeRootId).toBe('root-node');
+    expect(state.treeById['doc-valid']?.docId).toBe('page-root');
+    expect(state.treeById['doc-missing']).toBeUndefined();
+  });
+
+  it('creates fallback workspace tree when snapshot tree is unavailable', () => {
+    const store = useEditorStore.getState();
+    store.setWorkspaceSnapshot(
+      createWorkspaceSnapshot('ws-1', [
+        {
+          id: 'page-root',
+          type: 'mir-page',
+          path: '/',
+          contentRev: 1,
+          metaRev: 1,
+          content: createDocumentContent('root'),
+        },
+      ])
+    );
+
+    const state = useEditorStore.getState();
+    expect(state.treeRootId).toBe('root');
+    expect(state.treeById.root?.kind).toBe('dir');
+    expect(state.treeById['doc-page-root']?.docId).toBe('page-root');
+  });
+
+  it('applies create-child-route intent and links document + tree', () => {
+    const store = useEditorStore.getState();
+    store.setWorkspaceSnapshot(
+      createWorkspaceSnapshot(
+        'ws-1',
+        [
+          {
+            id: 'page-root',
+            type: 'mir-page',
+            path: '/',
+            contentRev: 1,
+            metaRev: 1,
+            content: createDocumentContent('root'),
+          },
+        ],
+        {
+          routeManifest: {
+            version: '1',
+            root: { id: 'root', children: [{ id: 'route-home', index: true }] },
+          },
+          activeRouteNodeId: 'route-home',
+        }
+      )
+    );
+
+    store.applyRouteIntent({
+      type: 'create-child-route',
+      parentRouteNodeId: 'route-home',
+      segment: 'about',
+      routeNodeId: 'route-about',
+      pageDocId: 'page-about',
+    });
+
+    const state = useEditorStore.getState();
+    const home = state.routeManifest.root.children?.find(
+      (node) => node.id === 'route-home'
+    );
+    const about = home?.children?.find((node) => node.id === 'route-about');
+    expect(about?.pageDocId).toBe('page-about');
+    expect(state.workspaceDocumentsById['page-about']?.type).toBe('mir-page');
+    expect(state.treeById['doc-page-about']?.docId).toBe('page-about');
+    expect(state.activeRouteNodeId).toBe('route-about');
+  });
+
+  it('applies split-layout intent and writes layout document', () => {
+    const store = useEditorStore.getState();
+    store.setWorkspaceSnapshot(
+      createWorkspaceSnapshot(
+        'ws-1',
+        [
+          {
+            id: 'page-root',
+            type: 'mir-page',
+            path: '/',
+            contentRev: 1,
+            metaRev: 1,
+            content: createDocumentContent('root'),
+          },
+        ],
+        {
+          routeManifest: {
+            version: '1',
+            root: { id: 'root', children: [{ id: 'route-home', index: true }] },
+          },
+        }
+      )
+    );
+
+    store.applyRouteIntent({
+      type: 'split-layout',
+      routeNodeId: 'route-home',
+      layoutDocId: 'layout-root',
+    });
+
+    const state = useEditorStore.getState();
+    const home = state.routeManifest.root.children?.find(
+      (node) => node.id === 'route-home'
+    );
+    expect(home?.layoutDocId).toBe('layout-root');
+    expect(state.workspaceDocumentsById['layout-root']?.type).toBe(
+      'mir-layout'
+    );
+    expect(state.treeById['doc-layout-root']?.docId).toBe('layout-root');
+  });
+
+  it('applies delete-route intent and removes unreferenced route docs', () => {
+    const store = useEditorStore.getState();
+    store.setWorkspaceSnapshot(
+      createWorkspaceSnapshot(
+        'ws-1',
+        [
+          {
+            id: 'page-root',
+            type: 'mir-page',
+            path: '/',
+            contentRev: 1,
+            metaRev: 1,
+            content: createDocumentContent('root'),
+          },
+          {
+            id: 'page-about',
+            type: 'mir-page',
+            path: '/about',
+            contentRev: 1,
+            metaRev: 1,
+            content: createDocumentContent('about'),
+          },
+        ],
+        {
+          routeManifest: {
+            version: '1',
+            root: {
+              id: 'root',
+              children: [
+                { id: 'route-home', index: true, pageDocId: 'page-root' },
+                {
+                  id: 'route-about',
+                  segment: 'about',
+                  pageDocId: 'page-about',
+                },
+              ],
+            },
+          },
+          activeRouteNodeId: 'route-about',
+        }
+      )
+    );
+
+    store.applyRouteIntent({
+      type: 'delete-route',
+      routeNodeId: 'route-about',
+    });
+
+    const state = useEditorStore.getState();
+    expect(
+      state.routeManifest.root.children?.some(
+        (node) => node.id === 'route-about'
+      )
+    ).toBe(false);
+    expect(state.workspaceDocumentsById['page-about']).toBeUndefined();
+    expect(state.treeById['doc-page-about']).toBeUndefined();
   });
 });

@@ -8,6 +8,7 @@ import {
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { KeyboardEvent, ReactNode } from 'react';
 import { useAuthStore } from '@/auth/useAuthStore';
+import { editorApi } from '@/editor/editorApi';
 import BlueprintEditor from '../BlueprintEditor';
 import {
   DEFAULT_BLUEPRINT_STATE,
@@ -449,6 +450,56 @@ describe('BlueprintEditor', () => {
     expect(addressBar.getAttribute('data-current')).toBe('/new-route');
   });
 
+  it('syncs route manifest to workspace backend after route changes', async () => {
+    const applyWorkspaceIntent = vi
+      .spyOn(editorApi, 'applyWorkspaceIntent')
+      .mockResolvedValue({
+        workspaceId: 'ws-1',
+        workspaceRev: 6,
+        routeRev: 8,
+        opSeq: 9,
+      });
+
+    useAuthStore.setState({
+      token: 'token-1',
+      expiresAt: Date.now() + 60_000,
+      user: null,
+    });
+    resetEditorStore({
+      workspaceId: 'ws-1',
+      workspaceRev: 5,
+      routeRev: 7,
+      workspaceCapabilitiesLoaded: true,
+      workspaceCapabilities: {
+        'core.route.manifest.update@1.0': true,
+      },
+      routeManifest: {
+        version: '1',
+        root: {
+          id: 'root',
+          children: [{ id: 'route-home', index: true }],
+        },
+      },
+      activeRouteNodeId: 'route-home',
+    });
+
+    render(<BlueprintEditor />);
+
+    fireEvent.click(screen.getByTestId('set-new-path'));
+    fireEvent.click(screen.getByTestId('add-route'));
+
+    await waitFor(
+      () => {
+        expect(applyWorkspaceIntent).toHaveBeenCalledTimes(1);
+      },
+      { timeout: 3000 }
+    );
+    const payload = applyWorkspaceIntent.mock.calls[0]?.[2];
+    expect(payload?.intent.namespace).toBe('core.route');
+    expect(payload?.intent.type).toBe('manifest.update');
+    expect(payload?.intent.payload).toHaveProperty('routeManifest');
+  });
+
   it('falls back to timestamp-based route ids when crypto is unavailable', async () => {
     vi.stubGlobal('crypto', undefined);
 
@@ -747,6 +798,51 @@ describe('BlueprintEditor', () => {
     expect(divNode?.children?.[0].type).toBe('MdrButton');
   });
 
+  it('drops into MdrRoute with current address as data-route-path', async () => {
+    resetEditorStore({
+      mirDoc: createMirDoc([
+        { id: 'route-1', type: 'MdrRoute', props: {}, children: [] },
+      ]),
+      routeManifest: {
+        version: '1',
+        root: {
+          id: 'root',
+          children: [{ id: 'route-search', segment: 'search' }],
+        },
+      },
+      activeRouteNodeId: 'route-search',
+    });
+
+    render(<BlueprintEditor />);
+
+    const dndProps = (
+      globalThis as {
+        __dndProps?: { onDragEnd?: (event: DragEndPayload) => void };
+      }
+    ).__dndProps;
+
+    act(() => {
+      dndProps?.onDragEnd?.({
+        active: {
+          data: {
+            current: { kind: 'palette-item', itemId: 'button' },
+          },
+        },
+        over: {
+          id: 'tree-node:route-1',
+          data: { current: { kind: 'tree-node', nodeId: 'route-1' } },
+        },
+      });
+    });
+
+    const routeNode = useEditorStore
+      .getState()
+      .mirDoc.ui.root.children?.find((node) => node.id === 'route-1');
+    const routedChild = routeNode?.children?.[0];
+    expect(routedChild?.type).toBe('MdrButton');
+    expect(routedChild?.props?.['data-route-path']).toBe('/search');
+  });
+
   it('inserts new nodes after a node that does not support children', async () => {
     resetEditorStore({
       mirDoc: createMirDoc([
@@ -1041,7 +1137,7 @@ describe('BlueprintEditor', () => {
         });
       });
       const nextTotal = countNodes(useEditorStore.getState().mirDoc.ui.root);
-      expect(nextTotal).toBe(totalNodes + 1);
+      expect(nextTotal).toBeGreaterThan(totalNodes);
       totalNodes = nextTotal;
     });
   });

@@ -1,3 +1,4 @@
+import type { ComponentNode } from '@/core/types/engine.types';
 import type { CanonicalNode } from '../core/canonicalIR';
 import { buildCanonicalIR } from '../core/canonicalIR';
 import type { AdapterImportSpec } from '../core/adapter';
@@ -114,12 +115,258 @@ const dedupeImports = (items: AdapterImportSpec[]) => {
   return Array.from(map.values());
 };
 
+const toImportKey = (item: AdapterImportSpec) =>
+  `${item.kind}:${item.source}:${item.imported}:${item.local ?? ''}`;
+
+const toPascalCase = (value: string) =>
+  value
+    .split(/[^a-zA-Z0-9]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('');
+
+type ResolvedAdapterImport = AdapterImportSpec & {
+  resolution: ReturnType<typeof resolvePackageImport>;
+};
+
+const resolveImportAliasPrefix = (item: ResolvedAdapterImport) => {
+  const { source, resolution } = item;
+  const packageName = resolution.packageName;
+  if (packageName === 'antd') return 'Antd';
+  if (packageName?.startsWith('@mui/')) return 'Mui';
+  if (packageName?.startsWith('@radix-ui/')) return 'Radix';
+  if (packageName?.startsWith('@mdr/')) return 'Mdr';
+  if (source === 'antd') return 'Antd';
+  if (source.startsWith('@mui/')) return 'Mui';
+  if (source.startsWith('@radix-ui/')) return 'Radix';
+  if (source.startsWith('@mdr/')) return 'Mdr';
+  const fallback = packageName ?? source;
+  return toPascalCase(fallback.replace(/^@/, '').replace(/\//g, '-')) || 'Lib';
+};
+
+const assignImportLocals = (items: ResolvedAdapterImport[]) => {
+  const localCount = new Map<string, number>();
+  items.forEach((item) => {
+    const base = item.local ?? item.imported;
+    localCount.set(base, (localCount.get(base) ?? 0) + 1);
+  });
+
+  const assigned = new Map<string, string>();
+  const usedLocals = new Set<string>();
+
+  items.forEach((item) => {
+    const key = toImportKey(item);
+    const baseLocal = item.local ?? item.imported;
+    const needsAlias = (localCount.get(baseLocal) ?? 0) > 1;
+    let candidate = baseLocal;
+
+    if (needsAlias) {
+      const prefix = resolveImportAliasPrefix(item);
+      const safeBase = baseLocal.charAt(0).toUpperCase() + baseLocal.slice(1);
+      candidate = `${prefix}${safeBase}`;
+    }
+
+    candidate = toIdentifier(candidate);
+    let uniqueName = candidate;
+    let suffix = 2;
+    while (usedLocals.has(uniqueName)) {
+      uniqueName = `${candidate}${suffix}`;
+      suffix += 1;
+    }
+
+    usedLocals.add(uniqueName);
+    assigned.set(key, uniqueName);
+  });
+
+  return assigned;
+};
+
+const rewriteElementWithAlias = (
+  element: string,
+  imports: AdapterImportSpec[] | undefined,
+  importLocalByKey: Map<string, string>
+) => {
+  if (!imports?.length || !element) return element;
+  const [root, ...rest] = element.split('.');
+  const matchedImport = imports.find(
+    (item) => (item.local ?? item.imported) === root
+  );
+  if (!matchedImport) return element;
+  const nextRoot = importLocalByKey.get(toImportKey(matchedImport)) ?? root;
+  if (nextRoot === root) return element;
+  return [nextRoot, ...rest].join('.');
+};
+
+type UnsafeRecord = Record<string, unknown>;
+
+const INTERNAL_NODE_PROP_KEYS = new Set([
+  'mountedCss',
+  'styleMount',
+  'styleMountCss',
+  'textMode',
+]);
+
+const INTERNAL_DATA_ATTRIBUTE_PREFIXES = ['data-mir-', 'data-layout-'];
+
+const asRecord = (value: unknown): UnsafeRecord | null =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+    ? (value as UnsafeRecord)
+    : null;
+
+const sanitizePathSegment = (segment: string) =>
+  segment.replace(/[^a-zA-Z0-9._-]/g, '-');
+
+const toMountedCssFilePath = (rawPath: string, fallbackName: string) => {
+  const normalized = rawPath.replaceAll('\\', '/').trim();
+  const rawSegments = normalized
+    .split('/')
+    .map((segment) => segment.trim())
+    .filter(Boolean)
+    .filter((segment) => segment !== '.' && segment !== '..')
+    .map(sanitizePathSegment);
+
+  const styleIndex = rawSegments.findIndex((segment) => segment === 'styles');
+  const segments =
+    styleIndex >= 0
+      ? rawSegments.slice(styleIndex)
+      : ['styles', 'mounted', rawSegments.at(-1) ?? `${fallbackName}.css`];
+
+  if (!segments.length) {
+    segments.push('styles', 'mounted', `${fallbackName}.css`);
+  }
+
+  const fileName = segments.at(-1) ?? `${fallbackName}.css`;
+  if (!fileName.toLowerCase().endsWith('.css')) {
+    segments[segments.length - 1] = `${fileName}.css`;
+  }
+
+  return segments.join('/');
+};
+
+const readMountedCssContent = (value: unknown): string | null => {
+  const record = asRecord(value);
+  if (!record) return null;
+  if (typeof record.content !== 'string') return null;
+  const content = record.content.trim();
+  if (!content) return null;
+  return `${content}\n`;
+};
+
+const collectMountedCssFiles = (
+  root: ComponentNode
+): Array<{ path: string; content: string }> => {
+  const filesByPath = new Map<string, string>();
+
+  const collectFromNode = (node: ComponentNode) => {
+    const anyNode = node as ComponentNode & { metadata?: unknown };
+    const props = asRecord(anyNode.props);
+    const metadata = asRecord(anyNode.metadata);
+    const candidates = [
+      props?.mountedCss,
+      props?.styleMount,
+      props?.styleMountCss,
+      metadata?.mountedCss,
+      metadata?.styleMount,
+    ];
+
+    candidates.forEach((candidate, candidateIndex) => {
+      const appendCssFile = (rawEntry: unknown, fallbackPath: string): void => {
+        const content = readMountedCssContent(rawEntry);
+        if (!content) return;
+        const record = asRecord(rawEntry);
+        const pathValue =
+          typeof record?.path === 'string' && record.path.trim()
+            ? record.path
+            : fallbackPath;
+        const normalizedPath = toMountedCssFilePath(pathValue, node.id);
+        const previous = filesByPath.get(normalizedPath);
+        if (!previous) {
+          filesByPath.set(normalizedPath, content);
+          return;
+        }
+        if (!previous.includes(content)) {
+          filesByPath.set(normalizedPath, `${previous}\n${content}`);
+        }
+      };
+
+      if (Array.isArray(candidate)) {
+        candidate.forEach((entry, entryIndex) => {
+          appendCssFile(
+            entry,
+            `styles/mounted/${node.id}-${candidateIndex + 1}-${entryIndex + 1}.css`
+          );
+        });
+        return;
+      }
+
+      appendCssFile(
+        candidate,
+        `styles/mounted/${node.id}-${candidateIndex + 1}.css`
+      );
+    });
+
+    node.children?.forEach(collectFromNode);
+  };
+
+  collectFromNode(root);
+
+  return Array.from(filesByPath.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([path, content]) => ({
+      path,
+      content,
+    }));
+};
+
+const sanitizeDataAttributesProp = (value: unknown): Record<string, string> => {
+  const record = asRecord(value);
+  if (!record) return {};
+  return Object.entries(record).reduce<Record<string, string>>(
+    (acc, [key, item]) => {
+      if (
+        INTERNAL_DATA_ATTRIBUTE_PREFIXES.some((prefix) =>
+          key.startsWith(prefix)
+        )
+      ) {
+        return acc;
+      }
+      if (typeof item === 'string' || typeof item === 'number') {
+        acc[key] = String(item);
+      }
+      return acc;
+    },
+    {}
+  );
+};
+
+const sanitizeNodePropsForExport = (props: Record<string, unknown>) => {
+  const sanitized: Record<string, unknown> = {};
+  Object.entries(props).forEach(([key, value]) => {
+    if (INTERNAL_NODE_PROP_KEYS.has(key)) return;
+    if (
+      INTERNAL_DATA_ATTRIBUTE_PREFIXES.some((prefix) => key.startsWith(prefix))
+    ) {
+      return;
+    }
+    if (key === 'dataAttributes') {
+      const dataAttributes = sanitizeDataAttributesProp(value);
+      if (Object.keys(dataAttributes).length > 0) {
+        sanitized[key] = dataAttributes;
+      }
+      return;
+    }
+    sanitized[key] = value;
+  });
+  return sanitized;
+};
+
 export const compileMirToReactComponent = (
   mirDoc: MirDocLike,
   options?: ReactCompileOptions
 ): ReactComponentCompileResult => {
   const bag = createDiagnosticBag();
   const canonical = buildCanonicalIR(mirDoc, bag);
+  const mountedCssFiles = collectMountedCssFiles(mirDoc.ui.root);
 
   const componentName =
     options?.componentName ||
@@ -140,8 +387,7 @@ export const compileMirToReactComponent = (
   const adapter = options?.adapter ?? reactAdapter;
 
   const adapterImports: AdapterImportSpec[] = [];
-
-  const compileNode = (node: CanonicalNode, indent = '    '): string => {
+  const collectAdapterArtifacts = (node: CanonicalNode) => {
     const adapterResult = adapter.resolveNode(node);
     if (adapterResult.imports?.length) {
       adapterImports.push(...adapterResult.imports);
@@ -149,8 +395,25 @@ export const compileMirToReactComponent = (
     if (adapterResult.diagnostics?.length) {
       bag.diagnostics.push(...adapterResult.diagnostics);
     }
+    node.children.forEach(collectAdapterArtifacts);
+  };
+  collectAdapterArtifacts(canonical.root);
 
-    const tag = adapterResult.element;
+  const resolvedImports: ResolvedAdapterImport[] = dedupeImports(
+    adapterImports
+  ).map((item) => ({
+    ...item,
+    resolution: resolvePackageImport(item.source, options?.packageResolver),
+  }));
+  const importLocalByKey = assignImportLocals(resolvedImports);
+
+  const compileNode = (node: CanonicalNode, indent = '    '): string => {
+    const adapterResult = adapter.resolveNode(node);
+    const tag = rewriteElementWithAlias(
+      adapterResult.element,
+      adapterResult.imports,
+      importLocalByKey
+    );
     const propsArray: string[] = [];
 
     if (Object.keys(node.style).length > 0) {
@@ -158,12 +421,14 @@ export const compileMirToReactComponent = (
       if (styleExpr) propsArray.push(`style={${styleExpr}}`);
     }
 
-    Object.entries(node.props).forEach(([key, value]) => {
-      const expr = compilePropExpression(value);
-      if (expr !== null) {
-        propsArray.push(`${key}=${expr}`);
+    Object.entries(sanitizeNodePropsForExport(node.props)).forEach(
+      ([key, value]) => {
+        const expr = compilePropExpression(value);
+        if (expr !== null) {
+          propsArray.push(`${key}=${expr}`);
+        }
       }
-    });
+    );
 
     Object.entries(node.events).forEach(([eventKey, eventDef]) => {
       const trigger = eventDef.trigger || eventKey;
@@ -232,17 +497,24 @@ export const compileMirToReactComponent = (
     ? "import React, { useState } from 'react';"
     : "import React from 'react';";
   const rootJsx = compileNode(canonical.root);
-  const resolvedImports = dedupeImports(adapterImports).map((item) => ({
-    ...item,
-    resolution: resolvePackageImport(item.source, options?.packageResolver),
-  }));
   const adapterImportBlock = resolvedImports
-    .map((item) =>
-      renderImport({
+    .map((item) => {
+      const importKey = toImportKey(item);
+      const assignedLocal = importLocalByKey.get(importKey);
+      const baseLocal = item.local ?? item.imported;
+      const local =
+        assignedLocal && assignedLocal !== baseLocal
+          ? assignedLocal
+          : item.local;
+      return renderImport({
         ...item,
+        local,
         source: item.resolution.importSource,
-      })
-    )
+      });
+    })
+    .join('\n');
+  const mountedCssImportBlock = mountedCssFiles
+    .map((file) => `import './${file.path}';`)
     .join('\n');
   const functionSignature = `export default function ${componentName}(${
     hasProps ? `{ ${destructuredProps} }: ${interfaceName}` : ''
@@ -251,6 +523,7 @@ export const compileMirToReactComponent = (
   const code = [
     reactImport,
     adapterImportBlock,
+    mountedCssImportBlock,
     interfaceBlock.trim(),
     `${functionSignature}
 ${stateBlock ? `${stateBlock}\n` : ''}  return (
@@ -278,5 +551,6 @@ ${rootJsx}
     diagnostics: bag.diagnostics,
     canonicalIR: canonical,
     dependencies,
+    mountedCssFiles,
   };
 };

@@ -729,6 +729,7 @@ export const antdExternalLibraryProfile: ExternalLibraryProfile = {
   descriptor: createAntdLibraryDescriptor,
   includePaths: ANTD_GROUPS.flatMap((group) => group.components),
   excludeExports: NON_COMPONENT_EXPORTS,
+  scanMode: 'include-only',
   manifest: antdLibraryManifest,
   toCanonicalComponents: (module, paths) =>
     collectCanonicalComponents(module as AntdModule, paths),

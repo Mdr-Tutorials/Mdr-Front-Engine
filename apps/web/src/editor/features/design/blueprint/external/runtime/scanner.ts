@@ -3,6 +3,7 @@ import { getValueByPath, isRenderableComponent } from './utils';
 type ScanExternalModuleOptions = {
   includePaths?: string[];
   excludeExports?: Set<string>;
+  discoverExports?: boolean;
 };
 
 const isLikelyTopLevelComponent = (
@@ -23,7 +24,14 @@ export const scanExternalModulePaths = (
     .map((item) => item.trim())
     .filter(Boolean);
   const excludeExports = options.excludeExports ?? new Set<string>();
+  const discoverExports = options.discoverExports ?? true;
   const discovered = new Set<string>(includePaths);
+
+  if (!discoverExports) {
+    return [...discovered].filter((path) =>
+      isRenderableComponent(getValueByPath(module, path))
+    );
+  }
 
   Object.entries(module).forEach(([name, value]) => {
     if (!isLikelyTopLevelComponent(name, value, excludeExports)) return;

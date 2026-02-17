@@ -1,0 +1,199 @@
+{
+  "inspector": {
+    "classProtocol": {
+      "mountedCss": {
+        "title": "挂载 CSS",
+        "untitled": "untitled.css",
+        "close": "关闭挂载 CSS 编辑器",
+        "focusClass": "定位类名",
+        "cancel": "取消",
+        "save": "保存 CSS",
+        "invalidSyntax": "CSS 语法无效"
+      }
+    },
+    "fields": {
+      "className": {
+        "placeholder": "例如：p-4 flex items-center"
+      },
+      "link": {
+        "relPlaceholder": "noopener noreferrer"
+      },
+      "colorInput": {
+        "placeholder": "#RRGGBB / var(--color-x)",
+        "pickerAria": "颜色选择器"
+      },
+      "presetInput": {
+        "toggle": "切换预设"
+      }
+    },
+    "panels": {
+      "layout": {
+        "fields": {
+          "display": "显示",
+          "gridRows": "行",
+          "gridAutoFlow": "自动流向",
+          "justifyItems": "项目主轴对齐",
+          "alignContent": "内容交叉轴对齐",
+          "gap": "间隙",
+          "margin": "外边距",
+          "padding": "内边距",
+          "collapse": "收起",
+          "expand": "展开",
+          "sides": {
+            "top": "上",
+            "right": "右",
+            "bottom": "下",
+            "left": "左"
+          },
+          "width": "宽度",
+          "height": "高度",
+          "backgroundColor": "背景",
+          "border": "边框",
+          "borderRadius": "圆角",
+          "flexDirection": "方向",
+          "justifyContent": "主轴对齐",
+          "alignItems": "交叉轴对齐",
+          "gridColumns": "列",
+          "gridColumnsHint": "用于设置 gridTemplateColumns。"
+        },
+        "placeholders": {
+          "auto": "auto",
+          "backgroundColor": "var(--color-2)",
+          "gridRows": "repeat(2, minmax(0, 1fr))"
+        },
+        "options": {
+          "display": {
+            "block": "块级",
+            "flex": "弹性",
+            "grid": "网格",
+            "inline": "行内",
+            "inlineBlock": "行内块"
+          },
+          "gridAutoFlow": {
+            "row": "按行",
+            "column": "按列",
+            "rowDense": "按行紧凑",
+            "columnDense": "按列紧凑"
+          },
+          "direction": {
+            "row": "横向",
+            "rowReverse": "横向反转",
+            "column": "纵向",
+            "columnReverse": "纵向反转"
+          },
+          "justify": {
+            "start": "起始",
+            "center": "居中",
+            "end": "结束",
+            "spaceBetween": "两端对齐",
+            "spaceAround": "环绕分布",
+            "spaceEvenly": "均匀分布"
+          },
+          "align": {
+            "start": "起始",
+            "center": "居中",
+            "end": "结束",
+            "stretch": "拉伸",
+            "baseline": "基线"
+          }
+        },
+        "title": "布局",
+        "description": "Flex / Grid 布局细节",
+        "patternControlled": "布局结构由范式参数控制。",
+        "groups": {
+          "spacing": "间距",
+          "size": "尺寸",
+          "appearance": "外观",
+          "flex": "Flex",
+          "grid": "Grid"
+        }
+      },
+      "layoutPattern": {
+        "title": "范式",
+        "description": "布局范式参数",
+        "splitThirdColumnHint": "2 列模式下会隐藏第 3 列（不会删除）。",
+        "patterns": {
+          "split": {
+            "name": "分栏布局",
+            "description": "带比例预设的双列分栏布局。"
+          },
+          "holy-grail": {
+            "name": "圣杯布局",
+            "description": "头部 + 侧栏 + 主体 + 底部布局。"
+          },
+          "dashboard-shell": {
+            "name": "仪表盘骨架",
+            "description": "顶部栏 + 卡片网格 + 详情区。"
+          }
+        },
+        "fields": {
+          "split": {
+            "category": {
+              "label": "类别",
+              "options": {
+                "2-columns": "2 列",
+                "3-columns": "3 列"
+              }
+            },
+            "gap": {
+              "label": "间隙"
+            },
+            "ratio": {
+              "label": "分栏比例",
+              "options": {
+                "1-1": "1 : 1",
+                "3-7": "3 : 7",
+                "7-3": "7 : 3",
+                "1-1-1": "1 : 1 : 1",
+                "2-5-3": "2 : 5 : 3",
+                "3-5-2": "3 : 5 : 2"
+              }
+            }
+          },
+          "holy-grail": {
+            "gap": {
+              "label": "间隙"
+            },
+            "sidebarWidth": {
+              "label": "侧栏宽度"
+            }
+          },
+          "dashboard-shell": {
+            "gap": {
+              "label": "间隙"
+            },
+            "columns": {
+              "label": "主区列数",
+              "options": {
+                "2": "2 列",
+                "3": "3 列",
+                "4": "4 列"
+              }
+            }
+          }
+        }
+      },
+      "layout-pattern": {
+        "title": "范式"
+      }
+    }
+  },
+  "componentLibrary": {
+    "groups": {
+      "layout-pattern": {
+        "title": "布局范式"
+      }
+    },
+    "items": {
+      "layout-pattern-split": {
+        "name": "分栏布局"
+      },
+      "layout-pattern-holy-grail": {
+        "name": "圣杯布局"
+      },
+      "layout-pattern-dashboard-shell": {
+        "name": "仪表盘骨架"
+      }
+    }
+  }
+}

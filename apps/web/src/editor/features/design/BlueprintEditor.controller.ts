@@ -8,7 +8,7 @@ import {
 import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
-import { DEFAULT_ROUTES, VIEWPORT_ZOOM_RANGE } from './BlueprintEditor.data';
+import { VIEWPORT_ZOOM_RANGE } from './BlueprintEditor.data';
 import { useBlueprintAutosave } from './BlueprintEditor.autosave';
 import { useBlueprintDragDrop } from './BlueprintEditor.dragdrop';
 import { createNodeIdFactory } from './BlueprintEditor.palette';
@@ -21,7 +21,6 @@ import {
   moveChildById,
   removeNodeById,
 } from './BlueprintEditor.tree';
-import type { RouteItem } from './BlueprintEditor.types';
 import {
   getNavigateLinkKind,
   resolveNavigateTarget,
@@ -33,14 +32,26 @@ import {
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
 import { useAuthStore } from '@/auth/useAuthStore';
 import { editorApi } from '@/editor/editorApi';
+import {
+  flattenRouteItems,
+  normalizeRoutePath,
+} from '@/editor/store/routeManifest';
 
 const CAPABILITY_MIR_DOCUMENT_UPDATE = 'core.mir.document.update@1.0';
+const CAPABILITY_ROUTE_MANIFEST_UPDATE = 'core.route.manifest.update@1.0';
 
 const createRouteId = () => {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
     return crypto.randomUUID();
   }
   return `route-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+};
+
+const createIntentId = () => {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+    return crypto.randomUUID();
+  }
+  return `intent-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 };
 
 type InteractionRequest = {
@@ -59,8 +70,6 @@ type InteractionRequest = {
  * - DnD 结果 -> MIR 树变换 -> 选中态与面板状态同步
  */
 export const useBlueprintEditorController = () => {
-  const [routes, setRoutes] = useState<RouteItem[]>(DEFAULT_ROUTES);
-  const [currentPath, setCurrentPath] = useState(DEFAULT_ROUTES[0].path);
   const [newPath, setNewPath] = useState('');
   const panelLayout = useSettingsStore((state) => state.global.panelLayout);
   const [isLibraryCollapsed, setLibraryCollapsed] = useState(
@@ -93,6 +102,8 @@ export const useBlueprintEditorController = () => {
   const mirDoc = useEditorStore((state) => state.mirDoc);
   const updateMirDoc = useEditorStore((state) => state.updateMirDoc);
   const workspaceId = useEditorStore((state) => state.workspaceId);
+  const workspaceRev = useEditorStore((state) => state.workspaceRev);
+  const routeRev = useEditorStore((state) => state.routeRev);
   const activeDocumentId = useEditorStore((state) => state.activeDocumentId);
   const activeDocumentContentRev = useEditorStore((state) =>
     state.activeDocumentId
@@ -102,9 +113,19 @@ export const useBlueprintEditorController = () => {
   const workspaceCapabilitiesLoaded = useEditorStore(
     (state) => state.workspaceCapabilitiesLoaded
   );
+  const routeManifest = useEditorStore((state) => state.routeManifest);
+  const activeRouteNodeId = useEditorStore((state) => state.activeRouteNodeId);
+  const applyRouteIntent = useEditorStore((state) => state.applyRouteIntent);
+  const setActiveRouteNodeId = useEditorStore(
+    (state) => state.setActiveRouteNodeId
+  );
   const canUpdateWorkspaceDocument = useEditorStore(
     (state) =>
       state.workspaceCapabilities[CAPABILITY_MIR_DOCUMENT_UPDATE] === true
+  );
+  const canUpdateRouteManifest = useEditorStore(
+    (state) =>
+      state.workspaceCapabilities[CAPABILITY_ROUTE_MANIFEST_UPDATE] === true
   );
   const applyWorkspaceMutation = useEditorStore(
     (state) => state.applyWorkspaceMutation
@@ -128,6 +149,18 @@ export const useBlueprintEditorController = () => {
   const resolvedBlueprintState = blueprintState ?? DEFAULT_BLUEPRINT_STATE;
   const { viewportWidth, viewportHeight, zoom, pan, selectedId } =
     resolvedBlueprintState;
+  const routes = useMemo(
+    () => flattenRouteItems(routeManifest.root, '/'),
+    [routeManifest]
+  );
+  const activeRoute = useMemo(
+    () =>
+      activeRouteNodeId
+        ? (routes.find((route) => route.id === activeRouteNodeId) ?? null)
+        : null,
+    [activeRouteNodeId, routes]
+  );
+  const currentPath = activeRoute?.path ?? routes[0]?.path ?? '/';
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 6 },
@@ -151,21 +184,99 @@ export const useBlueprintEditorController = () => {
     workspaceCapabilitiesLoaded,
     applyWorkspaceMutation,
   });
+  const routeSyncRequestSeqRef = useRef(0);
+  const syncedRouteManifestRef = useRef<string>(JSON.stringify(routeManifest));
+
+  useEffect(() => {
+    if (!workspaceId) return;
+    if (typeof routeRev !== 'number' || routeRev <= 0) return;
+    syncedRouteManifestRef.current = JSON.stringify(routeManifest);
+  }, [workspaceId, routeRev]);
+
+  useEffect(() => {
+    if (!token) return;
+    if (!workspaceId) return;
+    if (!workspaceCapabilitiesLoaded) return;
+    if (!canUpdateRouteManifest) return;
+    if (typeof workspaceRev !== 'number' || workspaceRev <= 0) return;
+    if (typeof routeRev !== 'number' || routeRev <= 0) return;
+
+    const serializedRouteManifest = JSON.stringify(routeManifest);
+    if (serializedRouteManifest === syncedRouteManifestRef.current) return;
+
+    let disposed = false;
+    const requestSeq = routeSyncRequestSeqRef.current + 1;
+    routeSyncRequestSeqRef.current = requestSeq;
+    const timeoutId = window.setTimeout(() => {
+      void editorApi
+        .applyWorkspaceIntent(token, workspaceId, {
+          expectedWorkspaceRev: workspaceRev,
+          expectedRouteRev: routeRev,
+          intent: {
+            id: createIntentId(),
+            namespace: 'core.route',
+            type: 'manifest.update',
+            version: '1.0',
+            payload: { routeManifest },
+            issuedAt: new Date().toISOString(),
+          },
+        })
+        .then((mutation) => {
+          if (disposed || routeSyncRequestSeqRef.current !== requestSeq) {
+            return;
+          }
+          applyWorkspaceMutation(mutation);
+          syncedRouteManifestRef.current = serializedRouteManifest;
+        })
+        .catch((error) => {
+          if (disposed || routeSyncRequestSeqRef.current !== requestSeq) {
+            return;
+          }
+          console.warn('[blueprint] route manifest sync failed', error);
+        });
+    }, 500);
+
+    return () => {
+      disposed = true;
+      window.clearTimeout(timeoutId);
+    };
+  }, [
+    applyWorkspaceMutation,
+    canUpdateRouteManifest,
+    routeManifest,
+    routeRev,
+    token,
+    workspaceCapabilitiesLoaded,
+    workspaceId,
+    workspaceRev,
+  ]);
 
   const handleAddRoute = () => {
     const value = newPath.trim();
     if (!value) return;
-    const next = { id: createRouteId(), path: value };
-    setRoutes((prev) => [...prev, next]);
-    setCurrentPath(value);
+    const nextPath = normalizeRoutePath(value);
+    const existingRoute = routes.find((route) => route.path === nextPath);
+    if (existingRoute) {
+      setActiveRouteNodeId(existingRoute.id);
+      setNewPath('');
+      return;
+    }
+    const nextRouteId = createRouteId();
+    applyRouteIntent({
+      type: 'create-page',
+      path: nextPath,
+      routeNodeId: nextRouteId,
+    });
+    if (nextRouteId) {
+      setActiveRouteNodeId(nextRouteId);
+    }
     setNewPath('');
   };
 
-  const ensureRouteExists = (path: string) => {
-    setRoutes((prev) => {
-      if (prev.some((route) => route.path === path)) return prev;
-      return [...prev, { id: createRouteId(), path }];
-    });
+  const findRouteIdByPath = (path: string): string | null => {
+    const normalizedPath = normalizeRoutePath(path);
+    const existing = routes.find((route) => route.path === normalizedPath);
+    return existing?.id ?? null;
   };
 
   /**
@@ -231,8 +342,8 @@ export const useBlueprintEditorController = () => {
     }
 
     if (linkKind === 'internal') {
-      setCurrentPath(to);
-      ensureRouteExists(to);
+      const routeId = findRouteIdByPath(to);
+      if (routeId) setActiveRouteNodeId(routeId);
     }
   };
 
@@ -372,6 +483,7 @@ export const useBlueprintEditorController = () => {
     handleDragEnd,
   } = useBlueprintDragDrop({
     mirDoc,
+    currentPath,
     selectedId,
     updateMirDoc,
     onNodeSelect: handleNodeSelect,
@@ -493,7 +605,10 @@ export const useBlueprintEditorController = () => {
       currentPath,
       newPath,
       routes,
-      onCurrentPathChange: setCurrentPath,
+      onCurrentPathChange: (value: string) => {
+        const routeId = findRouteIdByPath(value);
+        if (routeId) setActiveRouteNodeId(routeId);
+      },
       onNewPathChange: setNewPath,
       onAddRoute: handleAddRoute,
     },

@@ -326,8 +326,8 @@ function SpacingSidePreview({
 }) {
   const border =
     spacingKey === 'margin'
-      ? { x: 13, y: 13, size: 14, opacity: 0.64 }
-      : { x: 8, y: 8, size: 24, opacity: 0.7 };
+      ? { x: 13, y: 13, size: 14, opacity: 0.34 }
+      : { x: 8, y: 8, size: 24, opacity: 0.42 };
   const content = { x: 16, y: 16, size: 8 };
   const arrow =
     spacingKey === 'margin'
@@ -387,8 +387,8 @@ function SpacingSidePreview({
         width={content.size}
         height={content.size}
         rx="1.5"
-        fill="currentColor"
-        opacity="0.95"
+        fill="var(--color-9)"
+        opacity="1"
       />
       <line
         x1={arrow.x1}
@@ -611,11 +611,39 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
                 size="Small"
                 value={display ?? 'Block'}
                 options={[
-                  { label: 'Block', value: 'Block' },
-                  { label: 'Flex', value: 'Flex' },
-                  { label: 'Grid', value: 'Grid' },
-                  { label: 'Inline', value: 'Inline' },
-                  { label: 'InlineBlock', value: 'InlineBlock' },
+                  {
+                    label: t('inspector.panels.layout.options.display.block', {
+                      defaultValue: 'Block',
+                    }),
+                    value: 'Block',
+                  },
+                  {
+                    label: t('inspector.panels.layout.options.display.flex', {
+                      defaultValue: 'Flex',
+                    }),
+                    value: 'Flex',
+                  },
+                  {
+                    label: t('inspector.panels.layout.options.display.grid', {
+                      defaultValue: 'Grid',
+                    }),
+                    value: 'Grid',
+                  },
+                  {
+                    label: t('inspector.panels.layout.options.display.inline', {
+                      defaultValue: 'Inline',
+                    }),
+                    value: 'Inline',
+                  },
+                  {
+                    label: t(
+                      'inspector.panels.layout.options.display.inlineBlock',
+                      {
+                        defaultValue: 'InlineBlock',
+                      }
+                    ),
+                    value: 'InlineBlock',
+                  },
                 ]}
                 onChange={(value) =>
                   updateNode((current) =>
@@ -701,7 +729,9 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
             <UnitInput
               value={widthValue || undefined}
               quantity="length-percentage"
-              placeholder="auto"
+              placeholder={t('inspector.panels.layout.placeholders.auto', {
+                defaultValue: 'auto',
+              })}
               onChange={(value) =>
                 updateNode((current) =>
                   updateLayoutValue(current, 'width', readCssValue(value) ?? '')
@@ -718,7 +748,9 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
             <UnitInput
               value={heightValue || undefined}
               quantity="length-percentage"
-              placeholder="auto"
+              placeholder={t('inspector.panels.layout.placeholders.auto', {
+                defaultValue: 'auto',
+              })}
               onChange={(value) =>
                 updateNode((current) =>
                   updateLayoutValue(
@@ -746,7 +778,12 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
               <input
                 className="h-7 w-full min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
                 value={backgroundColorValue}
-                placeholder="var(--color-2)"
+                placeholder={t(
+                  'inspector.panels.layout.placeholders.backgroundColor',
+                  {
+                    defaultValue: 'var(--color-2)',
+                  }
+                )}
                 onChange={(event) =>
                   updateNode((current) =>
                     updateLayoutValue(
@@ -1211,7 +1248,12 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
                   <input
                     className="h-7 w-full min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
                     value={gridTemplateRows}
-                    placeholder="repeat(2, minmax(0, 1fr))"
+                    placeholder={t(
+                      'inspector.panels.layout.placeholders.gridRows',
+                      {
+                        defaultValue: 'repeat(2, minmax(0, 1fr))',
+                      }
+                    )}
                     onChange={(event) =>
                       updateNode((current) =>
                         updateStyleValue(
@@ -1236,22 +1278,42 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
                     value={gridAutoFlow}
                     options={[
                       {
-                        label: 'Row',
+                        label: t(
+                          'inspector.panels.layout.options.gridAutoFlow.row',
+                          {
+                            defaultValue: 'Row',
+                          }
+                        ),
                         value: 'row',
                         icon: <span className="text-[10px]">R</span>,
                       },
                       {
-                        label: 'Column',
+                        label: t(
+                          'inspector.panels.layout.options.gridAutoFlow.column',
+                          {
+                            defaultValue: 'Column',
+                          }
+                        ),
                         value: 'column',
                         icon: <span className="text-[10px]">C</span>,
                       },
                       {
-                        label: 'Row Dense',
+                        label: t(
+                          'inspector.panels.layout.options.gridAutoFlow.rowDense',
+                          {
+                            defaultValue: 'Row Dense',
+                          }
+                        ),
                         value: 'row dense',
                         icon: <span className="text-[10px]">RD</span>,
                       },
                       {
-                        label: 'Col Dense',
+                        label: t(
+                          'inspector.panels.layout.options.gridAutoFlow.columnDense',
+                          {
+                            defaultValue: 'Col Dense',
+                          }
+                        ),
                         value: 'column dense',
                         icon: <span className="text-[10px]">CD</span>,
                       },
@@ -1277,22 +1339,39 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
                     value={gridJustifyItems}
                     options={[
                       {
-                        label: 'Start',
+                        label: t(
+                          'inspector.panels.layout.options.align.start',
+                          {
+                            defaultValue: 'Start',
+                          }
+                        ),
                         value: 'start',
                         icon: <span className="text-[10px]">S</span>,
                       },
                       {
-                        label: 'Center',
+                        label: t(
+                          'inspector.panels.layout.options.align.center',
+                          {
+                            defaultValue: 'Center',
+                          }
+                        ),
                         value: 'center',
                         icon: <span className="text-[10px]">C</span>,
                       },
                       {
-                        label: 'End',
+                        label: t('inspector.panels.layout.options.align.end', {
+                          defaultValue: 'End',
+                        }),
                         value: 'end',
                         icon: <span className="text-[10px]">E</span>,
                       },
                       {
-                        label: 'Stretch',
+                        label: t(
+                          'inspector.panels.layout.options.align.stretch',
+                          {
+                            defaultValue: 'Stretch',
+                          }
+                        ),
                         value: 'stretch',
                         icon: <span className="text-[10px]">ST</span>,
                       },
@@ -1318,27 +1397,49 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
                     value={gridAlignItems}
                     options={[
                       {
-                        label: 'Start',
+                        label: t(
+                          'inspector.panels.layout.options.align.start',
+                          {
+                            defaultValue: 'Start',
+                          }
+                        ),
                         value: 'start',
                         icon: <span className="text-[10px]">S</span>,
                       },
                       {
-                        label: 'Center',
+                        label: t(
+                          'inspector.panels.layout.options.align.center',
+                          {
+                            defaultValue: 'Center',
+                          }
+                        ),
                         value: 'center',
                         icon: <span className="text-[10px]">C</span>,
                       },
                       {
-                        label: 'End',
+                        label: t('inspector.panels.layout.options.align.end', {
+                          defaultValue: 'End',
+                        }),
                         value: 'end',
                         icon: <span className="text-[10px]">E</span>,
                       },
                       {
-                        label: 'Stretch',
+                        label: t(
+                          'inspector.panels.layout.options.align.stretch',
+                          {
+                            defaultValue: 'Stretch',
+                          }
+                        ),
                         value: 'stretch',
                         icon: <span className="text-[10px]">ST</span>,
                       },
                       {
-                        label: 'Baseline',
+                        label: t(
+                          'inspector.panels.layout.options.align.baseline',
+                          {
+                            defaultValue: 'Baseline',
+                          }
+                        ),
                         value: 'baseline',
                         icon: <span className="text-[10px]">B</span>,
                       },
@@ -1364,37 +1465,72 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
                     value={gridJustifyContent}
                     options={[
                       {
-                        label: 'Start',
+                        label: t(
+                          'inspector.panels.layout.options.justify.start',
+                          {
+                            defaultValue: 'Start',
+                          }
+                        ),
                         value: 'start',
                         icon: <span className="text-[10px]">S</span>,
                       },
                       {
-                        label: 'Center',
+                        label: t(
+                          'inspector.panels.layout.options.justify.center',
+                          {
+                            defaultValue: 'Center',
+                          }
+                        ),
                         value: 'center',
                         icon: <span className="text-[10px]">C</span>,
                       },
                       {
-                        label: 'End',
+                        label: t(
+                          'inspector.panels.layout.options.justify.end',
+                          {
+                            defaultValue: 'End',
+                          }
+                        ),
                         value: 'end',
                         icon: <span className="text-[10px]">E</span>,
                       },
                       {
-                        label: 'Between',
+                        label: t(
+                          'inspector.panels.layout.options.justify.spaceBetween',
+                          {
+                            defaultValue: 'Between',
+                          }
+                        ),
                         value: 'space-between',
                         icon: <span className="text-[10px]">SB</span>,
                       },
                       {
-                        label: 'Around',
+                        label: t(
+                          'inspector.panels.layout.options.justify.spaceAround',
+                          {
+                            defaultValue: 'Around',
+                          }
+                        ),
                         value: 'space-around',
                         icon: <span className="text-[10px]">SA</span>,
                       },
                       {
-                        label: 'Evenly',
+                        label: t(
+                          'inspector.panels.layout.options.justify.spaceEvenly',
+                          {
+                            defaultValue: 'Evenly',
+                          }
+                        ),
                         value: 'space-evenly',
                         icon: <span className="text-[10px]">SE</span>,
                       },
                       {
-                        label: 'Stretch',
+                        label: t(
+                          'inspector.panels.layout.options.align.stretch',
+                          {
+                            defaultValue: 'Stretch',
+                          }
+                        ),
                         value: 'stretch',
                         icon: <span className="text-[10px]">ST</span>,
                       },
@@ -1420,37 +1556,72 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
                     value={gridAlignContent}
                     options={[
                       {
-                        label: 'Start',
+                        label: t(
+                          'inspector.panels.layout.options.justify.start',
+                          {
+                            defaultValue: 'Start',
+                          }
+                        ),
                         value: 'start',
                         icon: <span className="text-[10px]">S</span>,
                       },
                       {
-                        label: 'Center',
+                        label: t(
+                          'inspector.panels.layout.options.justify.center',
+                          {
+                            defaultValue: 'Center',
+                          }
+                        ),
                         value: 'center',
                         icon: <span className="text-[10px]">C</span>,
                       },
                       {
-                        label: 'End',
+                        label: t(
+                          'inspector.panels.layout.options.justify.end',
+                          {
+                            defaultValue: 'End',
+                          }
+                        ),
                         value: 'end',
                         icon: <span className="text-[10px]">E</span>,
                       },
                       {
-                        label: 'Between',
+                        label: t(
+                          'inspector.panels.layout.options.justify.spaceBetween',
+                          {
+                            defaultValue: 'Between',
+                          }
+                        ),
                         value: 'space-between',
                         icon: <span className="text-[10px]">SB</span>,
                       },
                       {
-                        label: 'Around',
+                        label: t(
+                          'inspector.panels.layout.options.justify.spaceAround',
+                          {
+                            defaultValue: 'Around',
+                          }
+                        ),
                         value: 'space-around',
                         icon: <span className="text-[10px]">SA</span>,
                       },
                       {
-                        label: 'Evenly',
+                        label: t(
+                          'inspector.panels.layout.options.justify.spaceEvenly',
+                          {
+                            defaultValue: 'Evenly',
+                          }
+                        ),
                         value: 'space-evenly',
                         icon: <span className="text-[10px]">SE</span>,
                       },
                       {
-                        label: 'Stretch',
+                        label: t(
+                          'inspector.panels.layout.options.align.stretch',
+                          {
+                            defaultValue: 'Stretch',
+                          }
+                        ),
                         value: 'stretch',
                         icon: <span className="text-[10px]">ST</span>,
                       },

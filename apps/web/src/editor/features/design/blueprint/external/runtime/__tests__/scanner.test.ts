@@ -49,4 +49,24 @@ describe('scanExternalModulePaths', () => {
 
     expect(result).toContain('drawer');
   });
+
+  it('supports include-only scan mode to avoid auto-discovery', () => {
+    const module = {
+      Button: () => null,
+      Hidden: () => null,
+      Layout: Object.assign(() => null, {
+        Header: () => null,
+      }),
+    };
+
+    const result = scanExternalModulePaths(module, {
+      includePaths: ['Button', 'Layout.Header'],
+      discoverExports: false,
+    });
+
+    expect(result).toContain('Button');
+    expect(result).toContain('Layout.Header');
+    expect(result).not.toContain('Hidden');
+    expect(result).not.toContain('Layout');
+  });
 });

@@ -71,7 +71,9 @@ export function LinkBasicsFields({
               className="h-7 w-full min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
               value={rel}
               onChange={(event) => onChangeRel(event.target.value)}
-              placeholder="noopener noreferrer"
+              placeholder={t('inspector.fields.link.relPlaceholder', {
+                defaultValue: 'noopener noreferrer',
+              })}
             />
           }
         />

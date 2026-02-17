@@ -4,6 +4,8 @@ import type { LucideIcon } from 'lucide-react';
 export type RouteItem = {
   id: string;
   path: string;
+  depth?: number;
+  label?: string;
 };
 
 export type ComponentPreviewVariant = {

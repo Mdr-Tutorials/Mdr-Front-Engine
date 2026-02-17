@@ -6,6 +6,8 @@
   MdrNav,
   MdrNavbar,
   MdrPagination,
+  MdrOutlet,
+  MdrRoute,
   MdrSidebar,
   MdrTabs,
   MdrText,
@@ -108,6 +110,24 @@ export const NAV_GROUP: ComponentGroup = {
         )
       ),
       scale: 0.6,
+    },
+    {
+      id: 'route',
+      name: 'Route',
+      preview: (
+        <MdrRoute>
+          <div data-route-path="/">Home content</div>
+          <div data-route-path="/about">About content</div>
+          <div data-route-fallback>Fallback content</div>
+        </MdrRoute>
+      ),
+      scale: 0.55,
+    },
+    {
+      id: 'outlet',
+      name: 'Outlet',
+      preview: <MdrOutlet emptyText="Route content renders here" />,
+      scale: 0.55,
     },
     {
       id: 'tabs',

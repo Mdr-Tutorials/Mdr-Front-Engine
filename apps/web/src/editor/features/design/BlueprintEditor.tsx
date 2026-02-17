@@ -213,6 +213,7 @@ function BlueprintEditor() {
             onMoveNode={componentTree.onMoveNode}
           />
           <BlueprintEditorCanvas
+            currentPath={addressBar.currentPath}
             viewportWidth={canvas.viewportWidth}
             viewportHeight={canvas.viewportHeight}
             zoom={canvas.zoom}

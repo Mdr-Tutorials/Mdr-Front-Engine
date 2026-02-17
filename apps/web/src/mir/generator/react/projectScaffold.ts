@@ -103,6 +103,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       language: 'typescript',
       content: compiled.code,
     },
+    ...compiled.mountedCssFiles.map((file) => ({
+      path: `src/${file.path}`,
+      language: 'css' as const,
+      content: file.content,
+    })),
   ],
 });
 
@@ -119,5 +124,10 @@ export const createSingleFileBundle = (
       language: 'typescript',
       content: compiled.code,
     },
+    ...compiled.mountedCssFiles.map((file) => ({
+      path: file.path,
+      language: 'css' as const,
+      content: file.content,
+    })),
   ],
 });

@@ -12,29 +12,31 @@ import {
 } from 'lucide-react';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import { generateReactBundle } from '@/mir/generator/mirToReact';
-import { antdReactAdapter } from '@/mir/generator/react/antdAdapter';
 import { flattenPublicFiles, readPublicTree } from '../resources/publicTree';
 import { CodeViewer } from './CodeViewer';
+import { resolveZipFilePayload } from './exportZip';
 import './ExportMirPage.scss';
 
 type ExportTab = 'mir' | 'react';
-type ReactAdapterMode = 'mdr' | 'antd';
-type ReactImportStrategy = 'workspace' | 'esm-sh';
 type ExportCodeFile = {
   path: string;
-  language: 'typescript' | 'json' | 'html';
+  language: 'typescript' | 'json' | 'html' | 'css';
   content: string;
+  binaryDataUrl?: string;
 };
 type FileTreeNode = {
   key: string;
   name: string;
   path: string;
-  file?: { path: string; language: 'typescript' | 'json' | 'html' };
+  file?: { path: string; language: 'typescript' | 'json' | 'html' | 'css' };
   children: FileTreeNode[];
 };
 
 const buildFileTree = (
-  files: Array<{ path: string; language: 'typescript' | 'json' | 'html' }>
+  files: Array<{
+    path: string;
+    language: 'typescript' | 'json' | 'html' | 'css';
+  }>
 ): FileTreeNode[] => {
   const root: FileTreeNode = {
     key: 'root',
@@ -78,6 +80,14 @@ const buildFileTree = (
   return sortNodes(root.children);
 };
 
+const sanitizeFileName = (value: string) =>
+  value
+    .trim()
+    .replace(/[\\/:*?"<>|]+/g, '-')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '') || 'mdr-react-export';
+
 export function ExportMirPage() {
   const { t } = useTranslation('export');
   const { projectId } = useParams();
@@ -87,11 +97,8 @@ export function ExportMirPage() {
       (projectId ? state.projectsById[projectId]?.type : undefined) ?? 'project'
   );
   const [copied, setCopied] = useState(false);
+  const [downloadingZip, setDownloadingZip] = useState(false);
   const [activeTab, setActiveTab] = useState<ExportTab>('mir');
-  const [reactAdapterMode, setReactAdapterMode] =
-    useState<ReactAdapterMode>('mdr');
-  const [reactImportStrategy, setReactImportStrategy] =
-    useState<ReactImportStrategy>('workspace');
   const [activeReactFile, setActiveReactFile] = useState('');
   const [expandedFolders, setExpandedFolders] = useState<
     Record<string, boolean>
@@ -105,18 +112,11 @@ export function ExportMirPage() {
   const reactBundle = useMemo(() => {
     if (!mirDoc?.ui?.root) return null;
     try {
-      const adapter =
-        reactAdapterMode === 'antd' ? antdReactAdapter : undefined;
-      const packageResolver = {
-        strategy: reactImportStrategy,
-        packageVersions:
-          reactAdapterMode === 'antd' ? { antd: '5.28.0' } : undefined,
-      } as const;
-
       return generateReactBundle(mirDoc, {
         resourceType: projectType,
-        adapter,
-        packageResolver,
+        packageResolver: {
+          strategy: 'npm',
+        },
       });
     } catch (error) {
       const message = t('react.error', {
@@ -134,7 +134,7 @@ export function ExportMirPage() {
         ],
       };
     }
-  }, [mirDoc, projectType, reactAdapterMode, reactImportStrategy, t]);
+  }, [mirDoc, projectType, t]);
 
   const publicTree = useMemo(() => readPublicTree(projectId), [projectId]);
   const publicExportFiles = useMemo<ExportCodeFile[]>(
@@ -147,6 +147,9 @@ export function ExportMirPage() {
         const isHtml = Boolean(
           file.mime?.includes('html') || /\.(html?)$/i.test(lowerName)
         );
+        const isCss = Boolean(
+          file.mime?.includes('css') || lowerName.endsWith('.css')
+        );
         const content =
           file.textContent ??
           `// Binary file\n// path: ${file.path}\n// mime: ${
@@ -154,8 +157,18 @@ export function ExportMirPage() {
           }\n// size: ${file.size || 0} bytes`;
         return {
           path: file.path,
-          language: isJson ? 'json' : isHtml ? 'html' : 'typescript',
+          language: isJson
+            ? 'json'
+            : isHtml
+              ? 'html'
+              : isCss
+                ? 'css'
+                : 'typescript',
           content,
+          binaryDataUrl:
+            file.textContent == null && file.contentRef?.startsWith('data:')
+              ? file.contentRef
+              : undefined,
         };
       }),
     [publicTree]
@@ -175,6 +188,13 @@ export function ExportMirPage() {
     [activeReactFile, reactProjectFiles]
   );
   const activeReactFileContent = activeReactFileRecord?.content ?? '';
+  const reactZipBaseName = useMemo(
+    () =>
+      sanitizeFileName(
+        mirDoc?.metadata?.name || projectId || 'mdr-react-export'
+      ),
+    [mirDoc?.metadata?.name, projectId]
+  );
 
   useEffect(() => {
     if (!reactProjectFiles.length) {
@@ -252,7 +272,7 @@ export function ExportMirPage() {
       const fileIcon =
         node.file?.language === 'json' ? (
           <FileJson2 size={13} />
-        ) : node.file?.language === 'html' ? (
+        ) : node.file?.language === 'html' || node.file?.language === 'css' ? (
           <FileText size={13} />
         ) : (
           <FileCode2 size={13} />
@@ -335,38 +355,6 @@ export function ExportMirPage() {
               {t('tabs.react', { defaultValue: 'React' })}
             </button>
           </div>
-          {activeTab === 'react' && (
-            <div className="inline-flex items-center gap-2 text-xs">
-              <label className="inline-flex items-center gap-1">
-                <span>Adapter</span>
-                <select
-                  className="h-7 rounded border border-black/10 bg-transparent px-2 text-xs dark:border-white/15"
-                  value={reactAdapterMode}
-                  onChange={(event) =>
-                    setReactAdapterMode(event.target.value as ReactAdapterMode)
-                  }
-                >
-                  <option value="mdr">@mdr/ui</option>
-                  <option value="antd">antd</option>
-                </select>
-              </label>
-              <label className="inline-flex items-center gap-1">
-                <span>Imports</span>
-                <select
-                  className="h-7 rounded border border-black/10 bg-transparent px-2 text-xs dark:border-white/15"
-                  value={reactImportStrategy}
-                  onChange={(event) =>
-                    setReactImportStrategy(
-                      event.target.value as ReactImportStrategy
-                    )
-                  }
-                >
-                  <option value="workspace">workspace</option>
-                  <option value="esm-sh">esm.sh</option>
-                </select>
-              </label>
-            </div>
-          )}
           <button
             type="button"
             className="ExportMirPageCopy"
@@ -382,6 +370,45 @@ export function ExportMirPage() {
               ? t('copySuccess', { defaultValue: '已复制' })
               : t('copy', { defaultValue: '复制' })}
           </button>
+          {activeTab === 'react' ? (
+            <button
+              type="button"
+              className="ExportMirPageCopy"
+              disabled={!reactProjectFiles.length || downloadingZip}
+              onClick={async () => {
+                if (!reactProjectFiles.length) return;
+                setDownloadingZip(true);
+                try {
+                  const { default: JSZip } = await import('jszip');
+                  const zip = new JSZip();
+                  const rootFolder = zip.folder(reactZipBaseName) ?? zip;
+                  reactProjectFiles.forEach((file) => {
+                    const payload = resolveZipFilePayload(file);
+                    if (payload instanceof Uint8Array) {
+                      rootFolder.file(file.path, payload, { binary: true });
+                    } else {
+                      rootFolder.file(file.path, payload);
+                    }
+                  });
+                  const blob = await zip.generateAsync({ type: 'blob' });
+                  const downloadUrl = URL.createObjectURL(blob);
+                  const anchor = document.createElement('a');
+                  anchor.href = downloadUrl;
+                  anchor.download = `${reactZipBaseName}.zip`;
+                  document.body.append(anchor);
+                  anchor.click();
+                  anchor.remove();
+                  URL.revokeObjectURL(downloadUrl);
+                } finally {
+                  setDownloadingZip(false);
+                }
+              }}
+            >
+              {downloadingZip
+                ? t('downloading', { defaultValue: 'Downloading...' })
+                : t('downloadZip', { defaultValue: 'Download ZIP' })}
+            </button>
+          ) : null}
         </div>
       </div>
 
@@ -409,7 +436,9 @@ export function ExportMirPage() {
                   ? 'json'
                   : activeReactFileRecord?.language === 'html'
                     ? 'html'
-                    : 'typescript'
+                    : activeReactFileRecord?.language === 'css'
+                      ? 'css'
+                      : 'typescript'
               }
             />
           </div>

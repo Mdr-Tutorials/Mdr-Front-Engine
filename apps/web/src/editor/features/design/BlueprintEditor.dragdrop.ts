@@ -21,6 +21,7 @@ import {
   type TreeDropPlacement,
 } from './BlueprintEditor.tree';
 import type { MIRDocument } from '@/core/types/engine.types';
+import { normalizeRoutePath } from '@/editor/store/routeManifest';
 
 export type TreeDropHint = {
   overNodeId: string;
@@ -29,6 +30,7 @@ export type TreeDropHint = {
 
 type UseBlueprintDragDropOptions = {
   mirDoc: MIRDocument;
+  currentPath: string;
   selectedId?: string;
   updateMirDoc: (updater: (doc: MIRDocument) => MIRDocument) => void;
   onNodeSelect: (nodeId: string) => void;
@@ -75,6 +77,7 @@ const resolveTreePlacement = (options: {
 
 export const useBlueprintDragDrop = ({
   mirDoc,
+  currentPath,
   selectedId,
   updateMirDoc,
   onNodeSelect,
@@ -262,17 +265,70 @@ export const useBlueprintDragDrop = ({
     let nextNodeId = '';
     updateMirDoc((doc) => {
       const createId = createNodeIdFactory(doc);
-      const newNode = createNodeFromPaletteItem(
+      let newNode = createNodeFromPaletteItem(
         itemId,
         createId,
         variantProps,
         selectedSize
       );
+      const normalizedCurrentPath = normalizeRoutePath(currentPath || '/');
+      const toRoutedNode = (node: typeof newNode) => {
+        const props = (node.props ?? {}) as Record<string, unknown>;
+        if (
+          typeof props['data-route-path'] === 'string' ||
+          props['data-route-fallback'] === true
+        ) {
+          return node;
+        }
+        return {
+          ...node,
+          props: {
+            ...props,
+            'data-route-path': normalizedCurrentPath,
+          },
+        };
+      };
       nextNodeId = newNode.id;
+
+      if (dropNodeId) {
+        const dropNode = findNodeById(doc.ui.root, dropNodeId);
+        if (dropNode?.type === 'MdrRoute') {
+          newNode = toRoutedNode(newNode);
+          nextNodeId = newNode.id;
+          const insertedChild = insertChildAtIndex(
+            doc.ui.root,
+            dropNode.id,
+            newNode,
+            dropNode.children?.length ?? 0
+          );
+          if (insertedChild.inserted) {
+            return {
+              ...doc,
+              ui: { ...doc.ui, root: insertedChild.node },
+            };
+          }
+        }
+      }
 
       if (dropKind === 'canvas' && selectedId) {
         const root = doc.ui.root;
         const selectedNode = findNodeById(root, selectedId);
+        if (selectedNode?.type === 'MdrRoute') {
+          newNode = toRoutedNode(newNode);
+          nextNodeId = newNode.id;
+          const insertedChild = insertChildAtIndex(
+            root,
+            selectedNode.id,
+            newNode,
+            selectedNode.children?.length ?? 0
+          );
+          if (insertedChild.inserted) {
+            return {
+              ...doc,
+              ui: { ...doc.ui, root: insertedChild.node },
+            };
+          }
+        }
         const isLayoutPatternItem = itemId.startsWith('layout-pattern-');
         if (
           isLayoutPatternItem &&

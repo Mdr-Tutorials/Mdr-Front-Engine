@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 type PresetInputOption = {
   label: string;
@@ -19,6 +20,7 @@ export function PresetInput({
   placeholder,
   onChange,
 }: PresetInputProps) {
+  const { t } = useTranslation('blueprint');
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
 
@@ -49,7 +51,9 @@ export function PresetInput({
         type="button"
         className="absolute right-1 inline-flex h-5 w-5 items-center justify-center rounded-sm border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
         onClick={() => setOpen((current) => !current)}
-        aria-label="Toggle ratio presets"
+        aria-label={t('inspector.fields.presetInput.toggle', {
+          defaultValue: 'Toggle presets',
+        })}
       >
         <ChevronDown size={14} />
       </button>

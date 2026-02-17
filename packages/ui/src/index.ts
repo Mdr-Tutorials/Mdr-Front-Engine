@@ -10,6 +10,8 @@ export { default as MdrPagination } from './nav/MdrPagination';
 export { default as MdrAnchorNavigation } from './nav/MdrAnchorNavigation';
 export { default as MdrTabs } from './nav/MdrTabs';
 export { default as MdrCollapse } from './nav/MdrCollapse';
+export { default as MdrRoute } from './nav/MdrRoute';
+export { default as MdrOutlet } from './nav/MdrOutlet';
 export { default as MdrIcon } from './icon/MdrIcon';
 
 export { default as MdrText } from './text/MdrText';

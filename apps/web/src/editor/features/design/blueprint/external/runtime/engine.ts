@@ -33,6 +33,7 @@ export const ensureExternalLibrary = async (
       const discoveredPaths = scanExternalModulePaths(module, {
         includePaths: profile.includePaths,
         excludeExports: profile.excludeExports,
+        discoverExports: profile.scanMode !== 'include-only',
       });
       if (discoveredPaths.length === 0) {
         diagnostics.push({

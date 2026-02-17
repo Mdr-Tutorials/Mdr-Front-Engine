@@ -76,6 +76,7 @@ export type ExternalLibraryProfile = {
   descriptor: () => ExternalLibraryDescriptor;
   includePaths?: string[];
   excludeExports?: Set<string>;
+  scanMode?: 'discover' | 'include-only';
   manifest?: ExternalLibraryManifest;
   toCanonicalComponents: (
     module: Record<string, unknown>,

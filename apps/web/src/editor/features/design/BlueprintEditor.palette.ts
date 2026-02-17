@@ -139,6 +139,14 @@ const PALETTE_NODE_DEFAULTS: Record<
     type: 'MdrSidebar',
     props: { title: 'Menu', items: SIDEBAR_ITEMS, width: 160 },
   },
+  route: {
+    type: 'MdrRoute',
+    props: {},
+  },
+  outlet: {
+    type: 'MdrOutlet',
+    props: {},
+  },
   'image-gallery': {
     type: 'MdrImageGallery',
     props: {
@@ -248,6 +256,20 @@ export const createNodeFromPaletteItem = (
         category: 'Primary',
         ...variantProps,
       },
+    };
+  }
+  if (itemId === 'route') {
+    return {
+      id: createId('MdrRoute'),
+      type: 'MdrRoute',
+      props: {},
+    };
+  }
+  if (itemId === 'outlet') {
+    return {
+      id: createId('MdrOutlet'),
+      type: 'MdrOutlet',
+      props: {},
     };
   }
   if (itemId === 'button-link') {

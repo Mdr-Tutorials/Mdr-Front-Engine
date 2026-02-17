@@ -31,7 +31,7 @@ export const resolvePackageImport = (
   source: string,
   options?: PackageResolverOptions
 ): PackageResolution => {
-  const strategy = options?.strategy ?? 'workspace';
+  const strategy = options?.strategy ?? 'npm';
   const bare = isBareImport(source);
   const packageName = getPackageName(source);
   const packageVersion = packageName

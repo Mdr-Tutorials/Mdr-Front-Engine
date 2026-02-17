@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MdrInput, MdrSelect } from '@mdr/ui';
 import { getLayoutPatternDefinition } from '@/editor/features/design/blueprint/layoutPatterns/registry';
 import {
@@ -65,6 +66,7 @@ function LayoutPatternPanelView({
   node,
   updateNode,
 }: InspectorPanelRenderProps) {
+  const { t } = useTranslation('blueprint');
   const patternId = getLayoutPatternId(node);
   const pattern = patternId ? getLayoutPatternDefinition(patternId) : undefined;
   const currentParams = useMemo(() => {
@@ -77,6 +79,21 @@ function LayoutPatternPanelView({
     patternId === 'split' && typeof currentParams.category === 'string'
       ? currentParams.category
       : null;
+  const getFieldLabel = (fieldKey: string, fallback: string) =>
+    t(`inspector.panels.layoutPattern.fields.${patternId}.${fieldKey}.label`, {
+      defaultValue: fallback,
+    });
+  const getOptionLabel = (
+    fieldKey: string,
+    optionValue: string,
+    fallback: string
+  ) =>
+    t(
+      `inspector.panels.layoutPattern.fields.${patternId}.${fieldKey}.options.${optionValue}`,
+      {
+        defaultValue: fallback,
+      }
+    );
 
   const updatePatternParam = (key: string, value: unknown) => {
     updateNode((current) => {
@@ -104,7 +121,10 @@ function LayoutPatternPanelView({
     <div className="InspectorSection flex flex-col gap-2">
       {patternId === 'split' && splitCategory === '2-columns' ? (
         <div className="rounded-md border border-black/8 px-2 py-1 text-[10px] text-(--color-6) dark:border-white/14">
-          Third column is hidden in 2 columns mode (not deleted).
+          {t('inspector.panels.layoutPattern.splitThirdColumnHint', {
+            defaultValue:
+              'Third column is hidden in 2 columns mode (not deleted).',
+          })}
         </div>
       ) : null}
       {Object.entries(pattern.schema).map(([key, definition]) => {
@@ -118,17 +138,21 @@ function LayoutPatternPanelView({
                     : option.value.split('-').length === 2
                 )
               : definition.options;
+          const localizedEnumOptions = enumOptions.map((option) => ({
+            ...option,
+            label: getOptionLabel(key, option.value, option.label),
+          }));
           const enumValue = typeof value === 'string' ? value : '';
 
           if (patternId === 'split' && key === 'ratio') {
             return (
               <InspectorRow
                 key={key}
-                label={definition.label}
+                label={getFieldLabel(key, definition.label)}
                 control={
                   <PresetInput
                     value={enumValue}
-                    options={enumOptions}
+                    options={localizedEnumOptions}
                     placeholder={
                       splitCategory === '3-columns' ? '1-1-1' : '1-1'
                     }
@@ -141,16 +165,19 @@ function LayoutPatternPanelView({
           return (
             <InspectorRow
               key={key}
-              label={definition.label}
+              label={getFieldLabel(key, definition.label)}
               control={
                 <MdrSelect
                   size="Small"
                   value={
-                    enumValue && enumOptions.some((option) => option.value === enumValue)
+                    enumValue &&
+                    localizedEnumOptions.some(
+                      (option) => option.value === enumValue
+                    )
                       ? enumValue
                       : definition.defaultValue
                   }
-                  options={enumOptions.map((option) => ({
+                  options={localizedEnumOptions.map((option) => ({
                     label: option.label,
                     value: option.value,
                   }))}
@@ -164,7 +191,7 @@ function LayoutPatternPanelView({
           return (
             <InspectorRow
               key={key}
-              label={definition.label}
+              label={getFieldLabel(key, definition.label)}
               control={
                 <MdrInput
                   size="Small"
@@ -183,7 +210,7 @@ function LayoutPatternPanelView({
           return (
             <InspectorRow
               key={key}
-              label={definition.label}
+              label={getFieldLabel(key, definition.label)}
               control={
                 <UnitInput
                   value={value as string | number | undefined}
@@ -199,7 +226,7 @@ function LayoutPatternPanelView({
         return (
           <InspectorRow
             key={key}
-            label={definition.label}
+            label={getFieldLabel(key, definition.label)}
             control={
               <input
                 type="checkbox"
