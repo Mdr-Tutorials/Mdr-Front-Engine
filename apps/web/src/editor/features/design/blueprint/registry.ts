@@ -23,6 +23,12 @@ export const registerComponentGroups = (groups: ComponentGroup[]) => {
   groups.forEach((group) => upsertGroup(group));
 };
 
+export const unregisterComponentGroup = (groupId: string) => {
+  const index = componentGroups.findIndex((item) => item.id === groupId);
+  if (index < 0) return;
+  componentGroups.splice(index, 1);
+};
+
 export const getComponentGroups = () => componentGroups;
 
 export const getComponentItemById = (
@@ -30,6 +36,16 @@ export const getComponentItemById = (
 ): ComponentPreviewItem | undefined => {
   for (const group of componentGroups) {
     const item = group.items.find((entry) => entry.id === itemId);
+    if (item) return item;
+  }
+  return undefined;
+};
+
+export const getComponentItemByRuntimeType = (
+  runtimeType: string
+): ComponentPreviewItem | undefined => {
+  for (const group of componentGroups) {
+    const item = group.items.find((entry) => entry.runtimeType === runtimeType);
     if (item) return item;
   }
   return undefined;

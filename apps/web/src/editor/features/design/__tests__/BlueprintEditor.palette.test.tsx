@@ -6,6 +6,10 @@ import {
   getTreeDropPlacement,
 } from '../BlueprintEditor';
 import { getComponentGroups } from '../BlueprintEditor.data';
+import {
+  registerComponentGroup,
+  resetComponentRegistry,
+} from '../blueprint/registry';
 import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
 import { mdrAdapter } from '@/mir/renderer/registry';
 import { createMirDoc } from '@/test-utils/editorStore';
@@ -80,6 +84,80 @@ describe('createNodeFromPaletteItem', () => {
       name: 'Sparkles',
     });
     expect(iconLinkNode.props?.to).toBe('');
+  });
+
+  it('creates external nodes with runtimeType and stable prop merging', () => {
+    const createId = (type: string) => `${type}-1`;
+    try {
+      registerComponentGroup({
+        id: 'external-test-group',
+        title: 'External',
+        source: 'external',
+        items: [
+          {
+            id: 'external-button',
+            name: 'External Button',
+            preview: <div>External Button</div>,
+            runtimeType: 'MuiButton',
+            defaultProps: {
+              variant: 'contained',
+              size: 'small',
+              disabled: false,
+            },
+          },
+        ],
+      });
+
+      const node = createNodeFromPaletteItem(
+        'external-button',
+        createId,
+        { variant: 'outlined' },
+        'large'
+      );
+      expect(node.type).toBe('MuiButton');
+      expect(node.props).toMatchObject({
+        variant: 'outlined',
+        size: 'large',
+        disabled: false,
+      });
+    } finally {
+      resetComponentRegistry();
+    }
+  });
+
+  it('keeps external runtimeType and props serializable across save snapshots', () => {
+    const createId = (type: string) => `${type}-1`;
+    try {
+      registerComponentGroup({
+        id: 'external-test-group',
+        title: 'External',
+        source: 'external',
+        items: [
+          {
+            id: 'external-text-field',
+            name: 'External TextField',
+            preview: <div>External TextField</div>,
+            runtimeType: 'MuiTextField',
+            defaultProps: { label: 'Text Field', size: 'small' },
+          },
+        ],
+      });
+
+      const node = createNodeFromPaletteItem(
+        'external-text-field',
+        createId,
+        { label: 'Name' },
+        'medium'
+      );
+      const rehydrated = JSON.parse(JSON.stringify(node));
+      expect(rehydrated.type).toBe('MuiTextField');
+      expect(rehydrated.props).toMatchObject({
+        label: 'Name',
+        size: 'medium',
+      });
+    } finally {
+      resetComponentRegistry();
+    }
   });
 });
 

@@ -1,0 +1,281 @@
+import { antdExternalLibraryProfile } from './libraries/antdProfile';
+import { muiExternalLibraryProfile } from './libraries/muiProfile';
+import { ensureExternalLibrary } from './runtime/engine';
+import { clearRegisteredExternalLibraries } from './runtime/registry';
+import {
+  getExternalLibraryProfile,
+  listExternalLibraryIds,
+  registerExternalLibraryProfile,
+  unregisterExternalLibraryProfile,
+} from './runtime/profileRegistry';
+import type {
+  ExternalLibraryDiagnostic,
+  ExternalLibraryProfile,
+} from './runtime/types';
+export type { ExternalLibraryDiagnostic } from './runtime/types';
+
+const EXTERNAL_LIBRARY_IDS_STORAGE_KEY = 'mdr.externalLibraryIds';
+const DEFAULT_LIBRARY_IDS: string[] = [];
+const EXTERNAL_LIBRARY_DISPLAY_NAME: Record<string, string> = {
+  antd: 'Ant Design',
+  mui: 'Material UI',
+};
+export const externalLibraryConfigUpdatedEvent =
+  'mdr:external-library-config-updated';
+let bootstrapped = false;
+let latestDiagnostics: ExternalLibraryDiagnostic[] = [];
+let isLoadingExternalLibraries = false;
+export type ExternalLibraryLoadStatus =
+  | 'idle'
+  | 'loading'
+  | 'success'
+  | 'error';
+export type ExternalLibraryRuntimeState = {
+  libraryId: string;
+  status: ExternalLibraryLoadStatus;
+  diagnostics: ExternalLibraryDiagnostic[];
+  lastUpdatedAt: number;
+};
+const externalLibraryStateById = new Map<string, ExternalLibraryRuntimeState>();
+const diagnosticListeners = new Set<
+  (diagnostics: ExternalLibraryDiagnostic[]) => void
+>();
+const loadingListeners = new Set<(isLoading: boolean) => void>();
+const stateListeners = new Set<
+  (states: ExternalLibraryRuntimeState[]) => void
+>();
+
+const ensureBootstrap = () => {
+  if (bootstrapped) return;
+  registerExternalLibraryProfile(antdExternalLibraryProfile);
+  registerExternalLibraryProfile(muiExternalLibraryProfile);
+  bootstrapped = true;
+};
+
+export const getExternalLibraryDisplayName = (libraryId: string) => {
+  const normalizedId = libraryId.trim();
+  const fromMap = EXTERNAL_LIBRARY_DISPLAY_NAME[normalizedId];
+  if (fromMap) return fromMap;
+  const profile = getExternalLibraryProfile(normalizedId);
+  const packageName = profile?.descriptor().packageName;
+  if (packageName === '@mui/material') return 'Material UI';
+  if (packageName === 'antd') return 'Ant Design';
+  return normalizedId;
+};
+
+const unknownLibraryDiagnostic = (
+  libraryId: string
+): ExternalLibraryDiagnostic => ({
+  code: 'ELIB-1004',
+  level: 'error',
+  stage: 'load',
+  message: `External library "${libraryId}" is not registered.`,
+  hint: 'Register a library profile before loading it.',
+  retryable: false,
+  libraryId,
+});
+
+const setLatestDiagnostics = (diagnostics: ExternalLibraryDiagnostic[]) => {
+  latestDiagnostics = diagnostics;
+  diagnosticListeners.forEach((listener) => listener(latestDiagnostics));
+};
+
+const setLoadingState = (isLoading: boolean) => {
+  isLoadingExternalLibraries = isLoading;
+  loadingListeners.forEach((listener) => listener(isLoadingExternalLibraries));
+};
+
+const emitExternalLibraryStates = () => {
+  const states = Array.from(externalLibraryStateById.values());
+  stateListeners.forEach((listener) => listener(states));
+};
+
+const setExternalLibraryState = (
+  libraryId: string,
+  status: ExternalLibraryLoadStatus,
+  diagnostics: ExternalLibraryDiagnostic[]
+) => {
+  externalLibraryStateById.set(libraryId, {
+    libraryId,
+    status,
+    diagnostics,
+    lastUpdatedAt: Date.now(),
+  });
+  emitExternalLibraryStates();
+};
+
+export const getConfiguredExternalLibraryIds = (): string[] => {
+  ensureBootstrap();
+  if (typeof window === 'undefined') return [...DEFAULT_LIBRARY_IDS];
+  try {
+    const raw = window.localStorage.getItem(EXTERNAL_LIBRARY_IDS_STORAGE_KEY);
+    if (raw === null) return [...DEFAULT_LIBRARY_IDS];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [...DEFAULT_LIBRARY_IDS];
+    const ids = parsed.filter(
+      (item): item is string =>
+        typeof item === 'string' && item.trim().length > 0
+    );
+    return ids;
+  } catch {
+    return [...DEFAULT_LIBRARY_IDS];
+  }
+};
+
+export const setConfiguredExternalLibraryIds = (libraryIds: string[]) => {
+  ensureBootstrap();
+  const uniqueIds = [...new Set(libraryIds.map((item) => item.trim()))].filter(
+    (item) => item.length > 0
+  );
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem(
+      EXTERNAL_LIBRARY_IDS_STORAGE_KEY,
+      JSON.stringify(uniqueIds)
+    );
+    window.dispatchEvent(
+      new CustomEvent(externalLibraryConfigUpdatedEvent, {
+        detail: {
+          libraryIds: uniqueIds,
+        },
+      })
+    );
+  }
+  return uniqueIds;
+};
+
+export const getConfiguredExternalLibraries = () =>
+  getConfiguredExternalLibraryIds().map((libraryId) => ({
+    id: libraryId,
+    label: getExternalLibraryDisplayName(libraryId),
+  }));
+
+export const ensureExternalLibraryById = async (
+  libraryId: string
+): Promise<ExternalLibraryDiagnostic[]> => {
+  ensureBootstrap();
+  setExternalLibraryState(libraryId, 'loading', []);
+  const profile = getExternalLibraryProfile(libraryId);
+  if (!profile) {
+    const diagnostics = [unknownLibraryDiagnostic(libraryId)];
+    setExternalLibraryState(libraryId, 'error', diagnostics);
+    setLatestDiagnostics(diagnostics);
+    return diagnostics;
+  }
+  const diagnostics = await ensureExternalLibrary(profile);
+  setExternalLibraryState(
+    libraryId,
+    diagnostics.some((item) => item.level === 'error') ? 'error' : 'success',
+    diagnostics
+  );
+  setLatestDiagnostics(diagnostics);
+  return diagnostics;
+};
+
+export const ensureConfiguredExternalLibraries = async (
+  libraryIds: string[] = getConfiguredExternalLibraryIds()
+): Promise<ExternalLibraryDiagnostic[]> => {
+  ensureBootstrap();
+  clearRegisteredExternalLibraries();
+  if (libraryIds.length === 0) {
+    setLatestDiagnostics([]);
+    Array.from(externalLibraryStateById.keys()).forEach((libraryId) => {
+      if (!libraryIds.includes(libraryId)) {
+        externalLibraryStateById.delete(libraryId);
+      }
+    });
+    emitExternalLibraryStates();
+    return [];
+  }
+  setLoadingState(true);
+  try {
+    const uniqueIds = [...new Set(libraryIds)];
+    Array.from(externalLibraryStateById.keys()).forEach((libraryId) => {
+      if (!uniqueIds.includes(libraryId)) {
+        externalLibraryStateById.delete(libraryId);
+      }
+    });
+    emitExternalLibraryStates();
+    const results = await Promise.all(
+      uniqueIds.map((libraryId) => ensureExternalLibraryById(libraryId))
+    );
+    const diagnostics = results.flat();
+    setLatestDiagnostics(diagnostics);
+    return diagnostics;
+  } finally {
+    setLoadingState(false);
+  }
+};
+
+export const ensureDefaultExternalLibrary = () =>
+  ensureExternalLibraryById('antd');
+
+export const getRegisteredExternalLibraryIds = () => {
+  ensureBootstrap();
+  return listExternalLibraryIds();
+};
+
+export const getRegisteredExternalLibraries = () => {
+  ensureBootstrap();
+  return listExternalLibraryIds().map((libraryId) => ({
+    id: libraryId,
+    label: getExternalLibraryDisplayName(libraryId),
+  }));
+};
+
+export const registerExternalLibrary = (profile: ExternalLibraryProfile) => {
+  ensureBootstrap();
+  return registerExternalLibraryProfile(profile);
+};
+
+export const unregisterExternalLibrary = (libraryId: string) => {
+  ensureBootstrap();
+  unregisterExternalLibraryProfile(libraryId);
+  externalLibraryStateById.delete(libraryId);
+  emitExternalLibraryStates();
+};
+
+export const getExternalLibraryDiagnostics = () => latestDiagnostics;
+export const getExternalLibraryLoadingState = () => isLoadingExternalLibraries;
+export const getExternalLibraryState = (
+  libraryId: string
+): ExternalLibraryRuntimeState => {
+  return (
+    externalLibraryStateById.get(libraryId) ?? {
+      libraryId,
+      status: 'idle',
+      diagnostics: [],
+      lastUpdatedAt: 0,
+    }
+  );
+};
+export const getExternalLibraryStates = () =>
+  Array.from(externalLibraryStateById.values());
+export const retryExternalLibraryById = (libraryId: string) =>
+  ensureExternalLibraryById(libraryId);
+
+export const subscribeExternalLibraryDiagnostics = (
+  listener: (diagnostics: ExternalLibraryDiagnostic[]) => void
+) => {
+  diagnosticListeners.add(listener);
+  return () => {
+    diagnosticListeners.delete(listener);
+  };
+};
+
+export const subscribeExternalLibraryLoading = (
+  listener: (isLoading: boolean) => void
+) => {
+  loadingListeners.add(listener);
+  return () => {
+    loadingListeners.delete(listener);
+  };
+};
+
+export const subscribeExternalLibraryState = (
+  listener: (states: ExternalLibraryRuntimeState[]) => void
+) => {
+  stateListeners.add(listener);
+  return () => {
+    stateListeners.delete(listener);
+  };
+};

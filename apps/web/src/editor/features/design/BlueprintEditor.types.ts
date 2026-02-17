@@ -28,11 +28,17 @@ export type ComponentPreviewStatus = ComponentPreviewOption & {
 export type ComponentPreviewItem = {
   id: string;
   name: string;
+  libraryId?: string;
   preview: ReactNode;
+  runtimeType?: string;
+  defaultProps?: Record<string, unknown>;
+  propOptions?: Record<string, string[]>;
   scale?: number;
   variants?: ComponentPreviewVariant[];
   sizeOptions?: ComponentPreviewOption[];
   statusOptions?: ComponentPreviewStatus[];
+  statusProp?: string;
+  statusLabel?: string;
   renderPreview?: (options: { size?: string; status?: string }) => ReactNode;
   defaultStatus?: string;
 };

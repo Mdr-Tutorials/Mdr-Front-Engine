@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DndContext, DragOverlay } from '@dnd-kit/core';
 import { BlueprintEditorAddressBar } from './BlueprintEditorAddressBar';
 import { BlueprintEditorCanvas } from './BlueprintEditorCanvas';
@@ -8,11 +8,32 @@ import { BlueprintEditorInspector } from './BlueprintEditorInspector';
 import { BlueprintEditorSaveIndicator } from './BlueprintEditorSaveIndicator';
 import { BlueprintEditorSidebar } from './BlueprintEditorSidebar';
 import { BlueprintEditorViewportBar } from './BlueprintEditorViewportBar';
+import type {
+  ExternalLibraryDiagnostic,
+  ExternalLibraryRuntimeState,
+} from './blueprint/external';
+import { externalLibraryConfigUpdatedEvent } from './blueprint/external';
 
 export { createNodeFromPaletteItem } from './BlueprintEditor.palette';
 export { getTreeDropPlacement } from './BlueprintEditor.tree';
 
 function BlueprintEditor() {
+  const [externalDiagnostics, setExternalDiagnostics] = useState<
+    ExternalLibraryDiagnostic[]
+  >([]);
+  const [externalLibraryStates, setExternalLibraryStates] = useState<
+    ExternalLibraryRuntimeState[]
+  >([]);
+  const [externalLibraryOptions, setExternalLibraryOptions] = useState<
+    Array<{ id: string; label: string }>
+  >([]);
+  const [isExternalLibraryLoading, setExternalLibraryLoading] = useState(false);
+  const [retryExternalLibrary, setRetryExternalLibrary] = useState<
+    ((libraryId: string) => Promise<void>) | null
+  >(null);
+  const externalModuleRef = useRef<
+    typeof import('./blueprint/external') | null
+  >(null);
   const {
     addressBar,
     canvas,
@@ -53,11 +74,80 @@ function BlueprintEditor() {
   ]);
 
   useEffect(() => {
-    void import('./blueprint/external/antdEsmLibrary')
-      .then((mod) => mod.ensureAntdEsmLibrary())
+    let disposed = false;
+    let unsubscribe: (() => void) | undefined;
+    let unsubscribeLoading: (() => void) | undefined;
+    let unsubscribeState: (() => void) | undefined;
+    void import('./blueprint/external')
+      .then((mod) => {
+        externalModuleRef.current = mod;
+        unsubscribe = mod.subscribeExternalLibraryDiagnostics((diagnostics) => {
+          if (disposed) return;
+          setExternalDiagnostics(diagnostics);
+        });
+        unsubscribeLoading = mod.subscribeExternalLibraryLoading(
+          (isLoading) => {
+            if (disposed) return;
+            setExternalLibraryLoading(isLoading);
+          }
+        );
+        unsubscribeState = mod.subscribeExternalLibraryState((states) => {
+          if (disposed) return;
+          setExternalLibraryStates(states);
+        });
+        setRetryExternalLibrary(() => async (libraryId: string) => {
+          await mod.retryExternalLibraryById(libraryId);
+        });
+        setExternalLibraryOptions(mod.getConfiguredExternalLibraries());
+        setExternalDiagnostics(mod.getExternalLibraryDiagnostics());
+        setExternalLibraryLoading(mod.getExternalLibraryLoadingState());
+        setExternalLibraryStates(mod.getExternalLibraryStates());
+        void mod.ensureConfiguredExternalLibraries();
+      })
       .catch((error) => {
-        console.warn('[blueprint] failed to preload antd runtime', error);
+        console.warn('[blueprint] failed to preload external runtime', error);
       });
+    return () => {
+      disposed = true;
+      unsubscribe?.();
+      unsubscribeLoading?.();
+      unsubscribeState?.();
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleConfigUpdated = (event: Event) => {
+      const customEvent = event as CustomEvent<{ libraryIds?: string[] }>;
+      const nextIds = customEvent.detail?.libraryIds ?? [];
+      if (externalModuleRef.current) {
+        setExternalLibraryOptions(
+          externalModuleRef.current.getConfiguredExternalLibraries()
+        );
+      } else {
+        setExternalLibraryOptions(
+          nextIds.map((libraryId) => ({
+            id: libraryId,
+            label: libraryId,
+          }))
+        );
+      }
+      if (externalModuleRef.current) {
+        void externalModuleRef.current.ensureConfiguredExternalLibraries(
+          nextIds
+        );
+      }
+    };
+    if (typeof window === 'undefined') return;
+    window.addEventListener(
+      externalLibraryConfigUpdatedEvent,
+      handleConfigUpdated
+    );
+    return () => {
+      window.removeEventListener(
+        externalLibraryConfigUpdatedEvent,
+        handleConfigUpdated
+      );
+    };
   }, []);
 
   return (
@@ -96,6 +186,11 @@ function BlueprintEditor() {
             expandedPreviews={sidebar.expandedPreviews}
             sizeSelections={sidebar.sizeSelections}
             statusSelections={sidebar.statusSelections}
+            externalDiagnostics={externalDiagnostics}
+            externalLibraryStates={externalLibraryStates}
+            externalLibraryOptions={externalLibraryOptions}
+            isExternalLibraryLoading={isExternalLibraryLoading}
+            onRetryExternalLibrary={retryExternalLibrary ?? undefined}
             onToggleCollapse={sidebar.onToggleCollapse}
             onToggleGroup={sidebar.onToggleGroup}
             onTogglePreview={sidebar.onTogglePreview}

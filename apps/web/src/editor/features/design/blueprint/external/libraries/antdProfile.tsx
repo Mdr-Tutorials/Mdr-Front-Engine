@@ -1,16 +1,19 @@
 import React from 'react';
 import type { ComponentAdapter } from '@/mir/renderer/registry';
-import { registerRuntimeComponent } from '@/mir/renderer/registry';
-import { registerComponentGroup } from '../registry';
+import type { ComponentPreviewItem } from '../../../BlueprintEditor.types';
 import type {
-  ComponentGroup,
-  ComponentPreviewItem,
-} from '../../BlueprintEditor.types';
-
-type EsmLoadDiagnostic = {
-  level: 'warning' | 'error';
-  message: string;
-};
+  CanonicalExternalComponent,
+  ExternalCanonicalGroup,
+  ExternalLibraryDescriptor,
+  ExternalLibraryProfile,
+} from '../runtime/types';
+import { antdLibraryManifest } from './antdManifest';
+import {
+  getValueByPath,
+  isRenderableComponent,
+  toKebabCase,
+  toPascalCase,
+} from '../runtime/utils';
 
 type AntdModule = Record<string, unknown> & {
   Button?: React.ElementType;
@@ -35,7 +38,17 @@ const createAntdEsmUrlCandidates = (cacheBust: string) => [
   `https://esm.sh/v135/antd@5.28.0/es2022/antd.mjs?external=react,react-dom&v=${cacheBust}`,
   `https://esm.sh/antd@5.28.0?target=es2022&external=react,react-dom&deps=@ant-design/colors@7.2.1&v=${cacheBust}`,
 ];
-const ANTD_RUNTIME_LOG_PREFIX = '[antd-esm-runtime]';
+
+const createAntdLibraryDescriptor = (): ExternalLibraryDescriptor => {
+  const cacheBust = Date.now().toString(36);
+  return {
+    libraryId: 'antd',
+    packageName: 'antd',
+    version: '5.28.0',
+    source: 'esm.sh',
+    entryCandidates: createAntdEsmUrlCandidates(cacheBust),
+  };
+};
 
 const ANTD_GROUPS: AntdGroupDefinition[] = [
   {
@@ -251,20 +264,6 @@ const antdModalAdapter: ComponentAdapter = {
   },
 };
 
-const toPascalCase = (value: string) =>
-  value
-    .split(/[^a-zA-Z0-9]+/)
-    .filter(Boolean)
-    .map((segment) => `${segment[0]?.toUpperCase()}${segment.slice(1)}`)
-    .join('');
-
-const toKebabCase = (value: string) =>
-  value
-    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-    .replace(/[^a-zA-Z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .toLowerCase();
-
 const pathToRuntimeType = (path: string) =>
   `Antd${path.split('.').map(toPascalCase).join('')}`;
 
@@ -275,16 +274,10 @@ const getComponentByPath = (
   module: AntdModule,
   path: string
 ): React.ElementType | undefined => {
-  const segments = path.split('.');
-  let cursor: unknown = module;
-  for (const segment of segments) {
-    if (!cursor || typeof cursor !== 'object') return undefined;
-    cursor = (cursor as Record<string, unknown>)[segment];
-  }
-  if (!cursor) return undefined;
-  if (typeof cursor !== 'function' && typeof cursor !== 'object')
-    return undefined;
-  return cursor as React.ElementType;
+  const cursor = getValueByPath(module, path);
+  return isRenderableComponent(cursor)
+    ? (cursor as React.ElementType)
+    : undefined;
 };
 
 const getAdapterByPath = (path: string): ComponentAdapter => {
@@ -293,10 +286,29 @@ const getAdapterByPath = (path: string): ComponentAdapter => {
   return antdTextAdapter;
 };
 
-const isLikelyTopLevelComponent = (name: string, value: unknown) => {
-  if (NON_COMPONENT_EXPORTS.has(name)) return false;
-  if (!/^[A-Z]/.test(name)) return false;
-  return typeof value === 'function' || typeof value === 'object';
+const INLINE_POPUP_PATHS = new Set([
+  'Select',
+  'TreeSelect',
+  'Cascader',
+  'DatePicker',
+  'TimePicker',
+  'Dropdown',
+  'Popover',
+  'Tooltip',
+  'ColorPicker',
+]);
+
+const withInlinePopupContainer = (
+  path: string,
+  props: Record<string, unknown>
+): Record<string, unknown> => {
+  if (!INLINE_POPUP_PATHS.has(path)) return props;
+  if (props.getPopupContainer !== undefined) return props;
+  return {
+    ...props,
+    getPopupContainer: (trigger: HTMLElement | null) =>
+      trigger?.parentElement ?? trigger ?? document.body,
+  };
 };
 
 const renderAntdPreview = (
@@ -305,10 +317,10 @@ const renderAntdPreview = (
   component: React.ElementType
 ) => {
   if (path === 'Button') {
-    return ({ size }: { size?: string; status?: string }) =>
+    return ({ size, status }: { size?: string; status?: string }) =>
       React.createElement(
         component,
-        { type: 'primary', size: size ?? 'middle' },
+        { type: status ?? 'primary', size: size ?? 'middle' },
         'Button'
       );
   }
@@ -361,26 +373,33 @@ const renderAntdDefaultPreview = (
   path: string,
   module: AntdModule,
   component: React.ElementType,
-  size?: string
+  size?: string,
+  status?: string
 ) => {
   const commonSize = size ?? 'middle';
   switch (path) {
     case 'Select':
-      return React.createElement(component, {
-        size: commonSize,
-        defaultValue: 'a',
-        options: [
-          { label: 'Option A', value: 'a' },
-          { label: 'Option B', value: 'b' },
-        ],
-        style: { width: 120 },
-      });
+      return React.createElement(
+        component,
+        withInlinePopupContainer(path, {
+          size: commonSize,
+          defaultValue: 'a',
+          options: [
+            { label: 'Option A', value: 'a' },
+            { label: 'Option B', value: 'b' },
+          ],
+          style: { width: 120 },
+        })
+      );
     case 'DatePicker':
     case 'TimePicker':
-      return React.createElement(component, {
-        size: commonSize,
-        style: { width: 120 },
-      });
+      return React.createElement(
+        component,
+        withInlinePopupContainer(path, {
+          size: commonSize,
+          style: { width: 120 },
+        })
+      );
     case 'InputNumber':
       return React.createElement(component, {
         size: commonSize,
@@ -419,7 +438,7 @@ const renderAntdDefaultPreview = (
     case 'Alert':
       return React.createElement(component, {
         message: 'Alert',
-        type: 'info',
+        type: status ?? 'info',
         showIcon: true,
       });
     case 'Progress':
@@ -443,19 +462,21 @@ const renderAntdDefaultPreview = (
     case 'Tooltip':
       return React.createElement(
         component,
-        { title: 'Tooltip' },
+        withInlinePopupContainer(path, { title: 'Tooltip' }),
         <span className="text-[10px]">Hover</span>
       );
     case 'Popover':
       return React.createElement(
         component,
-        { content: 'Popover' },
+        withInlinePopupContainer(path, { content: 'Popover' }),
         <span className="text-[10px]">Trigger</span>
       );
     case 'Dropdown':
       return React.createElement(
         component,
-        { menu: { items: [{ key: '1', label: 'Item' }] } },
+        withInlinePopupContainer(path, {
+          menu: { items: [{ key: '1', label: 'Item' }] },
+        }),
         <button type="button">Menu</button>
       );
     case 'Menu':
@@ -590,6 +611,21 @@ const renderAntdDefaultPreview = (
   }
 };
 
+const defaultPropsForPath = (path: string): Record<string, unknown> => {
+  if (path === 'Button') return { type: 'primary', size: 'middle' };
+  if (path === 'Input') return { placeholder: 'Input', size: 'middle' };
+  if (path === 'Modal')
+    return {
+      open: false,
+      title: 'Modal Title',
+      getContainer: false,
+      mask: false,
+      footer: null,
+    };
+  if (path === 'Drawer') return { open: false, title: 'Drawer Title' };
+  return {};
+};
+
 const createPreviewItem = (
   path: string,
   module: AntdModule,
@@ -597,12 +633,14 @@ const createPreviewItem = (
 ): ComponentPreviewItem => ({
   id: pathToItemId(path),
   name: path,
+  runtimeType: pathToRuntimeType(path),
+  defaultProps: defaultPropsForPath(path),
   preview: <div className="text-[10px] text-(--color-7)">{path}</div>,
-  renderPreview: ({ size }) => (
+  renderPreview: ({ size, status }) => (
     <AntdPreviewBoundary>
       {
-        (renderAntdPreview(path, module, component)?.({ size }) ??
-          renderAntdDefaultPreview(path, module, component, size) ?? (
+        (renderAntdPreview(path, module, component)?.({ size, status }) ??
+          renderAntdDefaultPreview(path, module, component, size, status) ?? (
             <div className="text-[10px] text-(--color-7)">{path}</div>
           )) as React.ReactNode
       }
@@ -611,23 +649,23 @@ const createPreviewItem = (
   sizeOptions: SIZE_SUPPORT_PATHS.has(path) ? SIZE_OPTIONS : undefined,
 });
 
-const buildAntdGroups = (module: AntdModule): ComponentGroup[] => {
+const buildAntdGroups = (
+  discoveredComponents: CanonicalExternalComponent[]
+): ExternalCanonicalGroup[] => {
+  const componentByPath = new Map(
+    discoveredComponents.map((item) => [item.path, item])
+  );
   const knownPaths = new Set(ANTD_GROUPS.flatMap((group) => group.components));
-  const extraPaths = Object.entries(module)
-    .filter(([name, value]) => isLikelyTopLevelComponent(name, value))
-    .map(([name]) => name)
-    .filter((name) => !knownPaths.has(name))
+  const extraPaths = discoveredComponents
+    .map((item) => item.path)
+    .filter((path) => !knownPaths.has(path))
     .sort();
 
-  const groups: ComponentGroup[] = [];
+  const groups: ExternalCanonicalGroup[] = [];
   ANTD_GROUPS.forEach((group) => {
     const items = group.components
-      .map((path) => {
-        const component = getComponentByPath(module, path);
-        if (!component) return null;
-        return createPreviewItem(path, module, component);
-      })
-      .filter((item): item is ComponentPreviewItem => Boolean(item));
+      .map((path) => componentByPath.get(path) ?? null)
+      .filter((item): item is CanonicalExternalComponent => Boolean(item));
 
     if (items.length > 0) {
       groups.push({
@@ -645,136 +683,54 @@ const buildAntdGroups = (module: AntdModule): ComponentGroup[] => {
       title: 'Ant Design / Other',
       source: 'external',
       items: extraPaths
-        .map((path) => {
-          const component = getComponentByPath(module, path);
-          if (!component) return null;
-          return createPreviewItem(path, module, component);
-        })
-        .filter((item): item is ComponentPreviewItem => Boolean(item)),
+        .map((path) => componentByPath.get(path) ?? null)
+        .filter((item): item is CanonicalExternalComponent => Boolean(item)),
     });
   }
 
   return groups;
 };
 
-const registerAntdRuntimeComponents = (
+const toCanonicalComponent = (
+  path: string,
+  module: AntdModule
+): CanonicalExternalComponent | null => {
+  const component = getComponentByPath(module, path);
+  if (!component) return null;
+  const item = createPreviewItem(path, module, component);
+  return {
+    libraryId: 'antd',
+    componentName: path,
+    component,
+    runtimeType: pathToRuntimeType(path),
+    itemId: item.id,
+    preview: item.preview,
+    renderPreview: item.renderPreview,
+    sizeOptions: item.sizeOptions,
+    defaultProps: item.defaultProps,
+    adapter: getAdapterByPath(path),
+    path,
+    behaviorTags: [],
+    codegenHints: {},
+    propsSchema: {},
+    slots: [],
+  };
+};
+
+const collectCanonicalComponents = (
   module: AntdModule,
-  diagnostics: EsmLoadDiagnostic[]
-) => {
-  const groupPaths = ANTD_GROUPS.flatMap((group) => group.components);
-  const extraPaths = Object.entries(module)
-    .filter(([name, value]) => isLikelyTopLevelComponent(name, value))
-    .map(([name]) => name);
-  const allPaths = [...new Set([...groupPaths, ...extraPaths])];
+  paths: string[]
+): CanonicalExternalComponent[] =>
+  paths
+    .map((path) => toCanonicalComponent(path, module))
+    .filter((value): value is CanonicalExternalComponent => Boolean(value));
 
-  let registered = 0;
-  allPaths.forEach((path) => {
-    const component = getComponentByPath(module, path);
-    if (!component) return;
-    registerRuntimeComponent(
-      pathToRuntimeType(path),
-      component,
-      getAdapterByPath(path)
-    );
-    registered += 1;
-  });
-
-  if (registered === 0) {
-    diagnostics.push({
-      level: 'error',
-      message: 'No runtime-renderable components were found in antd module.',
-    });
-  } else {
-    // eslint-disable-next-line no-console
-    console.info(
-      `${ANTD_RUNTIME_LOG_PREFIX} registered ${registered} components`
-    );
-  }
-};
-
-let loadPromise: Promise<EsmLoadDiagnostic[]> | null = null;
-let importMapInjected = false;
-
-/**
- * Ensure the runtime import-map points remote esm modules to host React bridges,
- * so antd and the editor share one React instance.
- * 确保运行时 import-map 将远程 esm 模块指向宿主 React 桥接层，
- * 让 antd 与编辑器共享同一个 React 实例。
- */
-const ensureHostReactImportMap = () => {
-  if (importMapInjected || typeof document === 'undefined') return;
-  const existingImportMap = document.getElementById('mdr-esm-importmap');
-  if (existingImportMap) {
-    importMapInjected = true;
-    return;
-  }
-  const script = document.createElement('script');
-  script.id = 'mdr-esm-importmap';
-  script.type = 'importmap';
-  script.textContent = JSON.stringify({
-    imports: {
-      react: '/src/esm-bridge/react-interop.mjs',
-      'react-dom': '/src/esm-bridge/react-dom-interop.mjs',
-      'react/jsx-runtime': '/src/esm-bridge/react-jsx-runtime-interop.mjs',
-      'react/jsx-dev-runtime':
-        '/src/esm-bridge/react-jsx-dev-runtime-interop.mjs',
-    },
-  });
-  document.head.appendChild(script);
-  importMapInjected = true;
-};
-
-/**
- * Runtime external library registration chain:
- * Sidebar("External") -> ensureAntdEsmLibrary -> import(esm.sh antd) ->
- * registerRuntimeComponent -> registerComponentGroup -> MIRRenderer.
- *
- * 外部库运行时注册链路：
- * 侧栏切到 External -> ensureAntdEsmLibrary -> import(esm.sh antd) ->
- * registerRuntimeComponent -> registerComponentGroup -> MIRRenderer。
- */
-export const ensureAntdEsmLibrary = async (): Promise<EsmLoadDiagnostic[]> => {
-  if (loadPromise) return loadPromise;
-
-  loadPromise = (async () => {
-    const diagnostics: EsmLoadDiagnostic[] = [];
-    let module: AntdModule | null = null;
-
-    try {
-      ensureHostReactImportMap();
-      let lastError: unknown = null;
-      const cacheBust = Date.now().toString(36);
-      const candidateUrls = createAntdEsmUrlCandidates(cacheBust);
-      for (const url of candidateUrls) {
-        try {
-          module = (await import(/* @vite-ignore */ url)) as AntdModule;
-          // eslint-disable-next-line no-console
-          console.info(`${ANTD_RUNTIME_LOG_PREFIX} import success`, url);
-          break;
-        } catch (error) {
-          lastError = error;
-          // eslint-disable-next-line no-console
-          console.warn(`${ANTD_RUNTIME_LOG_PREFIX} import failed`, url, error);
-        }
-      }
-
-      if (!module)
-        throw lastError ?? new Error('No reachable esm.sh antd URL.');
-
-      registerAntdRuntimeComponents(module, diagnostics);
-      buildAntdGroups(module).forEach((group) => registerComponentGroup(group));
-    } catch (error) {
-      diagnostics.push({
-        level: 'error',
-        message: `Failed to load antd from esm.sh (tried ${createAntdEsmUrlCandidates('x').length} endpoints): ${String(error)}`,
-      });
-    }
-
-    if (diagnostics.some((item) => item.level === 'error')) {
-      loadPromise = null;
-    }
-    return diagnostics;
-  })();
-
-  return loadPromise;
+export const antdExternalLibraryProfile: ExternalLibraryProfile = {
+  descriptor: createAntdLibraryDescriptor,
+  includePaths: ANTD_GROUPS.flatMap((group) => group.components),
+  excludeExports: NON_COMPONENT_EXPORTS,
+  manifest: antdLibraryManifest,
+  toCanonicalComponents: (module, paths) =>
+    collectCanonicalComponents(module as AntdModule, paths),
+  toGroups: buildAntdGroups,
 };

@@ -25,6 +25,10 @@ import {
   isWideComponent,
 } from './BlueprintEditor.data';
 import { getComponentGroups } from './blueprint/registry';
+import type {
+  ExternalLibraryDiagnostic,
+  ExternalLibraryRuntimeState,
+} from './blueprint/external';
 
 type BlueprintEditorSidebarProps = {
   isCollapsed: boolean;
@@ -33,6 +37,11 @@ type BlueprintEditorSidebarProps = {
   expandedPreviews: Record<string, boolean>;
   sizeSelections: Record<string, string>;
   statusSelections: Record<string, number>;
+  externalDiagnostics: ExternalLibraryDiagnostic[];
+  externalLibraryStates?: ExternalLibraryRuntimeState[];
+  externalLibraryOptions?: Array<{ id: string; label: string }>;
+  isExternalLibraryLoading: boolean;
+  onRetryExternalLibrary?: (libraryId: string) => Promise<void> | void;
   onToggleCollapse: () => void;
   onToggleGroup: (groupId: string) => void;
   onTogglePreview: (previewId: string) => void;
@@ -61,7 +70,7 @@ const PreviewWrapper = ({
   children,
 }: PreviewWrapperProps) => (
   <div
-    className={`ComponentPreviewSurface relative flex h-[60px] min-w-20 items-center justify-center overflow-hidden rounded-md border border-black/6 bg-black/[0.02] dark:border-white/12 dark:bg-white/4 [&_.MdrModalOverlay]:absolute [&_.MdrModalOverlay]:inset-1 [&_.MdrModalOverlay]:z-0 [&_.MdrModalOverlay]:rounded-md [&_.MdrDrawerOverlay]:absolute [&_.MdrDrawerOverlay]:inset-1 [&_.MdrDrawerOverlay]:z-0 [&_.MdrDrawerOverlay]:rounded-md [&_.MdrModal]:max-w-full [&_.MdrModal]:w-[140px] [&_.MdrDrawer]:max-h-full [&_.MdrDrawer]:max-w-full ${wide ? 'Wide w-full' : ''} ${className}`.trim()}
+    className={`ComponentPreviewSurface relative flex h-[60px] min-w-20 items-center justify-center overflow-hidden rounded-md border border-black/6 bg-black/[0.02] dark:border-white/12 dark:bg-white/4 [&_.MdrModalOverlay]:absolute [&_.MdrModalOverlay]:inset-1 [&_.MdrModalOverlay]:z-0 [&_.MdrModalOverlay]:rounded-md [&_.MdrDrawerOverlay]:absolute [&_.MdrDrawerOverlay]:inset-1 [&_.MdrDrawerOverlay]:z-0 [&_.MdrDrawerOverlay]:rounded-md [&_.MdrModal]:max-w-full [&_.MdrModal]:w-[140px] [&_.MdrDrawer]:max-h-full [&_.MdrDrawer]:max-w-full [&_.ant-modal-root]:relative [&_.ant-modal-root]:inset-auto [&_.ant-modal-root]:z-[1] [&_.ant-modal-wrap]:relative [&_.ant-modal-wrap]:inset-auto [&_.ant-modal-wrap]:overflow-hidden [&_.ant-modal]:my-1 [&_.ant-modal]:max-w-[150px] [&_.MuiDialog-root]:absolute [&_.MuiDialog-root]:inset-0 [&_.MuiPaper-root]:m-0 [&_.MuiPaper-root]:max-h-full [&_.MuiPaper-root]:max-w-[150px] ${wide ? 'Wide w-full' : ''} ${className}`.trim()}
   >
     <div
       className="ComponentPreviewInner pointer-events-none inline-flex origin-center items-center justify-center"
@@ -170,6 +179,11 @@ export function BlueprintEditorSidebar({
   expandedPreviews,
   sizeSelections,
   statusSelections,
+  externalDiagnostics = [],
+  externalLibraryStates = [],
+  externalLibraryOptions = [],
+  isExternalLibraryLoading,
+  onRetryExternalLibrary,
   onToggleCollapse,
   onToggleGroup,
   onTogglePreview,
@@ -182,15 +196,36 @@ export function BlueprintEditorSidebar({
   const { t } = useTranslation('blueprint');
   const [query, setQuery] = useState('');
   const [isSearchOpen, setSearchOpen] = useState(false);
-  const [activeLibrary, setActiveLibrary] = useState<
-    'builtIn' | 'headless' | 'external'
-  >('builtIn');
-  const [externalLoadState, setExternalLoadState] = useState<
-    'idle' | 'loading' | 'ready' | 'error'
-  >('idle');
-  const [externalMessage, setExternalMessage] = useState('');
-  const [registryVersion, setRegistryVersion] = useState(0);
+  const [activeLibraryId, setActiveLibraryId] = useState('builtIn');
   const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const libraryTabs = useMemo(
+    () => [
+      {
+        id: 'builtIn',
+        label: t('sidebar.libraries.builtIn'),
+        source: 'builtIn',
+      },
+      {
+        id: 'headless',
+        label: t('sidebar.libraries.headless'),
+        source: 'headless',
+      },
+      ...externalLibraryOptions.map((item) => ({
+        id: `external:${item.id}`,
+        label: item.label,
+        source: 'external' as const,
+        libraryId: item.id,
+      })),
+    ],
+    [externalLibraryOptions, t]
+  );
+  const activeLibraryTab =
+    libraryTabs.find((tab) => tab.id === activeLibraryId) ?? libraryTabs[0];
+
+  useEffect(() => {
+    if (libraryTabs.some((tab) => tab.id === activeLibraryId)) return;
+    setActiveLibraryId(libraryTabs[0]?.id ?? 'builtIn');
+  }, [activeLibraryId, libraryTabs]);
 
   const normalizedQuery = query.trim().toLowerCase();
   const effectiveSearchOpen = isSearchOpen || Boolean(normalizedQuery);
@@ -198,7 +233,14 @@ export function BlueprintEditorSidebar({
     const rawGroups = getComponentGroups();
     const scopedGroups = rawGroups.filter((group) => {
       const groupSource = group.source ?? 'builtIn';
-      return groupSource === activeLibrary;
+      if (activeLibraryTab?.source === 'external') {
+        if (groupSource !== 'external') return false;
+        if (!activeLibraryTab.libraryId) return true;
+        return group.items.some(
+          (item) => item.libraryId === activeLibraryTab.libraryId
+        );
+      }
+      return groupSource === activeLibraryTab?.source;
     });
 
     if (!normalizedQuery) return scopedGroups;
@@ -215,6 +257,13 @@ export function BlueprintEditorSidebar({
         const nextItems = groupMatches
           ? group.items
           : group.items.filter((item) => {
+              if (
+                activeLibraryTab?.source === 'external' &&
+                activeLibraryTab.libraryId &&
+                item.libraryId !== activeLibraryTab.libraryId
+              ) {
+                return false;
+              }
               const itemName = t(`componentLibrary.items.${item.id}.name`, {
                 defaultValue: item.name,
               });
@@ -228,8 +277,36 @@ export function BlueprintEditorSidebar({
         return { ...group, items: nextItems };
       })
       .filter((value): value is NonNullable<typeof value> => Boolean(value));
-  }, [activeLibrary, normalizedQuery, registryVersion, t]);
-
+  }, [activeLibraryTab, normalizedQuery, t]);
+  const hasExternalItems = useMemo(
+    () =>
+      groups.some(
+        (group) =>
+          (group.source ?? 'builtIn') === 'external' && group.items.length > 0
+      ),
+    [groups]
+  );
+  const failedExternalLibraries = useMemo(
+    () =>
+      externalLibraryStates.filter((state) => {
+        if (
+          activeLibraryTab?.source === 'external' &&
+          activeLibraryTab.libraryId &&
+          state.libraryId !== activeLibraryTab.libraryId
+        ) {
+          return false;
+        }
+        return state.status === 'error';
+      }),
+    [activeLibraryTab, externalLibraryStates]
+  );
+  const scopedExternalDiagnostics = useMemo(() => {
+    if (activeLibraryTab?.source !== 'external') return [];
+    if (!activeLibraryTab.libraryId) return externalDiagnostics;
+    return externalDiagnostics.filter(
+      (item) => !item.libraryId || item.libraryId === activeLibraryTab.libraryId
+    );
+  }, [activeLibraryTab, externalDiagnostics]);
   const handleQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
   };
@@ -242,23 +319,6 @@ export function BlueprintEditorSidebar({
     const id = window.setTimeout(() => searchInputRef.current?.focus(), 0);
     return () => window.clearTimeout(id);
   }, [effectiveSearchOpen]);
-
-  useEffect(() => {
-    if (activeLibrary !== 'external') return;
-    setExternalLoadState('loading');
-    void import('./blueprint/external/antdEsmLibrary')
-      .then((mod) => mod.ensureAntdEsmLibrary())
-      .then((diagnostics) => {
-        const hasError = diagnostics.some((item) => item.level === 'error');
-        setExternalLoadState(hasError ? 'error' : 'ready');
-        setExternalMessage(diagnostics.map((item) => item.message).join(' '));
-        setRegistryVersion((value) => value + 1);
-      })
-      .catch((error) => {
-        setExternalLoadState('error');
-        setExternalMessage(String(error));
-      });
-  }, [activeLibrary]);
 
   const openSearch = () => setSearchOpen(true);
   const closeSearch = () => setSearchOpen(false);
@@ -339,62 +399,96 @@ export function BlueprintEditorSidebar({
       </div>
       {!isCollapsed && (
         <div className="BlueprintEditorSidebarLibraryBar px-3 py-2">
-          <div className="inline-flex w-full items-center gap-1 text-[11px] text-(--color-7)">
-            <button
-              type="button"
-              className={`h-6 flex-1 cursor-pointer rounded-full px-2 transition-colors ${
-                activeLibrary === 'builtIn'
-                  ? 'border border-black/16 text-(--color-9) dark:border-white/20'
-                  : 'border border-transparent bg-transparent hover:text-(--color-9)'
-              }`}
-              onClick={() => setActiveLibrary('builtIn')}
-              aria-label={t('sidebar.libraries.builtIn')}
-            >
-              {t('sidebar.libraries.builtIn')}
-            </button>
-            <button
-              type="button"
-              className={`h-6 flex-1 cursor-pointer rounded-full px-2 transition-colors ${
-                activeLibrary === 'headless'
-                  ? 'border border-black/16 text-(--color-9) dark:border-white/20'
-                  : 'border border-transparent bg-transparent hover:text-(--color-9)'
-              }`}
-              onClick={() => setActiveLibrary('headless')}
-              aria-label={t('sidebar.libraries.headless')}
-            >
-              {t('sidebar.libraries.headless')}
-            </button>
-            <button
-              type="button"
-              className={`h-6 flex-1 cursor-pointer rounded-full px-2 transition-colors ${
-                activeLibrary === 'external'
-                  ? 'border border-black/16 text-(--color-9) dark:border-white/20'
-                  : 'border border-transparent bg-transparent hover:text-(--color-9)'
-              }`}
-              onClick={() => setActiveLibrary('external')}
-              aria-label={t('sidebar.libraries.external')}
-            >
-              {t('sidebar.libraries.external')}
-            </button>
+          <div className="flex w-full flex-wrap items-center gap-1 text-[11px] text-(--color-7)">
+            {libraryTabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                className={`h-6 cursor-pointer rounded-full px-2 transition-colors ${
+                  activeLibraryId === tab.id
+                    ? 'border border-black/16 text-(--color-9) dark:border-white/20'
+                    : 'border border-transparent bg-transparent hover:text-(--color-9)'
+                }`}
+                onClick={() => setActiveLibraryId(tab.id)}
+                aria-label={tab.label}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
-          {activeLibrary === 'external' && externalLoadState !== 'ready' ? (
-            <p className="mt-1.5 text-[10px] text-(--color-6)">
-              {externalLoadState === 'loading'
-                ? t('sidebar.external.loading', {
-                    defaultValue: 'Loading Ant Design from esm.sh...',
-                  })
-                : externalMessage ||
-                  t('sidebar.external.error', {
-                    defaultValue: 'Failed to load remote components.',
-                  })}
-            </p>
-          ) : null}
         </div>
       )}
+      {!isCollapsed &&
+        activeLibraryTab?.source === 'external' &&
+        scopedExternalDiagnostics.length > 0 && (
+          <div className="px-3 pb-2">
+            <div className="grid max-h-24 gap-1 overflow-auto rounded-md border border-black/8 bg-black/[0.02] p-1.5 text-[10px] dark:border-white/14 dark:bg-white/4">
+              {scopedExternalDiagnostics.map((item, index) => (
+                <div
+                  key={`${item.code}-${item.libraryId ?? 'global'}-${index}`}
+                  className="rounded px-1.5 py-1 text-(--color-7)"
+                  title={item.hint}
+                >
+                  <span className="mr-1 font-semibold text-(--color-8)">
+                    [{item.code}]
+                  </span>
+                  <span>{item.message}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      {!isCollapsed &&
+        activeLibraryTab?.source === 'external' &&
+        failedExternalLibraries.length > 0 && (
+          <div className="px-3 pb-2">
+            <div className="rounded-md border border-black/8 bg-black/[0.02] px-2 py-1.5 text-[10px] text-(--color-7) dark:border-white/14 dark:bg-white/4">
+              <div className="mt-1.5 grid gap-1">
+                {failedExternalLibraries.map((state) => (
+                  <div
+                    key={state.libraryId}
+                    className="flex items-center justify-between gap-2 rounded border border-black/6 bg-white/50 px-1.5 py-1 dark:border-white/10 dark:bg-white/5"
+                  >
+                    <span className="truncate text-(--color-8)">
+                      {state.libraryId}
+                    </span>
+                    <button
+                      type="button"
+                      className="cursor-pointer rounded border border-black/10 px-1.5 py-0.5 text-[10px] text-(--color-8) dark:border-white/16"
+                      onClick={() => onRetryExternalLibrary?.(state.libraryId)}
+                    >
+                      Retry
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      {!isCollapsed &&
+        activeLibraryTab?.source === 'external' &&
+        isExternalLibraryLoading && (
+          <div className="px-3 pb-2">
+            <div className="rounded-md border border-black/8 bg-black/[0.02] px-2 py-1.5 text-[10px] text-(--color-7) dark:border-white/14 dark:bg-white/4">
+              Loading external components...
+            </div>
+          </div>
+        )}
+      {!isCollapsed &&
+        activeLibraryTab?.source === 'external' &&
+        !isExternalLibraryLoading &&
+        !hasExternalItems && (
+          <div className="px-3 pb-2">
+            <div className="rounded-md border border-black/8 bg-black/[0.02] px-2 py-1.5 text-[10px] text-(--color-7) dark:border-white/14 dark:bg-white/4">
+              No external components available.
+            </div>
+          </div>
+        )}
       {!isCollapsed && (
         <div className="BlueprintEditorComponentList grid gap-4 overflow-auto px-3 pb-3 pt-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:h-0 [&::-webkit-scrollbar]:w-0">
-          {groups.map((group) => {
-            const isGroupCollapsed = collapsedGroups[group.id];
+          {groups.map((group, groupIndex) => {
+            const isGroupCollapsed =
+              collapsedGroups[group.id] ?? groupIndex > 0;
             const groupTitle = t(`componentLibrary.groups.${group.id}.title`, {
               defaultValue: group.title,
             });

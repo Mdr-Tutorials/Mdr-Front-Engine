@@ -39,6 +39,11 @@
 
 - `specs/implementation/workspace-refactor-plan.md`
 - `specs/implementation/workspace-task-backlog.md`
+- `specs/implementation/external-library-execution-plan.md`
+- `specs/implementation/external-library-task-backlog.md`
+- `specs/codegen/react-production-policy-v1.md`
+- `specs/external/canonical-external-ir-v1.md`
+- `specs/diagnostics/external-library-diagnostic-codes.md`
 
 ## 范围边界（必须遵守）
 

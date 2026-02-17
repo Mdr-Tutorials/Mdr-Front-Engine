@@ -8,7 +8,7 @@ flowchart TD
     MIR((MIR Core<br>JSON Schema<br>唯一真相源)):::core
 
     %% ----------------- 顶部：编辑器层 -----------------
-    subgraph Editors [编辑器：三编辑器架构]
+    subgraph Editors [编辑器-三编辑器架构]
         direction TB
 
         %% 测试模块

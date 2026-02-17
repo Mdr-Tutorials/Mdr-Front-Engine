@@ -461,6 +461,19 @@ export const registerRuntimeComponent = (
   }
 };
 
+export const unregisterRuntimeComponent = (type: string) => {
+  if (!runtimeEntries.has(type)) return;
+  runtimeEntries.delete(type);
+  runtimeRegistryRevision += 1;
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent(RUNTIME_REGISTRY_UPDATED_EVENT, {
+        detail: { revision: runtimeRegistryRevision },
+      })
+    );
+  }
+};
+
 export const resetRuntimeComponents = () => {
   runtimeEntries.clear();
   runtimeRegistryRevision += 1;

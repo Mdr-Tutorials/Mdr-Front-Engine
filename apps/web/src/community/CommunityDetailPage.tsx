@@ -34,18 +34,6 @@ const formatTime = (value: string) =>
     minute: '2-digit',
   });
 
-const hasAntdNode = (
-  node: { type?: string; children?: unknown[] } | undefined
-) => {
-  if (!node) return false;
-  if (typeof node.type === 'string' && node.type.startsWith('Antd'))
-    return true;
-  if (!Array.isArray(node.children)) return false;
-  return node.children.some((child) =>
-    hasAntdNode(child as { type?: string; children?: unknown[] })
-  );
-};
-
 export function CommunityDetailPage() {
   const { t } = useTranslation('community');
   const { projectId } = useParams();
@@ -106,10 +94,6 @@ export function CommunityDetailPage() {
     () => resolveMirDocument(project?.mir),
     [project?.mir]
   );
-  const shouldLoadAntdRuntime = useMemo(
-    () => hasAntdNode(previewMirDoc.ui.root),
-    [previewMirDoc]
-  );
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -122,18 +106,6 @@ export function CommunityDetailPage() {
         handleRegistryUpdate
       );
   }, []);
-
-  useEffect(() => {
-    if (!shouldLoadAntdRuntime) return;
-    void import('@/editor/features/design/blueprint/external/antdEsmLibrary')
-      .then((mod) => mod.ensureAntdEsmLibrary())
-      .catch((runtimeError) => {
-        console.warn(
-          '[community-preview] failed to load antd runtime',
-          runtimeError
-        );
-      });
-  }, [shouldLoadAntdRuntime]);
 
   const handleClone = async () => {
     if (!project || isCloning) return;

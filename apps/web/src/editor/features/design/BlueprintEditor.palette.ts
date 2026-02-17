@@ -1,4 +1,4 @@
-import {
+﻿import {
   ANCHOR_ITEMS,
   BREADCRUMB_ITEMS,
   CHECKLIST_ITEMS,
@@ -20,6 +20,7 @@ import {
 } from './BlueprintEditor.data';
 import type { ComponentNode, MIRDocument } from '@/core/types/engine.types';
 import { createRadixNodeFromPaletteItem } from './BlueprintEditor.radix';
+import { getComponentItemById } from './blueprint/registry';
 
 const collectTypeCounts = (
   node: ComponentNode,
@@ -37,6 +38,50 @@ export const createNodeIdFactory = (doc: MIRDocument) => {
     counts[type] = next;
     return `${type}-${next}`;
   };
+};
+
+const NON_TEXT_COMPONENT_KEYWORDS = [
+  'input',
+  'select',
+  'picker',
+  'switch',
+  'checkbox',
+  'radio',
+  'slider',
+  'progress',
+  'spinner',
+  'skeleton',
+  'avatar',
+  'image',
+  'icon',
+  'table',
+  'list',
+  'grid',
+  'tree',
+  'chart',
+  'modal',
+  'dialog',
+  'drawer',
+  'tooltip',
+  'popover',
+  'dropdown',
+  'menu',
+  'pagination',
+  'steps',
+  'tabs',
+  'collapse',
+  'timeline',
+];
+
+const inferDefaultText = (name: string) => {
+  const trimmed = name.trim();
+  if (!trimmed) return undefined;
+  const normalized = trimmed.toLowerCase();
+  if (
+    NON_TEXT_COMPONENT_KEYWORDS.some((keyword) => normalized.includes(keyword))
+  )
+    return undefined;
+  return trimmed;
 };
 
 const PALETTE_NODE_DEFAULTS: Record<
@@ -338,28 +383,16 @@ export const createNodeFromPaletteItem = (
       ],
     };
   }
-  if (itemId.startsWith('antd-')) {
-    const runtimeType = `Antd${itemId
-      .slice('antd-'.length)
-      .split('-')
-      .map((segment) =>
-        segment ? `${segment[0].toUpperCase()}${segment.slice(1)}` : ''
-      )
-      .join('')}`;
-
-    const defaultPropsByType: Record<string, Record<string, unknown>> = {
-      AntdButton: { type: 'primary', size: selectedSize ?? 'middle' },
-      AntdInput: { placeholder: 'Input', size: selectedSize ?? 'middle' },
-      AntdModal: { open: false, title: 'Modal Title' },
-      AntdDrawer: { open: false, title: 'Drawer Title' },
-    };
-
+  const registryItem = getComponentItemById(itemId);
+  if (registryItem?.runtimeType) {
+    const inferredText = inferDefaultText(registryItem.name);
     return {
-      id: createId(runtimeType),
-      type: runtimeType,
+      id: createId(registryItem.runtimeType),
+      type: registryItem.runtimeType,
+      ...(inferredText ? { text: inferredText } : {}),
       props: {
+        ...(registryItem.defaultProps ?? {}),
         ...(selectedSize ? { size: selectedSize } : {}),
-        ...(defaultPropsByType[runtimeType] ?? {}),
         ...(variantProps ?? {}),
       },
     };

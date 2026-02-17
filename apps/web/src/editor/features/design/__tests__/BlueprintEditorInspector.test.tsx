@@ -3,6 +3,10 @@ import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { BlueprintEditorInspector } from '../BlueprintEditorInspector';
 import {
+  resetExternalRuntimeMetaStore,
+  setExternalRuntimeMeta,
+} from '../blueprint/external/runtime/metaStore';
+import {
   DEFAULT_BLUEPRINT_STATE,
   useEditorStore,
 } from '@/editor/store/useEditorStore';
@@ -77,6 +81,7 @@ vi.mock('@uiw/react-codemirror', () => ({
 
 beforeEach(() => {
   resetEditorStore();
+  resetExternalRuntimeMetaStore();
 });
 
 const getSelectedId = () =>
@@ -469,5 +474,109 @@ describe('BlueprintEditorInspector', () => {
     expect(mountedCss[0]?.path).toBe('src/styles/mounted/card-1.css');
     expect(mountedCss[0]?.content).toContain('.card');
     expect(mountedCss[0]?.classes).toContain('card');
+  });
+
+  it('updates external prop option through inspector field', () => {
+    setExternalRuntimeMeta('MuiButton', {
+      libraryId: 'mui',
+      runtimeType: 'MuiButton',
+      defaultProps: { variant: 'contained', size: 'medium' },
+      propOptions: { variant: ['contained', 'outlined', 'text'] },
+    });
+    resetEditorStore({
+      mirDoc: createMirDoc([
+        {
+          id: 'mui-button-1',
+          type: 'MuiButton',
+          text: 'Button',
+          props: { variant: 'contained', size: 'medium' },
+        },
+      ]),
+      blueprintStateByProject: {
+        [PROJECT_ID]: {
+          ...DEFAULT_BLUEPRINT_STATE,
+          selectedId: 'mui-button-1',
+        },
+      },
+    });
+
+    render(
+      <BlueprintEditorInspector
+        isCollapsed={false}
+        onToggleCollapse={() => {}}
+      />
+    );
+
+    const selects = screen.getAllByRole('combobox');
+    fireEvent.change(selects[0] as HTMLSelectElement, {
+      target: { value: 'outlined' },
+    });
+
+    const node = useEditorStore
+      .getState()
+      .mirDoc.ui.root.children?.find((item) => item.id === 'mui-button-1');
+    expect(node?.props?.variant).toBe('outlined');
+  });
+
+  it('updates and resets external boolean/number props through inspector fields', async () => {
+    setExternalRuntimeMeta('MuiDialog', {
+      libraryId: 'mui',
+      runtimeType: 'MuiDialog',
+      defaultProps: { open: false, maxWidth: 480, title: 'Dialog' },
+      propOptions: { maxWidth: ['320', '480', '640'] },
+    });
+    resetEditorStore({
+      mirDoc: createMirDoc([
+        {
+          id: 'mui-dialog-1',
+          type: 'MuiDialog',
+          props: { open: true, maxWidth: 640, title: 'Confirm' },
+        },
+      ]),
+      blueprintStateByProject: {
+        [PROJECT_ID]: {
+          ...DEFAULT_BLUEPRINT_STATE,
+          selectedId: 'mui-dialog-1',
+        },
+      },
+    });
+
+    render(
+      <BlueprintEditorInspector
+        isCollapsed={false}
+        onToggleCollapse={() => {}}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('inspector-external-prop-open'));
+    fireEvent.change(screen.getByTestId('inspector-external-prop-maxWidth'), {
+      target: { value: '320' },
+    });
+    const openInput = screen.getByTestId(
+      'inspector-external-prop-open'
+    ) as HTMLInputElement;
+    fireEvent.change(openInput, { target: { checked: false } });
+
+    let node = useEditorStore
+      .getState()
+      .mirDoc.ui.root.children?.find((item) => item.id === 'mui-dialog-1');
+    expect(node?.props?.maxWidth).toBe('320');
+    await waitFor(() => {
+      const latest = useEditorStore
+        .getState()
+        .mirDoc.ui.root.children?.find((item) => item.id === 'mui-dialog-1');
+      expect(latest?.props?.open).toBe(false);
+    });
+
+    fireEvent.click(screen.getByTestId('inspector-external-prop-reset-open'));
+    fireEvent.click(
+      screen.getByTestId('inspector-external-prop-reset-maxWidth')
+    );
+
+    node = useEditorStore
+      .getState()
+      .mirDoc.ui.root.children?.find((item) => item.id === 'mui-dialog-1');
+    expect(node?.props?.open).toBeUndefined();
+    expect(node?.props?.maxWidth).toBeUndefined();
   });
 });

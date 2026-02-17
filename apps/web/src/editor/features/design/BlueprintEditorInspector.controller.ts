@@ -7,6 +7,7 @@ import { createDefaultActionParams } from '@/mir/actions/registry';
 import { isIconRef, resolveIconRef } from '@/mir/renderer/iconRegistry';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import { resolveLinkCapability } from '@/mir/renderer/capabilities';
+import { getExternalRuntimeMetaByType } from './blueprint/external/runtime/metaStore';
 import { INSPECTOR_PANELS } from './inspector/panels/registry';
 import { resolveMountedCssEntries } from './inspector/classProtocol/mountedCss';
 import { useMountedCssEditorState } from './inspector/classProtocol/useMountedCssEditorState';
@@ -43,6 +44,10 @@ export const useBlueprintEditorInspectorController = () => {
     () => (selectedNode ? getPrimaryTextField(selectedNode) : null),
     [selectedNode]
   );
+  const externalComponentItem = useMemo(() => {
+    if (!selectedNode?.type) return null;
+    return getExternalRuntimeMetaByType(selectedNode.type) ?? null;
+  }, [selectedNode?.type]);
   const [draftId, setDraftId] = useState('');
   const [expandedSections, setExpandedSections] = useState({
     basic: true,
@@ -329,6 +334,7 @@ export const useBlueprintEditorInspectorController = () => {
       isDuplicate,
       primaryTextField,
       updateSelectedNode,
+      externalComponentItem,
       openMountedCssEditor: mountedCssEditor.openMountedCssEditor,
       mountedCssEntries,
       matchedPanels,
@@ -365,6 +371,7 @@ export const useBlueprintEditorInspectorController = () => {
       canApply,
       isDuplicate,
       primaryTextField,
+      externalComponentItem,
       mountedCssEditor.openMountedCssEditor,
       mountedCssEntries,
       matchedPanels,

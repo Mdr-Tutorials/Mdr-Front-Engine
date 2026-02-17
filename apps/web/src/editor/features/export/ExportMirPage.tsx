@@ -13,12 +13,18 @@ import {
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import { generateReactBundle } from '@/mir/generator/mirToReact';
 import { antdReactAdapter } from '@/mir/generator/react/antdAdapter';
+import { flattenPublicFiles, readPublicTree } from '../resources/publicTree';
 import { CodeViewer } from './CodeViewer';
 import './ExportMirPage.scss';
 
 type ExportTab = 'mir' | 'react';
 type ReactAdapterMode = 'mdr' | 'antd';
 type ReactImportStrategy = 'workspace' | 'esm-sh';
+type ExportCodeFile = {
+  path: string;
+  language: 'typescript' | 'json' | 'html';
+  content: string;
+};
 type FileTreeNode = {
   key: string;
   name: string;
@@ -130,25 +136,64 @@ export function ExportMirPage() {
     }
   }, [mirDoc, projectType, reactAdapterMode, reactImportStrategy, t]);
 
+  const publicTree = useMemo(() => readPublicTree(projectId), [projectId]);
+  const publicExportFiles = useMemo<ExportCodeFile[]>(
+    () =>
+      flattenPublicFiles(publicTree).map((file) => {
+        const lowerName = file.name.toLowerCase();
+        const isJson = Boolean(
+          file.mime?.includes('json') || lowerName.endsWith('.json')
+        );
+        const isHtml = Boolean(
+          file.mime?.includes('html') || /\.(html?)$/i.test(lowerName)
+        );
+        const content =
+          file.textContent ??
+          `// Binary file\n// path: ${file.path}\n// mime: ${
+            file.mime || 'unknown'
+          }\n// size: ${file.size || 0} bytes`;
+        return {
+          path: file.path,
+          language: isJson ? 'json' : isHtml ? 'html' : 'typescript',
+          content,
+        };
+      }),
+    [publicTree]
+  );
+  const reactProjectFiles = useMemo<ExportCodeFile[]>(
+    () => [...(reactBundle?.files ?? []), ...publicExportFiles],
+    [publicExportFiles, reactBundle?.files]
+  );
+  const reactFileTree = useMemo(
+    () => buildFileTree(reactProjectFiles),
+    [reactProjectFiles]
+  );
+  const activeReactFileRecord = useMemo(
+    () =>
+      reactProjectFiles.find((file) => file.path === activeReactFile) ??
+      reactProjectFiles[0],
+    [activeReactFile, reactProjectFiles]
+  );
+  const activeReactFileContent = activeReactFileRecord?.content ?? '';
+
   useEffect(() => {
-    if (!reactBundle) {
+    if (!reactProjectFiles.length) {
       setActiveReactFile('');
       return;
     }
-    setActiveReactFile(reactBundle.entryFilePath);
-  }, [reactBundle]);
-
-  const activeReactFileContent = useMemo(() => {
-    if (!reactBundle) return '';
-    const active =
-      reactBundle.files.find((file) => file.path === activeReactFile) ??
-      reactBundle.files[0];
-    return active?.content ?? '';
-  }, [activeReactFile, reactBundle]);
-  const reactFileTree = useMemo(
-    () => (reactBundle ? buildFileTree(reactBundle.files) : []),
-    [reactBundle]
-  );
+    const hasActiveFile = reactProjectFiles.some(
+      (file) => file.path === activeReactFile
+    );
+    if (hasActiveFile) return;
+    if (
+      reactBundle?.entryFilePath &&
+      reactProjectFiles.some((file) => file.path === reactBundle.entryFilePath)
+    ) {
+      setActiveReactFile(reactBundle.entryFilePath);
+      return;
+    }
+    setActiveReactFile(reactProjectFiles[0].path);
+  }, [activeReactFile, reactBundle?.entryFilePath, reactProjectFiles]);
 
   const activeCode = activeTab === 'mir' ? mirJson : activeReactFileContent;
   const activeTitle =
@@ -161,7 +206,7 @@ export function ExportMirPage() {
           defaultValue: '当前项目的 MIR JSON（临时页）',
         })
       : t('react.description', {
-          defaultValue: '基于当前 MIR 生成的 React 组件代码',
+          defaultValue: '基于当前 MIR 生成的 React 项目代码（含 public/*）',
         });
   const activeEmpty =
     activeTab === 'mir'
@@ -177,19 +222,19 @@ export function ExportMirPage() {
   }, [activeTab]);
 
   useEffect(() => {
-    if (!reactBundle) {
+    if (!reactProjectFiles.length) {
       setExpandedFolders({});
       return;
     }
     const next: Record<string, boolean> = {};
-    reactBundle.files.forEach((file) => {
+    reactProjectFiles.forEach((file) => {
       const segments = file.path.split('/').filter(Boolean);
       for (let index = 0; index < segments.length - 1; index += 1) {
         next[segments.slice(0, index + 1).join('/')] = true;
       }
     });
     setExpandedFolders(next);
-  }, [reactBundle]);
+  }, [reactProjectFiles]);
 
   const toggleFolder = (path: string) => {
     setExpandedFolders((current) => ({
@@ -203,8 +248,7 @@ export function ExportMirPage() {
       const isFolder = node.children.length > 0 && !node.file;
       const isExpanded = expandedFolders[node.path] ?? true;
       const isActive =
-        Boolean(node.file) &&
-        (activeReactFile || reactBundle?.entryFilePath) === node.file?.path;
+        Boolean(node.file) && activeReactFile === node.file?.path;
       const fileIcon =
         node.file?.language === 'json' ? (
           <FileJson2 size={13} />
@@ -353,7 +397,7 @@ export function ExportMirPage() {
         ) : null}
         {!activeCode ? (
           <div className="ExportMirPageEmpty">{activeEmpty}</div>
-        ) : activeTab === 'react' && reactBundle ? (
+        ) : activeTab === 'react' && reactProjectFiles.length ? (
           <div className="flex h-full min-h-0 gap-2">
             <aside className="w-52 shrink-0 overflow-auto rounded-md border border-black/10 p-1 dark:border-white/15">
               {renderTreeNodes(reactFileTree)}
@@ -361,12 +405,11 @@ export function ExportMirPage() {
             <CodeViewer
               code={activeReactFileContent}
               lang={
-                reactBundle.files.find(
-                  (file) =>
-                    file.path === (activeReactFile || reactBundle.entryFilePath)
-                )?.language === 'json'
+                activeReactFileRecord?.language === 'json'
                   ? 'json'
-                  : 'typescript'
+                  : activeReactFileRecord?.language === 'html'
+                    ? 'html'
+                    : 'typescript'
               }
             />
           </div>

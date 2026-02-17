@@ -172,4 +172,46 @@ describe('BlueprintEditorSidebar', () => {
     });
     expect(screen.getByText(/Base/)).toBeTruthy();
   });
+
+  it('shows external library errors and supports retry', () => {
+    const onRetryExternalLibrary = vi.fn();
+    render(
+      <BlueprintEditorSidebar
+        isCollapsed={false}
+        collapsedGroups={{}}
+        expandedPreviews={{}}
+        sizeSelections={{}}
+        statusSelections={{}}
+        externalLibraryOptions={[{ id: 'mui', label: 'Material UI' }]}
+        externalLibraryStates={[
+          {
+            libraryId: 'mui',
+            status: 'error',
+            diagnostics: [
+              {
+                code: 'ELIB-1099',
+                level: 'error',
+                stage: 'load',
+                message: 'failed',
+              },
+            ],
+            lastUpdatedAt: Date.now(),
+          },
+        ]}
+        onRetryExternalLibrary={onRetryExternalLibrary}
+        onToggleCollapse={() => {}}
+        onToggleGroup={() => {}}
+        onTogglePreview={() => {}}
+        onPreviewKeyDown={() => {}}
+        onSizeSelect={() => {}}
+        onStatusSelect={() => {}}
+        onStatusCycleStart={() => {}}
+        onStatusCycleStop={() => {}}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Material UI' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Retry' }));
+    expect(onRetryExternalLibrary).toHaveBeenCalledWith('mui');
+  });
 });
