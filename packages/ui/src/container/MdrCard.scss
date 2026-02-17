@@ -2,8 +2,25 @@
   box-sizing: border-box;
   background-color: var(--color-0);
   border-radius: var(--radius-md);
-  transition: all var(--transition-normal);
+  transition:
+    border-color var(--transition-normal),
+    box-shadow var(--transition-normal),
+    transform var(--transition-fast),
+    background-color var(--transition-normal);
   color: var(--color-10);
+  display: block;
+
+  &.Small {
+    min-height: 100px;
+  }
+
+  &.Medium {
+    min-height: 200px;
+  }
+
+  &.Large {
+    min-height: 300px;
+  }
 
   &.PaddingNone {
     padding: 0;
@@ -22,15 +39,15 @@
   }
 
   &.Default {
-    border: 1px solid var(--color-6);
+    border: 1px solid var(--color-3);
   }
 
   &.Bordered {
-    border: 2px solid var(--color-6);
+    border: 2px solid var(--color-4);
   }
 
   &.Elevated {
-    border: 1px solid var(--color-6);
+    border: 1px solid var(--color-3);
     box-shadow: var(--shadow-md);
   }
 
@@ -51,7 +68,7 @@
 
     &:hover {
       border-color: var(--color-9);
-      box-shadow: var(--shadow-md);
+      box-shadow: var(--shadow-lg);
     }
 
     &:active {

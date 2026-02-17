@@ -2,6 +2,8 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { BlueprintEditorInspector } from '../BlueprintEditorInspector';
+import { resetInspectorExpansionPersistence } from '../BlueprintEditorInspector.controller';
+import { resetLayoutPanelExpansionPersistence } from '../inspector/panels/LayoutPanel';
 import {
   DEFAULT_BLUEPRINT_STATE,
   useEditorStore,
@@ -58,6 +60,8 @@ vi.mock('@mdr/ui', () => ({
 }));
 
 beforeEach(() => {
+  resetInspectorExpansionPersistence();
+  resetLayoutPanelExpansionPersistence();
   resetEditorStore();
 });
 

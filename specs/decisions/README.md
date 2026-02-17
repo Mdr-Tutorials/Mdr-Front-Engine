@@ -34,6 +34,8 @@
    - `specs/decisions/16.class-protocol-editor.md`
 8. **外部组件库接入**
    - `specs/decisions/17.external-library-runtime-and-adapter.md`
+9. **布局范式与内置 Inspector Schema**
+   - `specs/decisions/19.layout-pattern-and-builtin-inspector-schema.md`
 
 ## 实施主计划
 
@@ -41,6 +43,7 @@
 - `specs/implementation/workspace-task-backlog.md`
 - `specs/implementation/external-library-execution-plan.md`
 - `specs/implementation/external-library-task-backlog.md`
+- `specs/implementation/layout-pattern-and-builtin-inspector-task-backlog.md`
 - `specs/codegen/react-production-policy-v1.md`
 - `specs/external/canonical-external-ir-v1.md`
 - `specs/diagnostics/external-library-diagnostic-codes.md`

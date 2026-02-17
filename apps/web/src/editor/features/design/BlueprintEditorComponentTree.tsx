@@ -21,6 +21,10 @@ import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import type { ComponentNode } from '@/core/types/engine.types';
 import { useEditorStore } from '@/editor/store/useEditorStore';
+import {
+  getLayoutPatternId,
+  isLayoutPatternRootNode,
+} from './blueprint/layoutPatterns/dataAttributes';
 
 type BlueprintEditorComponentTreeProps = {
   isCollapsed: boolean;
@@ -79,6 +83,27 @@ const countNodes = (node: ComponentNode): number => {
   return 1 + children.reduce((acc, child) => acc + countNodes(child), 0);
 };
 
+const formatPatternLabel = (patternId: string) =>
+  patternId
+    .split('-')
+    .filter(Boolean)
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join('-');
+
+const isHiddenBySplitCategory = (node: ComponentNode) => {
+  const props =
+    node.props && typeof node.props === 'object'
+      ? (node.props as Record<string, unknown>)
+      : null;
+  const dataAttributes =
+    props?.dataAttributes && typeof props.dataAttributes === 'object'
+      ? (props.dataAttributes as Record<string, unknown>)
+      : null;
+  if (dataAttributes?.['data-layout-pattern'] !== 'split') return false;
+  if (dataAttributes?.['data-layout-role'] !== 'content') return false;
+  return props?.display === 'None';
+};
+
 type TreeNodeProps = {
   node: ComponentNode;
   depth: number;
@@ -121,7 +146,17 @@ function BlueprintTreeNode({
   const children = node.children ?? [];
   const hasChildren = children.length > 0;
   const isExpanded = expandedKeys.includes(node.id);
-  const Icon = getNodeIcon(node.type);
+  const layoutPatternId = getLayoutPatternId(node);
+  const isLayoutPatternRoot = isLayoutPatternRootNode(node);
+  const Icon = isLayoutPatternRoot ? Layers : getNodeIcon(node.type);
+  const nodeTypeLabel =
+    isLayoutPatternRoot && layoutPatternId
+      ? formatPatternLabel(layoutPatternId)
+      : node.type;
+  const hiddenBySplitCategory = isHiddenBySplitCategory(node);
+  const nodeTypeSecondaryLabel = hiddenBySplitCategory
+    ? 'Hidden by 2 Columns'
+    : null;
   const isRoot = rootId && node.id === rootId;
   const dropPlacement =
     dropHint?.overNodeId === node.id ? dropHint.placement : null;
@@ -235,8 +270,8 @@ function BlueprintTreeNode({
               onSelect(node.id);
             }
           }}
-          title={`${node.type} (${node.id})`}
-          aria-label={`${node.type} (${node.id})`}
+          title={`${nodeTypeLabel} (${node.id})`}
+          aria-label={`${nodeTypeLabel} (${node.id})`}
         >
           {dropPlacement === 'before' && (
             <span
@@ -259,8 +294,13 @@ function BlueprintTreeNode({
           <span className="BlueprintEditorTreeMeta flex min-w-0 flex-col gap-px">
             <span className="BlueprintEditorTreeTypeRow inline-flex min-w-0 items-center gap-1.5">
               <span className="BlueprintEditorTreeType truncate text-[11px] font-bold tracking-[0.01em]">
-                {node.type}
+                {nodeTypeLabel}
               </span>
+              {nodeTypeSecondaryLabel ? (
+                <span className="inline-flex items-center rounded-full border border-black/8 px-1.5 py-0 text-[9px] text-(--color-6) dark:border-white/14">
+                  {nodeTypeSecondaryLabel}
+                </span>
+              ) : null}
               {hasChildren && (
                 <span
                   className="BlueprintEditorTreeCount inline-flex h-[15px] min-w-[15px] flex-none items-center justify-center rounded-full border border-[rgba(0,0,0,0.08)] bg-[rgba(0,0,0,0.04)] text-[10px] tabular-nums text-(--color-7) dark:border-white/16 dark:bg-white/8"

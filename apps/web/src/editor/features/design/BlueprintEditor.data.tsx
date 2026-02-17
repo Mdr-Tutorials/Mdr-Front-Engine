@@ -5,3 +5,4 @@ export * from './blueprint/data/placeholders';
 export * from './blueprint/data/sampleData';
 export * from './blueprint/data/ComponentGroups';
 export * from './blueprint/registry';
+export * from './blueprint/layoutPatterns';

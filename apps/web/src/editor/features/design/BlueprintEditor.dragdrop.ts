@@ -64,6 +64,9 @@ const resolveTreePlacement = (options: {
       activeCenterY,
     });
   }
+  if (overData?.kind === 'tree-sort') {
+    return canNest ? 'child' : 'after';
+  }
   if (overData?.kind === 'tree-node') {
     return canNest ? 'child' : 'after';
   }
@@ -270,6 +273,27 @@ export const useBlueprintDragDrop = ({
       if (dropKind === 'canvas' && selectedId) {
         const root = doc.ui.root;
         const selectedNode = findNodeById(root, selectedId);
+        const isLayoutPatternItem = itemId.startsWith('layout-pattern-');
+        if (
+          isLayoutPatternItem &&
+          selectedNode &&
+          selectedNode.id !== root.id &&
+          supportsChildrenForNode(selectedNode)
+        ) {
+          const insertedChild = insertChildAtIndex(
+            root,
+            selectedNode.id,
+            newNode,
+            selectedNode.children?.length ?? 0
+          );
+          if (insertedChild.inserted) {
+            return {
+              ...doc,
+              ui: { ...doc.ui, root: insertedChild.node },
+            };
+          }
+        }
+
         if (selectedNode && selectedNode.id !== root.id) {
           const insertedSibling = insertAfterById(
             root,

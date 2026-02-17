@@ -20,6 +20,7 @@
 } from './BlueprintEditor.data';
 import type { ComponentNode, MIRDocument } from '@/core/types/engine.types';
 import { createRadixNodeFromPaletteItem } from './BlueprintEditor.radix';
+import { buildLayoutPatternNode } from './blueprint/layoutPatterns';
 import { getComponentItemById } from './blueprint/registry';
 
 const collectTypeCounts = (
@@ -184,6 +185,20 @@ export const createNodeFromPaletteItem = (
   );
   if (radixNode) {
     return radixNode;
+  }
+
+  if (itemId.startsWith('layout-pattern-')) {
+    const patternId = itemId.replace('layout-pattern-', '');
+    const registryItem = getComponentItemById(itemId);
+    const patternNode = buildLayoutPatternNode({
+      patternId,
+      createId,
+      params: {
+        ...(registryItem?.defaultProps ?? {}),
+        ...(variantProps ?? {}),
+      },
+    });
+    if (patternNode) return patternNode;
   }
 
   if (itemId === 'text') {

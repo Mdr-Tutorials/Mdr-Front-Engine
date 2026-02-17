@@ -211,6 +211,41 @@ describe('BlueprintEditorComponentTree', () => {
     expect(screen.queryByTitle('MdrText (child-2a)')).toBeNull();
   });
 
+  it('renders layout pattern root with distinguishable type label', () => {
+    resetEditorStore({
+      mirDoc: createMirDoc([
+        {
+          id: 'pattern-root',
+          type: 'MdrDiv',
+          props: {
+            dataAttributes: {
+              'data-layout-pattern': 'split',
+              'data-layout-pattern-root': 'true',
+              'data-layout-role': 'root',
+              'data-layout-version': '1',
+            },
+          },
+          children: [],
+        },
+      ]),
+    });
+
+    render(
+      <BlueprintEditorComponentTree
+        isCollapsed={false}
+        selectedId={undefined}
+        onToggleCollapse={() => {}}
+        onSelectNode={() => {}}
+        onDeleteSelected={() => {}}
+        onDeleteNode={() => {}}
+        onCopyNode={() => {}}
+        onMoveNode={() => {}}
+      />
+    );
+
+    expect(screen.getByTitle('Split (pattern-root)')).toBeTruthy();
+  });
+
   describe('Drag and Drop Behavior', () => {
     it('applies isDragging state and reduces opacity when dragging', () => {
       resetEditorStore({

@@ -447,13 +447,13 @@ POST /api/projects
 }
 ```
 
-| 字段           | 类型    | 必填 | 描述                                        |
-| -------------- | ------- | ---- | ------------------------------------------- |
-| `name`         | string  | 是   | 项目名称                                    |
-| `description`  | string  | 否   | 项目描述                                    |
+| 字段           | 类型    | 必填 | 描述                                            |
+| -------------- | ------- | ---- | ----------------------------------------------- |
+| `name`         | string  | 是   | 项目名称                                        |
+| `description`  | string  | 否   | 项目描述                                        |
 | `resourceType` | string  | 否   | 资源类型：`project` / `component` / `nodegraph` |
-| `isPublic`     | boolean | 否   | 是否公开到社区（默认 false）                |
-| `mir`          | object  | 否   | MIR 文档内容                                |
+| `isPublic`     | boolean | 否   | 是否公开到社区（默认 false）                    |
+| `mir`          | object  | 否   | MIR 文档内容                                    |
 
 **成功响应** (201 Created):
 
@@ -685,14 +685,14 @@ PUT /api/workspaces/:workspaceId/documents/:documentId
 }
 ```
 
-| 字段                   | 类型   | 必填 | 描述                     |
-| ---------------------- | ------ | ---- | ------------------------ |
-| `expectedContentRev`   | number | 是   | 期望的内容版本号         |
-| `expectedWorkspaceRev` | number | 否   | 期望的工作区版本号       |
-| `expectedRouteRev`     | number | 否   | 期望的路由版本号         |
-| `content`              | object | 是   | MIR 文档内容             |
-| `clientMutationId`     | string | 否   | 客户端变更 ID            |
-| `command`              | object | 否   | 命令信封                 |
+| 字段                   | 类型   | 必填 | 描述               |
+| ---------------------- | ------ | ---- | ------------------ |
+| `expectedContentRev`   | number | 是   | 期望的内容版本号   |
+| `expectedWorkspaceRev` | number | 否   | 期望的工作区版本号 |
+| `expectedRouteRev`     | number | 否   | 期望的路由版本号   |
+| `content`              | object | 是   | MIR 文档内容       |
+| `clientMutationId`     | string | 否   | 客户端变更 ID      |
+| `command`              | object | 否   | 命令信封           |
 
 **成功响应** (200 OK):
 

@@ -61,6 +61,7 @@ function MdrPanel({
           <h3 className="MdrPanelTitle">{title}</h3>
           {collapsible && (
             <button
+              type="button"
               className="MdrPanelToggle"
               aria-label={isCollapsed ? 'Expand' : 'Collapse'}
             >

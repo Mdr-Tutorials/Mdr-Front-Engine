@@ -91,18 +91,18 @@ interface MIRDocument {
 
 ### 必需字段
 
-| 字段      | 类型   | 描述           |
-| --------- | ------ | -------------- |
-| `version` | string | MIR 版本号     |
-| `ui`      | object | UI 组件树      |
-| `ui.root` | object | 根组件节点     |
+| 字段      | 类型   | 描述       |
+| --------- | ------ | ---------- |
+| `version` | string | MIR 版本号 |
+| `ui`      | object | UI 组件树  |
+| `ui.root` | object | 根组件节点 |
 
 ### 可选字段
 
-| 字段       | 类型   | 描述             |
-| ---------- | ------ | ---------------- |
-| `metadata` | object | 元信息           |
-| `logic`    | object | 逻辑层定义       |
+| 字段       | 类型   | 描述       |
+| ---------- | ------ | ---------- |
+| `metadata` | object | 元信息     |
+| `logic`    | object | 逻辑层定义 |
 
 ### 元信息 (metadata)
 
@@ -129,25 +129,28 @@ interface ComponentNode {
   style?: Record<string, string | number | ParamReference | StateReference>;
   props?: Record<string, any | ParamReference | StateReference>;
   children?: ComponentNode[];
-  events?: Record<string, {
-    trigger: string;
-    action?: string;
-    params?: Record<string, unknown>;
-  }>;
+  events?: Record<
+    string,
+    {
+      trigger: string;
+      action?: string;
+      params?: Record<string, unknown>;
+    }
+  >;
 }
 ```
 
 ### 字段说明
 
-| 字段       | 类型   | 必需 | 描述                                    |
-| ---------- | ------ | ---- | --------------------------------------- |
-| `id`       | string | 是   | 唯一标识符                              |
-| `type`     | string | 是   | 组件类型（如 `div`, `MdrButton` 等）    |
-| `text`     | mixed  | 否   | 文本内容，支持状态/参数引用             |
-| `style`    | object | 否   | 内联样式                                |
-| `props`    | object | 否   | 组件属性                                |
-| `children` | array  | 否   | 子节点数组                              |
-| `events`   | object | 否   | 事件处理定义                            |
+| 字段       | 类型   | 必需 | 描述                                 |
+| ---------- | ------ | ---- | ------------------------------------ |
+| `id`       | string | 是   | 唯一标识符                           |
+| `type`     | string | 是   | 组件类型（如 `div`, `MdrButton` 等） |
+| `text`     | mixed  | 否   | 文本内容，支持状态/参数引用          |
+| `style`    | object | 否   | 内联样式                             |
+| `props`    | object | 否   | 组件属性                             |
+| `children` | array  | 否   | 子节点数组                           |
+| `events`   | object | 否   | 事件处理定义                         |
 
 ### 数据引用
 
@@ -180,15 +183,21 @@ type StateReference = { $state: string };
 
 ```typescript
 interface LogicDefinition {
-  props?: Record<string, {
-    type: 'string' | 'number' | 'boolean' | 'object' | 'array' | string;
-    description?: string;
-    default?: any;
-  }>;
-  state?: Record<string, {
-    type?: string;
-    initial: any;
-  }>;
+  props?: Record<
+    string,
+    {
+      type: 'string' | 'number' | 'boolean' | 'object' | 'array' | string;
+      description?: string;
+      default?: any;
+    }
+  >;
+  state?: Record<
+    string,
+    {
+      type?: string;
+      initial: any;
+    }
+  >;
   graphs?: any[];
 }
 ```
@@ -246,10 +255,10 @@ MIR 支持内置动作和自定义事件处理。
 
 ### 内置动作
 
-| 动作           | 描述           | 参数                                      |
-| -------------- | -------------- | ----------------------------------------- |
-| `navigate`     | 页面导航       | `to`, `target`, `replace`, `state`        |
-| `executeGraph` | 执行节点图     | `graphMode`, `graphName`, `graphId`       |
+| 动作           | 描述       | 参数                                |
+| -------------- | ---------- | ----------------------------------- |
+| `navigate`     | 页面导航   | `to`, `target`, `replace`, `state`  |
+| `executeGraph` | 执行节点图 | `graphMode`, `graphName`, `graphId` |
 
 ### 事件定义
 
@@ -274,19 +283,19 @@ MIR 支持内置动作和自定义事件处理。
 
 支持的标准 DOM 事件：
 
-| 触发器         | 说明     |
-| -------------- | -------- |
-| `onClick`      | 点击     |
-| `onDoubleClick`| 双击     |
-| `onMouseEnter` | 鼠标进入 |
-| `onMouseLeave` | 鼠标离开 |
-| `onFocus`      | 获得焦点 |
-| `onBlur`       | 失去焦点 |
-| `onChange`     | 值变化   |
-| `onInput`      | 输入     |
-| `onSubmit`     | 表单提交 |
-| `onKeyDown`    | 按键按下 |
-| `onKeyUp`      | 按键抬起 |
+| 触发器          | 说明     |
+| --------------- | -------- |
+| `onClick`       | 点击     |
+| `onDoubleClick` | 双击     |
+| `onMouseEnter`  | 鼠标进入 |
+| `onMouseLeave`  | 鼠标离开 |
+| `onFocus`       | 获得焦点 |
+| `onBlur`        | 失去焦点 |
+| `onChange`      | 值变化   |
+| `onInput`       | 输入     |
+| `onSubmit`      | 表单提交 |
+| `onKeyDown`     | 按键按下 |
+| `onKeyUp`       | 按键抬起 |
 
 ## 代码生成
 
@@ -304,7 +313,7 @@ interface HomePageProps {
 
 export default function HomePage({ title = "Welcome" }: HomePageProps) {
   const [count, setCount] = React.useState(0);
-  
+
   return (
     <div style={{ padding: 16 }}>
       <span>Hello, MdrFrontEngine!</span>

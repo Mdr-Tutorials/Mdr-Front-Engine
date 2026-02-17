@@ -7,6 +7,10 @@ import { createDefaultActionParams } from '@/mir/actions/registry';
 import { isIconRef, resolveIconRef } from '@/mir/renderer/iconRegistry';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import { resolveLinkCapability } from '@/mir/renderer/capabilities';
+import {
+  getLayoutPatternId,
+  isLayoutPatternRootNode,
+} from './blueprint/layoutPatterns/dataAttributes';
 import { getExternalRuntimeMetaByType } from './blueprint/external/runtime/metaStore';
 import { INSPECTOR_PANELS } from './inspector/panels/registry';
 import { resolveMountedCssEntries } from './inspector/classProtocol/mountedCss';
@@ -18,6 +22,23 @@ import {
   renameNodeId,
   updateNodeById,
 } from './BlueprintEditorInspector.utils';
+
+let persistedExpandedSections = {
+  basic: true,
+  style: true,
+  triggers: true,
+};
+
+let persistedExpandedPanels: Record<string, boolean> = {};
+
+export const resetInspectorExpansionPersistence = () => {
+  persistedExpandedSections = {
+    basic: true,
+    style: true,
+    triggers: true,
+  };
+  persistedExpandedPanels = {};
+};
 
 export const useBlueprintEditorInspectorController = () => {
   const { t } = useTranslation('blueprint');
@@ -49,13 +70,11 @@ export const useBlueprintEditorInspectorController = () => {
     return getExternalRuntimeMetaByType(selectedNode.type) ?? null;
   }, [selectedNode?.type]);
   const [draftId, setDraftId] = useState('');
-  const [expandedSections, setExpandedSections] = useState({
-    basic: true,
-    style: true,
-    triggers: true,
-  });
+  const [expandedSections, setExpandedSections] = useState(() => ({
+    ...persistedExpandedSections,
+  }));
   const [expandedPanels, setExpandedPanels] = useState<Record<string, boolean>>(
-    {}
+    () => ({ ...persistedExpandedPanels })
   );
   const [isIconPickerOpen, setIconPickerOpen] = useState(false);
   const allIds = useMemo(() => collectIds(mirDoc.ui.root), [mirDoc.ui.root]);
@@ -75,9 +94,31 @@ export const useBlueprintEditorInspectorController = () => {
           changed = true;
         }
       });
+      if (changed) {
+        persistedExpandedPanels = { ...next };
+      }
       return changed ? next : current;
     });
   }, [matchedPanels]);
+
+  useEffect(() => {
+    if (!selectedNode || !isLayoutPatternRootNode(selectedNode)) return;
+    setExpandedSections((current) => {
+      if (current.style) return current;
+      const next = { ...current, style: true };
+      persistedExpandedSections = { ...next };
+      return next;
+    });
+    setExpandedPanels((current) => {
+      if (current['layout-pattern'] === true) return current;
+      const next = {
+        ...current,
+        'layout-pattern': true,
+      };
+      persistedExpandedPanels = { ...next };
+      return next;
+    });
+  }, [selectedNode]);
 
   useEffect(() => {
     setIconPickerOpen(false);
@@ -161,11 +202,23 @@ export const useBlueprintEditorInspectorController = () => {
     updater: (node: ComponentNode) => ComponentNode
   ) => {
     if (!selectedNode?.id) return;
+    const currentSelectedId = selectedNode.id;
+    const currentPatternId = getLayoutPatternId(selectedNode);
     updateMirDoc((doc) => {
       const result = updateNodeById(doc.ui.root, selectedNode.id, updater);
-      return result.updated
-        ? { ...doc, ui: { ...doc.ui, root: result.node } }
-        : doc;
+      if (!result.updated) return doc;
+      const nextDoc = { ...doc, ui: { ...doc.ui, root: result.node } };
+      const keptSelection = findNodeById(nextDoc.ui.root, currentSelectedId);
+      if (keptSelection) return nextDoc;
+      if (!currentPatternId) return nextDoc;
+      const patternRootId = findLayoutPatternRootId(
+        nextDoc.ui.root,
+        currentPatternId
+      );
+      if (patternRootId) {
+        setBlueprintState(blueprintKey, { selectedId: patternRootId });
+      }
+      return nextDoc;
     });
   };
 
@@ -183,17 +236,25 @@ export const useBlueprintEditorInspectorController = () => {
   };
 
   const toggleSection = (key: keyof typeof expandedSections) => {
-    setExpandedSections((current) => ({
-      ...current,
-      [key]: !current[key],
-    }));
+    setExpandedSections((current) => {
+      const next = {
+        ...current,
+        [key]: !current[key],
+      };
+      persistedExpandedSections = { ...next };
+      return next;
+    });
   };
 
   const togglePanel = (key: string) => {
-    setExpandedPanels((current) => ({
-      ...current,
-      [key]: !(current[key] ?? true),
-    }));
+    setExpandedPanels((current) => {
+      const next = {
+        ...current,
+        [key]: !(current[key] ?? true),
+      };
+      persistedExpandedPanels = { ...next };
+      return next;
+    });
   };
 
   const triggerEntries = useMemo(
@@ -405,4 +466,19 @@ export const useBlueprintEditorInspectorController = () => {
     sectionContextValue,
     mountedCssEditor,
   };
+};
+
+const findLayoutPatternRootId = (
+  node: ComponentNode,
+  patternId: string
+): string | null => {
+  if (isLayoutPatternRootNode(node) && getLayoutPatternId(node) === patternId) {
+    return node.id;
+  }
+  const children = node.children ?? [];
+  for (const child of children) {
+    const found = findLayoutPatternRootId(child, patternId);
+    if (found) return found;
+  }
+  return null;
 };

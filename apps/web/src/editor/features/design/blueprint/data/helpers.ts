@@ -9,7 +9,12 @@ import type {
 import { DEFAULT_PREVIEW_SCALE } from './viewport';
 
 const WIDE_PREVIEW_SCALE_BOOST = 1.18;
-const WIDE_GROUP_IDS = new Set(['navigation', 'layout', 'chart']);
+const WIDE_GROUP_IDS = new Set([
+  'navigation',
+  'layout',
+  'layout-pattern',
+  'chart',
+]);
 const WIDE_COMPONENT_IDS = new Set([
   'date-range-picker',
   'steps',

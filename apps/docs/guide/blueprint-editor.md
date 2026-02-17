@@ -28,16 +28,16 @@
 
 ### 组件分类
 
-| 分类     | 组件示例                       | 说明           |
-| -------- | ------------------------------ | -------------- |
-| **基础** | Button, Link, Text, Icon       | 基本 UI 元素   |
-| **布局** | Div, Section, Card, Panel      | 页面结构和布局 |
-| **表单** | Input, Select, DatePicker, FileUpload | 用户输入控件   |
+| 分类     | 组件示例                               | 说明           |
+| -------- | -------------------------------------- | -------------- |
+| **基础** | Button, Link, Text, Icon               | 基本 UI 元素   |
+| **布局** | Div, Section, Card, Panel              | 页面结构和布局 |
+| **表单** | Input, Select, DatePicker, FileUpload  | 用户输入控件   |
 | **导航** | Nav, Navbar, Sidebar, Tabs, Breadcrumb | 页面导航元素   |
-| **媒体** | Image, Avatar, Video, Audio    | 多媒体内容     |
-| **数据** | Table, DataGrid, List, Tree, Tag | 数据展示组件   |
-| **反馈** | Modal, Drawer, Tooltip, Notification | 用户反馈组件   |
-| **无头** | Headless Container             | 无样式逻辑组件 |
+| **媒体** | Image, Avatar, Video, Audio            | 多媒体内容     |
+| **数据** | Table, DataGrid, List, Tree, Tag       | 数据展示组件   |
+| **反馈** | Modal, Drawer, Tooltip, Notification   | 用户反馈组件   |
+| **无头** | Headless Container                     | 无样式逻辑组件 |
 
 ### 内置组件数量
 
@@ -341,10 +341,10 @@ Page
 
 ### 支持的外部库
 
-| 库            | 说明              | 状态   |
-| ------------- | ----------------- | ------ |
-| Ant Design    | 企业级 UI 组件库  | ✅ 支持 |
-| Material UI   | Google Material Design | ✅ 支持 |
+| 库          | 说明                   | 状态    |
+| ----------- | ---------------------- | ------- |
+| Ant Design  | 企业级 UI 组件库       | ✅ 支持 |
+| Material UI | Google Material Design | ✅ 支持 |
 
 ### 配置外部库
 
@@ -357,12 +357,12 @@ Page
 
 外部库加载时会显示状态指示器：
 
-| 状态     | 说明                   |
-| -------- | ---------------------- |
-| `idle`   | 未加载                 |
-| `loading`| 正在加载               |
-| `success`| 加载成功，组件可用     |
-| `error`  | 加载失败，可点击重试   |
+| 状态      | 说明                 |
+| --------- | -------------------- |
+| `idle`    | 未加载               |
+| `loading` | 正在加载             |
+| `success` | 加载成功，组件可用   |
+| `error`   | 加载失败，可点击重试 |
 
 ### 组件分组来源
 
