@@ -389,6 +389,429 @@ PATCH /api/users/me
 
 ---
 
+### 项目 API
+
+#### 获取项目列表
+
+获取当前用户的所有项目。
+
+```http
+GET /api/projects
+```
+
+**请求头**: 需要认证
+
+**成功响应** (200 OK):
+
+```json
+{
+  "projects": [
+    {
+      "id": "prj_xxx",
+      "resourceType": "project",
+      "name": "My Project",
+      "description": "Project description",
+      "isPublic": false,
+      "starsCount": 0,
+      "createdAt": "2024-01-15T10:30:00Z",
+      "updatedAt": "2024-01-15T12:00:00Z"
+    }
+  ]
+}
+```
+
+---
+
+#### 创建项目
+
+创建新项目。
+
+```http
+POST /api/projects
+```
+
+**请求头**: 需要认证
+
+**请求体**:
+
+```json
+{
+  "name": "My Project",
+  "description": "Project description",
+  "resourceType": "project",
+  "isPublic": false,
+  "mir": {
+    "version": "1.0",
+    "ui": { "root": { "id": "root", "type": "div" } }
+  }
+}
+```
+
+| 字段           | 类型    | 必填 | 描述                                        |
+| -------------- | ------- | ---- | ------------------------------------------- |
+| `name`         | string  | 是   | 项目名称                                    |
+| `description`  | string  | 否   | 项目描述                                    |
+| `resourceType` | string  | 否   | 资源类型：`project` / `component` / `nodegraph` |
+| `isPublic`     | boolean | 否   | 是否公开到社区（默认 false）                |
+| `mir`          | object  | 否   | MIR 文档内容                                |
+
+**成功响应** (201 Created):
+
+```json
+{
+  "project": {
+    "id": "prj_xxx",
+    "resourceType": "project",
+    "name": "My Project",
+    "description": "Project description",
+    "isPublic": false,
+    "starsCount": 0,
+    "createdAt": "2024-01-15T10:30:00Z",
+    "updatedAt": "2024-01-15T10:30:00Z"
+  }
+}
+```
+
+---
+
+#### 获取项目详情
+
+根据 ID 获取项目详情。
+
+```http
+GET /api/projects/:id
+```
+
+**请求头**: 需要认证
+
+**成功响应** (200 OK):
+
+```json
+{
+  "project": {
+    "id": "prj_xxx",
+    "resourceType": "project",
+    "name": "My Project",
+    "description": "Project description",
+    "isPublic": false,
+    "starsCount": 0,
+    "mir": { ... },
+    "createdAt": "2024-01-15T10:30:00Z",
+    "updatedAt": "2024-01-15T12:00:00Z"
+  }
+}
+```
+
+---
+
+#### 获取项目 MIR
+
+获取项目的 MIR 文档内容。
+
+```http
+GET /api/projects/:id/mir
+```
+
+**请求头**: 需要认证
+
+**成功响应** (200 OK):
+
+```json
+{
+  "id": "prj_xxx",
+  "mir": { ... },
+  "updatedAt": "2024-01-15T12:00:00Z"
+}
+```
+
+---
+
+#### 保存项目 MIR
+
+保存项目的 MIR 文档内容。
+
+```http
+PUT /api/projects/:id/mir
+```
+
+**请求头**: 需要认证
+
+**请求体**:
+
+```json
+{
+  "mir": {
+    "version": "1.0",
+    "ui": { "root": { "id": "root", "type": "div" } }
+  }
+}
+```
+
+---
+
+#### 发布项目
+
+将项目发布到社区。
+
+```http
+POST /api/projects/:id/publish
+```
+
+**请求头**: 需要认证
+
+**成功响应** (200 OK):
+
+```json
+{
+  "project": {
+    "id": "prj_xxx",
+    "isPublic": true,
+    ...
+  }
+}
+```
+
+---
+
+#### 删除项目
+
+删除指定项目。
+
+```http
+DELETE /api/projects/:id
+```
+
+**请求头**: 需要认证
+
+**成功响应** (204 No Content): 无响应体
+
+---
+
+### 工作区 API
+
+工作区 API 提供协作编辑功能，支持版本控制和冲突检测。
+
+#### 获取工作区快照
+
+获取工作区的完整快照，包括所有文档。
+
+```http
+GET /api/workspaces/:workspaceId
+```
+
+**请求头**: 需要认证
+
+**成功响应** (200 OK):
+
+```json
+{
+  "workspace": {
+    "id": "ws_xxx",
+    "workspaceRev": 1,
+    "routeRev": 1,
+    "opSeq": 100,
+    "tree": null,
+    "documents": [
+      {
+        "id": "doc_root",
+        "type": "mir_page",
+        "path": "/",
+        "contentRev": 5,
+        "metaRev": 2,
+        "content": { ... },
+        "updatedAt": "2024-01-15T12:00:00Z"
+      }
+    ],
+    "routeManifest": null
+  }
+}
+```
+
+---
+
+#### 获取工作区能力
+
+获取工作区支持的功能能力。
+
+```http
+GET /api/workspaces/:workspaceId/capabilities
+```
+
+**请求头**: 需要认证
+
+**成功响应** (200 OK):
+
+```json
+{
+  "workspaceId": "ws_xxx",
+  "capabilities": {
+    "core.mir.document.update@1.0": true,
+    "core.route.manifest.update@1.0": true,
+    "core.nodegraph.node.move@1.0": false,
+    "core.nodegraph.edge.connect@1.0": false,
+    "core.animation.timeline.keyframe.add@1.0": false,
+    "core.animation.clip.bind@1.0": false
+  }
+}
+```
+
+---
+
+#### 保存工作区文档
+
+保存工作区中的文档内容，支持乐观更新和冲突检测。
+
+```http
+PUT /api/workspaces/:workspaceId/documents/:documentId
+```
+
+**请求头**: 需要认证
+
+**请求体**:
+
+```json
+{
+  "expectedContentRev": 5,
+  "expectedWorkspaceRev": 1,
+  "expectedRouteRev": 1,
+  "content": { ... },
+  "clientMutationId": "mutation_123",
+  "command": {
+    "id": "cmd_xxx",
+    "namespace": "core.mir",
+    "type": "document.update",
+    "version": "1.0"
+  }
+}
+```
+
+| 字段                   | 类型   | 必填 | 描述                     |
+| ---------------------- | ------ | ---- | ------------------------ |
+| `expectedContentRev`   | number | 是   | 期望的内容版本号         |
+| `expectedWorkspaceRev` | number | 否   | 期望的工作区版本号       |
+| `expectedRouteRev`     | number | 否   | 期望的路由版本号         |
+| `content`              | object | 是   | MIR 文档内容             |
+| `clientMutationId`     | string | 否   | 客户端变更 ID            |
+| `command`              | object | 否   | 命令信封                 |
+
+**成功响应** (200 OK):
+
+```json
+{
+  "workspaceId": "ws_xxx",
+  "workspaceRev": 2,
+  "routeRev": 1,
+  "opSeq": 101,
+  "updatedDocuments": [
+    {
+      "id": "doc_root",
+      "contentRev": 6,
+      "metaRev": 2
+    }
+  ],
+  "acceptedMutationId": "mutation_123"
+}
+```
+
+**冲突响应** (409 Conflict):
+
+```json
+{
+  "error": "revision_conflict",
+  "conflictType": "content",
+  "workspaceId": "ws_xxx",
+  "serverWorkspaceRev": 3,
+  "serverRouteRev": 1,
+  "opSeq": 150,
+  "serverDocument": {
+    "id": "doc_root",
+    "contentRev": 10,
+    "metaRev": 2
+  }
+}
+```
+
+---
+
+#### 应用工作区意图
+
+应用意图驱动的操作（如路由更新）。
+
+```http
+POST /api/workspaces/:workspaceId/intents
+```
+
+**请求头**: 需要认证
+
+**请求体**:
+
+```json
+{
+  "expectedWorkspaceRev": 1,
+  "expectedRouteRev": 1,
+  "intent": {
+    "id": "intent_xxx",
+    "namespace": "core.route",
+    "type": "manifest.update",
+    "version": "1.0",
+    "payload": {
+      "routeManifest": { ... }
+    },
+    "idempotencyKey": "key_123",
+    "issuedAt": "2024-01-15T12:00:00Z"
+  },
+  "clientMutationId": "mutation_123"
+}
+```
+
+---
+
+#### 批量操作
+
+执行多个工作区操作的批量请求。
+
+```http
+POST /api/workspaces/:workspaceId/batch
+```
+
+**请求头**: 需要认证
+
+**请求体**:
+
+```json
+{
+  "expectedWorkspaceRev": 1,
+  "expectedRouteRev": 1,
+  "operations": [
+    {
+      "op": "saveDocument",
+      "documentId": "doc_root",
+      "expectedContentRev": 5,
+      "content": { ... }
+    },
+    {
+      "op": "intent",
+      "intent": { ... }
+    }
+  ],
+  "clientBatchId": "batch_123"
+}
+```
+
+**成功响应** (200 OK):
+
+```json
+{
+  "workspaceId": "ws_xxx",
+  "workspaceRev": 3,
+  "routeRev": 2,
+  "opSeq": 102,
+  "acceptedMutationId": "batch_123"
+}
+```
+
+---
+
 ## 数据模型
 
 ### User
@@ -412,7 +835,11 @@ interface Session {
   createdAt: string; // 创建时间
   expiresAt: string; // 过期时间
 }
+```
 
+### ProjectSummary
+
+```typescript
 interface ProjectSummary {
   id: string;
   resourceType: 'project' | 'component' | 'nodegraph';
@@ -422,6 +849,34 @@ interface ProjectSummary {
   starsCount: number;
   createdAt: string;
   updatedAt: string;
+}
+```
+
+### WorkspaceDocument
+
+```typescript
+interface WorkspaceDocument {
+  id: string;
+  type: 'mir_page' | 'mir_component' | 'mir_nodegraph';
+  path: string;
+  contentRev: number;
+  metaRev: number;
+  content: MIRDocument;
+  updatedAt: string;
+}
+```
+
+### WorkspaceSnapshot
+
+```typescript
+interface WorkspaceSnapshot {
+  id: string;
+  workspaceRev: number;
+  routeRev: number;
+  opSeq: number;
+  tree: unknown;
+  documents: WorkspaceDocument[];
+  routeManifest: unknown;
 }
 ```
 
@@ -548,11 +1003,12 @@ docker compose up -d
 
 ### 当前限制
 
-- 暂无项目管理 API
+- 节点图编辑器功能未完全启用（工作区能力中 `core.nodegraph.*` 为 false）
+- 动画编辑器功能未完全启用（工作区能力中 `core.animation.*` 为 false）
 
 ### 计划功能
 
-- [ ] 项目 CRUD API
 - [ ] 文件上传 API
 - [ ] OAuth 第三方登录
 - [ ] API 速率限制
+- [ ] 团队协作功能

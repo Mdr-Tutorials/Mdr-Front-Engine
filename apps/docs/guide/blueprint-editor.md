@@ -30,13 +30,27 @@
 
 | 分类     | 组件示例                       | 说明           |
 | -------- | ------------------------------ | -------------- |
-| **布局** | Container, Grid, Flex, Stack   | 页面结构和布局 |
-| **基础** | Button, Link, Text, Image      | 基本 UI 元素   |
-| **表单** | Input, Select, Checkbox, Radio | 用户输入控件   |
-| **数据** | Table, List, Card              | 数据展示组件   |
-| **导航** | Nav, Tabs, Breadcrumb, Menu    | 页面导航元素   |
-| **反馈** | Alert, Toast, Modal, Tooltip   | 用户反馈组件   |
-| **媒体** | Video, Audio, Embed            | 多媒体内容     |
+| **基础** | Button, Link, Text, Icon       | 基本 UI 元素   |
+| **布局** | Div, Section, Card, Panel      | 页面结构和布局 |
+| **表单** | Input, Select, DatePicker, FileUpload | 用户输入控件   |
+| **导航** | Nav, Navbar, Sidebar, Tabs, Breadcrumb | 页面导航元素   |
+| **媒体** | Image, Avatar, Video, Audio    | 多媒体内容     |
+| **数据** | Table, DataGrid, List, Tree, Tag | 数据展示组件   |
+| **反馈** | Modal, Drawer, Tooltip, Notification | 用户反馈组件   |
+| **无头** | Headless Container             | 无样式逻辑组件 |
+
+### 内置组件数量
+
+MDR 内置 **75+** 组件，覆盖常见 UI 场景：
+
+- **按钮类** (4): MdrButton, MdrButtonLink, MdrIconLink, MdrLink
+- **导航类** (8): MdrNav, MdrNavbar, MdrSidebar, MdrBreadcrumb, MdrPagination, MdrAnchorNavigation, MdrTabs, MdrCollapse
+- **输入类** (3): MdrInput, MdrTextarea, MdrSearch
+- **表单类** (16): MdrDatePicker, MdrDateRangePicker, MdrTimePicker, MdrRegionPicker, MdrVerificationCode, MdrPasswordStrength, MdrRegexInput, MdrFileUpload, MdrImageUpload, MdrRichTextEditor, MdrRating, MdrColorPicker, MdrSlider, MdrRange, MdrSelect, MdrRadioGroup
+- **容器类** (4): MdrDiv, MdrSection, MdrCard, MdrPanel
+- **图片类** (3): MdrImage, MdrAvatar, MdrImageGallery
+- **数据类** (13): MdrTable, MdrDataGrid, MdrList, MdrCheckList, MdrTree, MdrTreeSelect, MdrTag, MdrBadge, MdrProgress, MdrSpinner, MdrStatistic, MdrTimeline, MdrSteps
+- **反馈类** (8): MdrModal, MdrDrawer, MdrTooltip, MdrPopover, MdrMessage, MdrNotification, MdrEmpty, MdrSkeleton
 
 ### 使用方式
 
@@ -320,6 +334,50 @@ Page
 - 使用相对单位（%、rem）而非固定像素
 - 在不同设备视口下预览效果
 - 为移动端单独调整必要的样式
+
+## 外部库集成
+
+蓝图编辑器支持动态加载外部 UI 组件库，扩展可用组件范围。
+
+### 支持的外部库
+
+| 库            | 说明              | 状态   |
+| ------------- | ----------------- | ------ |
+| Ant Design    | 企业级 UI 组件库  | ✅ 支持 |
+| Material UI   | Google Material Design | ✅ 支持 |
+
+### 配置外部库
+
+1. 在项目设置中找到 **外部库管理**
+2. 选择要启用的组件库
+3. 等待库加载完成
+4. 组件面板中将显示新的组件分组
+
+### 外部库状态
+
+外部库加载时会显示状态指示器：
+
+| 状态     | 说明                   |
+| -------- | ---------------------- |
+| `idle`   | 未加载                 |
+| `loading`| 正在加载               |
+| `success`| 加载成功，组件可用     |
+| `error`  | 加载失败，可点击重试   |
+
+### 组件分组来源
+
+组件面板中的组件会标注来源：
+
+- **builtIn** - 内置 MDR 组件
+- **external** - 外部库组件（如 Ant Design、Material UI）
+- **headless** - 无头组件
+
+### 注意事项
+
+- 外部库配置保存在浏览器本地存储中
+- 首次加载外部库可能需要较长时间
+- 加载失败时可点击重试按钮
+- 外部库组件在代码导出时会自动添加依赖声明
 
 ## 下一步
 

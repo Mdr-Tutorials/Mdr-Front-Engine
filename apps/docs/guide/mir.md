@@ -1,6 +1,6 @@
 # MIR 中间表示
 
-MIR（Modular Intermediate Representation）是 MdrFrontEngine 的核心创新，它是一种框架无关的组件描述格式，使得"一次设计，多端运行"成为可能。
+MIR（Minimal Intermediate Representation）是 MdrFrontEngine 的核心创新，它是一种框架无关的组件描述格式，使得"一次设计，多端运行"成为可能。
 
 ## 什么是 MIR？
 
@@ -8,38 +8,55 @@ MIR 是一种 JSON 格式的组件描述语言，它抽象了不同前端框架�
 
 ```json
 {
-  "$schema": "https://mdr.dev/schemas/mir/1.0.json",
   "version": "1.0",
-  "type": "page",
-  "root": {
-    "type": "MdrContainer",
-    "props": {
-      "layout": "flex",
-      "direction": "column"
-    },
-    "children": [
-      {
-        "type": "MdrText",
-        "props": {
-          "content": "Hello, MdrFrontEngine!",
-          "variant": "h1"
-        }
-      },
-      {
-        "type": "MdrButton",
-        "props": {
-          "variant": "primary",
-          "size": "medium"
+  "metadata": {
+    "name": "HomePage",
+    "description": "应用首页"
+  },
+  "ui": {
+    "root": {
+      "id": "root",
+      "type": "div",
+      "style": { "padding": 16 },
+      "children": [
+        {
+          "id": "title",
+          "type": "MdrText",
+          "text": "Hello, MdrFrontEngine!"
         },
-        "children": ["点击我"],
-        "events": {
-          "onClick": {
-            "type": "graph",
-            "ref": "click-handler"
+        {
+          "id": "button",
+          "type": "MdrButton",
+          "props": {
+            "variant": "primary",
+            "size": "medium"
+          },
+          "text": "点击我",
+          "events": {
+            "click": {
+              "trigger": "onClick",
+              "action": "navigate",
+              "params": { "to": "/about" }
+            }
           }
         }
+      ]
+    }
+  },
+  "logic": {
+    "props": {
+      "title": {
+        "type": "string",
+        "description": "页面标题",
+        "default": "Welcome"
       }
-    ]
+    },
+    "state": {
+      "count": {
+        "type": "number",
+        "initial": 0
+      }
+    }
   }
 }
 ```
@@ -48,7 +65,7 @@ MIR 是一种 JSON 格式的组件描述语言，它抽象了不同前端框架�
 
 1. **框架无关** - 不绑定任何特定前端框架
 2. **可读性强** - JSON 格式，人机皆可读
-3. **类型安全** - JSON Schema 验证，避免运行时错误
+3. **类型安全** - TypeScript 类型定义，避免运行时错误
 4. **可扩展性** - 支持自定义组件和属性
 5. **双向转换** - 支持与各框架代码相互转换
 
@@ -56,50 +73,47 @@ MIR 是一种 JSON 格式的组件描述语言，它抽象了不同前端框架�
 
 ### 顶层结构
 
-```json
-{
-  "$schema": "...",     // JSON Schema 引用
-  "version": "1.0",     // MIR 版本
-  "type": "page",       // 文档类型: page | component | template
-  "meta": {...},        // 元信息
-  "imports": [...],     // 导入声明
-  "root": {...}         // 根组件
+```typescript
+interface MIRDocument {
+  version: string;
+  metadata?: {
+    name?: string;
+    description?: string;
+    author?: string;
+    createdAt?: string;
+  };
+  ui: {
+    root: ComponentNode;
+  };
+  logic?: LogicDefinition;
 }
 ```
 
-### 元信息 (meta)
+### 必需字段
+
+| 字段      | 类型   | 描述           |
+| --------- | ------ | -------------- |
+| `version` | string | MIR 版本号     |
+| `ui`      | object | UI 组件树      |
+| `ui.root` | object | 根组件节点     |
+
+### 可选字段
+
+| 字段       | 类型   | 描述             |
+| ---------- | ------ | ---------------- |
+| `metadata` | object | 元信息           |
+| `logic`    | object | 逻辑层定义       |
+
+### 元信息 (metadata)
 
 ```json
 {
-  "meta": {
+  "metadata": {
     "name": "HomePage",
-    "title": "首页",
     "description": "应用首页",
     "author": "MFE Team",
-    "created": "2024-01-01T00:00:00Z",
-    "modified": "2024-01-15T12:30:00Z"
+    "createdAt": "2024-01-01T00:00:00Z"
   }
-}
-```
-
-### 导入声明 (imports)
-
-```json
-{
-  "imports": [
-    {
-      "from": "@mdr/ui",
-      "components": ["MdrButton", "MdrInput"]
-    },
-    {
-      "from": "./components/CustomCard",
-      "components": ["CustomCard"]
-    },
-    {
-      "from": "antd",
-      "components": ["Table", "Modal"]
-    }
-  ]
 }
 ```
 
@@ -107,307 +121,215 @@ MIR 是一种 JSON 格式的组件描述语言，它抽象了不同前端框架�
 
 每个组件节点包含以下字段：
 
-```json
-{
-  "id": "btn-1",              // 唯一标识（可选，自动生成）
-  "type": "MdrButton",        // 组件类型
-  "props": {...},             // 属性
-  "children": [...],          // 子节点
-  "events": {...},            // 事件处理
-  "bindings": {...},          // 数据绑定
-  "styles": {...},            // 内联样式
-  "className": "...",         // CSS 类名
-  "condition": {...},         // 条件渲染
-  "loop": {...}               // 循环渲染
+```typescript
+interface ComponentNode {
+  id: string;
+  type: string;
+  text?: string | ParamReference | StateReference;
+  style?: Record<string, string | number | ParamReference | StateReference>;
+  props?: Record<string, any | ParamReference | StateReference>;
+  children?: ComponentNode[];
+  events?: Record<string, {
+    trigger: string;
+    action?: string;
+    params?: Record<string, unknown>;
+  }>;
 }
 ```
 
-### 属性 (props)
+### 字段说明
+
+| 字段       | 类型   | 必需 | 描述                                    |
+| ---------- | ------ | ---- | --------------------------------------- |
+| `id`       | string | 是   | 唯一标识符                              |
+| `type`     | string | 是   | 组件类型（如 `div`, `MdrButton` 等）    |
+| `text`     | mixed  | 否   | 文本内容，支持状态/参数引用             |
+| `style`    | object | 否   | 内联样式                                |
+| `props`    | object | 否   | 组件属性                                |
+| `children` | array  | 否   | 子节点数组                              |
+| `events`   | object | 否   | 事件处理定义                            |
+
+### 数据引用
+
+MIR 支持两种数据引用方式：
+
+```typescript
+// 参数引用
+type ParamReference = { $param: string };
+
+// 状态引用
+type StateReference = { $state: string };
+```
+
+**示例**：
 
 ```json
 {
+  "id": "greeting",
+  "type": "MdrText",
+  "text": { "$state": "userName" },
   "props": {
-    "variant": "primary", // 静态值
-    "disabled": false,
-    "size": "medium",
-    "onClick": {
-      // 函数属性
-      "$type": "function",
-      "ref": "handleClick"
-    }
+    "title": { "$param": "pageTitle" }
   }
 }
 ```
 
-### 子节点 (children)
+## 逻辑层定义
 
-子节点可以是：
+逻辑层定义组件的行为和数据：
 
-```json
-{
-  "children": [
-    "纯文本内容", // 文本节点
-    {
-      // 组件节点
-      "type": "MdrIcon",
-      "props": { "name": "check" }
-    },
-    {
-      // 动态内容
-      "$type": "expression",
-      "value": "user.name"
-    }
-  ]
+```typescript
+interface LogicDefinition {
+  props?: Record<string, {
+    type: 'string' | 'number' | 'boolean' | 'object' | 'array' | string;
+    description?: string;
+    default?: any;
+  }>;
+  state?: Record<string, {
+    type?: string;
+    initial: any;
+  }>;
+  graphs?: any[];
 }
 ```
 
-### 事件处理 (events)
+### Props 定义
+
+定义组件对外暴露的属性：
 
 ```json
 {
-  "events": {
-    "onClick": {
-      "type": "graph", // 节点图
-      "ref": "click-handler"
-    },
-    "onChange": {
-      "type": "action", // 预设操作
-      "action": "setState",
-      "params": {
-        "key": "inputValue",
-        "value": "$event.target.value"
+  "logic": {
+    "props": {
+      "title": {
+        "type": "string",
+        "description": "页面标题",
+        "default": "Welcome"
+      },
+      "items": {
+        "type": "array",
+        "description": "数据列表"
       }
-    },
-    "onSubmit": {
-      "type": "code", // 代码片段
-      "code": "console.log('submitted', data)"
     }
   }
 }
 ```
 
-### 数据绑定 (bindings)
+### State 定义
+
+定义组件内部状态：
 
 ```json
 {
-  "bindings": {
-    "content": {
-      "source": "state", // 状态绑定
-      "path": "user.name"
-    },
-    "items": {
-      "source": "api", // API 绑定
-      "endpoint": "/api/users",
-      "path": "data.list"
-    },
-    "visible": {
-      "source": "expression", // 表达式
-      "value": "user.role === 'admin'"
+  "logic": {
+    "state": {
+      "count": {
+        "type": "number",
+        "initial": 0
+      },
+      "isLoading": {
+        "type": "boolean",
+        "initial": false
+      },
+      "user": {
+        "type": "object",
+        "initial": null
+      }
     }
   }
 }
 ```
 
-### 条件渲染 (condition)
+## 事件系统
+
+MIR 支持内置动作和自定义事件处理。
+
+### 内置动作
+
+| 动作           | 描述           | 参数                                      |
+| -------------- | -------------- | ----------------------------------------- |
+| `navigate`     | 页面导航       | `to`, `target`, `replace`, `state`        |
+| `executeGraph` | 执行节点图     | `graphMode`, `graphName`, `graphId`       |
+
+### 事件定义
 
 ```json
 {
-  "condition": {
-    "type": "expression",
-    "value": "isLoggedIn",
-    "else": {
-      // 可选的 else 分支
-      "type": "MdrText",
-      "props": { "content": "请先登录" }
+  "id": "button",
+  "type": "MdrButton",
+  "events": {
+    "click": {
+      "trigger": "onClick",
+      "action": "navigate",
+      "params": {
+        "to": "/about",
+        "target": "_self"
+      }
     }
   }
 }
 ```
 
-### 循环渲染 (loop)
+### DOM 事件触发器
 
-```json
-{
-  "loop": {
-    "source": "users",
-    "item": "user",
-    "index": "idx",
-    "key": "user.id"
-  },
-  "type": "MdrCard",
-  "props": {
-    "title": { "$type": "expression", "value": "user.name" }
-  }
-}
-```
+支持的标准 DOM 事件：
 
-## 表达式语法
-
-MIR 使用特殊的表达式格式表示动态值：
-
-### 变量引用
-
-```json
-{ "$type": "expression", "value": "user.name" }
-```
-
-### 模板字符串
-
-```json
-{ "$type": "template", "value": "Hello, ${user.name}!" }
-```
-
-### 函数调用
-
-```json
-{
-  "$type": "call",
-  "function": "formatDate",
-  "args": ["user.createdAt", "YYYY-MM-DD"]
-}
-```
-
-### 简写语法
-
-在支持的上下文中，可以使用简写：
-
-```json
-{
-  "props": {
-    "title": "${user.name}", // 自动识别为模板
-    "count": "$items.length" // 自动识别为表达式
-  }
-}
-```
-
-## 内置组件
-
-MIR 定义了一套标准的内置组件：
-
-### 布局组件
-
-| 组件         | 说明     | 关键属性                  |
-| ------------ | -------- | ------------------------- |
-| MdrContainer | 容器     | layout, padding, gap      |
-| MdrGrid      | 网格布局 | columns, rows, gap        |
-| MdrFlex      | 弹性布局 | direction, justify, align |
-| MdrStack     | 堆叠布局 | spacing, direction        |
-
-### 基础组件
-
-| 组件      | 说明 | 关键属性                |
-| --------- | ---- | ----------------------- |
-| MdrText   | 文本 | content, variant, color |
-| MdrButton | 按钮 | variant, size, disabled |
-| MdrLink   | 链接 | href, target            |
-| MdrImage  | 图片 | src, alt, objectFit     |
-| MdrIcon   | 图标 | name, size, color       |
-
-### 表单组件
-
-| 组件        | 说明     | 关键属性                 |
-| ----------- | -------- | ------------------------ |
-| MdrInput    | 输入框   | type, placeholder, value |
-| MdrSelect   | 下拉选择 | options, value           |
-| MdrCheckbox | 复选框   | checked, label           |
-| MdrRadio    | 单选框   | options, value           |
-| MdrTextarea | 多行输入 | rows, placeholder        |
-
-### 数据组件
-
-| 组件     | 说明 | 关键属性            |
-| -------- | ---- | ------------------- |
-| MdrTable | 表格 | columns, dataSource |
-| MdrList  | 列表 | items, renderItem   |
-| MdrCard  | 卡片 | title, content      |
+| 触发器         | 说明     |
+| -------------- | -------- |
+| `onClick`      | 点击     |
+| `onDoubleClick`| 双击     |
+| `onMouseEnter` | 鼠标进入 |
+| `onMouseLeave` | 鼠标离开 |
+| `onFocus`      | 获得焦点 |
+| `onBlur`       | 失去焦点 |
+| `onChange`     | 值变化   |
+| `onInput`      | 输入     |
+| `onSubmit`     | 表单提交 |
+| `onKeyDown`    | 按键按下 |
+| `onKeyUp`      | 按键抬起 |
 
 ## 代码生成
 
-MIR 可以转换为多种框架代码：
+MIR 可以转换为多种框架代码。当前主要支持 React 代码生成。
 
 ### React (JSX)
 
 ```jsx
 // 从 MIR 生成的 React 代码
-import { Container, Text, Button } from '@mdr/ui';
+import React from 'react';
 
-export function HomePage() {
-  const handleClick = useCallback(() => {
-    // 来自节点图
-  }, []);
+interface HomePageProps {
+  title?: string;
+}
 
+export default function HomePage({ title = "Welcome" }: HomePageProps) {
+  const [count, setCount] = React.useState(0);
+  
   return (
-    <Container layout="flex" direction="column">
-      <Text variant="h1">Hello, MdrFrontEngine!</Text>
-      <Button variant="primary" size="medium" onClick={handleClick}>
+    <div style={{ padding: 16 }}>
+      <span>Hello, MdrFrontEngine!</span>
+      <button
+        variant="primary"
+        size="medium"
+        onClick={() => { window.location.assign('/about'); }}
+      >
         点击我
-      </Button>
-    </Container>
+      </button>
+    </div>
   );
 }
 ```
 
-### Vue 3 (SFC)
-
-```vue
-<!-- 从 MIR 生成的 Vue 代码 -->
-<template>
-  <MdrContainer layout="flex" direction="column">
-    <MdrText variant="h1">Hello, MdrFrontEngine!</MdrText>
-    <MdrButton variant="primary" size="medium" @click="handleClick">
-      点击我
-    </MdrButton>
-  </MdrContainer>
-</template>
-
-<script setup>
-import { MdrContainer, MdrText, MdrButton } from '@mdr/ui-vue';
-
-const handleClick = () => {
-  // 来自节点图
-};
-</script>
-```
-
-### HTML/CSS/JS
-
-```html
-<!-- 从 MIR 生成的原生 Web 代码 -->
-<div class="mdr-container" style="display: flex; flex-direction: column;">
-  <h1 class="mdr-text">Hello, MdrFrontEngine!</h1>
-  <button
-    class="mdr-button mdr-button--primary mdr-button--medium"
-    onclick="handleClick()"
-  >
-    点击我
-  </button>
-</div>
-
-<script>
-  function handleClick() {
-    // 来自节点图
-  }
-</script>
-```
-
-## JSON Schema 验证
-
-MIR 文件通过 JSON Schema 进行验证：
-
-```json
-{
-  "$schema": "https://mdr.dev/schemas/mir/1.0.json"
-}
-```
-
-### 验证错误示例
+### 代码生成流程
 
 ```
-Error: Invalid MIR document
-  at root.children[0].props.variant
-  Expected: "h1" | "h2" | "h3" | "h4" | "body" | "caption"
-  Received: "heading"
+MIR Document → Canonical IR → React Component Code
 ```
+
+1. **解析 MIR** - 将 JSON 解析为内部表示
+2. **构建 IR** - 转换为规范的中间表示
+3. **代码生成** - 根据目标框架生成代码
+4. **依赖解析** - 自动解析和声明依赖包
 
 ## 最佳实践
 
@@ -420,41 +342,48 @@ Error: Invalid MIR document
 }
 ```
 
-### 2. 保持结构扁平
+### 2. 保持结构清晰
 
 ```json
 // ✅ 合理的嵌套
 {
-  "type": "MdrContainer",
+  "id": "page",
+  "type": "div",
   "children": [
-    { "type": "MdrText" },
-    { "type": "MdrButton" }
+    { "id": "header", "type": "header" },
+    { "id": "main", "type": "main" },
+    { "id": "footer", "type": "footer" }
   ]
 }
 
 // ❌ 过度嵌套
 {
-  "type": "MdrContainer",
+  "id": "page",
+  "type": "div",
   "children": [{
-    "type": "MdrContainer",
+    "type": "div",
     "children": [{
-      "type": "MdrContainer",
+      "type": "div",
       "children": [...]
     }]
   }]
 }
 ```
 
-### 3. 复用组件
+### 3. 合理使用状态
 
-创建可复用的组件模板，通过 imports 引入。
+- 将 UI 状态（如 loading、isOpen）与业务状态分开
+- 使用有意义的初始值
+- 避免冗余状态
 
-### 4. 类型检查
+### 4. 事件处理
 
-始终包含 `$schema` 以启用 IDE 类型检查和自动补全。
+- 优先使用内置动作（navigate、executeGraph）
+- 为复杂逻辑使用节点图
+- 保持事件参数简洁
 
 ## 下一步
 
 - [组件系统](/guide/components) - 深入了解组件设计
-- [MIR 规范](/reference/mir-spec) - 完整的语法规范
+- [蓝图编辑器](/guide/blueprint-editor) - 可视化编辑 MIR
 - [代码导出](/guide/export) - 导出为框架代码
