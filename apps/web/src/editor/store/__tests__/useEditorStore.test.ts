@@ -430,4 +430,36 @@ describe('useEditorStore workspace state', () => {
     expect(state.workspaceDocumentsById['page-about']).toBeUndefined();
     expect(state.treeById['doc-page-about']).toBeUndefined();
   });
+
+  it('patches runtime state by project without mutating mirDoc', () => {
+    const store = useEditorStore.getState();
+    const previousMirDoc = store.mirDoc;
+
+    store.patchRuntimeState('project-a', { products: [{ id: 'p-1' }] });
+    store.patchRuntimeState('project-a', { selected: 'p-1' });
+
+    const state = useEditorStore.getState();
+    expect(state.runtimeStateByProject['project-a']).toEqual({
+      products: [{ id: 'p-1' }],
+      selected: 'p-1',
+    });
+    expect(state.mirDoc).toBe(previousMirDoc);
+  });
+
+  it('resets runtime state for one project or all projects', () => {
+    const store = useEditorStore.getState();
+
+    store.patchRuntimeState('project-a', { count: 1 });
+    store.patchRuntimeState('project-b', { count: 2 });
+    store.resetRuntimeState('project-a');
+    expect(useEditorStore.getState().runtimeStateByProject['project-a']).toBe(
+      undefined
+    );
+    expect(
+      useEditorStore.getState().runtimeStateByProject['project-b']
+    ).toEqual({ count: 2 });
+
+    store.resetRuntimeState();
+    expect(useEditorStore.getState().runtimeStateByProject).toEqual({});
+  });
 });

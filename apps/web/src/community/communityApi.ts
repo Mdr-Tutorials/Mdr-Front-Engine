@@ -65,10 +65,21 @@ const request = async <T>(path: string): Promise<T> => {
         ? String((payload as { message?: string }).message || '')
         : response.statusText || 'Request failed.';
     const code =
-      typeof payload === 'object' && payload && 'error' in payload
-        ? String((payload as { error?: string }).error || '')
+      typeof payload === 'object' && payload && 'code' in payload
+        ? String((payload as { code?: string }).code || '')
+        : typeof payload === 'object' && payload && 'error' in payload
+          ? String((payload as { error?: string }).error || '')
+          : undefined;
+    const details =
+      typeof payload === 'object' && payload && 'details' in payload
+        ? (payload as { details?: unknown }).details
         : undefined;
-    throw new ApiError(message || 'Request failed.', response.status, code);
+    throw new ApiError(
+      message || 'Request failed.',
+      response.status,
+      code,
+      details
+    );
   }
   return payload as T;
 };

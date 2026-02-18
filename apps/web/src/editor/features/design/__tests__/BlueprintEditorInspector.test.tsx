@@ -291,6 +291,72 @@ describe('BlueprintEditorInspector', () => {
     expect(params?.target).toBeUndefined();
   });
 
+  it('persists data model schema, mock json and list array field', () => {
+    resetEditorStore({
+      mirDoc: createMirDoc([{ id: 'child-1', type: 'MdrDiv', text: 'Item' }]),
+      blueprintStateByProject: {
+        [PROJECT_ID]: {
+          ...DEFAULT_BLUEPRINT_STATE,
+          selectedId: 'child-1',
+        },
+      },
+    });
+
+    render(
+      <BlueprintEditorInspector
+        isCollapsed={false}
+        onToggleCollapse={() => {}}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('inspector-data-model-enable'));
+    fireEvent.change(screen.getByTestId('inspector-data-model-schema'), {
+      target: {
+        value: JSON.stringify(
+          {
+            totalCount: 'number',
+            items: [{ data: 'string' }],
+          },
+          null,
+          2
+        ),
+      },
+    });
+    fireEvent.blur(screen.getByTestId('inspector-data-model-schema'));
+
+    fireEvent.change(screen.getByTestId('inspector-data-model-mock'), {
+      target: {
+        value: JSON.stringify(
+          {
+            totalCount: 2,
+            items: [{ data: 'mdr' }, { data: 'mar' }],
+          },
+          null,
+          2
+        ),
+      },
+    });
+    fireEvent.blur(screen.getByTestId('inspector-data-model-mock'));
+
+    fireEvent.click(screen.getByTestId('inspector-list-template-enable'));
+    fireEvent.change(screen.getByTestId('inspector-list-array-field'), {
+      target: { value: 'items' },
+    });
+
+    const node = useEditorStore
+      .getState()
+      .mirDoc.ui.root.children?.find((item) => item.id === 'child-1');
+    expect(node?.data?.value).toEqual({
+      totalCount: 'number',
+      items: [{ data: 'string' }],
+    });
+    expect(node?.data?.mock).toEqual({
+      totalCount: 2,
+      items: [{ data: 'mdr' }, { data: 'mar' }],
+    });
+    expect(node?.list?.arrayField).toBe('items');
+  });
+
   it('updates iconRef after selecting icon from picker', async () => {
     resetEditorStore({
       mirDoc: createMirDoc([
@@ -670,5 +736,120 @@ describe('BlueprintEditorInspector', () => {
       .mirDoc.ui.root.children?.find((item) => item.id === 'mui-dialog-1');
     expect(node?.props?.open).toBeUndefined();
     expect(node?.props?.maxWidth).toBeUndefined();
+  });
+
+  it('mounts data model JSON on selected node', () => {
+    resetEditorStore({
+      mirDoc: createMirDoc([{ id: 'card-1', type: 'MdrCard' }]),
+      blueprintStateByProject: {
+        [PROJECT_ID]: {
+          ...DEFAULT_BLUEPRINT_STATE,
+          selectedId: 'card-1',
+        },
+      },
+    });
+
+    render(
+      <BlueprintEditorInspector
+        isCollapsed={false}
+        onToggleCollapse={() => {}}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('inspector-data-model-enable'));
+    const textarea = screen.getByTestId(
+      'inspector-data-model-schema'
+    ) as HTMLTextAreaElement;
+    fireEvent.change(textarea, {
+      target: { value: '{ "title": "Demo", "meta": { "price": 9.9 } }' },
+    });
+    fireEvent.blur(textarea);
+
+    const node = useEditorStore
+      .getState()
+      .mirDoc.ui.root.children?.find((item) => item.id === 'card-1');
+    expect(node?.data?.value).toEqual({
+      title: 'Demo',
+      meta: { price: 9.9 },
+    });
+  });
+
+  it('persists array json in mock input', () => {
+    resetEditorStore({
+      mirDoc: createMirDoc([{ id: 'card-1', type: 'MdrCard' }]),
+      blueprintStateByProject: {
+        [PROJECT_ID]: {
+          ...DEFAULT_BLUEPRINT_STATE,
+          selectedId: 'card-1',
+        },
+      },
+    });
+
+    render(
+      <BlueprintEditorInspector
+        isCollapsed={false}
+        onToggleCollapse={() => {}}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('inspector-data-model-enable'));
+    const textarea = screen.getByTestId(
+      'inspector-data-model-mock'
+    ) as HTMLTextAreaElement;
+    fireEvent.change(textarea, {
+      target: { value: '[{"data":"mdr"},{"data":"mar"}]' },
+    });
+    fireEvent.blur(textarea);
+
+    const node = useEditorStore
+      .getState()
+      .mirDoc.ui.root.children?.find((item) => item.id === 'card-1');
+    expect(node?.data?.mock).toEqual([{ data: 'mdr' }, { data: 'mar' }]);
+  });
+
+  it('shows parent data-model field paths in child external prop input', () => {
+    setExternalRuntimeMeta('MuiCard', {
+      libraryId: 'mui',
+      runtimeType: 'MuiCard',
+      defaultProps: { title: '' },
+    });
+    resetEditorStore({
+      mirDoc: createMirDoc([
+        {
+          id: 'parent',
+          type: 'MdrDiv',
+          data: {
+            extend: {
+              title: 'Demo',
+              detail: { price: 18 },
+            },
+          },
+          children: [{ id: 'card-1', type: 'MuiCard' }],
+        },
+      ]),
+      blueprintStateByProject: {
+        [PROJECT_ID]: {
+          ...DEFAULT_BLUEPRINT_STATE,
+          selectedId: 'card-1',
+        },
+      },
+    });
+
+    render(
+      <BlueprintEditorInspector
+        isCollapsed={false}
+        onToggleCollapse={() => {}}
+      />
+    );
+
+    const input = screen.getByTestId(
+      'inspector-external-prop-title'
+    ) as HTMLInputElement;
+    expect(input.getAttribute('list')).toBe('inspector-prop-paths-card-1');
+    const datalist = document.getElementById('inspector-prop-paths-card-1');
+    expect(datalist?.querySelector('option[value=\"title\"]')).toBeTruthy();
+    expect(
+      datalist?.querySelector('option[value=\"detail.price\"]')
+    ).toBeTruthy();
   });
 });

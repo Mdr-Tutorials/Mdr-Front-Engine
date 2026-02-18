@@ -123,8 +123,6 @@ type ComponentNodeV12 = {
 
 ```json
 {
-  "error": "invalid_mir",
-  "message": "MIR validation failed.",
   "details": [
     {
       "code": "MIR_LIST_SOURCE_NOT_ARRAY",
@@ -134,6 +132,11 @@ type ComponentNodeV12 = {
   ]
 }
 ```
+
+说明：
+
+1. `details` 必须为数组；每项至少包含 `code/path/message`
+2. `path` 使用 JSON Pointer（示例：`/ui/root/children/0/list/source`）
 
 建议错误码：
 

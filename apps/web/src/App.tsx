@@ -5,6 +5,7 @@ import Editor from './editor/Editor';
 import EditorHome from './editor/EditorHome';
 import ProjectHome from './editor/ProjectHome';
 import BlueprintEditor from './editor/features/design/BlueprintEditor';
+import NodeGraph from './editor/features/development/NodeGraph';
 import { ProjectResources } from './editor/features/resources/ProjectResources';
 import { EditorSettingsPage } from './editor/features/settings/EditorSettingsPage';
 import { ProjectSettingsPage } from './editor/features/settings/ProjectSettingsPage';
@@ -39,7 +40,7 @@ export const createRoutes = (t: TFunction) => [
           { path: 'blueprint', element: <BlueprintEditor /> },
           {
             path: 'nodegraph',
-            element: <div>{t('nodeGraphEditor', { ns: 'routes' })}</div>,
+            element: <NodeGraph />,
           },
           {
             path: 'component',
@@ -67,6 +68,7 @@ export const createRoutes = (t: TFunction) => [
         element: <div>{t('componentEditor', { ns: 'routes' })}</div>,
       },
       { path: 'blueprint', element: <BlueprintEditor /> },
+      { path: 'nodegraph', element: <NodeGraph /> },
       { path: 'settings', element: <EditorSettingsPage /> },
     ],
   },

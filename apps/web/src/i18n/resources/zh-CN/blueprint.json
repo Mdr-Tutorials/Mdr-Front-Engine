@@ -29,6 +29,31 @@
         "label": "外部 Props",
         "description": "根据外部组件元数据（d.ts）生成。",
         "reset": "重置"
+      },
+      "dataScope": {
+        "title": "数据作用域",
+        "sourceKind": "来源类型",
+        "sourcePath": "来源路径",
+        "sourcePathPlaceholder": "products.list",
+        "pick": "下钻路径",
+        "pickPlaceholder": "detail.summary",
+        "extend": "扩展字段"
+      },
+      "dataModel": {
+        "title": "数据模型",
+        "enable": "在当前组件挂载数据模型 JSON",
+        "schemaPlaceholder": "{\n  \"totalCount\": \"number\",\n  \"items\": [\n    {\n      \"data\": \"string\"\n    }\n  ]\n}",
+        "mockLabel": "模拟 JSON",
+        "mockPlaceholder": "{\n  \"totalCount\": 2,\n  \"items\": [\n    {\n      \"data\": \"mdr\"\n    }\n  ]\n}",
+        "invalidJson": "JSON 格式无效。",
+        "schemaObjectOnly": "数据模型必须是 JSON 对象。",
+        "hint": "子组件在各自属性输入框中直接填写字段路径即可绑定。"
+      },
+      "listTemplate": {
+        "title": "列表模板",
+        "enable": "提升节点为列表模板",
+        "arrayField": "数组字段",
+        "arrayFieldPlaceholder": "items"
       }
     },
     "panels": {

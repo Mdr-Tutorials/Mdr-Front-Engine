@@ -29,6 +29,7 @@ type BlueprintEditorCanvasProps = {
   zoom: number;
   pan: { x: number; y: number };
   selectedId?: string;
+  runtimeState?: Record<string, unknown>;
   onPanChange: (pan: { x: number; y: number }) => void;
   onZoomChange: (value: number) => void;
   onSelectNode: (nodeId: string) => void;
@@ -137,6 +138,7 @@ export function BlueprintEditorCanvas({
   zoom,
   pan,
   selectedId,
+  runtimeState,
   onPanChange,
   onZoomChange,
   onSelectNode,
@@ -508,6 +510,7 @@ export function BlueprintEditorCanvas({
                 <MIRRenderer
                   node={mirDoc.ui.root}
                   mirDoc={mirDoc}
+                  runtimeState={runtimeState}
                   overrides={{ currentPath }}
                   outletContentNode={outletContentNode}
                   outletTargetNodeId={activeRouteNode?.outletNodeId}

@@ -1,6 +1,8 @@
 export type ApiErrorPayload = {
   error?: string;
+  code?: string;
   message?: string;
+  details?: unknown;
 };
 
 export type PublicUser = {
@@ -20,12 +22,19 @@ export type AuthResponse = {
 export class ApiError extends Error {
   status: number;
   code?: string;
+  details?: unknown;
 
-  constructor(message: string, status: number, code?: string) {
+  constructor(
+    message: string,
+    status: number,
+    code?: string,
+    details?: unknown
+  ) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
     this.code = code;
+    this.details = details;
   }
 }
 
@@ -58,7 +67,12 @@ const request = async <T>(
       response.statusText ||
       'Request failed.';
     const code = typeof apiPayload === 'object' ? apiPayload?.error : undefined;
-    throw new ApiError(message, response.status, code);
+    throw new ApiError(
+      message,
+      response.status,
+      apiPayload?.code || code,
+      apiPayload?.details
+    );
   }
   return payload as T;
 };

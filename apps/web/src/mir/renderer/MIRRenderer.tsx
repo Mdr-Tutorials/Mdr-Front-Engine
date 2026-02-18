@@ -13,6 +13,7 @@ import {
   isBuiltInActionName,
   type BuiltInActionContext,
 } from '../actions/registry';
+import { deepResolveValueOrRef, readValueByPath } from '@/mir/shared/valueRef';
 import { resolveLinkCapability } from './capabilities';
 import { renderRichTextValue } from './richText';
 import { decodeHtmlEntities } from './textEntities';
@@ -36,6 +37,10 @@ type UnsafeRecord = Record<string, unknown>;
 type RenderContext = {
   state: RenderState;
   params: RenderParams;
+  data?: unknown;
+  item?: unknown;
+  index?: number;
+  nodesById: Record<string, ComponentNode>;
   dispatchAction: (actionName?: string, payload?: unknown) => void;
   dispatchBuiltInAction: (
     actionName: string,
@@ -55,18 +60,105 @@ type RenderContext = {
   outletTargetNodeId?: string;
 };
 
-const resolveValue = (value: any, state: RenderState, params: RenderParams) => {
-  if (typeof value !== 'object' || value === null) return value;
+const resolvePathLikeString = (value: string, data: unknown): unknown => {
+  const candidate = value.trim();
+  if (!candidate || data === null || data === undefined) return value;
+  const resolved = readValueByPath(data, candidate);
+  return resolved === undefined ? value : resolved;
+};
 
-  if ('$state' in value) {
-    return state[value.$state];
+const resolveValue = (value: unknown, context: RenderContext): unknown => {
+  if (typeof value === 'string') {
+    return resolvePathLikeString(value, context.data);
   }
+  return deepResolveValueOrRef(value as any, {
+    state: context.state,
+    params: context.params,
+    data: context.data,
+    item: context.item,
+    index: context.index,
+  });
+};
 
-  if ('$param' in value) {
-    return params[value.$param];
+const resolveNodeDataScope = (
+  context: RenderContext,
+  node: ComponentNode
+): unknown => {
+  const scope = node.data;
+  if (!scope) return context.data;
+  let nextValue = context.data;
+  const hasMock = scope.mock !== undefined;
+  if (hasMock) {
+    nextValue = deepResolveValueOrRef(scope.mock, {
+      state: context.state,
+      params: context.params,
+      data: context.data,
+      item: context.item,
+      index: context.index,
+    });
   }
+  if (scope.source) {
+    nextValue = deepResolveValueOrRef(scope.source, {
+      state: context.state,
+      params: context.params,
+      data: context.data,
+      item: context.item,
+      index: context.index,
+    });
+  }
+  if (typeof scope.pick === 'string' && scope.pick.trim()) {
+    nextValue = readValueByPath(nextValue, scope.pick);
+  }
+  if (!hasMock && scope.value !== undefined) {
+    nextValue = deepResolveValueOrRef(scope.value, {
+      state: context.state,
+      params: context.params,
+      data: context.data,
+      item: context.item,
+      index: context.index,
+    });
+  }
+  if (
+    scope.extend &&
+    typeof scope.extend === 'object' &&
+    !Array.isArray(scope.extend)
+  ) {
+    const resolvedExtend = deepResolveValueOrRef(scope.extend as any, {
+      state: context.state,
+      params: context.params,
+      data: context.data,
+      item: context.item,
+      index: context.index,
+    });
+    if (
+      resolvedExtend &&
+      typeof resolvedExtend === 'object' &&
+      !Array.isArray(resolvedExtend)
+    ) {
+      const base =
+        nextValue && typeof nextValue === 'object' && !Array.isArray(nextValue)
+          ? (nextValue as Record<string, unknown>)
+          : {};
+      return {
+        ...base,
+        ...(resolvedExtend as Record<string, unknown>),
+      };
+    }
+  }
+  return nextValue;
+};
 
-  return value;
+const resolveListKey = (
+  item: unknown,
+  index: number,
+  keyBy?: string
+): string => {
+  if (!keyBy?.trim()) return String(index);
+  const resolved = readValueByPath(item, keyBy);
+  if (resolved === undefined || resolved === null || resolved === '') {
+    return String(index);
+  }
+  return String(resolved);
 };
 
 const buildInitialState = (logicState?: Record<string, { initial: any }>) => {
@@ -217,6 +309,7 @@ interface MIRRendererProps {
   node: ComponentNode;
   mirDoc: MIRDocument;
   overrides?: Record<string, any>;
+  runtimeState?: Record<string, unknown>;
   actions?: ActionHandlers;
   selectedId?: string;
   onNodeSelect?: (nodeId: string, event: React.SyntheticEvent) => void;
@@ -243,39 +336,54 @@ const MIRNode: React.FC<{
   context: RenderContext;
   registry: ComponentRegistry;
 }> = ({ node, context, registry }) => {
+  const resolvedNodeData = useMemo(
+    () => resolveNodeDataScope(context, node),
+    [
+      context.data,
+      context.index,
+      context.item,
+      context.params,
+      context.state,
+      node,
+    ]
+  );
+  const scopedContext = useMemo(
+    () => ({
+      ...context,
+      data: resolvedNodeData,
+    }),
+    [context, resolvedNodeData]
+  );
   const resolvedProps = useMemo(() => {
     const p: Record<string, any> = {};
     if (node.props) {
       Object.entries(node.props).forEach(([key, val]) => {
-        p[key] = resolveValue(val, context.state, context.params);
+        p[key] = resolveValue(val, scopedContext);
       });
     }
     if (
       node.type === 'MdrRoute' &&
       p.currentPath === undefined &&
-      typeof context.params.currentPath === 'string'
+      typeof scopedContext.params.currentPath === 'string'
     ) {
-      p.currentPath = context.params.currentPath;
+      p.currentPath = scopedContext.params.currentPath;
     }
     return p;
-  }, [node.props, node.type, context.state, context.params]);
+  }, [node.props, node.type, scopedContext]);
 
   const resolvedStyle = useMemo(() => {
     const s: Record<string, any> = {};
     if (node.style) {
       Object.entries(node.style).forEach(([key, val]) => {
-        s[key] = resolveValue(val, context.state, context.params);
+        s[key] = resolveValue(val, scopedContext);
       });
     }
     return s;
-  }, [node.style, context.state, context.params]);
+  }, [node.style, scopedContext]);
 
   const resolvedText = useMemo(
-    () =>
-      decodeHtmlEntities(
-        resolveValue(node.text, context.state, context.params)
-      ),
-    [node.text, context.state, context.params]
+    () => decodeHtmlEntities(resolveValue(node.text, scopedContext)),
+    [node.text, scopedContext]
   );
   const resolvedTextMode = useMemo(() => {
     const raw = resolvedProps?.textMode;
@@ -319,15 +427,24 @@ const MIRNode: React.FC<{
       if (isClickTrigger(trigger)) return;
       const handler = (payload: unknown) => {
         if (
-          context.requireSelectionForEvents &&
-          context.selectedId !== node.id
+          scopedContext.requireSelectionForEvents &&
+          scopedContext.selectedId !== node.id
         ) {
           return;
         }
+        const resolvedParams = eventDef.params
+          ? (deepResolveValueOrRef(eventDef.params as any, {
+              state: scopedContext.state,
+              params: scopedContext.params,
+              data: scopedContext.data,
+              item: scopedContext.item,
+              index: scopedContext.index,
+            }) as Record<string, unknown>)
+          : undefined;
         if (
           eventDef.action &&
-          context.dispatchBuiltInAction(eventDef.action, {
-            params: eventDef.params,
+          scopedContext.dispatchBuiltInAction(eventDef.action, {
+            params: resolvedParams,
             nodeId: node.id,
             trigger,
             eventKey,
@@ -336,7 +453,7 @@ const MIRNode: React.FC<{
         ) {
           return;
         }
-        context.dispatchAction(eventDef.action, payload);
+        scopedContext.dispatchAction(eventDef.action, payload);
       };
       handlers[reactEventName] = mergeHandlers(
         handlers[reactEventName],
@@ -344,14 +461,7 @@ const MIRNode: React.FC<{
       );
     });
     return handlers;
-  }, [
-    node.events,
-    context.dispatchAction,
-    context.dispatchBuiltInAction,
-    context.requireSelectionForEvents,
-    context.selectedId,
-    node.id,
-  ]);
+  }, [node.events, scopedContext, node.id]);
 
   const mergedProps = useMemo(() => {
     const combined = {
@@ -363,10 +473,10 @@ const MIRNode: React.FC<{
     return stripInternalProps(combined);
   }, [adapterResult.props, resolvedProps, eventProps]);
 
-  const selectionData = context.onNodeSelect
+  const selectionData = scopedContext.onNodeSelect
     ? {
         'data-mir-id': node.id,
-        ...(context.selectedId === node.id
+        ...(scopedContext.selectedId === node.id
           ? { 'data-mir-selected': 'true' }
           : {}),
       }
@@ -406,15 +516,89 @@ const MIRNode: React.FC<{
 
   const outletChildren =
     node.type === 'MdrOutlet' &&
-    context.outletContentNode &&
-    (!context.outletTargetNodeId || context.outletTargetNodeId === node.id) ? (
+    scopedContext.outletContentNode &&
+    (!scopedContext.outletTargetNodeId ||
+      scopedContext.outletTargetNodeId === node.id) ? (
       <MIRNode
-        key={context.outletContentNode.id}
-        node={context.outletContentNode}
-        context={context}
+        key={scopedContext.outletContentNode.id}
+        node={scopedContext.outletContentNode}
+        context={scopedContext}
         registry={registry}
       />
     ) : null;
+
+  const listRender = useMemo(() => {
+    if (!node.list) return null;
+    const source =
+      node.list.source !== undefined
+        ? deepResolveValueOrRef(node.list.source as any, {
+            state: scopedContext.state,
+            params: scopedContext.params,
+            data: scopedContext.data,
+            item: scopedContext.item,
+            index: scopedContext.index,
+          })
+        : typeof node.list.arrayField === 'string' &&
+            node.list.arrayField.trim().length > 0
+          ? readValueByPath(scopedContext.data, node.list.arrayField)
+          : scopedContext.data;
+    const items = Array.isArray(source) ? source : [];
+    if (!items.length) {
+      const emptyNodeId =
+        typeof node.list.emptyNodeId === 'string' ? node.list.emptyNodeId : '';
+      if (!emptyNodeId || emptyNodeId === node.id) return null;
+      const emptyNode = scopedContext.nodesById[emptyNodeId];
+      if (!emptyNode) return null;
+      return (
+        <MIRNode
+          key={`${node.id}-empty`}
+          node={emptyNode}
+          context={scopedContext}
+          registry={registry}
+        />
+      );
+    }
+    const nodeWithoutList = { ...node, list: undefined };
+    const itemAlias =
+      typeof node.list.itemAs === 'string' && node.list.itemAs.trim()
+        ? node.list.itemAs.trim()
+        : 'item';
+    const indexAlias =
+      typeof node.list.indexAs === 'string' && node.list.indexAs.trim()
+        ? node.list.indexAs.trim()
+        : 'index';
+    return items.map((item, index) => {
+      const iterationData =
+        item && typeof item === 'object' && !Array.isArray(item)
+          ? ({
+              ...(scopedContext.data &&
+              typeof scopedContext.data === 'object' &&
+              !Array.isArray(scopedContext.data)
+                ? (scopedContext.data as Record<string, unknown>)
+                : {}),
+              ...(item as Record<string, unknown>),
+            } as Record<string, unknown>)
+          : item;
+      return (
+        <MIRNode
+          key={`${node.id}-${resolveListKey(item, index, node.list?.keyBy)}`}
+          node={nodeWithoutList}
+          context={{
+            ...scopedContext,
+            data: iterationData,
+            item,
+            index,
+            params: {
+              ...scopedContext.params,
+              [itemAlias]: item,
+              [indexAlias]: index,
+            },
+          }}
+          registry={registry}
+        />
+      );
+    });
+  }, [node, scopedContext, registry]);
 
   const { style: propStyle, ...restProps } = finalProps;
   const mergedStyle = propStyle
@@ -422,11 +606,18 @@ const MIRNode: React.FC<{
     : resolvedStyle;
 
   if (!supportsChildren) {
+    if (listRender) {
+      return <>{listRender}</>;
+    }
     return (
       <span style={{ display: 'contents' }} data-mir-node-id={node.id}>
         <Component {...restProps} style={mergedStyle} />
       </span>
     );
+  }
+
+  if (listRender) {
+    return <>{listRender}</>;
   }
 
   return (
@@ -438,7 +629,7 @@ const MIRNode: React.FC<{
             <MIRNode
               key={child.id}
               node={child}
-              context={context}
+              context={scopedContext}
               registry={registry}
             />
           ))}
@@ -451,6 +642,7 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
   node,
   mirDoc,
   overrides = {},
+  runtimeState,
   actions = {},
   selectedId,
   onNodeSelect,
@@ -485,11 +677,21 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
     () => buildInitialState(mirDoc.logic?.state),
     [mirDoc.logic?.state]
   );
-  const [state, setState] = useState<RenderState>(initialState);
+  const runtimeStateOverrides = useMemo(() => {
+    if (!runtimeState || typeof runtimeState !== 'object') return {};
+    return runtimeState;
+  }, [runtimeState]);
+  const [state, setState] = useState<RenderState>({
+    ...initialState,
+    ...runtimeStateOverrides,
+  });
 
   useEffect(() => {
-    setState(initialState);
-  }, [initialState]);
+    setState({
+      ...initialState,
+      ...runtimeStateOverrides,
+    });
+  }, [initialState, runtimeStateOverrides]);
 
   const dispatchAction = useCallback(
     (actionName?: string, payload?: unknown) => {
@@ -681,6 +883,10 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
     () => ({
       state,
       params: effectiveParams,
+      data: undefined,
+      item: undefined,
+      index: undefined,
+      nodesById,
       dispatchAction,
       dispatchBuiltInAction,
       selectedId,
@@ -693,6 +899,7 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
     [
       state,
       effectiveParams,
+      nodesById,
       dispatchAction,
       dispatchBuiltInAction,
       selectedId,

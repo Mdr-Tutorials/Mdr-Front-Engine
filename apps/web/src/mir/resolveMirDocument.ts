@@ -11,7 +11,7 @@ const isPlainObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
 export const createDefaultMirDoc = (): MIRDocument => ({
-  version: '1.0',
+  version: '1.2',
   ui: {
     root: {
       id: 'root',
@@ -19,6 +19,48 @@ export const createDefaultMirDoc = (): MIRDocument => ({
     },
   },
 });
+
+const normalizeNodeTree = (node: unknown): MIRDocument['ui']['root'] | null => {
+  if (!isPlainObject(node)) return null;
+  const id =
+    typeof node.id === 'string' && node.id.trim() ? node.id.trim() : 'root';
+  const type =
+    typeof node.type === 'string' && node.type.trim()
+      ? node.type.trim()
+      : 'container';
+  const normalized: Record<string, unknown> = {
+    ...node,
+    id,
+    type,
+  };
+  if (Array.isArray(node.children)) {
+    normalized.children = node.children
+      .map((child) => normalizeNodeTree(child))
+      .filter((child): child is MIRDocument['ui']['root'] => Boolean(child));
+  }
+  return normalized as MIRDocument['ui']['root'];
+};
+
+export const normalizeMirToV12 = (source: unknown): MIRDocument => {
+  if (!isPlainObject(source)) {
+    return createDefaultMirDoc();
+  }
+  const normalizedRoot = normalizeNodeTree(
+    (source as { ui?: { root?: unknown } }).ui?.root
+  );
+  if (!normalizedRoot) {
+    return createDefaultMirDoc();
+  }
+  const normalized = {
+    ...source,
+    version: '1.2',
+    ui: {
+      ...((source as { ui?: Record<string, unknown> }).ui ?? {}),
+      root: normalizedRoot,
+    },
+  } as MIRDocument;
+  return normalized;
+};
 
 export const resolveCanonicalWorkspaceDocumentId = (
   documents: WorkspaceLikeDocument[]
@@ -40,14 +82,7 @@ export const resolveCanonicalWorkspaceDocumentId = (
 };
 
 export const normalizeMirDocument = (source: unknown): MIRDocument => {
-  if (!isPlainObject(source)) {
-    return createDefaultMirDoc();
-  }
-  const root = (source as { ui?: { root?: unknown } }).ui?.root;
-  if (!isPlainObject(root)) {
-    return createDefaultMirDoc();
-  }
-  return source as MIRDocument;
+  return normalizeMirToV12(source);
 };
 
 const tryResolveFromWorkspaceShape = (source: unknown): MIRDocument | null => {

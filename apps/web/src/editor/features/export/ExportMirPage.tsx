@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import { generateReactBundle } from '@/mir/generator/mirToReact';
+import { validateMirDocument } from '@/mir/validator/validator';
 import { flattenPublicFiles, readPublicTree } from '../resources/publicTree';
 import { CodeViewer } from './CodeViewer';
 import { resolveZipFilePayload } from './exportZip';
@@ -103,16 +104,32 @@ export function ExportMirPage() {
   const [expandedFolders, setExpandedFolders] = useState<
     Record<string, boolean>
   >({});
+  const mirValidation = useMemo(() => validateMirDocument(mirDoc), [mirDoc]);
+  const hasMirValidationError = mirValidation.hasError;
+  const validatedMirDoc = mirValidation.document;
 
   const mirJson = useMemo(() => {
-    if (!mirDoc) return '';
-    return JSON.stringify(mirDoc, null, 2);
-  }, [mirDoc]);
+    return JSON.stringify(validatedMirDoc, null, 2);
+  }, [validatedMirDoc]);
 
   const reactBundle = useMemo(() => {
-    if (!mirDoc?.ui?.root) return null;
+    if (!validatedMirDoc?.ui?.root) return null;
+    if (hasMirValidationError) {
+      return {
+        entryFilePath: 'validation-error.ts',
+        type: projectType,
+        files: [],
+        diagnostics: mirValidation.issues.map((item) => ({
+          code: item.code,
+          severity: 'error' as const,
+          source: 'canonical-ir' as const,
+          message: item.message,
+          path: item.path,
+        })),
+      };
+    }
     try {
-      return generateReactBundle(mirDoc, {
+      return generateReactBundle(validatedMirDoc, {
         resourceType: projectType,
         packageResolver: {
           strategy: 'npm',
@@ -132,9 +149,16 @@ export function ExportMirPage() {
             content: `// ${message}\n${String(error)}`,
           },
         ],
+        diagnostics: [],
       };
     }
-  }, [mirDoc, projectType, t]);
+  }, [
+    validatedMirDoc,
+    hasMirValidationError,
+    mirValidation.issues,
+    projectType,
+    t,
+  ]);
 
   const publicTree = useMemo(() => readPublicTree(projectId), [projectId]);
   const publicExportFiles = useMemo<ExportCodeFile[]>(
@@ -358,7 +382,9 @@ export function ExportMirPage() {
           <button
             type="button"
             className="ExportMirPageCopy"
-            disabled={!activeCode}
+            disabled={
+              !activeCode || (activeTab === 'react' && hasMirValidationError)
+            }
             onClick={async () => {
               if (!activeCode) return;
               await navigator.clipboard.writeText(activeCode);
@@ -374,7 +400,11 @@ export function ExportMirPage() {
             <button
               type="button"
               className="ExportMirPageCopy"
-              disabled={!reactProjectFiles.length || downloadingZip}
+              disabled={
+                !reactProjectFiles.length ||
+                downloadingZip ||
+                hasMirValidationError
+              }
               onClick={async () => {
                 if (!reactProjectFiles.length) return;
                 setDownloadingZip(true);
@@ -413,6 +443,15 @@ export function ExportMirPage() {
       </div>
 
       <div className="ExportMirPageBody">
+        {hasMirValidationError ? (
+          <div className="mb-2 rounded-md border border-red-300/60 bg-red-100/40 px-2 py-1 text-xs text-red-900 dark:border-red-700/60 dark:bg-red-900/20 dark:text-red-100">
+            {mirValidation.issues.map((item) => (
+              <p key={`${item.code}:${item.path}`} className="m-0">
+                [{item.code}] {item.path}: {item.message}
+              </p>
+            ))}
+          </div>
+        ) : null}
         {activeTab === 'react' && reactBundle?.diagnostics?.length ? (
           <div className="mb-2 rounded-md border border-amber-300/60 bg-amber-100/40 px-2 py-1 text-xs text-amber-900 dark:border-amber-700/60 dark:bg-amber-900/20 dark:text-amber-100">
             {reactBundle.diagnostics.map((item) => (

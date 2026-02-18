@@ -400,6 +400,7 @@ interface EditorStore {
   ) => void;
   applyWorkspaceMutation: (mutation: WorkspaceMutationResponse) => void;
   blueprintStateByProject: Record<string, BlueprintState>;
+  runtimeStateByProject: Record<string, Record<string, unknown>>;
   projectsById: Record<
     string,
     {
@@ -415,6 +416,11 @@ interface EditorStore {
     projectId: string,
     partial: Partial<BlueprintState>
   ) => void;
+  patchRuntimeState: (
+    projectId: string,
+    patch: Record<string, unknown>
+  ) => void;
+  resetRuntimeState: (projectId?: string) => void;
   setProject: (project: {
     id: string;
     name: string;
@@ -569,6 +575,7 @@ export const useEditorStore = create<EditorStore>()((set) => ({
       workspaceCapabilitiesLoaded: false,
       routeManifest: DEFAULT_ROUTE_MANIFEST,
       activeRouteNodeId: undefined,
+      runtimeStateByProject: {},
     }),
   setActiveDocumentId: (documentId) =>
     set((state) => {
@@ -877,6 +884,7 @@ export const useEditorStore = create<EditorStore>()((set) => ({
       };
     }),
   blueprintStateByProject: {},
+  runtimeStateByProject: {},
   projectsById: {},
   setBlueprintState: (projectId, partial) =>
     set((state) => {
@@ -891,6 +899,36 @@ export const useEditorStore = create<EditorStore>()((set) => ({
           [projectId]: { ...previous, ...partial, pan: nextPan },
         },
       };
+    }),
+  patchRuntimeState: (projectId, patch) =>
+    set((state) => {
+      const normalizedProjectId = projectId.trim();
+      if (!normalizedProjectId) return state;
+      if (!patch || typeof patch !== 'object' || Array.isArray(patch)) {
+        return state;
+      }
+      const previous = state.runtimeStateByProject[normalizedProjectId] ?? {};
+      return {
+        runtimeStateByProject: {
+          ...state.runtimeStateByProject,
+          [normalizedProjectId]: {
+            ...previous,
+            ...patch,
+          },
+        },
+      };
+    }),
+  resetRuntimeState: (projectId) =>
+    set((state) => {
+      const normalizedProjectId = projectId?.trim();
+      if (!normalizedProjectId) {
+        if (!Object.keys(state.runtimeStateByProject).length) return state;
+        return { runtimeStateByProject: {} };
+      }
+      if (!state.runtimeStateByProject[normalizedProjectId]) return state;
+      const nextRuntimeStateByProject = { ...state.runtimeStateByProject };
+      delete nextRuntimeStateByProject[normalizedProjectId];
+      return { runtimeStateByProject: nextRuntimeStateByProject };
     }),
   setProject: (project) =>
     set((state) => ({
@@ -922,6 +960,11 @@ export const useEditorStore = create<EditorStore>()((set) => ({
       if (!state.projectsById[projectId]) return state;
       const nextProjectsById = { ...state.projectsById };
       delete nextProjectsById[projectId];
-      return { projectsById: nextProjectsById };
+      const nextRuntimeStateByProject = { ...state.runtimeStateByProject };
+      delete nextRuntimeStateByProject[projectId];
+      return {
+        projectsById: nextProjectsById,
+        runtimeStateByProject: nextRuntimeStateByProject,
+      };
     }),
 }));

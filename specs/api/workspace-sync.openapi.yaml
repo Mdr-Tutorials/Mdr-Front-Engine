@@ -487,5 +487,21 @@ components:
         message:
           type: string
         details:
-          type: object
-          additionalProperties: true
+          type: array
+          description: Field-level validation details. JSON Pointer is used in path.
+          items:
+            $ref: '#/components/schemas/RequestErrorDetail'
+    RequestErrorDetail:
+      type: object
+      required: [code, path, message]
+      properties:
+        code:
+          type: string
+          description: Stable machine-readable detail code.
+        path:
+          type: string
+          description: JSON Pointer path to the invalid field.
+        message:
+          type: string
+          description: Human-readable detail message.
+      additionalProperties: true

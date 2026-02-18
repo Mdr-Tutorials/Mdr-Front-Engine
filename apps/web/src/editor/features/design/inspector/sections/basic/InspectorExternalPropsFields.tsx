@@ -17,8 +17,13 @@ const EXTERNAL_PROP_EXCLUDE_KEYS = new Set([
 const MAX_EXTERNAL_FIELDS = 16;
 
 export function InspectorExternalPropsFields() {
-  const { t, selectedNode, externalComponentItem, updateSelectedNode } =
-    useInspectorSectionContext();
+  const {
+    t,
+    selectedNode,
+    externalComponentItem,
+    updateSelectedNode,
+    dataModelFieldPaths = [],
+  } = useInspectorSectionContext();
 
   if (!selectedNode || !externalComponentItem) return null;
 
@@ -44,6 +49,7 @@ export function InspectorExternalPropsFields() {
     nodeProps[key] ?? defaultProps[key] ?? propOptions[key]?.[0] ?? '';
   const resolvePropSource = (key: string) =>
     Object.prototype.hasOwnProperty.call(nodeProps, key) ? 'node' : 'default';
+  const dataModelPathDatalistId = `inspector-prop-paths-${selectedNode.id}`;
 
   const updateProp = (key: string, value: unknown) => {
     updateSelectedNode((current: any) => ({
@@ -98,7 +104,7 @@ export function InspectorExternalPropsFields() {
                       value={normalizedValue}
                       onChange={(event) => updateProp(key, event.target.value)}
                     >
-                      {resolvedOptions.map((option) => (
+                      {resolvedOptions.map((option: string) => (
                         <option key={option} value={option}>
                           {option}
                         </option>
@@ -195,6 +201,11 @@ export function InspectorExternalPropsFields() {
                   <input
                     data-testid={`inspector-external-prop-${key}`}
                     className="h-7 min-w-0 flex-1 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) dark:border-white/16"
+                    list={
+                      dataModelFieldPaths.length
+                        ? dataModelPathDatalistId
+                        : undefined
+                    }
                     value={String(value ?? '')}
                     onChange={(event) => updateProp(key, event.target.value)}
                   />
@@ -213,6 +224,13 @@ export function InspectorExternalPropsFields() {
                 </div>
               );
             })}
+            {dataModelFieldPaths.length ? (
+              <datalist id={dataModelPathDatalistId}>
+                {dataModelFieldPaths.map((path: string) => (
+                  <option key={path} value={path} />
+                ))}
+              </datalist>
+            ) : null}
           </div>
         }
       />

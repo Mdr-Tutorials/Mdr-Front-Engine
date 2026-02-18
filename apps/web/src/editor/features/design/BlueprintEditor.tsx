@@ -129,6 +129,7 @@ function BlueprintEditor() {
             zoom={canvas.zoom}
             pan={canvas.pan}
             selectedId={canvas.selectedId}
+            runtimeState={canvas.runtimeState}
             onPanChange={canvas.onPanChange}
             onZoomChange={canvas.onZoomChange}
             onSelectNode={canvas.onSelectNode}

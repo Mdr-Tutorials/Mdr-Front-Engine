@@ -41,6 +41,7 @@ export const resetEditorStore = (overrides: Partial<EditorState> = {}) => {
       },
       activeRouteNodeId: undefined,
       blueprintStateByProject: {},
+      runtimeStateByProject: {},
       projectsById: {},
       ...overrides,
     },

@@ -1,16 +1,13 @@
 import type {
   ComponentNode,
+  NodeDataScope,
+  NodeListRender,
   MIRDocument,
-  ParamReference,
-  StateReference,
+  ValueOrRef,
 } from '@/core/types/engine.types';
 import type { DiagnosticBag } from './diagnostics';
 
-export type CanonicalText =
-  | string
-  | ParamReference
-  | StateReference
-  | undefined;
+export type CanonicalText = ValueOrRef | undefined;
 
 export interface CanonicalEvent {
   trigger: string;
@@ -25,6 +22,8 @@ export interface CanonicalNode {
   text: CanonicalText;
   style: Record<string, unknown>;
   props: Record<string, unknown>;
+  data?: NodeDataScope;
+  list?: NodeListRender;
   events: Record<string, CanonicalEvent>;
   children: CanonicalNode[];
 }
@@ -115,9 +114,11 @@ const normalizeNode = (
     id,
     type,
     path,
-    text: node.text,
+    text: node.text as CanonicalText,
     style: node.style ? { ...node.style } : {},
     props: node.props ? { ...node.props } : {},
+    data: node.data ? { ...node.data } : undefined,
+    list: node.list ? { ...node.list } : undefined,
     events: normalizeEventMap(node.events, path, bag),
     children,
   };

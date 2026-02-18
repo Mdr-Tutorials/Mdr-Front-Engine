@@ -38,59 +38,105 @@ const stringifyLiteral = (value: unknown): string | null => {
   return json;
 };
 
-const buildNavigateInlineHandler = (params: Record<string, unknown>) => {
-  const to = typeof params.to === 'string' ? params.to.trim() : '';
-  const target = params.target === '_self' ? '_self' : '_blank';
-  const replace = Boolean(params.replace);
-  if (target === '_blank') {
-    return `{() => { window.open(${stringify(to)}, '_blank', 'noopener,noreferrer'); }}`;
+const compileValueExpression = (value: unknown, scopeVar: string): string => {
+  if (typeof value === 'object' && value !== null) {
+    const record = value as Record<string, unknown>;
+    if ('$param' in record && typeof record.$param === 'string') {
+      return toIdentifier(record.$param);
+    }
+    if ('$state' in record && typeof record.$state === 'string') {
+      return toIdentifier(record.$state);
+    }
+    if ('$data' in record && typeof record.$data === 'string') {
+      return `__readByPath(${scopeVar}.data, ${stringify(record.$data)})`;
+    }
+    if ('$item' in record && typeof record.$item === 'string') {
+      return `__readByPath(${scopeVar}.item, ${stringify(record.$item)})`;
+    }
+    if ('$index' in record && record.$index === true) {
+      return `${scopeVar}.index`;
+    }
   }
-  if (replace) {
-    return `{() => { window.location.replace(${stringify(to)}); }}`;
+  if (typeof value === 'string') {
+    return `__resolvePathOrLiteral(${scopeVar}.data, ${stringify(value)})`;
   }
-  return `{() => { window.location.assign(${stringify(to)}); }}`;
+  const literal = stringifyLiteral(value);
+  return literal ?? 'undefined';
 };
 
-const buildExecuteGraphInlineHandler = (params: Record<string, unknown>) => {
-  const detail = stringifyLiteral(params) ?? '{}';
+const compileObjectExpression = (
+  value: Record<string, unknown>,
+  scopeVar: string
+): string =>
+  `{ ${Object.entries(value)
+    .map(
+      ([key, entry]) =>
+        `${JSON.stringify(key)}: ${compileValueExpression(entry, scopeVar)}`
+    )
+    .join(', ')} }`;
+
+const buildNavigateInlineHandler = (paramsExpr: string) => {
+  return `{() => {
+    const __params = ${paramsExpr};
+    const __to = typeof __params.to === 'string' ? __params.to.trim() : '';
+    if (!__to) return;
+    const __target = __params.target === '_self' ? '_self' : '_blank';
+    const __replace = Boolean(__params.replace);
+    if (__target === '_blank') {
+      window.open(__to, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    if (__replace) {
+      window.location.replace(__to);
+      return;
+    }
+    window.location.assign(__to);
+  }}`;
+};
+
+const buildExecuteGraphInlineHandler = (paramsExpr: string) => {
   return `{() => {
       window.dispatchEvent(
-        new CustomEvent('mdr:execute-graph', { detail: ${detail} })
+        new CustomEvent('mdr:execute-graph', { detail: ${paramsExpr} })
       );
     }}`;
 };
 
 const buildBuiltInInlineHandler = (
   action: string,
-  params: Record<string, unknown>
+  params: Record<string, unknown>,
+  scopeVar: string
 ) => {
-  if (action === 'navigate') return buildNavigateInlineHandler(params);
-  if (action === 'executeGraph') return buildExecuteGraphInlineHandler(params);
+  const paramsExpr = compileObjectExpression(params, scopeVar);
+  if (action === 'navigate') return buildNavigateInlineHandler(paramsExpr);
+  if (action === 'executeGraph')
+    return buildExecuteGraphInlineHandler(paramsExpr);
   return null;
 };
 
-const compilePropExpression = (value: unknown): string | null => {
-  if (typeof value === 'object' && value !== null) {
-    if ('$param' in (value as Record<string, unknown>)) {
-      return `{${String((value as Record<string, unknown>).$param)}}`;
-    }
-    if ('$state' in (value as Record<string, unknown>)) {
-      return `{${String((value as Record<string, unknown>).$state)}}`;
-    }
-  }
-  if (typeof value === 'string') return stringify(value);
-  const literal = stringifyLiteral(value);
-  if (literal === null) return null;
-  return `{${literal}}`;
+const compilePropExpression = (
+  value: unknown,
+  scopeVar: string
+): string | null => {
+  const expr = compileValueExpression(value, scopeVar);
+  if (!expr) return null;
+  return `{${expr}}`;
 };
 
-const compileTextContent = (value: CanonicalNode['text']) => {
+const compileTextContent = (value: CanonicalNode['text'], scopeVar: string) => {
   if (value === undefined) return '';
-  if (typeof value === 'object' && value !== null) {
-    if ('$state' in value) return `{${String(value.$state)}}`;
-    if ('$param' in value) return `{${String(value.$param)}}`;
+  if (
+    typeof value === 'object' &&
+    value !== null &&
+    !('$param' in value) &&
+    !('$state' in value) &&
+    !('$data' in value) &&
+    !('$item' in value) &&
+    !('$index' in value)
+  ) {
+    return stringify(JSON.stringify(value));
   }
-  return String(value);
+  return `{${compileValueExpression(value, scopeVar)}}`;
 };
 
 const renderImport = (item: AdapterImportSpec) => {
@@ -406,8 +452,98 @@ export const compileMirToReactComponent = (
     resolution: resolvePackageImport(item.source, options?.packageResolver),
   }));
   const importLocalByKey = assignImportLocals(resolvedImports);
+  const findCanonicalNodeById = (
+    target: CanonicalNode,
+    nodeId: string
+  ): CanonicalNode | null => {
+    if (target.id === nodeId) return target;
+    for (const child of target.children) {
+      const found = findCanonicalNodeById(child, nodeId);
+      if (found) return found;
+    }
+    return null;
+  };
 
-  const compileNode = (node: CanonicalNode, indent = '    '): string => {
+  const compileNode = (
+    node: CanonicalNode,
+    indent = '    ',
+    scopeVar = '__scope'
+  ): string => {
+    if (node.list) {
+      const listSourceExpr =
+        node.list.source !== undefined
+          ? compileValueExpression(node.list.source, scopeVar)
+          : `${scopeVar}.data`;
+      const itemAlias =
+        typeof node.list.itemAs === 'string' && node.list.itemAs.trim()
+          ? node.list.itemAs.trim()
+          : 'item';
+      const indexAlias =
+        typeof node.list.indexAs === 'string' && node.list.indexAs.trim()
+          ? node.list.indexAs.trim()
+          : 'index';
+      const nodeWithoutList: CanonicalNode = {
+        ...node,
+        list: undefined,
+      };
+      const bodyNode = compileNode(
+        nodeWithoutList,
+        `${indent}      `,
+        '__nextScope'
+      );
+      const keyExpr =
+        typeof node.list.keyBy === 'string' && node.list.keyBy.trim()
+          ? `__readByPath(__item, ${stringify(node.list.keyBy)}) ?? __index`
+          : '__index';
+      let emptyRender = 'null';
+      if (
+        typeof node.list.emptyNodeId === 'string' &&
+        node.list.emptyNodeId.trim()
+      ) {
+        const emptyNodeId = node.list.emptyNodeId.trim();
+        const emptyNode =
+          emptyNodeId === node.id
+            ? null
+            : findCanonicalNodeById(canonical.root, emptyNodeId);
+        if (emptyNode) {
+          emptyRender = compileNode(
+            emptyNode,
+            `${indent}      `,
+            scopeVar
+          ).trim();
+        }
+      }
+      return `${indent}{(() => {
+${indent}  const __list = ${listSourceExpr};
+${indent}  if (!Array.isArray(__list) || __list.length === 0) {
+${indent}    return ${emptyRender};
+${indent}  }
+${indent}  return __list.map((__item, __index) => {
+${indent}    const __nextScope = {
+${indent}      ...${scopeVar},
+${indent}      item: __item,
+${indent}      index: __index,
+${indent}      data:
+${indent}        __item && typeof __item === 'object' && !Array.isArray(__item)
+${indent}          ? {
+${indent}              ...(__isPlainObject(${scopeVar}.data) ? ${scopeVar}.data : {}),
+${indent}              ...(__item as Record<string, unknown>),
+${indent}            }
+${indent}          : __item,
+${indent}      params: {
+${indent}        ...${scopeVar}.params,
+${indent}        ${JSON.stringify(itemAlias)}: __item,
+${indent}        ${JSON.stringify(indexAlias)}: __index,
+${indent}      },
+${indent}    };
+${indent}    return (
+${indent}      <React.Fragment key={String(${keyExpr})}>
+${bodyNode}
+${indent}      </React.Fragment>
+${indent}    );
+${indent}  });
+${indent}})()}`;
+    }
     const adapterResult = adapter.resolveNode(node);
     const tag = rewriteElementWithAlias(
       adapterResult.element,
@@ -423,7 +559,7 @@ export const compileMirToReactComponent = (
 
     Object.entries(sanitizeNodePropsForExport(node.props)).forEach(
       ([key, value]) => {
-        const expr = compilePropExpression(value);
+        const expr = compilePropExpression(value, scopeVar);
         if (expr !== null) {
           propsArray.push(`${key}=${expr}`);
         }
@@ -443,7 +579,8 @@ export const compileMirToReactComponent = (
       if (eventDef.action && isBuiltInActionName(eventDef.action)) {
         const handlerExpr = buildBuiltInInlineHandler(
           eventDef.action,
-          eventDef.params ?? {}
+          eventDef.params ?? {},
+          scopeVar
         );
         if (handlerExpr) {
           propsArray.push(`${reactEventName}=${handlerExpr}`);
@@ -452,10 +589,10 @@ export const compileMirToReactComponent = (
     });
 
     const allProps = propsArray.length ? ` ${propsArray.join(' ')}` : '';
-    const textContent = compileTextContent(node.text);
+    const textContent = compileTextContent(node.text, scopeVar);
     const childJsx =
       node.children
-        .map((child) => compileNode(child, `${indent}  `))
+        .map((child) => compileNode(child, `${indent}  `, scopeVar))
         .join('\n') || '';
 
     if (!childJsx && !textContent && (tag === 'input' || tag === 'img')) {
@@ -516,6 +653,33 @@ export const compileMirToReactComponent = (
   const mountedCssImportBlock = mountedCssFiles
     .map((file) => `import './${file.path}';`)
     .join('\n');
+  const runtimeHelperBlock = `const __PATH_SEGMENT_PATTERN = /[^.[\\]]+|\\[(\\d+)\\]/g;
+const __isPlainObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+const __readByPath = (source: unknown, path: string): unknown => {
+  const trimmed = path.trim();
+  if (!trimmed) return source;
+  const tokens = Array.from(trimmed.matchAll(__PATH_SEGMENT_PATTERN)).map(
+    (token) => token[1] ?? token[0]
+  );
+  let cursor: unknown = source;
+  for (const token of tokens) {
+    if (cursor === null || cursor === undefined) return undefined;
+    if (Array.isArray(cursor)) {
+      const index = Number(token);
+      if (!Number.isInteger(index)) return undefined;
+      cursor = cursor[index];
+      continue;
+    }
+    if (!__isPlainObject(cursor)) return undefined;
+    cursor = cursor[token];
+  }
+  return cursor;
+};
+const __resolvePathOrLiteral = (source: unknown, value: string): unknown => {
+  const resolved = __readByPath(source, value);
+  return resolved === undefined ? value : resolved;
+};`;
   const functionSignature = `export default function ${componentName}(${
     hasProps ? `{ ${destructuredProps} }: ${interfaceName}` : ''
   }) {`;
@@ -525,8 +689,14 @@ export const compileMirToReactComponent = (
     adapterImportBlock,
     mountedCssImportBlock,
     interfaceBlock.trim(),
+    runtimeHelperBlock,
     `${functionSignature}
-${stateBlock ? `${stateBlock}\n` : ''}  return (
+${stateBlock ? `${stateBlock}\n` : ''}  const __scope = { data: undefined as unknown, item: undefined as unknown, index: undefined as number | undefined, params: { ${Object.keys(
+      propsDef
+    )
+      .map((key) => `${JSON.stringify(key)}: ${toIdentifier(key)}`)
+      .join(', ')} } };
+  return (
 ${rootJsx}
   );
 }`,

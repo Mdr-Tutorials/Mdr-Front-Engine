@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ApiError } from '@/auth/authApi';
 import { editorApi, type WorkspaceCommandEnvelope } from '@/editor/editorApi';
 import type { MIRDocument } from '@/core/types/engine.types';
+import { validateMirDocument } from '@/mir/validator/validator';
 
 export type SaveTransport = 'workspace' | 'project' | null;
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
@@ -51,6 +53,20 @@ const createDocumentUpdateCommand = (
   reverseOps: [],
   target: { workspaceId, documentId },
 });
+
+const resolveApiErrorMessage = (error: unknown): string | null => {
+  if (!(error instanceof ApiError)) return null;
+  if (Array.isArray(error.details) && error.details.length > 0) {
+    const first = error.details[0] as {
+      path?: string;
+      message?: string;
+    };
+    if (first?.message) {
+      return first.path ? `${first.path}: ${first.message}` : first.message;
+    }
+  }
+  return error.message || null;
+};
 
 export const useBlueprintAutosave = ({
   token,
@@ -140,6 +156,7 @@ export const useBlueprintAutosave = ({
   const projectSavedMessage = t('autosave.status.projectSaved', {
     defaultValue: 'Saved to project.',
   });
+  const mirValidationFailedMessageKey = 'autosave.messages.mirValidationFailed';
 
   useEffect(() => {
     if (!token) return;
@@ -149,6 +166,18 @@ export const useBlueprintAutosave = ({
     let disposed = false;
 
     const timeoutId = window.setTimeout(() => {
+      const validation = validateMirDocument(mirDoc);
+      if (validation.hasError) {
+        setSaveTransport(null);
+        setSaveStatus('error');
+        setSaveMessage(
+          t(mirValidationFailedMessageKey, {
+            defaultValue: 'MIR validation failed: {{message}}',
+            message: validation.issues[0]?.message ?? 'Invalid MIR document.',
+          })
+        );
+        return;
+      }
       if (
         workspaceId &&
         activeDocumentId &&
@@ -179,12 +208,14 @@ export const useBlueprintAutosave = ({
             setSaveStatus('saved');
             setSaveMessage('');
           })
-          .catch(() => {
+          .catch((error: unknown) => {
             if (disposed || saveRequestSeqRef.current !== requestSeq) {
               return;
             }
             setSaveStatus('error');
-            setSaveMessage(workspaceRetryMessage);
+            setSaveMessage(
+              resolveApiErrorMessage(error) || workspaceRetryMessage
+            );
           });
         return;
       }
@@ -207,12 +238,14 @@ export const useBlueprintAutosave = ({
             setSaveStatus('saved');
             setSaveMessage(fallbackMessage || projectSavedMessage);
           })
-          .catch(() => {
+          .catch((error: unknown) => {
             if (disposed || saveRequestSeqRef.current !== requestSeq) {
               return;
             }
             setSaveStatus('error');
-            setSaveMessage(projectRetryMessage);
+            setSaveMessage(
+              resolveApiErrorMessage(error) || projectRetryMessage
+            );
           });
       }
     }, 700);
@@ -237,6 +270,7 @@ export const useBlueprintAutosave = ({
     workspaceUnavailableMessage,
     workspaceCapabilitiesLoaded,
     workspaceId,
+    t,
   ]);
 
   useEffect(() => {

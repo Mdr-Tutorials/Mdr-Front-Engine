@@ -104,6 +104,18 @@ export const useBlueprintEditorInspectorController = () => {
   );
   const [isIconPickerOpen, setIconPickerOpen] = useState(false);
   const allIds = useMemo(() => collectIds(mirDoc.ui.root), [mirDoc.ui.root]);
+  const dataModelFieldPaths = useMemo(() => {
+    if (!selectedId) return [];
+    const nodePath = findNodePathById(mirDoc.ui.root, selectedId);
+    if (!nodePath.length) return [];
+    for (let index = nodePath.length - 1; index >= 0; index -= 1) {
+      const mountedDataModel = extractMountedDataModel(nodePath[index]);
+      if (mountedDataModel) {
+        return collectDataModelFieldPaths(mountedDataModel);
+      }
+    }
+    return [];
+  }, [mirDoc.ui.root, selectedId]);
 
   useEffect(() => {
     setDraftId(selectedNode?.id ?? '');
@@ -452,6 +464,8 @@ export const useBlueprintEditorInspectorController = () => {
       activeRouteNodeId,
       bindOutletToRoute,
       selectedParentNode,
+      allNodeIds: Array.from(allIds),
+      dataModelFieldPaths,
     }),
     [
       t,
@@ -489,6 +503,8 @@ export const useBlueprintEditorInspectorController = () => {
       activeRouteNodeId,
       bindOutletToRoute,
       selectedParentNode,
+      allIds,
+      dataModelFieldPaths,
     ]
   );
 
@@ -530,4 +546,66 @@ const findParentNodeById = (
     if (nested) return nested;
   }
   return null;
+};
+
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const LEGACY_DATA_MODEL_KEYS = ['x-mdr-data-model', 'x-mdr-data-schema'];
+
+const extractMountedDataModel = (
+  node: ComponentNode
+): Record<string, unknown> | null => {
+  if (!isPlainObject(node.data)) return null;
+  if (isPlainObject(node.data.value)) {
+    return node.data.value;
+  }
+  if (Array.isArray(node.data.value) && isPlainObject(node.data.value[0])) {
+    return node.data.value[0] as Record<string, unknown>;
+  }
+  if (isPlainObject(node.data.extend)) {
+    return node.data.extend;
+  }
+  for (const key of LEGACY_DATA_MODEL_KEYS) {
+    const legacyValue = (node.data as Record<string, unknown>)[key];
+    if (isPlainObject(legacyValue)) {
+      return legacyValue;
+    }
+  }
+  return null;
+};
+
+const collectDataModelFieldPaths = (
+  schema: Record<string, unknown>,
+  prefix = '',
+  result: string[] = []
+): string[] => {
+  Object.entries(schema).forEach(([key, value]) => {
+    const path = prefix ? `${prefix}.${key}` : key;
+    result.push(path);
+    if (Array.isArray(value)) {
+      if (value.length > 0 && isPlainObject(value[0])) {
+        collectDataModelFieldPaths(value[0], `${path}[0]`, result);
+      }
+      return;
+    }
+    if (isPlainObject(value)) {
+      collectDataModelFieldPaths(value, path, result);
+    }
+  });
+  return result;
+};
+
+const findNodePathById = (
+  node: ComponentNode,
+  targetId: string,
+  path: ComponentNode[] = []
+): ComponentNode[] => {
+  const nextPath = [...path, node];
+  if (node.id === targetId) return nextPath;
+  for (const child of node.children ?? []) {
+    const found = findNodePathById(child, targetId, nextPath);
+    if (found.length) return found;
+  }
+  return [];
 };

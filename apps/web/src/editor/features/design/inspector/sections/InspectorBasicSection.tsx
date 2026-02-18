@@ -2,6 +2,8 @@ import { ChevronDown } from 'lucide-react';
 import { useInspectorSectionContext } from './InspectorSectionContext';
 import { InspectorNodeIdentityFields } from './basic/InspectorNodeIdentityFields';
 import { InspectorNodeCapabilitiesFields } from './basic/InspectorNodeCapabilitiesFields';
+import { InspectorDataScopeFields } from './basic/InspectorDataScopeFields';
+import { InspectorListTemplateFields } from './basic/InspectorListTemplateFields';
 import { InspectorExternalPropsFields } from './basic/InspectorExternalPropsFields';
 
 export function InspectorBasicSection() {
@@ -28,6 +30,8 @@ export function InspectorBasicSection() {
         <div className="flex flex-col gap-2 pb-1 pt-1">
           <InspectorNodeIdentityFields />
           <InspectorNodeCapabilitiesFields />
+          <InspectorDataScopeFields />
+          <InspectorListTemplateFields />
           <InspectorExternalPropsFields />
         </div>
       )}

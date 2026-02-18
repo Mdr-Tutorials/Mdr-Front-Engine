@@ -3,6 +3,7 @@ import { Outlet, useParams } from 'react-router';
 import EditorBar from './EditorBar/EditorBar';
 import { SettingsEffects } from './features/settings/SettingsEffects';
 import { useAuthStore } from '@/auth/useAuthStore';
+import { mountGraphExecutionBridge } from '@/core/executor/executor';
 import { editorApi } from './editorApi';
 import { useEditorStore } from './store/useEditorStore';
 import { useSettingsStore } from './store/useSettingsStore';
@@ -90,6 +91,8 @@ function Editor() {
     setWorkspaceCapabilities,
     setWorkspaceSnapshot,
   ]);
+
+  useEffect(() => mountGraphExecutionBridge(), []);
 
   return (
     <div className="flex min-h-screen max-h-screen flex-row bg-[linear-gradient(120deg,var(--color-0)_20%,var(--color-1)_100%)]">

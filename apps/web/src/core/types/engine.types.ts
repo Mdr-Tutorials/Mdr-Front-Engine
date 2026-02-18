@@ -1,28 +1,63 @@
 /**
- * MIR 核心类型定义 v1.1
+ * MIR 核心类型定义 v1.2
  */
 
-// 1. 定义引用类型 (用于绑定)
 export type ParamReference = { $param: string };
 export type StateReference = { $state: string };
+export type DataReference = { $data: string };
+export type ItemReference = { $item: string };
+export type IndexReference = { $index: true };
+export type ScopeSourceReference =
+  | ParamReference
+  | StateReference
+  | DataReference
+  | ItemReference;
 
-// 2. 组件节点定义
+export type ValueOrRef =
+  | string
+  | number
+  | boolean
+  | null
+  | Record<string, unknown>
+  | unknown[]
+  | ParamReference
+  | StateReference
+  | DataReference
+  | ItemReference
+  | IndexReference;
+
+export type NodeDataScope = {
+  source?: ScopeSourceReference;
+  pick?: string;
+  value?: ValueOrRef;
+  mock?: ValueOrRef;
+  extend?: Record<string, ValueOrRef>;
+};
+
+export type NodeListRender = {
+  source?: ScopeSourceReference;
+  arrayField?: string;
+  itemAs?: string;
+  indexAs?: string;
+  keyBy?: string;
+  emptyNodeId?: string;
+};
+
 export interface ComponentNode {
   id: string;
   type: string;
-  // text 可以是普通字符串，也可以是状态或参数引用
-  text?: string | ParamReference | StateReference;
-  // style 的每个值都可以是引用
-  style?: Record<string, string | number | ParamReference | StateReference>;
-  // props 的每个值也可以是引用
-  props?: Record<string, any | ParamReference | StateReference>;
+  text?: ValueOrRef;
+  style?: Record<string, ValueOrRef>;
+  props?: Record<string, ValueOrRef>;
+  data?: NodeDataScope;
+  list?: NodeListRender;
   children?: ComponentNode[];
   events?: Record<
     string,
     {
       trigger: string;
-      action?: string; // 关联到 logic.graphs 中的 id
-      params?: Record<string, unknown>;
+      action?: string;
+      params?: Record<string, ValueOrRef>;
     }
   >;
 }

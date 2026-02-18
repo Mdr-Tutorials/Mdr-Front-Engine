@@ -12,6 +12,7 @@ import { useParams } from 'react-router';
 import { VIEWPORT_ZOOM_RANGE } from './BlueprintEditor.data';
 import { useBlueprintAutosave } from './BlueprintEditor.autosave';
 import { useBlueprintDragDrop } from './BlueprintEditor.dragdrop';
+import { executeBlueprintGraph } from './BlueprintGraphExecutor';
 import { createNodeIdFactory } from './BlueprintEditor.palette';
 import {
   cloneNodeWithNewIds,
@@ -100,6 +101,10 @@ export const useBlueprintEditorController = () => {
     (state) => state.blueprintStateByProject[blueprintKey]
   );
   const setBlueprintState = useEditorStore((state) => state.setBlueprintState);
+  const runtimeState = useEditorStore(
+    (state) => state.runtimeStateByProject[blueprintKey]
+  );
+  const patchRuntimeState = useEditorStore((state) => state.patchRuntimeState);
   const mirDoc = useEditorStore((state) => state.mirDoc);
   const updateMirDoc = useEditorStore((state) => state.updateMirDoc);
   const workspaceId = useEditorStore((state) => state.workspaceId);
@@ -355,19 +360,20 @@ export const useBlueprintEditorController = () => {
    * MIR 事件 -> MIRRenderer -> Canvas builtInActions.executeGraph ->
    * controller -> `window` 事件总线 `mdr:execute-graph`
    */
-  const handleExecuteGraphRequest = (options: InteractionRequest) => {
-    if (typeof window === 'undefined') return;
-    window.dispatchEvent(
-      new CustomEvent('mdr:execute-graph', {
-        detail: {
-          nodeId: options.nodeId,
-          trigger: options.trigger,
-          eventKey: options.eventKey,
-          ...(options.params ?? {}),
-        },
-      })
-    );
-  };
+  const handleExecuteGraphRequest = useCallback(
+    (options: InteractionRequest) => {
+      void executeBlueprintGraph({
+        nodeId: options.nodeId,
+        trigger: options.trigger,
+        eventKey: options.eventKey,
+        params: options.params,
+      }).then((result) => {
+        if (!Object.keys(result.statePatch).length) return;
+        patchRuntimeState(blueprintKey, result.statePatch);
+      });
+    },
+    [blueprintKey, patchRuntimeState]
+  );
 
   const toggleGroup = (groupId: string) => {
     setCollapsedGroups((prev) => ({ ...prev, [groupId]: !prev[groupId] }));
@@ -656,6 +662,7 @@ export const useBlueprintEditorController = () => {
       zoom,
       pan,
       selectedId,
+      runtimeState,
       onPanChange: handlePanChange,
       onZoomChange: handleZoomChange,
       onSelectNode: handleNodeSelect,

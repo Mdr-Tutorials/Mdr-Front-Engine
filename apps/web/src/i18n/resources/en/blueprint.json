@@ -29,6 +29,31 @@
         "label": "External Props",
         "description": "Generated from external component metadata (d.ts).",
         "reset": "Reset"
+      },
+      "dataScope": {
+        "title": "Data Scope",
+        "sourceKind": "Source Kind",
+        "sourcePath": "Source Path",
+        "sourcePathPlaceholder": "products.list",
+        "pick": "Pick",
+        "pickPlaceholder": "detail.summary",
+        "extend": "Extend"
+      },
+      "dataModel": {
+        "title": "Data Model",
+        "enable": "Mount data model JSON on this component",
+        "schemaPlaceholder": "{\n  \"totalCount\": \"number\",\n  \"items\": [\n    {\n      \"data\": \"string\"\n    }\n  ]\n}",
+        "mockLabel": "Mock JSON",
+        "mockPlaceholder": "{\n  \"totalCount\": 2,\n  \"items\": [\n    {\n      \"data\": \"mdr\"\n    }\n  ]\n}",
+        "invalidJson": "Invalid JSON format.",
+        "schemaObjectOnly": "Data model must be a JSON object.",
+        "hint": "Child properties can bind with field paths directly in their own inputs."
+      },
+      "listTemplate": {
+        "title": "List Template",
+        "enable": "Promote node as list template",
+        "arrayField": "Array Field",
+        "arrayFieldPlaceholder": "items"
       }
     },
     "panels": {

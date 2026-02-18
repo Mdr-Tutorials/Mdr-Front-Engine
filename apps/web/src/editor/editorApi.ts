@@ -157,7 +157,16 @@ const request = async <T>(
         : typeof payload === 'object' && payload && 'error' in payload
           ? String((payload as { error?: string }).error || '')
           : undefined;
-    throw new ApiError(message || 'Request failed.', response.status, code);
+    const details =
+      typeof payload === 'object' && payload && 'details' in payload
+        ? (payload as { details?: unknown }).details
+        : undefined;
+    throw new ApiError(
+      message || 'Request failed.',
+      response.status,
+      code,
+      details
+    );
   }
 
   return payload as T;

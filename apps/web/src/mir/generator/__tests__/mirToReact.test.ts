@@ -37,7 +37,10 @@ describe('mirToReact generator', () => {
     });
     expect(code).toContain('onClick={() => {');
     expect(code).toContain(
-      `window.open("https://example.com", '_blank', 'noopener,noreferrer');`
+      `window.open(__to, '_blank', 'noopener,noreferrer');`
+    );
+    expect(code).toContain(
+      `const __params = { "to": __resolvePathOrLiteral(__scope.data, "https://example.com"), "target": __resolvePathOrLiteral(__scope.data, "_blank") };`
     );
     expect(code).not.toContain('runNavigate');
   });
@@ -266,7 +269,41 @@ describe('mirToReact generator', () => {
     const code = generateReactCode(doc, { resourceType: 'component' });
     expect(code).not.toContain('data-layout-role');
     expect(code).not.toContain('data-layout-pattern');
-    expect(code).toContain('data-testid="keep-me"');
+    expect(code).toContain(
+      'data-testid={__resolvePathOrLiteral(__scope.data, "keep-me")}'
+    );
     expect(code).toContain('dataAttributes={{"data-theme":"light"}}');
+  });
+
+  it('generates list map and data-path resolution helpers', () => {
+    const doc = createDoc();
+    doc.ui.root = {
+      id: 'root',
+      type: 'MdrDiv',
+      data: {
+        extend: {
+          products: [{ id: 'p1', name: 'Desk Lamp' }],
+        },
+      },
+      children: [
+        {
+          id: 'list',
+          type: 'MdrDiv',
+          list: {
+            source: { $data: 'products' },
+            keyBy: 'id',
+          },
+          children: [{ id: 'name', type: 'MdrText', text: 'name' }],
+        },
+      ],
+    };
+
+    const code = generateReactCode(doc, { resourceType: 'component' });
+    expect(code).toContain('__readByPath');
+    expect(code).toContain('__resolvePathOrLiteral');
+    expect(code).toContain('.map((__item, __index)');
+    expect(code).toContain(
+      'key={String(__readByPath(__item, "id") ?? __index)}'
+    );
   });
 });
