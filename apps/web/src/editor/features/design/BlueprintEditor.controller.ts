@@ -1,5 +1,6 @@
 import {
   type KeyboardEvent,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -415,6 +416,15 @@ export const useBlueprintEditorController = () => {
     window.clearInterval(statusTimers.current[itemId]);
     delete statusTimers.current[itemId];
   };
+  const handleToggleSidebarCollapse = useCallback(() => {
+    setLibraryCollapsed((prev) => !prev);
+  }, []);
+  const handleToggleTreeCollapse = useCallback(() => {
+    setTreeCollapsed((prev) => !prev);
+  }, []);
+  const handleToggleInspectorCollapse = useCallback(() => {
+    setInspectorCollapsed((prev) => !prev);
+  }, []);
 
   useEffect(() => {
     if (blueprintState) return;
@@ -619,7 +629,7 @@ export const useBlueprintEditorController = () => {
       expandedPreviews,
       sizeSelections,
       statusSelections,
-      onToggleCollapse: () => setLibraryCollapsed((prev) => !prev),
+      onToggleCollapse: handleToggleSidebarCollapse,
       onToggleGroup: toggleGroup,
       onTogglePreview: togglePreview,
       onPreviewKeyDown: handlePreviewKeyDown,
@@ -633,7 +643,7 @@ export const useBlueprintEditorController = () => {
       isTreeCollapsed,
       selectedId,
       dropHint: treeDropHint,
-      onToggleCollapse: () => setTreeCollapsed((prev) => !prev),
+      onToggleCollapse: handleToggleTreeCollapse,
       onSelectNode: handleNodeSelect,
       onDeleteSelected: handleDeleteSelected,
       onDeleteNode: handleDeleteNode,
@@ -654,7 +664,7 @@ export const useBlueprintEditorController = () => {
     },
     inspector: {
       isCollapsed: isInspectorCollapsed,
-      onToggleCollapse: () => setInspectorCollapsed((prev) => !prev),
+      onToggleCollapse: handleToggleInspectorCollapse,
     },
     viewportBar: {
       viewportWidth,

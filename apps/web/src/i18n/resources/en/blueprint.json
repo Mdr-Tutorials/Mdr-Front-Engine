@@ -24,6 +24,11 @@
       },
       "presetInput": {
         "toggle": "Toggle presets"
+      },
+      "externalProps": {
+        "label": "External Props",
+        "description": "Generated from external component metadata (d.ts).",
+        "reset": "Reset"
       }
     },
     "panels": {

@@ -111,7 +111,9 @@ export function InspectorExternalPropsFields() {
                         className="h-7 cursor-pointer rounded-md border border-black/10 px-1.5 text-[10px] text-(--color-7) dark:border-white/16"
                         onClick={() => clearProp(key)}
                       >
-                        Reset
+                        {t('inspector.fields.externalProps.reset', {
+                          defaultValue: 'Reset',
+                        })}
                       </button>
                     )}
                   </div>
@@ -141,7 +143,9 @@ export function InspectorExternalPropsFields() {
                         className="h-7 cursor-pointer rounded-md border border-black/10 px-1.5 text-[10px] text-(--color-7) dark:border-white/16"
                         onClick={() => clearProp(key)}
                       >
-                        Reset
+                        {t('inspector.fields.externalProps.reset', {
+                          defaultValue: 'Reset',
+                        })}
                       </button>
                     )}
                   </div>
@@ -175,7 +179,9 @@ export function InspectorExternalPropsFields() {
                         className="h-7 cursor-pointer rounded-md border border-black/10 px-1.5 text-[10px] text-(--color-7) dark:border-white/16"
                         onClick={() => clearProp(key)}
                       >
-                        Reset
+                        {t('inspector.fields.externalProps.reset', {
+                          defaultValue: 'Reset',
+                        })}
                       </button>
                     )}
                   </div>
@@ -199,7 +205,9 @@ export function InspectorExternalPropsFields() {
                       className="h-7 cursor-pointer rounded-md border border-black/10 px-1.5 text-[10px] text-(--color-7) dark:border-white/16"
                       onClick={() => clearProp(key)}
                     >
-                      Reset
+                      {t('inspector.fields.externalProps.reset', {
+                        defaultValue: 'Reset',
+                      })}
                     </button>
                   )}
                 </div>

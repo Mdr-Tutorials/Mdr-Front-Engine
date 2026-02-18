@@ -11,6 +11,11 @@ type ProjectGlobalSettingsState = {
   overrides: OverrideState;
 };
 
+export type WorkspaceSettingsSnapshot = {
+  global: GlobalSettingsState;
+  projectGlobalById: Record<string, ProjectGlobalSettingsState>;
+};
+
 type SettingsStore = {
   global: GlobalSettingsState;
   projectGlobalById: Record<string, ProjectGlobalSettingsState>;
@@ -25,6 +30,7 @@ type SettingsStore = {
     key: K,
     value: GlobalSettingsState[K]
   ) => void;
+  hydrateWorkspaceSettings: (settings: unknown) => void;
   toggleProjectOverride: (
     projectId: string,
     key: keyof GlobalSettingsState
@@ -56,6 +62,81 @@ const getInitialLanguage = (): 'en' | 'zh-CN' => {
 
   // Default to English
   return 'en';
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const cloneDefaultOverrides = (): OverrideState =>
+  Object.keys(createGlobalDefaults()).reduce<OverrideState>((acc, key) => {
+    acc[key] = false;
+    return acc;
+  }, {});
+
+const normalizeSettingValue = (
+  fallback: GlobalSettingsState[keyof GlobalSettingsState],
+  candidate: unknown
+) => {
+  if (Array.isArray(fallback)) {
+    if (!Array.isArray(candidate)) return fallback;
+    return candidate.filter((item): item is string => typeof item === 'string');
+  }
+  if (typeof fallback === 'number') {
+    return typeof candidate === 'number' && Number.isFinite(candidate)
+      ? candidate
+      : fallback;
+  }
+  if (typeof fallback === 'string') {
+    return typeof candidate === 'string' ? candidate : fallback;
+  }
+  if (typeof fallback === 'boolean') {
+    return typeof candidate === 'boolean' ? candidate : fallback;
+  }
+  return fallback;
+};
+
+const normalizeGlobalSettings = (
+  value: unknown,
+  fallback: GlobalSettingsState
+): GlobalSettingsState => {
+  if (!isRecord(value)) return fallback;
+  const next = { ...fallback };
+  (Object.keys(fallback) as Array<keyof GlobalSettingsState>).forEach((key) => {
+    next[key] = normalizeSettingValue(
+      fallback[key],
+      value[key]
+    ) as GlobalSettingsState[typeof key];
+  });
+  return next;
+};
+
+const normalizeOverrides = (value: unknown): OverrideState => {
+  const fallback = cloneDefaultOverrides();
+  if (!isRecord(value)) return fallback;
+  Object.keys(fallback).forEach((key) => {
+    fallback[key] =
+      typeof value[key] === 'boolean' ? Boolean(value[key]) : false;
+  });
+  return fallback;
+};
+
+const normalizeProjectGlobalById = (
+  value: unknown
+): Record<string, ProjectGlobalSettingsState> => {
+  if (!isRecord(value)) return {};
+  const normalized: Record<string, ProjectGlobalSettingsState> = {};
+  Object.entries(value).forEach(([projectId, projectValue]) => {
+    const normalizedProjectId = projectId.trim();
+    if (!normalizedProjectId || !isRecord(projectValue)) return;
+    normalized[normalizedProjectId] = {
+      values: normalizeGlobalSettings(
+        projectValue.values,
+        createProjectDefaults()
+      ),
+      overrides: normalizeOverrides(projectValue.overrides),
+    };
+  });
+  return normalized;
 };
 
 export const useSettingsStore = create<SettingsStore>()((set) => ({
@@ -114,6 +195,28 @@ export const useSettingsStore = create<SettingsStore>()((set) => ({
             values: { ...current.values, [key]: value },
           },
         },
+      };
+    }),
+  hydrateWorkspaceSettings: (settings) =>
+    set((state) => {
+      if (!isRecord(settings)) return state;
+      const hasGlobal = Object.prototype.hasOwnProperty.call(
+        settings,
+        'global'
+      );
+      const hasProjectGlobalById = Object.prototype.hasOwnProperty.call(
+        settings,
+        'projectGlobalById'
+      );
+      if (!hasGlobal && !hasProjectGlobalById) return state;
+
+      return {
+        global: hasGlobal
+          ? normalizeGlobalSettings(settings.global, state.global)
+          : state.global,
+        projectGlobalById: hasProjectGlobalById
+          ? normalizeProjectGlobalById(settings.projectGlobalById)
+          : state.projectGlobalById,
       };
     }),
   toggleProjectOverride: (projectId, key) =>

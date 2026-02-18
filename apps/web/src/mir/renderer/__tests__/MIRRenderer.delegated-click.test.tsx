@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@testing-library/react';
-import type React from 'react';
+import { type ReactNode, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import type { ComponentNode, MIRDocument } from '@/core/types/engine.types';
 import { MIRRenderer } from '../MIRRenderer';
@@ -7,7 +7,7 @@ import { createComponentRegistry, mdrAdapter } from '../registry';
 import { registerNodeCapability } from '../capabilities';
 
 type BareBoxProps = {
-  children?: React.ReactNode;
+  children?: ReactNode;
   dataAttributes?: Record<string, string>;
 };
 
@@ -69,6 +69,61 @@ describe('MIRRenderer delegated click behavior', () => {
         eventKey: 'click1',
       })
     );
+  });
+
+  it('triggers click actions only after node is selected when selection requirement is enabled', () => {
+    const navigate = vi.fn();
+    const registry = createComponentRegistry();
+    registry.register('BareBox', BareBox, mdrAdapter);
+
+    const root: ComponentNode = {
+      id: 'root',
+      type: 'BareBox',
+      children: [
+        {
+          id: 'box-1',
+          type: 'BareBox',
+          text: 'Box',
+          events: {
+            click1: {
+              trigger: 'onClick',
+              action: 'navigate',
+              params: { to: '/demo' },
+            },
+          },
+        },
+      ],
+    };
+
+    const onNodeSelect = vi.fn();
+    const Harness = () => {
+      const [selectedId, setSelectedId] = useState<string | undefined>();
+      return (
+        <MIRRenderer
+          node={root}
+          mirDoc={createDoc(root)}
+          selectedId={selectedId}
+          onNodeSelect={(nodeId, event) => {
+            onNodeSelect(nodeId, event);
+            setSelectedId(nodeId);
+          }}
+          registry={registry}
+          builtInActions={{ navigate }}
+          requireSelectionForEvents
+        />
+      );
+    };
+
+    const { container } = render(<Harness />);
+    const targets = container.querySelectorAll('section');
+    expect(targets.length).toBeGreaterThan(1);
+
+    fireEvent.click(targets[1] as Element);
+    expect(onNodeSelect).toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
+
+    fireEvent.click(targets[1] as Element);
+    expect(navigate).toHaveBeenCalledTimes(1);
   });
 
   it('prevents default navigation for registered link capability while selecting in editor mode', () => {

@@ -56,6 +56,7 @@ export const resetSettingsStore = (
     {
       ...state,
       global: { ...createGlobalDefaults(), ...overrides },
+      projectGlobalById: {},
     },
     true
   );

@@ -413,6 +413,34 @@ export const GlobalSettingsContent = ({
             />
           }
         />
+        <SettingsRow
+          label={t('settings.global.rows.eventTriggerMode.label')}
+          description={t('settings.global.rows.eventTriggerMode.description')}
+          meta={renderMeta('eventTriggerMode')}
+          control={
+            <MdrRadioGroup
+              options={[
+                {
+                  label: t(
+                    'settings.global.rows.eventTriggerMode.options.selectedOnly'
+                  ),
+                  value: 'selected-only',
+                },
+                {
+                  label: t(
+                    'settings.global.rows.eventTriggerMode.options.always'
+                  ),
+                  value: 'always',
+                },
+              ].map((option) => ({
+                ...option,
+                disabled: !isOverrideEnabled('eventTriggerMode'),
+              }))}
+              value={String(resolveValue('eventTriggerMode'))}
+              onChange={(value) => updateValue('eventTriggerMode', value)}
+            />
+          }
+        />
       </SettingsPanel>
       <SettingsPanel
         title={t('settings.global.panels.components.title')}

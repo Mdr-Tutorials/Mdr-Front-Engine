@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import {
+  Compartment,
   EditorSelection,
   RangeSetBuilder,
   type Extension,
@@ -30,6 +31,7 @@ type MountedCssEditorModalProps = {
 };
 
 const DEFAULT_CSS_CONTENT = `/* Mounted CSS */\n`;
+const DEFAULT_INVALID_CSS_MESSAGE = 'Invalid CSS syntax';
 const COLOR_TOKEN_MATCHER =
   /(#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\b|rgba?\([^)]*\)|hsla?\([^)]*\)|\b(?:transparent|black|white|red|green|blue|yellow|orange|purple|pink|gray|grey|brown|cyan|magenta)\b)/;
 
@@ -62,6 +64,23 @@ class ColorSwatchMarker extends GutterMarker {
   }
 }
 
+const createSyntaxLinterExtension = (message: string): Extension =>
+  linter((view): Diagnostic[] => {
+    const diagnostics: Diagnostic[] = [];
+    syntaxTree(view.state).iterate({
+      enter(node) {
+        if (!node.type.isError) return;
+        diagnostics.push({
+          from: node.from,
+          to: Math.max(node.to, node.from + 1),
+          severity: 'error',
+          message,
+        });
+      },
+    });
+    return diagnostics;
+  });
+
 export function MountedCssEditorModal({
   isOpen,
   path,
@@ -74,7 +93,15 @@ export function MountedCssEditorModal({
   onSave,
 }: MountedCssEditorModalProps) {
   const { t } = useTranslation('blueprint');
+  const invalidSyntaxMessage = t(
+    'inspector.classProtocol.mountedCss.invalidSyntax',
+    {
+      defaultValue: DEFAULT_INVALID_CSS_MESSAGE,
+    }
+  );
+  const lintCompartmentRef = useRef(new Compartment());
   const extensions = useMemo(() => {
+    const lintCompartment = lintCompartmentRef.current;
     const colorGutter = gutter({
       class: 'MountedCssColorGutter',
       markers(view) {
@@ -92,23 +119,6 @@ export function MountedCssEditorModal({
       lineMarkerChange(update: ViewUpdate) {
         return update.docChanged || update.viewportChanged;
       },
-    });
-    const syntaxLinter = linter((view): Diagnostic[] => {
-      const diagnostics: Diagnostic[] = [];
-      syntaxTree(view.state).iterate({
-        enter(node) {
-          if (!node.type.isError) return;
-          diagnostics.push({
-            from: node.from,
-            to: Math.max(node.to, node.from + 1),
-            severity: 'error',
-            message: t('inspector.classProtocol.mountedCss.invalidSyntax', {
-              defaultValue: 'Invalid CSS syntax',
-            }),
-          });
-        },
-      });
-      return diagnostics;
     });
     const lintTheme = EditorView.theme({
       '.cm-lintRange-error': {
@@ -131,9 +141,27 @@ export function MountedCssEditorModal({
         boxSizing: 'border-box',
       },
     });
-    return [css(), colorGutter, syntaxLinter, lintGutter(), lintTheme];
-  }, [t]);
+    return [
+      css(),
+      colorGutter,
+      lintCompartment.of(
+        createSyntaxLinterExtension(DEFAULT_INVALID_CSS_MESSAGE)
+      ),
+      lintGutter(),
+      lintTheme,
+    ];
+  }, []);
   const editorRef = useRef<EditorView | null>(null);
+
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    editor.dispatch({
+      effects: lintCompartmentRef.current.reconfigure(
+        createSyntaxLinterExtension(invalidSyntaxMessage)
+      ),
+    });
+  }, [invalidSyntaxMessage]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -219,6 +247,11 @@ export function MountedCssEditorModal({
               onChange={(next) => onChange(next)}
               onCreateEditor={(view) => {
                 editorRef.current = view;
+                view.dispatch({
+                  effects: lintCompartmentRef.current.reconfigure(
+                    createSyntaxLinterExtension(invalidSyntaxMessage)
+                  ),
+                });
               }}
               basicSetup={{
                 lineNumbers: true,

@@ -5,6 +5,7 @@ import { SettingsEffects } from './features/settings/SettingsEffects';
 import { useAuthStore } from '@/auth/useAuthStore';
 import { editorApi } from './editorApi';
 import { useEditorStore } from './store/useEditorStore';
+import { useSettingsStore } from './store/useSettingsStore';
 
 function Editor() {
   const { projectId } = useParams();
@@ -16,6 +17,9 @@ function Editor() {
   );
   const setWorkspaceCapabilities = useEditorStore(
     (state) => state.setWorkspaceCapabilities
+  );
+  const hydrateWorkspaceSettings = useSettingsStore(
+    (state) => state.hydrateWorkspaceSettings
   );
   const clearWorkspaceState = useEditorStore(
     (state) => state.clearWorkspaceState
@@ -41,6 +45,7 @@ function Editor() {
           .getWorkspace(token, projectId)
           .then(({ workspace }) => {
             if (cancelled) return;
+            hydrateWorkspaceSettings(workspace.settings);
             if (!workspace.documents.length) {
               clearWorkspaceState();
               setMirDoc(project.mir);
@@ -79,6 +84,7 @@ function Editor() {
     projectId,
     token,
     clearWorkspaceState,
+    hydrateWorkspaceSettings,
     setMirDoc,
     setProject,
     setWorkspaceCapabilities,

@@ -1,4 +1,4 @@
-package main
+package workspace
 
 import (
 	"context"
@@ -207,6 +207,111 @@ VALUES ($1, $2, $3, $4, $5::jsonb, $6)`)
 	}
 	if result.WorkspaceRev != 10 || result.RouteRev != 5 || result.OpSeq != 35 {
 		t.Fatalf("unexpected result: %+v", result)
+	}
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Fatalf("sql expectations: %v", err)
+	}
+}
+
+func TestWorkspaceStoreSaveWorkspaceSettingsIncrementsWorkspaceRevOnly(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("create sqlmock: %v", err)
+	}
+	defer db.Close()
+
+	store := NewWorkspaceStore(db)
+	issuedAt := time.Date(2026, time.February, 8, 10, 3, 0, 0, time.UTC)
+	command := buildTestCommand("cmd_settings_update_1", issuedAt, "ws_1", "", "core.settings", "global.update")
+
+	lockWorkspace := regexp.QuoteMeta(`SELECT workspace_rev, route_rev, op_seq
+FROM workspaces
+WHERE id = $1
+FOR UPDATE`)
+	upsertSettings := regexp.QuoteMeta(`INSERT INTO workspace_settings (workspace_id, settings_json, updated_at)
+VALUES ($1, $2::jsonb, NOW())
+ON CONFLICT (workspace_id) DO UPDATE
+SET settings_json = EXCLUDED.settings_json, updated_at = EXCLUDED.updated_at`)
+	bumpWorkspaceOnly := regexp.QuoteMeta(`UPDATE workspaces
+SET workspace_rev = workspace_rev + 1, op_seq = op_seq + 1, updated_at = NOW()
+WHERE id = $1
+RETURNING workspace_rev, route_rev, op_seq`)
+	insertOperation := regexp.QuoteMeta(`INSERT INTO workspace_operations (workspace_id, op_seq, domain, document_id, payload_json, created_at)
+VALUES ($1, $2, $3, $4, $5::jsonb, $6)`)
+
+	mock.ExpectBegin()
+	mock.ExpectQuery(lockWorkspace).
+		WithArgs("ws_1").
+		WillReturnRows(sqlmock.NewRows([]string{"workspace_rev", "route_rev", "op_seq"}).AddRow(9, 4, 34))
+	mock.ExpectExec(upsertSettings).
+		WithArgs("ws_1", `{"global":{"eventTriggerMode":"selected-only"},"projectGlobalById":{}}`).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectQuery(bumpWorkspaceOnly).
+		WithArgs("ws_1").
+		WillReturnRows(sqlmock.NewRows([]string{"workspace_rev", "route_rev", "op_seq"}).AddRow(10, 4, 35))
+	mock.ExpectExec(insertOperation).
+		WithArgs("ws_1", int64(35), "core.settings.global.update@1.0", nil, sqlmock.AnyArg(), issuedAt.UTC()).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	result, err := store.SaveWorkspaceSettings(context.Background(), SaveWorkspaceSettingsParams{
+		WorkspaceID:          "ws_1",
+		ExpectedWorkspaceRev: 9,
+		Settings:             json.RawMessage(`{"global":{"eventTriggerMode":"selected-only"},"projectGlobalById":{}}`),
+		Command:              command,
+	})
+	if err != nil {
+		t.Fatalf("save workspace settings: %v", err)
+	}
+	if result.WorkspaceRev != 10 || result.RouteRev != 4 || result.OpSeq != 35 {
+		t.Fatalf("unexpected result: %+v", result)
+	}
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Fatalf("sql expectations: %v", err)
+	}
+}
+
+func TestWorkspaceStoreSaveWorkspaceSettingsReturnsWorkspaceConflict(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("create sqlmock: %v", err)
+	}
+	defer db.Close()
+
+	store := NewWorkspaceStore(db)
+	issuedAt := time.Date(2026, time.February, 8, 10, 4, 0, 0, time.UTC)
+	command := buildTestCommand("cmd_settings_update_2", issuedAt, "ws_1", "", "core.settings", "global.update")
+
+	lockWorkspace := regexp.QuoteMeta(`SELECT workspace_rev, route_rev, op_seq
+FROM workspaces
+WHERE id = $1
+FOR UPDATE`)
+
+	mock.ExpectBegin()
+	mock.ExpectQuery(lockWorkspace).
+		WithArgs("ws_1").
+		WillReturnRows(sqlmock.NewRows([]string{"workspace_rev", "route_rev", "op_seq"}).AddRow(10, 4, 35))
+	mock.ExpectRollback()
+
+	_, err = store.SaveWorkspaceSettings(context.Background(), SaveWorkspaceSettingsParams{
+		WorkspaceID:          "ws_1",
+		ExpectedWorkspaceRev: 9,
+		Settings:             json.RawMessage(`{"global":{"eventTriggerMode":"always"},"projectGlobalById":{}}`),
+		Command:              command,
+	})
+	if err == nil {
+		t.Fatalf("expected conflict error")
+	}
+
+	var conflictErr *WorkspaceRevisionConflictError
+	if !errors.As(err, &conflictErr) {
+		t.Fatalf("expected WorkspaceRevisionConflictError, got %T", err)
+	}
+	if conflictErr.ConflictType != WorkspaceConflictWorkspace {
+		t.Fatalf("unexpected conflict type: %s", conflictErr.ConflictType)
+	}
+	if conflictErr.ServerWorkspaceRev != 10 {
+		t.Fatalf("unexpected server workspace rev: %d", conflictErr.ServerWorkspaceRev)
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Fatalf("sql expectations: %v", err)

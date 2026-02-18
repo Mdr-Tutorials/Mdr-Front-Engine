@@ -24,6 +24,11 @@
       },
       "presetInput": {
         "toggle": "切换预设"
+      },
+      "externalProps": {
+        "label": "外部 Props",
+        "description": "根据外部组件元数据（d.ts）生成。",
+        "reset": "重置"
       }
     },
     "panels": {

@@ -27,6 +27,7 @@ export function BlueprintEditorAddressBar({
   const { t } = useTranslation('blueprint');
   const [isRouteTreeOpen, setRouteTreeOpen] = useState(false);
   const routeTreeRootRef = useRef<HTMLDivElement | null>(null);
+  const routeTreePanelRef = useRef<HTMLDivElement | null>(null);
   const routeTreeTriggerRef = useRef<HTMLButtonElement | null>(null);
   const [routeTreeRect, setRouteTreeRect] = useState<{
     top: number;
@@ -48,6 +49,7 @@ export function BlueprintEditorAddressBar({
       const target = event.target;
       if (!(target instanceof Node)) return;
       if (routeTreeRootRef.current?.contains(target)) return;
+      if (routeTreePanelRef.current?.contains(target)) return;
       setRouteTreeOpen(false);
     };
 
@@ -118,6 +120,7 @@ export function BlueprintEditorAddressBar({
         {isRouteTreeOpen && routeTreeRect && typeof document !== 'undefined'
           ? createPortal(
               <div
+                ref={routeTreePanelRef}
                 className="fixed z-[80] flex max-h-52 min-w-[320px] max-w-[420px] flex-col gap-1 overflow-y-auto rounded-lg border border-black/10 bg-(--color-0) p-1 shadow-[0_16px_32px_rgba(0,0,0,0.16)] dark:border-white/16"
                 style={{
                   top: `${routeTreeRect.top}px`,

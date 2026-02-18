@@ -1,4 +1,4 @@
-package main
+package workspace
 
 import (
 	"database/sql"
@@ -11,11 +11,13 @@ import (
 	"time"
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
+	backendauth "github.com/Mdr-Tutorials/mdr-front-engine/apps/backend/internal/modules/auth"
+	backendproject "github.com/Mdr-Tutorials/mdr-front-engine/apps/backend/internal/modules/project"
 	"github.com/gin-gonic/gin"
 )
 
 func TestHandleGetWorkspaceReturnsSnapshot(t *testing.T) {
-	server, mock, cleanup := newWorkspaceHandlerTestServer(t)
+	handler, mock, cleanup := newWorkspaceHandlerTestHandler(t)
 	defer cleanup()
 
 	expectWorkspaceSnapshotQueries(mock, "ws_1")
@@ -27,7 +29,7 @@ func TestHandleGetWorkspaceReturnsSnapshot(t *testing.T) {
 		gin.Params{{Key: "workspaceId", Value: "ws_1"}},
 	)
 
-	server.handleGetWorkspace(context)
+	handler.HandleGetWorkspace(context)
 
 	if response.Code != http.StatusOK {
 		t.Fatalf("expected 200, got %d: %s", response.Code, response.Body.String())
@@ -43,18 +45,27 @@ func TestHandleGetWorkspaceReturnsSnapshot(t *testing.T) {
 	if workspace["id"] != "ws_1" {
 		t.Fatalf("unexpected workspace id: %v", workspace["id"])
 	}
+	settings, ok := workspace["settings"].(map[string]any)
+	if !ok {
+		t.Fatalf("missing workspace settings payload: %v", workspace)
+	}
+	global, ok := settings["global"].(map[string]any)
+	if !ok || global["eventTriggerMode"] != "selected-only" {
+		t.Fatalf("unexpected settings payload: %v", settings)
+	}
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Fatalf("sql expectations: %v", err)
 	}
 }
 
 func TestHandleGetWorkspaceNotFound(t *testing.T) {
-	server, mock, cleanup := newWorkspaceHandlerTestServer(t)
+	handler, mock, cleanup := newWorkspaceHandlerTestHandler(t)
 	defer cleanup()
 
-	workspaceQuery := regexp.QuoteMeta(`SELECT w.id, w.project_id, w.owner_id, w.name, w.workspace_rev, w.route_rev, w.op_seq, w.tree_root_id, w.tree_json, w.created_at, w.updated_at, r.manifest_json
+	workspaceQuery := regexp.QuoteMeta(`SELECT w.id, w.project_id, w.owner_id, w.name, w.workspace_rev, w.route_rev, w.op_seq, w.tree_root_id, w.tree_json, w.created_at, w.updated_at, r.manifest_json, s.settings_json
 FROM workspaces w
 LEFT JOIN workspace_routes r ON r.workspace_id = w.id
+LEFT JOIN workspace_settings s ON s.workspace_id = w.id
 WHERE w.id = $1`)
 	mock.ExpectQuery(workspaceQuery).WithArgs("ws_missing").WillReturnError(sql.ErrNoRows)
 	projectQuery := regexp.QuoteMeta(`SELECT id, owner_id, resource_type, name, description, mir_json, is_public, stars_count, created_at, updated_at
@@ -69,7 +80,7 @@ WHERE owner_id = $1 AND id = $2`)
 		gin.Params{{Key: "workspaceId", Value: "ws_missing"}},
 	)
 
-	server.handleGetWorkspace(context)
+	handler.HandleGetWorkspace(context)
 
 	if response.Code != http.StatusNotFound {
 		t.Fatalf("expected 404, got %d: %s", response.Code, response.Body.String())
@@ -87,14 +98,15 @@ WHERE owner_id = $1 AND id = $2`)
 }
 
 func TestHandleGetWorkspaceBootstrapsFromProjectWhenMissing(t *testing.T) {
-	server, mock, cleanup := newWorkspaceHandlerTestServer(t)
+	handler, mock, cleanup := newWorkspaceHandlerTestHandler(t)
 	defer cleanup()
 
 	now := time.Date(2026, time.February, 8, 9, 0, 0, 0, time.UTC)
 
-	workspaceQuery := regexp.QuoteMeta(`SELECT w.id, w.project_id, w.owner_id, w.name, w.workspace_rev, w.route_rev, w.op_seq, w.tree_root_id, w.tree_json, w.created_at, w.updated_at, r.manifest_json
+	workspaceQuery := regexp.QuoteMeta(`SELECT w.id, w.project_id, w.owner_id, w.name, w.workspace_rev, w.route_rev, w.op_seq, w.tree_root_id, w.tree_json, w.created_at, w.updated_at, r.manifest_json, s.settings_json
 FROM workspaces w
 LEFT JOIN workspace_routes r ON r.workspace_id = w.id
+LEFT JOIN workspace_settings s ON s.workspace_id = w.id
 WHERE w.id = $1`)
 	projectQuery := regexp.QuoteMeta(`SELECT id, owner_id, resource_type, name, description, mir_json, is_public, stars_count, created_at, updated_at
 FROM projects
@@ -170,7 +182,7 @@ ORDER BY path ASC`)
 	mock.ExpectQuery(workspaceQuery).
 		WithArgs("prj_bootstrap").
 		WillReturnRows(sqlmock.NewRows([]string{
-			"id", "project_id", "owner_id", "name", "workspace_rev", "route_rev", "op_seq", "tree_root_id", "tree_json", "created_at", "updated_at", "manifest_json",
+			"id", "project_id", "owner_id", "name", "workspace_rev", "route_rev", "op_seq", "tree_root_id", "tree_json", "created_at", "updated_at", "manifest_json", "settings_json",
 		}).AddRow(
 			"prj_bootstrap",
 			"prj_bootstrap",
@@ -184,6 +196,7 @@ ORDER BY path ASC`)
 			now,
 			now,
 			[]byte(`{"version":"1","root":{"id":"root"}}`),
+			[]byte(`{"global":{"theme":"dark"},"projectGlobalById":{}}`),
 		))
 	mock.ExpectQuery(documentQuery).
 		WithArgs("prj_bootstrap").
@@ -208,7 +221,7 @@ ORDER BY path ASC`)
 		gin.Params{{Key: "workspaceId", Value: "prj_bootstrap"}},
 	)
 
-	server.handleGetWorkspace(context)
+	handler.HandleGetWorkspace(context)
 
 	if response.Code != http.StatusOK {
 		t.Fatalf("expected 200, got %d: %s", response.Code, response.Body.String())
@@ -219,7 +232,7 @@ ORDER BY path ASC`)
 }
 
 func TestHandleGetWorkspaceCapabilitiesReturnsCapabilityMap(t *testing.T) {
-	server, mock, cleanup := newWorkspaceHandlerTestServer(t)
+	handler, mock, cleanup := newWorkspaceHandlerTestHandler(t)
 	defer cleanup()
 
 	expectWorkspaceSnapshotQueries(mock, "ws_1")
@@ -231,7 +244,7 @@ func TestHandleGetWorkspaceCapabilitiesReturnsCapabilityMap(t *testing.T) {
 		gin.Params{{Key: "workspaceId", Value: "ws_1"}},
 	)
 
-	server.handleGetWorkspaceCapabilities(context)
+	handler.HandleGetWorkspaceCapabilities(context)
 
 	if response.Code != http.StatusOK {
 		t.Fatalf("expected 200, got %d: %s", response.Code, response.Body.String())
@@ -249,6 +262,9 @@ func TestHandleGetWorkspaceCapabilitiesReturnsCapabilityMap(t *testing.T) {
 	if !payload.Capabilities["core.mir.document.update@1.0"] {
 		t.Fatalf("missing core mir capability: %+v", payload.Capabilities)
 	}
+	if !payload.Capabilities["core.settings.global.update@1.0"] {
+		t.Fatalf("missing core settings capability: %+v", payload.Capabilities)
+	}
 	if payload.Capabilities["core.nodegraph.node.move@1.0"] {
 		t.Fatalf("reserved nodegraph capability should be false: %+v", payload.Capabilities)
 	}
@@ -258,7 +274,7 @@ func TestHandleGetWorkspaceCapabilitiesReturnsCapabilityMap(t *testing.T) {
 }
 
 func TestHandleSaveWorkspaceDocumentRejectsInvalidExpectedContentRev(t *testing.T) {
-	server, mock, cleanup := newWorkspaceHandlerTestServer(t)
+	handler, mock, cleanup := newWorkspaceHandlerTestHandler(t)
 	defer cleanup()
 
 	context, response := newWorkspaceHandlerContext(
@@ -271,7 +287,7 @@ func TestHandleSaveWorkspaceDocumentRejectsInvalidExpectedContentRev(t *testing.
 		},
 	)
 
-	server.handleSaveWorkspaceDocument(context)
+	handler.HandleSaveWorkspaceDocument(context)
 
 	if response.Code != http.StatusUnprocessableEntity {
 		t.Fatalf("expected 422, got %d: %s", response.Code, response.Body.String())
@@ -280,7 +296,7 @@ func TestHandleSaveWorkspaceDocumentRejectsInvalidExpectedContentRev(t *testing.
 	if err := json.Unmarshal(response.Body.Bytes(), &payload); err != nil {
 		t.Fatalf("decode response: %v", err)
 	}
-	if payload["code"] != workspaceErrorInvalidPayload {
+	if payload["code"] != ErrorInvalidPayload {
 		t.Fatalf("unexpected error payload: %v", payload)
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {
@@ -289,7 +305,7 @@ func TestHandleSaveWorkspaceDocumentRejectsInvalidExpectedContentRev(t *testing.
 }
 
 func TestHandleSaveWorkspaceDocumentReturnsConflict(t *testing.T) {
-	server, mock, cleanup := newWorkspaceHandlerTestServer(t)
+	handler, mock, cleanup := newWorkspaceHandlerTestHandler(t)
 	defer cleanup()
 
 	lockQuery := regexp.QuoteMeta(`SELECT d.content_rev, d.meta_rev, w.workspace_rev, w.route_rev, w.op_seq
@@ -314,7 +330,7 @@ FOR UPDATE OF d, w`)
 		},
 	)
 
-	server.handleSaveWorkspaceDocument(context)
+	handler.HandleSaveWorkspaceDocument(context)
 
 	if response.Code != http.StatusConflict {
 		t.Fatalf("expected 409, got %d: %s", response.Code, response.Body.String())
@@ -332,7 +348,7 @@ FOR UPDATE OF d, w`)
 }
 
 func TestHandleApplyWorkspaceIntentRejectsUnsupportedIntent(t *testing.T) {
-	server, mock, cleanup := newWorkspaceHandlerTestServer(t)
+	handler, mock, cleanup := newWorkspaceHandlerTestHandler(t)
 	defer cleanup()
 
 	context, response := newWorkspaceHandlerContext(
@@ -353,7 +369,7 @@ func TestHandleApplyWorkspaceIntentRejectsUnsupportedIntent(t *testing.T) {
 		gin.Params{{Key: "workspaceId", Value: "ws_1"}},
 	)
 
-	server.handleApplyWorkspaceIntent(context)
+	handler.HandleApplyWorkspaceIntent(context)
 
 	if response.Code != http.StatusUnprocessableEntity {
 		t.Fatalf("expected 422, got %d: %s", response.Code, response.Body.String())
@@ -362,7 +378,7 @@ func TestHandleApplyWorkspaceIntentRejectsUnsupportedIntent(t *testing.T) {
 	if err := json.Unmarshal(response.Body.Bytes(), &payload); err != nil {
 		t.Fatalf("decode response: %v", err)
 	}
-	if payload["code"] != workspaceErrorUnsupportedIntent {
+	if payload["code"] != ErrorUnsupportedIntent {
 		t.Fatalf("unexpected error payload: %v", payload)
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {
@@ -371,7 +387,7 @@ func TestHandleApplyWorkspaceIntentRejectsUnsupportedIntent(t *testing.T) {
 }
 
 func TestHandleApplyWorkspaceIntentReturnsRouteConflict(t *testing.T) {
-	server, mock, cleanup := newWorkspaceHandlerTestServer(t)
+	handler, mock, cleanup := newWorkspaceHandlerTestHandler(t)
 	defer cleanup()
 
 	lockWorkspace := regexp.QuoteMeta(`SELECT workspace_rev, route_rev, op_seq
@@ -405,7 +421,7 @@ FOR UPDATE`)
 		gin.Params{{Key: "workspaceId", Value: "ws_1"}},
 	)
 
-	server.handleApplyWorkspaceIntent(context)
+	handler.HandleApplyWorkspaceIntent(context)
 
 	if response.Code != http.StatusConflict {
 		t.Fatalf("expected 409, got %d: %s", response.Code, response.Body.String())
@@ -422,8 +438,81 @@ FOR UPDATE`)
 	}
 }
 
+func TestHandleApplyWorkspaceIntentSavesSettings(t *testing.T) {
+	handler, mock, cleanup := newWorkspaceHandlerTestHandler(t)
+	defer cleanup()
+
+	lockWorkspace := regexp.QuoteMeta(`SELECT workspace_rev, route_rev, op_seq
+FROM workspaces
+WHERE id = $1
+FOR UPDATE`)
+	upsertSettings := regexp.QuoteMeta(`INSERT INTO workspace_settings (workspace_id, settings_json, updated_at)
+VALUES ($1, $2::jsonb, NOW())
+ON CONFLICT (workspace_id) DO UPDATE
+SET settings_json = EXCLUDED.settings_json, updated_at = EXCLUDED.updated_at`)
+	bumpWorkspaceOnly := regexp.QuoteMeta(`UPDATE workspaces
+SET workspace_rev = workspace_rev + 1, op_seq = op_seq + 1, updated_at = NOW()
+WHERE id = $1
+RETURNING workspace_rev, route_rev, op_seq`)
+	insertOperation := regexp.QuoteMeta(`INSERT INTO workspace_operations (workspace_id, op_seq, domain, document_id, payload_json, created_at)
+VALUES ($1, $2, $3, $4, $5::jsonb, $6)`)
+
+	mock.ExpectBegin()
+	mock.ExpectQuery(lockWorkspace).
+		WithArgs("ws_1").
+		WillReturnRows(sqlmock.NewRows([]string{"workspace_rev", "route_rev", "op_seq"}).AddRow(9, 4, 34))
+	mock.ExpectExec(upsertSettings).
+		WithArgs("ws_1", sqlmock.AnyArg()).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectQuery(bumpWorkspaceOnly).
+		WithArgs("ws_1").
+		WillReturnRows(sqlmock.NewRows([]string{"workspace_rev", "route_rev", "op_seq"}).AddRow(10, 4, 35))
+	mock.ExpectExec(insertOperation).
+		WithArgs("ws_1", int64(35), "core.settings.global.update@1.0", nil, sqlmock.AnyArg(), sqlmock.AnyArg()).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	context, response := newWorkspaceHandlerContext(
+		http.MethodPost,
+		"/api/workspaces/ws_1/intents",
+		`{
+			"expectedWorkspaceRev": 9,
+			"intent": {
+				"id": "intent_settings_1",
+				"namespace": "core.settings",
+				"type": "global.update",
+				"version": "1.0",
+				"payload": {
+					"settings": {
+						"global": {"eventTriggerMode":"selected-only"},
+						"projectGlobalById": {}
+					}
+				},
+				"issuedAt": "2026-02-08T10:05:00Z"
+			}
+		}`,
+		gin.Params{{Key: "workspaceId", Value: "ws_1"}},
+	)
+
+	handler.HandleApplyWorkspaceIntent(context)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", response.Code, response.Body.String())
+	}
+	var payload map[string]any
+	if err := json.Unmarshal(response.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if payload["workspaceRev"] != float64(10) || payload["routeRev"] != float64(4) {
+		t.Fatalf("unexpected mutation payload: %v", payload)
+	}
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Fatalf("sql expectations: %v", err)
+	}
+}
+
 func TestHandleApplyWorkspaceBatchRejectsUnsupportedOperation(t *testing.T) {
-	server, mock, cleanup := newWorkspaceHandlerTestServer(t)
+	handler, mock, cleanup := newWorkspaceHandlerTestHandler(t)
 	defer cleanup()
 
 	context, response := newWorkspaceHandlerContext(
@@ -438,7 +527,7 @@ func TestHandleApplyWorkspaceBatchRejectsUnsupportedOperation(t *testing.T) {
 		gin.Params{{Key: "workspaceId", Value: "ws_1"}},
 	)
 
-	server.handleApplyWorkspaceBatch(context)
+	handler.HandleApplyWorkspaceBatch(context)
 
 	if response.Code != http.StatusUnprocessableEntity {
 		t.Fatalf("expected 422, got %d: %s", response.Code, response.Body.String())
@@ -447,7 +536,7 @@ func TestHandleApplyWorkspaceBatchRejectsUnsupportedOperation(t *testing.T) {
 	if err := json.Unmarshal(response.Body.Bytes(), &payload); err != nil {
 		t.Fatalf("decode response: %v", err)
 	}
-	if payload["code"] != workspaceErrorInvalidPayload {
+	if payload["code"] != ErrorInvalidPayload {
 		t.Fatalf("unexpected error payload: %v", payload)
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {
@@ -455,7 +544,7 @@ func TestHandleApplyWorkspaceBatchRejectsUnsupportedOperation(t *testing.T) {
 	}
 }
 
-func newWorkspaceHandlerTestServer(t *testing.T) (*Server, sqlmock.Sqlmock, func()) {
+func newWorkspaceHandlerTestHandler(t *testing.T) (*Handler, sqlmock.Sqlmock, func()) {
 	t.Helper()
 	gin.SetMode(gin.TestMode)
 
@@ -464,11 +553,11 @@ func newWorkspaceHandlerTestServer(t *testing.T) (*Server, sqlmock.Sqlmock, func
 		t.Fatalf("create sqlmock: %v", err)
 	}
 
-	server := &Server{
-		workspaces: NewWorkspaceStore(db),
-		projects:   NewProjectStore(db),
-	}
-	return server, mock, func() {
+	projectStore := backendproject.NewProjectStore(db)
+	store := NewWorkspaceStore(db)
+	module := NewModule(store, projectStore)
+	handler := NewHandler(store, module)
+	return handler, mock, func() {
 		_ = db.Close()
 	}
 }
@@ -489,16 +578,17 @@ func newWorkspaceHandlerContext(method, path, body string, params gin.Params) (*
 	}
 	context.Request = request
 	context.Params = params
-	context.Set("authUser", &User{ID: "user_1"})
+	context.Set("authUser", &backendauth.User{ID: "user_1"})
 	return context, response
 }
 
 func expectWorkspaceSnapshotQueries(mock sqlmock.Sqlmock, workspaceID string) {
 	now := time.Date(2026, time.February, 8, 9, 0, 0, 0, time.UTC)
 
-	workspaceQuery := regexp.QuoteMeta(`SELECT w.id, w.project_id, w.owner_id, w.name, w.workspace_rev, w.route_rev, w.op_seq, w.tree_root_id, w.tree_json, w.created_at, w.updated_at, r.manifest_json
+	workspaceQuery := regexp.QuoteMeta(`SELECT w.id, w.project_id, w.owner_id, w.name, w.workspace_rev, w.route_rev, w.op_seq, w.tree_root_id, w.tree_json, w.created_at, w.updated_at, r.manifest_json, s.settings_json
 FROM workspaces w
 LEFT JOIN workspace_routes r ON r.workspace_id = w.id
+LEFT JOIN workspace_settings s ON s.workspace_id = w.id
 WHERE w.id = $1`)
 	documentQuery := regexp.QuoteMeta(`SELECT workspace_id, id, doc_type, name, path, content_rev, meta_rev, content_json, updated_at
 FROM workspace_documents
@@ -508,7 +598,7 @@ ORDER BY path ASC`)
 	mock.ExpectQuery(workspaceQuery).
 		WithArgs(workspaceID).
 		WillReturnRows(sqlmock.NewRows([]string{
-			"id", "project_id", "owner_id", "name", "workspace_rev", "route_rev", "op_seq", "tree_root_id", "tree_json", "created_at", "updated_at", "manifest_json",
+			"id", "project_id", "owner_id", "name", "workspace_rev", "route_rev", "op_seq", "tree_root_id", "tree_json", "created_at", "updated_at", "manifest_json", "settings_json",
 		}).AddRow(
 			workspaceID,
 			"project_1",
@@ -522,6 +612,7 @@ ORDER BY path ASC`)
 			now,
 			now,
 			[]byte(`{"version":"1","root":{"id":"root"}}`),
+			[]byte(`{"global":{"eventTriggerMode":"selected-only"},"projectGlobalById":{}}`),
 		))
 	mock.ExpectQuery(documentQuery).
 		WithArgs(workspaceID).

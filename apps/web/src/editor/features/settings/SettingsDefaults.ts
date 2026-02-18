@@ -13,6 +13,7 @@ export const createGlobalDefaults = () => ({
   zoomStep: 5,
   assist: ['grid', 'align', 'snap'],
   panInertia: 30,
+  eventTriggerMode: 'selected-only',
   resolverOrder: 'custom>mdr>native',
   customNamespaces: 'acme, design-system',
   renderMode: 'strict',

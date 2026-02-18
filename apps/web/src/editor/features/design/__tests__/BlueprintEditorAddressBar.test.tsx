@@ -87,6 +87,28 @@ describe('BlueprintEditorAddressBar', () => {
     ]);
   });
 
+  it('navigates when selecting a route from floating tree', () => {
+    const onCurrentPathChange = vi.fn();
+    render(
+      <BlueprintEditorAddressBar
+        currentPath="/"
+        newPath=""
+        routes={[
+          { id: 'home', path: '/', depth: 0, label: '(index)' },
+          { id: 'about', path: '/about', depth: 1, label: 'about' },
+        ]}
+        onCurrentPathChange={onCurrentPathChange}
+        onNewPathChange={() => {}}
+        onAddRoute={() => {}}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('address-route-menu-trigger'));
+    fireEvent.click(screen.getByTestId('address-route-item-about'));
+
+    expect(onCurrentPathChange).toHaveBeenCalledWith('/about');
+  });
+
   it('renders a trailing status indicator', () => {
     render(
       <BlueprintEditorAddressBar

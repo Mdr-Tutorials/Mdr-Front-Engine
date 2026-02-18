@@ -19,6 +19,10 @@ const withComponentOverrides = (
       ...(override.defaultProps ?? {}),
     },
     sizeOptions: override.sizeOptions ?? item.sizeOptions,
+    propOptions: {
+      ...(item.propOptions ?? {}),
+      ...(override.propOptions ?? {}),
+    },
     behaviorTags: override.behaviorTags ?? item.behaviorTags,
     codegenHints: {
       ...(item.codegenHints ?? {}),

@@ -49,6 +49,7 @@ type RenderContext = {
   ) => boolean;
   onNodeSelect?: (nodeId: string, event: React.SyntheticEvent) => void;
   selectedId?: string;
+  requireSelectionForEvents: boolean;
   renderMode: 'strict' | 'tolerant';
   outletContentNode?: ComponentNode | null;
   outletTargetNodeId?: string;
@@ -232,6 +233,7 @@ interface MIRRendererProps {
       payload?: unknown;
     }) => void
   >;
+  requireSelectionForEvents?: boolean;
   outletContentNode?: ComponentNode | null;
   outletTargetNodeId?: string;
 }
@@ -317,6 +319,12 @@ const MIRNode: React.FC<{
       if (isClickTrigger(trigger)) return;
       const handler = (payload: unknown) => {
         if (
+          context.requireSelectionForEvents &&
+          context.selectedId !== node.id
+        ) {
+          return;
+        }
+        if (
           eventDef.action &&
           context.dispatchBuiltInAction(eventDef.action, {
             params: eventDef.params,
@@ -340,6 +348,8 @@ const MIRNode: React.FC<{
     node.events,
     context.dispatchAction,
     context.dispatchBuiltInAction,
+    context.requireSelectionForEvents,
+    context.selectedId,
     node.id,
   ]);
 
@@ -448,6 +458,7 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
   renderMode = 'tolerant',
   allowExternalProps = true,
   builtInActions,
+  requireSelectionForEvents = false,
   outletContentNode,
   outletTargetNodeId,
 }) => {
@@ -594,12 +605,21 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
       if (onNodeSelect && resolveLinkCapability(matchedNode)) {
         event.preventDefault();
       }
+      const wasSelected = selectedId === nodeId;
 
       onNodeSelect?.(nodeId, event);
       emitSelectionDebug({
         stage: 'selected',
         nodeId,
       });
+      if (requireSelectionForEvents && !wasSelected) {
+        emitSelectionDebug({
+          stage: 'event-skipped-unselected',
+          nodeId,
+          selectedId,
+        });
+        return;
+      }
 
       const events = nodeEventsById[nodeId];
       if (!events) {
@@ -652,6 +672,8 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
       nodeEventsById,
       nodesById,
       onNodeSelect,
+      requireSelectionForEvents,
+      selectedId,
     ]
   );
 
@@ -662,6 +684,7 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
       dispatchAction,
       dispatchBuiltInAction,
       selectedId,
+      requireSelectionForEvents,
       onNodeSelect,
       renderMode,
       outletContentNode,
@@ -673,6 +696,7 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
       dispatchAction,
       dispatchBuiltInAction,
       selectedId,
+      requireSelectionForEvents,
       onNodeSelect,
       renderMode,
       outletContentNode,

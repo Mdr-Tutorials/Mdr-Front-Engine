@@ -1,4 +1,4 @@
-package main
+package database
 
 import (
 	"context"
@@ -6,10 +6,11 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Mdr-Tutorials/mdr-front-engine/apps/backend/internal/config"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
-func openDatabase(cfg Config) (*sql.DB, error) {
+func OpenDatabase(cfg config.Config) (*sql.DB, error) {
 	db, err := sql.Open("pgx", cfg.DatabaseURL)
 	if err != nil {
 		return nil, fmt.Errorf("open database: %w", err)
@@ -27,7 +28,7 @@ func openDatabase(cfg Config) (*sql.DB, error) {
 		return nil, fmt.Errorf("ping database: %w", err)
 	}
 
-	if err := runMigrations(ctx, db); err != nil {
+	if err := RunMigrations(ctx, db); err != nil {
 		_ = db.Close()
 		return nil, err
 	}
@@ -35,7 +36,7 @@ func openDatabase(cfg Config) (*sql.DB, error) {
 	return db, nil
 }
 
-func runMigrations(ctx context.Context, db *sql.DB) error {
+func RunMigrations(ctx context.Context, db *sql.DB) error {
 	statements := []string{
 		`CREATE TABLE IF NOT EXISTS users (
 			id TEXT PRIMARY KEY,
@@ -85,6 +86,11 @@ func runMigrations(ctx context.Context, db *sql.DB) error {
 		`CREATE TABLE IF NOT EXISTS workspace_routes (
 			workspace_id TEXT PRIMARY KEY REFERENCES workspaces(id) ON DELETE CASCADE,
 			manifest_json JSONB NOT NULL,
+			updated_at TIMESTAMPTZ NOT NULL
+		)`,
+		`CREATE TABLE IF NOT EXISTS workspace_settings (
+			workspace_id TEXT PRIMARY KEY REFERENCES workspaces(id) ON DELETE CASCADE,
+			settings_json JSONB NOT NULL,
 			updated_at TIMESTAMPTZ NOT NULL
 		)`,
 		`CREATE TABLE IF NOT EXISTS workspace_documents (

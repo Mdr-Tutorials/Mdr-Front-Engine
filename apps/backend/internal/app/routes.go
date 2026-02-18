@@ -1,0 +1,32 @@
+package app
+
+import (
+	"net/http"
+
+	backendauth "github.com/Mdr-Tutorials/mdr-front-engine/apps/backend/internal/modules/auth"
+	backendproject "github.com/Mdr-Tutorials/mdr-front-engine/apps/backend/internal/modules/project"
+	backendworkspace "github.com/Mdr-Tutorials/mdr-front-engine/apps/backend/internal/modules/workspace"
+	"github.com/gin-gonic/gin"
+)
+
+type Routes struct {
+	Ping gin.HandlerFunc
+
+	Auth      backendauth.RouteHandlers
+	Project   backendproject.RouteHandlers
+	Workspace backendworkspace.RouteHandlers
+}
+
+func RegisterAPIRoutes(router *gin.Engine, routes Routes) {
+	api := router.Group("/api")
+	api.GET("/ping", routes.Ping)
+	backendauth.RegisterRoutes(api, routes.Auth)
+	backendproject.RegisterRoutes(api, routes.Project)
+	backendworkspace.RegisterRoutes(api, routes.Workspace)
+
+	if routes.Ping == nil {
+		api.GET("/ping", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{"message": "pong"})
+		})
+	}
+}

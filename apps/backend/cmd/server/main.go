@@ -1,10 +1,15 @@
 package main
 
-import "log"
+import (
+	"log"
+
+	backend "github.com/Mdr-Tutorials/mdr-front-engine/apps/backend"
+	backendconfig "github.com/Mdr-Tutorials/mdr-front-engine/apps/backend/internal/config"
+)
 
 func main() {
-	cfg := LoadConfig()
-	server, err := NewServer(cfg)
+	cfg := backendconfig.LoadConfig()
+	server, err := backend.NewServer(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -18,11 +18,16 @@ vi.mock('@/mir/renderer/MIRRenderer', () => ({
   MIRRenderer: ({
     node,
     onNodeSelect,
+    requireSelectionForEvents,
   }: {
     node: any;
     onNodeSelect: (id: string) => void;
+    requireSelectionForEvents?: boolean;
   }) => (
-    <div data-mir-node-id={node.children?.[0]?.id ?? node.id}>
+    <div
+      data-mir-node-id={node.children?.[0]?.id ?? node.id}
+      data-require-selection={String(Boolean(requireSelectionForEvents))}
+    >
       <button
         type="button"
         data-testid="mir-node"
@@ -105,6 +110,53 @@ describe('BlueprintEditorCanvas', () => {
 
     fireEvent.click(screen.getByTestId('mir-node'));
     expect(onSelectNode).toHaveBeenCalledWith('child-1');
+  });
+
+  it('requires selection before triggering node events by default', () => {
+    resetEditorStore({
+      mirDoc: createMirDoc([{ id: 'child-1', type: 'MdrText', text: 'Hello' }]),
+    });
+
+    const { container } = render(
+      <BlueprintEditorCanvas
+        viewportWidth="1440"
+        viewportHeight="900"
+        zoom={100}
+        pan={{ x: 0, y: 0 }}
+        selectedId={undefined}
+        onPanChange={() => {}}
+        onZoomChange={() => {}}
+        onSelectNode={() => {}}
+      />
+    );
+
+    expect(
+      container.querySelector('[data-require-selection="true"]')
+    ).toBeTruthy();
+  });
+
+  it('allows triggering node events without selection when setting is always', () => {
+    resetSettingsStore({ eventTriggerMode: 'always' });
+    resetEditorStore({
+      mirDoc: createMirDoc([{ id: 'child-1', type: 'MdrText', text: 'Hello' }]),
+    });
+
+    const { container } = render(
+      <BlueprintEditorCanvas
+        viewportWidth="1440"
+        viewportHeight="900"
+        zoom={100}
+        pan={{ x: 0, y: 0 }}
+        selectedId={undefined}
+        onPanChange={() => {}}
+        onZoomChange={() => {}}
+        onSelectNode={() => {}}
+      />
+    );
+
+    expect(
+      container.querySelector('[data-require-selection="false"]')
+    ).toBeTruthy();
   });
 
   it('handles wheel zoom and pan', () => {

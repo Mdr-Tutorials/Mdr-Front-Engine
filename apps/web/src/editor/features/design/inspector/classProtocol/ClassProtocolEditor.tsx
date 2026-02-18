@@ -14,6 +14,7 @@ import { resolveClassTokenColorSwatch } from './colorSwatch';
 import type { MountedCssEntry } from './mountedCss';
 import { resolveMountedCssTokenTarget } from './mountedCss';
 import type { ClassSuggestion } from './types';
+import { useClassProtocolModeState } from './useClassProtocolModeState';
 import { parseClassTokens, toClassNameValue } from './tokenizer';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
 
@@ -31,8 +32,6 @@ type ClassProtocolEditorProps = {
     column?: number;
   }) => void;
 };
-
-type EditMode = 'token' | 'inline';
 
 const getSuggestionIcon = (token: string) => {
   if (token.startsWith('text-') || token.startsWith('font-')) return Type;
@@ -59,8 +58,8 @@ export function ClassProtocolEditor({
   const { i18n, t } = useTranslation();
   const [draft, setDraft] = useState('');
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
-  const [mode, setMode] = useState<EditMode>('token');
-  const [inlineDraft, setInlineDraft] = useState(value);
+  const { mode, inlineDraft, nextMode, setMode, setInlineDraft } =
+    useClassProtocolModeState(value);
   const draftInputRef = useRef<HTMLInputElement | null>(null);
   const inlineTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -173,17 +172,6 @@ export function ClassProtocolEditor({
   }, [draft, suggestions.length]);
 
   useEffect(() => {
-    if (mode !== 'inline') {
-      setInlineDraft(value);
-    }
-  }, [mode, value]);
-
-  useEffect(() => {
-    if (mode !== 'inline') return;
-    setInlineDraft(value);
-  }, [mode]);
-
-  useEffect(() => {
     if (mode !== 'inline') return;
     const textarea = inlineTextareaRef.current;
     if (!textarea) return;
@@ -227,7 +215,6 @@ export function ClassProtocolEditor({
   };
 
   const ModeIcon = mode === 'token' ? Tags : PenLine;
-  const nextMode: EditMode = mode === 'token' ? 'inline' : 'token';
 
   const tokenEditor = (
     <div className="InspectorClassProtocol relative grid w-full gap-1.5">

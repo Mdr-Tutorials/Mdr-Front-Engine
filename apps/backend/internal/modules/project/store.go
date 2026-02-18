@@ -1,4 +1,4 @@
-package main
+package project
 
 import (
 	"context"
@@ -10,9 +10,6 @@ import (
 	"strings"
 	"time"
 )
-
-var errProjectNotFound = errors.New("project not found")
-var errInvalidResourceType = errors.New("invalid resource type")
 
 var defaultMIRDocument = json.RawMessage(`{"version":"1.0","ui":{"root":{"id":"root","type":"container"}}}`)
 
@@ -35,7 +32,7 @@ func NewProjectStore(db *sql.DB) *ProjectStore {
 func (store *ProjectStore) Create(ownerID, name, description string, resourceType ResourceType, isPublic bool, mir json.RawMessage) (*Project, error) {
 	resourceType = normalizeResourceType(resourceType)
 	if !isValidResourceType(resourceType) {
-		return nil, errInvalidResourceType
+		return nil, ErrInvalidResourceType
 	}
 
 	normalizedMir, err := normalizeMIR(mir)
@@ -130,7 +127,7 @@ WHERE owner_id = $1 AND id = $2`
 	project, err := scanProject(row)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errProjectNotFound
+			return nil, ErrProjectNotFound
 		}
 		return nil, err
 	}
@@ -155,7 +152,7 @@ RETURNING id, owner_id, resource_type, name, description, mir_json, is_public, s
 	project, err := scanProject(row)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errProjectNotFound
+			return nil, ErrProjectNotFound
 		}
 		return nil, err
 	}
@@ -175,7 +172,7 @@ RETURNING id, owner_id, resource_type, name, description, mir_json, is_public, s
 	project, err := scanProject(row)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errProjectNotFound
+			return nil, ErrProjectNotFound
 		}
 		return nil, err
 	}
@@ -196,7 +193,7 @@ func (store *ProjectStore) Delete(ownerID, projectID string) error {
 		return err
 	}
 	if rows == 0 {
-		return errProjectNotFound
+		return ErrProjectNotFound
 	}
 	return nil
 }
@@ -263,7 +260,7 @@ func (store *ProjectStore) ListPublic(options CommunityListOptions) ([]Community
 	resourceType := normalizeResourceType(options.ResourceType)
 	if resourceType != "" {
 		if !isValidResourceType(resourceType) {
-			return nil, errInvalidResourceType
+			return nil, ErrInvalidResourceType
 		}
 		clauses = append(clauses, fmt.Sprintf("p.resource_type = $%d", argIndex))
 		args = append(args, resourceType)
@@ -338,7 +335,7 @@ WHERE p.id = $1 AND p.is_public = TRUE`
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errProjectNotFound
+			return nil, ErrProjectNotFound
 		}
 		return nil, err
 	}
@@ -350,7 +347,7 @@ WHERE p.id = $1 AND p.is_public = TRUE`
 	return &detail, nil
 }
 
-func parsePositiveInt(value string, fallback int) int {
+func ParsePositiveInt(value string, fallback int) int {
 	trimmed := strings.TrimSpace(value)
 	if trimmed == "" {
 		return fallback

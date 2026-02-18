@@ -146,6 +146,9 @@ export function BlueprintEditorCanvas({
   const { t } = useTranslation('blueprint');
   const assist = useSettingsStore((state) => state.global.assist);
   const panInertia = useSettingsStore((state) => state.global.panInertia);
+  const eventTriggerMode = useSettingsStore(
+    (state) => state.global.eventTriggerMode
+  );
   const zoomStep = useSettingsStore((state) => state.global.zoomStep);
   const renderMode = useSettingsStore((state) => state.global.renderMode);
   const allowExternalProps = useSettingsStore(
@@ -513,6 +516,9 @@ export function BlueprintEditorCanvas({
                   registry={registry}
                   renderMode={renderMode}
                   allowExternalProps={allowExternalProps === 'enabled'}
+                  requireSelectionForEvents={
+                    eventTriggerMode === 'selected-only'
+                  }
                   // 内置动作链路：MIRRenderer -> builtInActions -> controller。
                   builtInActions={{
                     ...(onNavigateRequest

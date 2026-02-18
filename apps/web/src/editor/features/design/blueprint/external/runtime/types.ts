@@ -57,6 +57,7 @@ export type ExternalComponentManifestOverride = {
   displayName?: string;
   defaultProps?: Record<string, unknown>;
   sizeOptions?: { id: string; label: string; value: string }[];
+  propOptions?: Record<string, string[]>;
   behaviorTags?: string[];
   codegenHints?: Record<string, unknown>;
   groupId?: string;

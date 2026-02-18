@@ -1,4 +1,4 @@
-package main
+package workspace
 
 import (
 	"context"
@@ -11,9 +11,9 @@ import (
 	"time"
 )
 
-var errWorkspaceNotFound = errors.New("workspace not found")
-var errWorkspaceDocumentNotFound = errors.New("workspace document not found")
-var errInvalidWorkspaceDocumentType = errors.New("invalid workspace document type")
+var ErrWorkspaceNotFound = errors.New("workspace not found")
+var ErrWorkspaceDocumentNotFound = errors.New("workspace document not found")
+var ErrInvalidWorkspaceDocumentType = errors.New("invalid workspace document type")
 
 type WorkspaceConflictType string
 
@@ -61,6 +61,8 @@ func NewWorkspaceStore(db *sql.DB) *WorkspaceStore {
 
 var defaultWorkspaceTree = json.RawMessage(`{"rootId":"root","nodes":[]}`)
 var defaultWorkspaceRouteManifest = json.RawMessage(`{"version":"1","root":{"id":"root"}}`)
+var defaultWorkspaceSettings = json.RawMessage(`{}`)
+var defaultMIRDocument = json.RawMessage(`{"version":"1.0","ui":{"root":{"id":"root","type":"container"}}}`)
 
 type WorkspaceRecord struct {
 	ID           string          `json:"id"`
@@ -91,6 +93,7 @@ type WorkspaceDocumentRecord struct {
 type WorkspaceSnapshot struct {
 	Workspace     WorkspaceRecord           `json:"workspace"`
 	RouteManifest json.RawMessage           `json:"routeManifest"`
+	Settings      json.RawMessage           `json:"settings"`
 	Documents     []WorkspaceDocumentRecord `json:"documents"`
 }
 
@@ -166,6 +169,13 @@ type SaveRouteManifestParams struct {
 	ExpectedWorkspaceRev int64
 	ExpectedRouteRev     int64
 	RouteManifest        json.RawMessage
+	Command              WorkspaceCommandEnvelope
+}
+
+type SaveWorkspaceSettingsParams struct {
+	WorkspaceID          string
+	ExpectedWorkspaceRev int64
+	Settings             json.RawMessage
 	Command              WorkspaceCommandEnvelope
 }
 
@@ -253,7 +263,7 @@ func (store *WorkspaceStore) CreateDocument(ctx context.Context, params CreateWo
 		return nil, errors.New("workspaceID, documentID and path are required")
 	}
 	if !isValidWorkspaceDocumentType(params.Type) {
-		return nil, errInvalidWorkspaceDocumentType
+		return nil, ErrInvalidWorkspaceDocumentType
 	}
 
 	contentJSON, err := normalizeJSONDocument(params.Content, defaultMIRDocument)
@@ -293,20 +303,22 @@ func (store *WorkspaceStore) GetSnapshot(ctx context.Context, workspaceID string
 	}
 	workspaceID = strings.TrimSpace(workspaceID)
 	if workspaceID == "" {
-		return nil, errWorkspaceNotFound
+		return nil, ErrWorkspaceNotFound
 	}
 
 	ctx, cancel := withStoreTimeout(ctx)
 	defer cancel()
 
-	const workspaceQuery = `SELECT w.id, w.project_id, w.owner_id, w.name, w.workspace_rev, w.route_rev, w.op_seq, w.tree_root_id, w.tree_json, w.created_at, w.updated_at, r.manifest_json
+	const workspaceQuery = `SELECT w.id, w.project_id, w.owner_id, w.name, w.workspace_rev, w.route_rev, w.op_seq, w.tree_root_id, w.tree_json, w.created_at, w.updated_at, r.manifest_json, s.settings_json
 FROM workspaces w
 LEFT JOIN workspace_routes r ON r.workspace_id = w.id
+LEFT JOIN workspace_settings s ON s.workspace_id = w.id
 WHERE w.id = $1`
 
 	var workspace WorkspaceRecord
 	var treeBytes []byte
 	var routeBytes []byte
+	var settingsBytes []byte
 	err := store.db.QueryRowContext(ctx, workspaceQuery, workspaceID).Scan(
 		&workspace.ID,
 		&workspace.ProjectID,
@@ -320,10 +332,11 @@ WHERE w.id = $1`
 		&workspace.CreatedAt,
 		&workspace.UpdatedAt,
 		&routeBytes,
+		&settingsBytes,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errWorkspaceNotFound
+			return nil, ErrWorkspaceNotFound
 		}
 		return nil, err
 	}
@@ -334,6 +347,13 @@ WHERE w.id = $1`
 			return nil, normalizeErr
 		}
 		routeBytes = workspaceRoute
+	}
+	if len(settingsBytes) == 0 {
+		workspaceSettings, normalizeErr := normalizeJSONDocument(nil, defaultWorkspaceSettings)
+		if normalizeErr != nil {
+			return nil, normalizeErr
+		}
+		settingsBytes = workspaceSettings
 	}
 
 	const documentQuery = `SELECT workspace_id, id, doc_type, name, path, content_rev, meta_rev, content_json, updated_at
@@ -362,6 +382,7 @@ ORDER BY path ASC`
 	return &WorkspaceSnapshot{
 		Workspace:     workspace,
 		RouteManifest: routeBytes,
+		Settings:      settingsBytes,
 		Documents:     documents,
 	}, nil
 }
@@ -562,7 +583,7 @@ FOR UPDATE`
 	if err != nil {
 		_ = tx.Rollback()
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errWorkspaceNotFound
+			return nil, ErrWorkspaceNotFound
 		}
 		return nil, err
 	}
@@ -627,6 +648,121 @@ RETURNING workspace_rev, route_rev, op_seq`
 	var nextRouteRev int64
 	var nextOpSeq int64
 	if err := tx.QueryRowContext(ctx, bumpWorkspaceAndRoute, params.WorkspaceID).Scan(&nextWorkspaceRev, &nextRouteRev, &nextOpSeq); err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+
+	if err := insertWorkspaceOperation(ctx, tx, params.WorkspaceID, nextOpSeq, commandDomain(command), nil, payloadJSON, command.IssuedAt); err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return &WorkspaceMutationResult{
+		WorkspaceID:  params.WorkspaceID,
+		WorkspaceRev: nextWorkspaceRev,
+		RouteRev:     nextRouteRev,
+		OpSeq:        nextOpSeq,
+	}, nil
+}
+
+func (store *WorkspaceStore) SaveWorkspaceSettings(ctx context.Context, params SaveWorkspaceSettingsParams) (*WorkspaceMutationResult, error) {
+	if store == nil || store.db == nil {
+		return nil, errors.New("workspace store is not initialized")
+	}
+	if strings.TrimSpace(params.WorkspaceID) == "" {
+		return nil, errors.New("workspaceID is required")
+	}
+	if params.ExpectedWorkspaceRev <= 0 {
+		return nil, errors.New("expectedWorkspaceRev must be positive")
+	}
+
+	settingsJSON, err := normalizeJSONDocument(params.Settings, defaultWorkspaceSettings)
+	if err != nil {
+		return nil, err
+	}
+	command, err := normalizeWorkspaceCommand(params.Command)
+	if err != nil {
+		return nil, err
+	}
+	if err := validateWorkspaceCommand(command, params.WorkspaceID, nil); err != nil {
+		return nil, err
+	}
+	if command.Target.DocumentID != "" {
+		return nil, errors.New("settings command must not set target.documentId")
+	}
+
+	commandJSON, err := json.Marshal(command)
+	if err != nil {
+		return nil, err
+	}
+	payloadJSON := json.RawMessage(commandJSON)
+
+	ctx, cancel := withStoreTimeout(ctx)
+	defer cancel()
+
+	tx, err := store.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	const lockWorkspace = `SELECT workspace_rev, route_rev, op_seq
+FROM workspaces
+WHERE id = $1
+FOR UPDATE`
+
+	var currentWorkspaceRev int64
+	var currentRouteRev int64
+	var currentOpSeq int64
+	err = tx.QueryRowContext(ctx, lockWorkspace, params.WorkspaceID).Scan(&currentWorkspaceRev, &currentRouteRev, &currentOpSeq)
+	if err != nil {
+		_ = tx.Rollback()
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrWorkspaceNotFound
+		}
+		return nil, err
+	}
+
+	if currentWorkspaceRev != params.ExpectedWorkspaceRev {
+		_ = tx.Rollback()
+		log.Printf(
+			"[workspace] conflict save_workspace_settings workspace=%s expectedWorkspaceRev=%d serverWorkspaceRev=%d serverRouteRev=%d serverOpSeq=%d",
+			params.WorkspaceID,
+			params.ExpectedWorkspaceRev,
+			currentWorkspaceRev,
+			currentRouteRev,
+			currentOpSeq,
+		)
+		return nil, &WorkspaceRevisionConflictError{
+			ConflictType:       WorkspaceConflictWorkspace,
+			WorkspaceID:        params.WorkspaceID,
+			ServerWorkspaceRev: currentWorkspaceRev,
+			ServerRouteRev:     currentRouteRev,
+			ServerOpSeq:        currentOpSeq,
+		}
+	}
+
+	const upsertSettings = `INSERT INTO workspace_settings (workspace_id, settings_json, updated_at)
+VALUES ($1, $2::jsonb, NOW())
+ON CONFLICT (workspace_id) DO UPDATE
+SET settings_json = EXCLUDED.settings_json, updated_at = EXCLUDED.updated_at`
+	if _, err := tx.ExecContext(ctx, upsertSettings, params.WorkspaceID, string(settingsJSON)); err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+
+	const bumpWorkspaceOnly = `UPDATE workspaces
+SET workspace_rev = workspace_rev + 1, op_seq = op_seq + 1, updated_at = NOW()
+WHERE id = $1
+RETURNING workspace_rev, route_rev, op_seq`
+
+	var nextWorkspaceRev int64
+	var nextRouteRev int64
+	var nextOpSeq int64
+	if err := tx.QueryRowContext(ctx, bumpWorkspaceOnly, params.WorkspaceID).Scan(&nextWorkspaceRev, &nextRouteRev, &nextOpSeq); err != nil {
 		_ = tx.Rollback()
 		return nil, err
 	}
@@ -787,11 +923,11 @@ func (store *WorkspaceStore) resolveDocumentLookupError(ctx context.Context, wor
 	err := store.db.QueryRowContext(ctx, query, workspaceID).Scan(&marker)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return errWorkspaceNotFound
+			return ErrWorkspaceNotFound
 		}
 		return err
 	}
-	return errWorkspaceDocumentNotFound
+	return ErrWorkspaceDocumentNotFound
 }
 
 func scanWorkspaceDocument(scanner interface{ Scan(dest ...any) error }) (*WorkspaceDocumentRecord, error) {

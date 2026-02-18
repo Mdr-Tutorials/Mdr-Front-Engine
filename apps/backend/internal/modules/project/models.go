@@ -1,46 +1,15 @@
-package main
+package project
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"time"
 )
 
-type User struct {
-	ID           string    `json:"id"`
-	Email        string    `json:"email"`
-	Name         string    `json:"name"`
-	Description  string    `json:"description"`
-	PasswordHash []byte    `json:"-"`
-	CreatedAt    time.Time `json:"createdAt"`
-}
-
-type PublicUser struct {
-	ID          string    `json:"id"`
-	Email       string    `json:"email"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"createdAt"`
-}
-
-func NewPublicUser(user *User) PublicUser {
-	if user == nil {
-		return PublicUser{}
-	}
-	return PublicUser{
-		ID:          user.ID,
-		Email:       user.Email,
-		Name:        user.Name,
-		Description: user.Description,
-		CreatedAt:   user.CreatedAt,
-	}
-}
-
-type Session struct {
-	Token     string    `json:"token"`
-	UserID    string    `json:"userId"`
-	CreatedAt time.Time `json:"createdAt"`
-	ExpiresAt time.Time `json:"expiresAt"`
-}
+var ErrProjectNotFound = errors.New("project not found")
+var ErrInvalidResourceType = errors.New("invalid resource type")
 
 type ResourceType string
 
@@ -89,4 +58,17 @@ type CommunityProjectSummary struct {
 type CommunityProjectDetail struct {
 	Project
 	AuthorName string `json:"authorName"`
+}
+
+func newID(prefix string) string {
+	return prefix + "_" + newRandomHex(16)
+}
+
+func newRandomHex(size int) string {
+	buffer := make([]byte, size)
+	_, err := rand.Read(buffer)
+	if err != nil {
+		return hex.EncodeToString([]byte(time.Now().Format("20060102150405.000")))
+	}
+	return hex.EncodeToString(buffer)
 }

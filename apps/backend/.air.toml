@@ -2,7 +2,7 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-cmd = "go build -o ./tmp/main.exe ."
+cmd = "go build -o ./tmp/main.exe ./cmd/server"
 entrypoint = ".\\tmp\\main.exe"
 include_ext = ["go"]
 exclude_dir = ["tmp", "vendor", ".git"]
