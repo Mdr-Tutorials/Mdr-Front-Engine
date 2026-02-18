@@ -76,19 +76,19 @@ MFE 采用独创的 **三编辑器统一架构**，所有操作最终都收敛�
 - pnpm（推荐 v10+）
 - Go 1.22+
 - Node.js LTS
-- PostgreSQL（用于持久化 MIR 与项目数据）
+- PostgreSQL
 
 ### 安装与启动
 
 ```bash
 # 克隆仓库
-git clone https://github.com/minsecrus/mdr-front-engine.git
+git clone https://github.com/Mdr-Tutorials/Mdr-Front-Engine.git
 cd mdr-front-engine
 
 # 安装依赖
 pnpm install
 
-# 梭哈模式：一次性启动所有模块（Web + Backend + Docs）
+# 一次性启动所有模块（Web + Backend + Docs）
 pnpm dev
 ```
 
@@ -100,7 +100,7 @@ pnpm dev
 
 | 命令          | 说明                               |
 | ------------- | ---------------------------------- |
-| `pnpm dev`    | 梭哈模式：并行启动所有应用         |
+| `pnpm dev`    | 并行启动所有应用                   |
 | `pnpm build`  | 全链路构建（生产产物）             |
 | `pnpm format` | 统一格式化（TS/TSX/Go/MD/JSON 等） |
 | `pnpm test`   | 全仓库测试                         |
@@ -135,8 +135,8 @@ pnpm cli sync                     # 同步 MIR 与本地代码
 ## 🔬 技术栈
 
 - **Monorepo**：Turbo + pnpm
-- **前端核心**：React + TypeScript + Vite + React Flow（画布）
-- **后端引擎**：Go（高性能 MIR 编译与执行）
+- **前端核心**：React + TypeScript + Vite + React Flow（节点图）+ Code Mirror（代码编辑器）
+- **后端引擎**：Go
 - **代码编辑**：CodeMirror
 - **UI 组件**：SCSS + Tailwind
 - **状态管理**：Zustand + Immer

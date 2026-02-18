@@ -1,6 +1,6 @@
 ﻿import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import NodeGraph from '../NodeGraph';
+import NodeGraphEditor from '../NodeGraphEditor';
 
 vi.mock('react-router', () => ({
   useParams: () => ({ projectId: 'project-1' }),
@@ -12,17 +12,17 @@ describe('NodeGraph Phase 0 UI', () => {
   });
 
   it('renders a full-canvas editor shell with 128px grid', () => {
-    render(<NodeGraph />);
+    render(<NodeGraphEditor />);
 
     const root = screen.getByTestId('nodegraph-editor-root');
     const canvas = screen.getByTestId('nodegraph-canvas-layer');
     expect(root.className).toContain('overflow-hidden');
-    expect(canvas.getAttribute('style')).toContain('var(--color-2)');
+    expect(canvas.getAttribute('style')).toContain('rgb(229, 231, 235)');
     expect(canvas.getAttribute('style')).toContain('128px 128px');
   });
 
   it('supports graph management in island + modal', () => {
-    render(<NodeGraph />);
+    render(<NodeGraphEditor />);
 
     fireEvent.change(screen.getByPlaceholderText('Graph name'), {
       target: { value: 'Products Graph' },
