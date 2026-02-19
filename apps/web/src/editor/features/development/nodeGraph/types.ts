@@ -22,6 +22,13 @@ export type NodeRenderCache = {
 
 export type GraphContextMenuState =
   | {
+      kind: 'canvas';
+      x: number;
+      y: number;
+      worldX: number;
+      worldY: number;
+    }
+  | {
       kind: 'node';
       nodeId: string;
       x: number;

@@ -7,12 +7,12 @@ RUN cd apps/backend && go mod download
 
 COPY apps/backend ./apps/backend
 
-RUN cd apps/backend && CGO_ENABLED=0 GOOS=linux go build -o /out/backend .
+RUN cd apps/backend && CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o /out/backend ./cmd/server
 
 FROM alpine:3.21
 
-RUN adduser -D -g '' appuser
-USER appuser
+RUN addgroup -S app && adduser -S -G app app
+USER app
 WORKDIR /app
 
 COPY --from=builder /out/backend /app/backend

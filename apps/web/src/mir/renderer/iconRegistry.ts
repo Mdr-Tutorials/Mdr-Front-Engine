@@ -53,9 +53,9 @@ export const registerIconProvider = (
 ) => {
   if (!provider.trim()) return;
   const normalizedId = normalizeProvider(provider);
-  const normalizedRegistration =
+  const normalizedRegistration: IconProviderRegistration =
     typeof registration === 'function'
-      ? { resolve: registration, listIcons: () => [] }
+      ? { label: provider, resolve: registration, listIcons: () => [] }
       : registration;
   iconProviders.set(normalizedId, {
     id: normalizedId,

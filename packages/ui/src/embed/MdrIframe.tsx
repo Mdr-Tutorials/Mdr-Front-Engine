@@ -23,13 +23,33 @@ interface MdrIframeSpecificProps {
   aspectRatio?: '16:9' | '4:3' | '1:1' | '21:9';
 }
 
+type MdrIframeNativeProps = Omit<
+  React.IframeHTMLAttributes<HTMLIFrameElement>,
+  | 'width'
+  | 'height'
+  | 'loading'
+  | 'referrerPolicy'
+  | 'src'
+  | 'srcDoc'
+  | 'title'
+  | 'allow'
+  | 'allowFullScreen'
+  | 'sandbox'
+  | 'className'
+  | 'style'
+  | 'id'
+  | 'onClick'
+  | 'onLoad'
+  | 'onError'
+>;
+
 export interface MdrIframeProps
   extends Omit<MdrComponent, 'as'>,
     MdrIframeSpecificProps,
-    Omit<
-      React.IframeHTMLAttributes<HTMLIFrameElement>,
-      'width' | 'height' | 'loading' | 'referrerPolicy'
-    > {}
+    MdrIframeNativeProps {
+  onLoad?: React.ReactEventHandler<HTMLIFrameElement>;
+  onError?: React.ReactEventHandler<HTMLIFrameElement>;
+}
 
 function MdrIframe({
   src,
@@ -57,7 +77,7 @@ function MdrIframe({
   const dataProps = { ...dataAttributes };
 
   const containerStyle: React.CSSProperties = {
-    ...style,
+    ...(style as React.CSSProperties | undefined),
     width: width || '100%',
     height: height || 'auto',
   };

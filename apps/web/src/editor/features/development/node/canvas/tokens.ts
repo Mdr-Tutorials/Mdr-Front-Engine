@@ -6,6 +6,7 @@ export type NodeCanvasVisualTokens = {
   bodyFontSize: number;
   bodyFontWeight: number;
   titleYOffset: number;
+  bodyYOffset: number;
   iconYOffset: number;
 };
 
@@ -17,5 +18,6 @@ export const NODE_CANVAS_VISUAL_TOKENS: NodeCanvasVisualTokens = {
   bodyFontSize: 12,
   bodyFontWeight: 400,
   titleYOffset: 2,
+  bodyYOffset: 1.5,
   iconYOffset: 2,
 };

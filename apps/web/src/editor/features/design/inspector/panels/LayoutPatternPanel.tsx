@@ -8,7 +8,10 @@ import {
   isLayoutPatternRootNode,
   mergeLayoutPatternParams,
 } from '@/editor/features/design/blueprint/layoutPatterns/dataAttributes';
-import type { LayoutPatternParamSchema } from '@/editor/features/design/blueprint/layoutPatterns/layoutPattern.types';
+import type {
+  LayoutPatternParamSchema,
+  LayoutPatternResolvedParams,
+} from '@/editor/features/design/blueprint/layoutPatterns/layoutPattern.types';
 import type { ComponentNode } from '@/core/types/engine.types';
 import type {
   InspectorPanelDefinition,
@@ -21,34 +24,34 @@ import { UnitInput } from '../components/UnitInput';
 const resolveParams = (
   schema: LayoutPatternParamSchema,
   raw: Record<string, string>
-) =>
-  Object.entries(schema).reduce<Record<string, unknown>>(
-    (accumulator, [key, definition]) => {
-      const value = raw[key];
-      if (value === undefined) {
-        accumulator[key] = definition.defaultValue;
-        return accumulator;
-      }
-      if (definition.kind === 'number') {
-        const next = Number(value);
-        accumulator[key] = Number.isFinite(next)
-          ? next
-          : definition.defaultValue;
-        return accumulator;
-      }
-      if (definition.kind === 'boolean') {
-        accumulator[key] = value === 'true';
-        return accumulator;
-      }
-      accumulator[key] = value;
+) => {
+  type ResolvedLayoutParams =
+    LayoutPatternResolvedParams<LayoutPatternParamSchema>;
+  return Object.entries(schema).reduce<
+    Record<string, string | number | boolean>
+  >((accumulator, [key, definition]) => {
+    const value = raw[key];
+    if (value === undefined) {
+      accumulator[key] = definition.defaultValue;
       return accumulator;
-    },
-    {}
-  );
+    }
+    if (definition.kind === 'number') {
+      const next = Number(value);
+      accumulator[key] = Number.isFinite(next) ? next : definition.defaultValue;
+      return accumulator;
+    }
+    if (definition.kind === 'boolean') {
+      accumulator[key] = value === 'true';
+      return accumulator;
+    }
+    accumulator[key] = value;
+    return accumulator;
+  }, {}) as ResolvedLayoutParams;
+};
 
 const withPatternParams = (
   root: ComponentNode,
-  params: Record<string, unknown>
+  params: LayoutPatternResolvedParams<LayoutPatternParamSchema>
 ) => {
   const nextProps =
     root.props && typeof root.props === 'object' ? { ...root.props } : {};
@@ -95,7 +98,10 @@ function LayoutPatternPanelView({
       }
     );
 
-  const updatePatternParam = (key: string, value: unknown) => {
+  const updatePatternParam = (
+    key: string,
+    value: string | number | boolean
+  ) => {
     updateNode((current) => {
       const definition = getLayoutPatternDefinition(patternId);
       if (!definition) return current;
@@ -106,11 +112,13 @@ function LayoutPatternPanelView({
       const nextParams = {
         ...currentResolved,
         [key]: value,
-      };
+      } as LayoutPatternResolvedParams<LayoutPatternParamSchema>;
       const nextRoot = definition.update(current, {
         patternId,
         currentParams: currentResolved,
-        patch: { [key]: value },
+        patch: {
+          [key]: value,
+        } as Partial<LayoutPatternResolvedParams<LayoutPatternParamSchema>>,
         nextParams,
       });
       return withPatternParams(nextRoot, nextParams);

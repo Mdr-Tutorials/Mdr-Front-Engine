@@ -6,9 +6,11 @@ import type {
   NodeGraphNodeType,
 } from '../types';
 import {
-  getNodeLayoutLines,
-  resolveNodePortAnchorY,
-} from '../layout/verticalLayout';
+  createDefaultSwitchNodeConfig,
+  normalizeSwitchNodeConfig,
+  resolveSwitchNodePorts,
+} from '../switchNode';
+import { getNodeLayoutLines } from '../layout/verticalLayout';
 import { NODE_CANVAS_VISUAL_TOKENS } from './tokens';
 
 export type NodeCanvasRect = {
@@ -60,6 +62,17 @@ export type NodeCanvasPortAnchor = {
   y: number;
   visualRadius: number;
   hitRadius: number;
+};
+
+export type NodeCanvasSwitchControlAction =
+  | 'add-case'
+  | 'remove-case'
+  | 'toggle-collapse';
+
+export type NodeCanvasSwitchControlHit = {
+  action: NodeCanvasSwitchControlAction;
+  disabled: boolean;
+  caseId?: string;
 };
 
 export type NodeCanvasRenderDefinition = {
@@ -155,11 +168,20 @@ export const createNodeCanvasTextMeasureCache = (
 const HEADER_HIT_HEIGHT = 36;
 const PORT_VISUAL_RADIUS = 5;
 const PORT_HIT_RADIUS = 12;
+const PORT_SLOT_MIN_GAP = PORT_VISUAL_RADIUS * 2 + 8;
 const NODE_RADIUS = 12;
 const NODE_LEFT_GUTTER = 36;
 const NODE_RIGHT_GUTTER = 36;
 const NODE_HEADER_HEIGHT = 36;
 const NODE_BODY_ROW_HEIGHT = 28;
+const SWITCH_CONTROL_SIZE = 16;
+const SWITCH_CONTROL_GAP = 8;
+const SWITCH_CONTROL_EDGE_INSET = 10;
+const SWITCH_CONTROL_TOP_INSET = (NODE_HEADER_HEIGHT - SWITCH_CONTROL_SIZE) / 2;
+const SWITCH_HEADER_CONTROL_COUNT = 2;
+const SWITCH_HEADER_CONTROL_BLOCK_WIDTH =
+  SWITCH_HEADER_CONTROL_COUNT * SWITCH_CONTROL_SIZE +
+  (SWITCH_HEADER_CONTROL_COUNT - 1) * SWITCH_CONTROL_GAP;
 const TITLE_FONT: NodeCanvasTextStyle = {
   fontFamily: NODE_CANVAS_VISUAL_TOKENS.titleFontFamily,
   fontSize: NODE_CANVAS_VISUAL_TOKENS.titleFontSize,
@@ -202,21 +224,18 @@ const toNodeLabel = (type: NodeGraphNodeType) =>
 
 const PORT_KIND_STYLE: Record<
   NodeGraphPortKind,
-  { stroke: string; fill: string; halo: string }
+  { stroke: string; fill: string }
 > = {
-  control: { stroke: '#334155', fill: '#475569', halo: 'rgba(71,85,105,0.35)' },
-  condition: {
-    stroke: '#92400e',
-    fill: '#d97706',
-    halo: 'rgba(217,119,6,0.35)',
-  },
-  data: { stroke: '#0c4a6e', fill: '#0284c7', halo: 'rgba(2,132,199,0.35)' },
+  control: { stroke: '#334155', fill: '#334155' },
+  data: { stroke: '#334155', fill: '#334155' },
+  node: { stroke: '#334155', fill: '#334155' },
 };
+const MULTI_PORT_RING_STROKE = '#94a3b8';
 
 const resolvePortShape = (port: NodeGraphPort): NodeGraphPortShape => {
   if (port.shape) return port.shape;
-  if (port.kind === 'condition') return 'diamond';
   if (port.kind === 'data') return 'square';
+  if (port.kind === 'node') return 'diamond';
   return 'circle';
 };
 
@@ -228,8 +247,7 @@ const drawPortShapePath = (
   shape: NodeGraphPortShape,
   x: number,
   y: number,
-  size: number,
-  role: NodeGraphPort['role']
+  size: number
 ) => {
   ctx.beginPath();
   if (shape === 'circle') {
@@ -248,31 +266,7 @@ const drawPortShapePath = (
     ctx.lineTo(x, y + size);
     ctx.lineTo(x - size, y);
     ctx.closePath();
-    return;
   }
-
-  if (shape === 'triangle') {
-    if (role === 'out') {
-      ctx.moveTo(x - size * 0.92, y - size);
-      ctx.lineTo(x + size, y);
-      ctx.lineTo(x - size * 0.92, y + size);
-    } else {
-      ctx.moveTo(x + size * 0.92, y - size);
-      ctx.lineTo(x - size, y);
-      ctx.lineTo(x + size * 0.92, y + size);
-    }
-    ctx.closePath();
-    return;
-  }
-
-  const innerX = size * 0.58;
-  ctx.moveTo(x - size, y);
-  ctx.lineTo(x - innerX, y - size);
-  ctx.lineTo(x + innerX, y - size);
-  ctx.lineTo(x + size, y);
-  ctx.lineTo(x + innerX, y + size);
-  ctx.lineTo(x - innerX, y + size);
-  ctx.closePath();
 };
 
 const drawNodePort = (
@@ -286,13 +280,13 @@ const drawNodePort = (
   const baseRadius = anchor.visualRadius;
 
   if (anchor.port.multiplicity === 'multi') {
-    drawPortShapePath(ctx, shape, anchor.x, anchor.y, baseRadius + 2.4, role);
+    drawPortShapePath(ctx, shape, anchor.x, anchor.y, baseRadius + 2.3);
     ctx.lineWidth = 1.2;
-    ctx.strokeStyle = kindStyle.halo;
+    ctx.strokeStyle = MULTI_PORT_RING_STROKE;
     ctx.stroke();
   }
 
-  drawPortShapePath(ctx, shape, anchor.x, anchor.y, baseRadius, role);
+  drawPortShapePath(ctx, shape, anchor.x, anchor.y, baseRadius);
   ctx.fillStyle = isInput ? '#ffffff' : kindStyle.fill;
   ctx.strokeStyle = kindStyle.stroke;
   ctx.lineWidth = isInput ? 1.7 : 1.45;
@@ -320,10 +314,143 @@ const resolveHeaderPortY = (
   slotIndex: number,
   slotCount: number
 ) => {
-  const centerY = rect.y + NODE_HEADER_HEIGHT / 2;
-  if (slotCount <= 1) return centerY;
-  const offset = (slotIndex - (slotCount - 1) / 2) * 10;
-  return centerY + offset;
+  if (slotCount <= 1) return rect.y + NODE_HEADER_HEIGHT / 2;
+  const top = rect.y + NODE_HEADER_HEIGHT / 2;
+  const bottom = rect.y + rect.height - NODE_HEADER_HEIGHT / 2;
+  const ratio = slotIndex / Math.max(1, slotCount - 1);
+  return top + (bottom - top) * ratio;
+};
+
+const resolveSwitchControlRects = (rect: NodeCanvasRect, collapsed = false) => {
+  const y = rect.y + SWITCH_CONTROL_TOP_INSET;
+  const collapsedShift = collapsed ? NODE_RIGHT_GUTTER + SWITCH_CONTROL_GAP : 0;
+  const foldX =
+    rect.x +
+    rect.width -
+    SWITCH_CONTROL_EDGE_INSET -
+    SWITCH_CONTROL_SIZE -
+    collapsedShift;
+  const addX = foldX - SWITCH_CONTROL_GAP - SWITCH_CONTROL_SIZE;
+  return {
+    fold: {
+      x: foldX,
+      y,
+      width: SWITCH_CONTROL_SIZE,
+      height: SWITCH_CONTROL_SIZE,
+    },
+    add: {
+      x: addX,
+      y,
+      width: SWITCH_CONTROL_SIZE,
+      height: SWITCH_CONTROL_SIZE,
+    },
+  };
+};
+
+const resolveSwitchRowCenterY = (rect: NodeCanvasRect, rowIndex: number) =>
+  rect.y +
+  NODE_HEADER_HEIGHT +
+  rowIndex * NODE_BODY_ROW_HEIGHT +
+  NODE_BODY_ROW_HEIGHT / 2;
+
+const resolveSwitchCaseRemoveControlRect = (
+  rect: NodeCanvasRect,
+  caseRowIndex: number
+) => ({
+  x:
+    rect.x +
+    rect.width -
+    SWITCH_CONTROL_EDGE_INSET -
+    SWITCH_CONTROL_SIZE * 2 -
+    SWITCH_CONTROL_GAP,
+  y: resolveSwitchRowCenterY(rect, caseRowIndex) - SWITCH_CONTROL_SIZE / 2,
+  width: SWITCH_CONTROL_SIZE,
+  height: SWITCH_CONTROL_SIZE,
+});
+
+const resolveSwitchPortCenterY = (
+  node: NodeGraphNode,
+  rect: NodeCanvasRect,
+  port: NodeGraphPort
+) => {
+  const config = normalizeSwitchNodeConfig(node.config, node.ports);
+  if (config.collapsed) {
+    return rect.y + NODE_HEADER_HEIGHT / 2;
+  }
+  if (port.id === 'in.prev') return rect.y + NODE_HEADER_HEIGHT / 2;
+  if (port.id === 'in.value') return resolveSwitchRowCenterY(rect, 0);
+  if (port.id === 'out.default') {
+    return resolveSwitchRowCenterY(rect, config.cases.length + 1);
+  }
+  if (port.id.startsWith('in.case-')) {
+    const caseId = port.id.slice(3);
+    const caseIndex = config.cases.findIndex((item) => item.id === caseId);
+    return resolveSwitchRowCenterY(
+      rect,
+      caseIndex >= 0 ? caseIndex + 1 : config.cases.length + 1
+    );
+  }
+  if (port.id.startsWith('out.case-')) {
+    const caseId = port.id.slice(4);
+    const caseIndex = config.cases.findIndex((item) => item.id === caseId);
+    return resolveSwitchRowCenterY(
+      rect,
+      caseIndex >= 0 ? caseIndex + 1 : config.cases.length + 1
+    );
+  }
+  return rect.y + NODE_HEADER_HEIGHT / 2;
+};
+
+const resolveSwitchVisiblePorts = (
+  ports: NodeGraphPort[],
+  collapsed: boolean
+) => {
+  if (!collapsed) return ports;
+  return ports.filter(
+    (port) => port.id === 'in.prev' || port.id === 'out.default'
+  );
+};
+
+const isPointInControlRect = (
+  point: NodeCanvasPoint,
+  rect: { x: number; y: number; width: number; height: number }
+) =>
+  point.x >= rect.x &&
+  point.x <= rect.x + rect.width &&
+  point.y >= rect.y &&
+  point.y <= rect.y + rect.height;
+
+export const hitTestSwitchControl = (
+  node: NodeGraphNode,
+  rect: NodeCanvasRect,
+  point: NodeCanvasPoint
+): NodeCanvasSwitchControlHit | null => {
+  if (node.type !== 'switch') return null;
+  const switchConfig = normalizeSwitchNodeConfig(node.config, node.ports);
+  const controls = resolveSwitchControlRects(rect, switchConfig.collapsed);
+  if (isPointInControlRect(point, controls.fold)) {
+    return { action: 'toggle-collapse', disabled: false };
+  }
+  if (isPointInControlRect(point, controls.add)) {
+    return { action: 'add-case', disabled: false };
+  }
+  if (switchConfig.collapsed) return null;
+  for (
+    let caseIndex = 0;
+    caseIndex < switchConfig.cases.length;
+    caseIndex += 1
+  ) {
+    const rowIndex = caseIndex + 1;
+    const removeRect = resolveSwitchCaseRemoveControlRect(rect, rowIndex);
+    if (isPointInControlRect(point, removeRect)) {
+      return {
+        action: 'remove-case',
+        disabled: false,
+        caseId: switchConfig.cases[caseIndex]?.id,
+      };
+    }
+  }
+  return null;
 };
 
 const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
@@ -335,7 +462,6 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       slotOrder: 0,
       kind: 'control',
       multiplicity: 'single',
-      shape: 'triangle',
     },
   ],
   end: [
@@ -345,8 +471,7 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       side: 'left',
       slotOrder: 0,
       kind: 'control',
-      multiplicity: 'single',
-      shape: 'circle',
+      multiplicity: 'multi',
     },
   ],
   'if-else': [
@@ -356,67 +481,26 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       side: 'left',
       slotOrder: 0,
       kind: 'control',
-      multiplicity: 'single',
-      shape: 'circle',
+      multiplicity: 'multi',
     },
     {
       id: 'out.true',
       role: 'out',
       side: 'right',
       slotOrder: 0,
-      kind: 'condition',
+      kind: 'control',
       multiplicity: 'single',
-      shape: 'diamond',
     },
     {
       id: 'out.false',
       role: 'out',
       side: 'right',
       slotOrder: 1,
-      kind: 'condition',
-      multiplicity: 'single',
-      shape: 'diamond',
-    },
-  ],
-  switch: [
-    {
-      id: 'in.prev',
-      role: 'in',
-      side: 'left',
-      slotOrder: 0,
       kind: 'control',
       multiplicity: 'single',
-      shape: 'circle',
-    },
-    {
-      id: 'in.value',
-      role: 'in',
-      side: 'left',
-      slotOrder: 1,
-      kind: 'data',
-      acceptsKinds: ['data'],
-      multiplicity: 'single',
-      shape: 'square',
-    },
-    {
-      id: 'out.case-0',
-      role: 'out',
-      side: 'right',
-      slotOrder: 0,
-      kind: 'condition',
-      multiplicity: 'multi',
-      shape: 'diamond',
-    },
-    {
-      id: 'out.default',
-      role: 'out',
-      side: 'right',
-      slotOrder: 999,
-      kind: 'condition',
-      multiplicity: 'multi',
-      shape: 'diamond',
     },
   ],
+  switch: [...resolveSwitchNodePorts(createDefaultSwitchNodeConfig())],
   'for-each': [
     {
       id: 'in.prev',
@@ -424,8 +508,7 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       side: 'left',
       slotOrder: 0,
       kind: 'control',
-      multiplicity: 'single',
-      shape: 'circle',
+      multiplicity: 'multi',
     },
     {
       id: 'in.items',
@@ -435,7 +518,6 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       kind: 'data',
       acceptsKinds: ['data'],
       multiplicity: 'single',
-      shape: 'square',
     },
     {
       id: 'out.loop',
@@ -443,8 +525,7 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       side: 'right',
       slotOrder: 0,
       kind: 'control',
-      multiplicity: 'multi',
-      shape: 'triangle',
+      multiplicity: 'single',
     },
     {
       id: 'out.done',
@@ -453,7 +534,6 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       slotOrder: 1,
       kind: 'control',
       multiplicity: 'single',
-      shape: 'square',
     },
   ],
   while: [
@@ -463,27 +543,15 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       side: 'left',
       slotOrder: 0,
       kind: 'control',
-      multiplicity: 'single',
-      shape: 'circle',
-    },
-    {
-      id: 'in.condition',
-      role: 'in',
-      side: 'left',
-      slotOrder: 1,
-      kind: 'condition',
-      acceptsKinds: ['condition', 'data'],
-      multiplicity: 'single',
-      shape: 'diamond',
+      multiplicity: 'multi',
     },
     {
       id: 'out.loop',
       role: 'out',
       side: 'right',
       slotOrder: 0,
-      kind: 'condition',
+      kind: 'control',
       multiplicity: 'single',
-      shape: 'diamond',
     },
     {
       id: 'out.done',
@@ -492,7 +560,6 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       slotOrder: 1,
       kind: 'control',
       multiplicity: 'single',
-      shape: 'square',
     },
   ],
   break: [
@@ -502,8 +569,7 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       side: 'left',
       slotOrder: 0,
       kind: 'control',
-      multiplicity: 'single',
-      shape: 'circle',
+      multiplicity: 'multi',
     },
     {
       id: 'out.break',
@@ -512,7 +578,6 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       slotOrder: 0,
       kind: 'control',
       multiplicity: 'single',
-      shape: 'square',
     },
   ],
   continue: [
@@ -522,8 +587,7 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       side: 'left',
       slotOrder: 0,
       kind: 'control',
-      multiplicity: 'single',
-      shape: 'circle',
+      multiplicity: 'multi',
     },
     {
       id: 'out.continue',
@@ -532,7 +596,6 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       slotOrder: 0,
       kind: 'control',
       multiplicity: 'single',
-      shape: 'square',
     },
   ],
   merge: [
@@ -543,7 +606,6 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       slotOrder: 0,
       kind: 'control',
       multiplicity: 'multi',
-      shape: 'circle',
     },
     {
       id: 'in.in1',
@@ -552,7 +614,6 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       slotOrder: 1,
       kind: 'control',
       multiplicity: 'multi',
-      shape: 'circle',
     },
     {
       id: 'out.next',
@@ -561,7 +622,6 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       slotOrder: 0,
       kind: 'control',
       multiplicity: 'single',
-      shape: 'triangle',
     },
   ],
   'parallel-fork': [
@@ -571,8 +631,7 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       side: 'left',
       slotOrder: 0,
       kind: 'control',
-      multiplicity: 'single',
-      shape: 'circle',
+      multiplicity: 'multi',
     },
     {
       id: 'out.branch-0',
@@ -580,8 +639,7 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       side: 'right',
       slotOrder: 0,
       kind: 'control',
-      multiplicity: 'multi',
-      shape: 'triangle',
+      multiplicity: 'single',
     },
     {
       id: 'out.branch-1',
@@ -589,8 +647,7 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       side: 'right',
       slotOrder: 1,
       kind: 'control',
-      multiplicity: 'multi',
-      shape: 'triangle',
+      multiplicity: 'single',
     },
   ],
   join: [
@@ -601,7 +658,6 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       slotOrder: 0,
       kind: 'control',
       multiplicity: 'multi',
-      shape: 'circle',
     },
     {
       id: 'in.in1',
@@ -610,7 +666,6 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       slotOrder: 1,
       kind: 'control',
       multiplicity: 'multi',
-      shape: 'circle',
     },
     {
       id: 'out.next',
@@ -619,22 +674,37 @@ const DEFAULT_PORTS_BY_TYPE: Record<string, NodeGraphPort[]> = {
       slotOrder: 0,
       kind: 'control',
       multiplicity: 'single',
-      shape: 'triangle',
     },
   ],
 };
 
 const sortPorts = (ports: NodeGraphPort[]) =>
-  [...ports].sort((left, right) => left.slotOrder - right.slotOrder);
+  [...ports].sort((left, right) => {
+    if (left.slotOrder !== right.slotOrder) {
+      return left.slotOrder - right.slotOrder;
+    }
+    return left.id.localeCompare(right.id);
+  });
 
 export const resolveNodePorts = (node: NodeGraphNode): NodeGraphPort[] => {
+  if (node.type === 'switch') {
+    return sortPorts(
+      resolveSwitchNodePorts(normalizeSwitchNodeConfig(node.config))
+    );
+  }
   if (node.ports?.length) return sortPorts(node.ports);
   return sortPorts(DEFAULT_PORTS_BY_TYPE[node.type] ?? []);
 };
 
 export const resolveNodeDefaultPorts = (
-  nodeType: NodeGraphNodeType
-): NodeGraphPort[] => sortPorts(DEFAULT_PORTS_BY_TYPE[nodeType] ?? []);
+  nodeType: NodeGraphNodeType,
+  config?: unknown
+): NodeGraphPort[] => {
+  if (nodeType === 'switch') {
+    return sortPorts(resolveSwitchNodePorts(normalizeSwitchNodeConfig(config)));
+  }
+  return sortPorts(DEFAULT_PORTS_BY_TYPE[nodeType] ?? []);
+};
 
 const drawRoundedRect = (
   ctx: CanvasRenderingContext2D,
@@ -687,8 +757,16 @@ export const getNodePortAnchors = (
   rect: NodeCanvasRect
 ): NodeCanvasPortAnchor[] => {
   const ports = resolveNodePorts(node);
-  const leftPorts = ports.filter((port) => port.side === 'left');
-  const rightPorts = ports.filter((port) => port.side === 'right');
+  const switchConfig =
+    node.type === 'switch'
+      ? normalizeSwitchNodeConfig(node.config, node.ports)
+      : null;
+  const anchorPorts =
+    node.type === 'switch'
+      ? resolveSwitchVisiblePorts(ports, Boolean(switchConfig?.collapsed))
+      : ports;
+  const leftPorts = anchorPorts.filter((port) => port.side === 'left');
+  const rightPorts = anchorPorts.filter((port) => port.side === 'right');
 
   const anchors: NodeCanvasPortAnchor[] = [];
   leftPorts.forEach((port, index) => {
@@ -696,7 +774,10 @@ export const getNodePortAnchors = (
     anchors.push({
       port,
       x: rect.x + NODE_LEFT_GUTTER / 2,
-      y: resolveHeaderPortY(rect, index, leftPorts.length),
+      y:
+        node.type === 'switch'
+          ? resolveSwitchPortCenterY(node, rect, port)
+          : resolveHeaderPortY(rect, index, leftPorts.length),
       visualRadius,
       hitRadius: PORT_HIT_RADIUS + (port.multiplicity === 'multi' ? 2 : 0),
     });
@@ -706,7 +787,10 @@ export const getNodePortAnchors = (
     anchors.push({
       port,
       x: rect.x + rect.width - NODE_RIGHT_GUTTER / 2,
-      y: resolveNodePortAnchorY(rect, index, rightPorts.length),
+      y:
+        node.type === 'switch'
+          ? resolveSwitchPortCenterY(node, rect, port)
+          : resolveHeaderPortY(rect, index, rightPorts.length),
       visualRadius,
       hitRadius: PORT_HIT_RADIUS + (port.multiplicity === 'multi' ? 2 : 0),
     });
@@ -720,25 +804,72 @@ const defaultMeasure: NodeCanvasRenderDefinition['measure'] = (
 ) => {
   const compact = isCompactNodeType(node.type);
   const lines = getNodeLayoutLines(node);
-  const title = node.title?.trim() || node.id || node.type;
-  const hasInputPort = resolveNodePorts(node).some(
-    (port) => port.role === 'in'
-  );
+  const ports = resolveNodePorts(node);
+  const switchConfig =
+    node.type === 'switch' ? normalizeSwitchNodeConfig(node.config) : null;
+  const layoutPorts =
+    node.type === 'switch'
+      ? resolveSwitchVisiblePorts(ports, Boolean(switchConfig?.collapsed))
+      : ports;
+  const title = node.title?.trim() || node.type;
+  const hasInputPort = layoutPorts.some((port) => port.role === 'in');
   const icon = resolveNodeIcon(node.type);
+  const leftPortCount = layoutPorts.filter(
+    (port) => port.side === 'left'
+  ).length;
+  const rightPortCount = layoutPorts.filter(
+    (port) => port.side === 'right'
+  ).length;
+  const maxSidePortCount = Math.max(leftPortCount, rightPortCount, 1);
   const bodyLines = compact
     ? []
-    : ([lines[0]?.text, ...lines.slice(2).map((line) => line.text)].filter(
-        Boolean
-      ) as string[]);
+    : (lines
+        .slice(2)
+        .map((line) => line.text)
+        .filter(Boolean) as string[]);
+  const switchLines =
+    switchConfig?.cases.map((item, index) =>
+      item.value.trim()
+        ? `branch ${index + 1}: ${item.value}`
+        : `branch ${index + 1}`
+    ) ?? [];
+  if (switchConfig) {
+    switchLines.unshift('switch value');
+    switchLines.push('default');
+  }
   const widest = [title, ...bodyLines].reduce((maxWidth, text, index) => {
     const width = measureText(text, index === 0 ? TITLE_FONT : BODY_FONT);
     return Math.max(maxWidth, width);
   }, 0);
+  const widestSwitchLine = switchLines.reduce((maxWidth, line) => {
+    const width = measureText(line, BODY_FONT);
+    return Math.max(maxWidth, width);
+  }, 0);
   const iconExtraWidth = compact && icon && hasInputPort ? 16 : 0;
-  const width = NODE_LEFT_GUTTER + widest + iconExtraWidth + NODE_RIGHT_GUTTER;
-  const height = compact
-    ? NODE_HEADER_HEIGHT
-    : NODE_HEADER_HEIGHT + bodyLines.length * NODE_BODY_ROW_HEIGHT;
+  const headerReserveWidth =
+    node.type === 'switch' ? SWITCH_HEADER_CONTROL_BLOCK_WIDTH + 10 : 0;
+  const switchRowControlReserve =
+    node.type === 'switch' ? SWITCH_CONTROL_SIZE + 14 : 0;
+  const contentWidth = Math.max(widest + headerReserveWidth, widestSwitchLine);
+  const width =
+    NODE_LEFT_GUTTER +
+    contentWidth +
+    switchRowControlReserve +
+    iconExtraWidth +
+    NODE_RIGHT_GUTTER;
+  const contentHeight =
+    node.type === 'switch'
+      ? NODE_HEADER_HEIGHT +
+        NODE_BODY_ROW_HEIGHT *
+          (switchConfig && !switchConfig.collapsed
+            ? switchConfig.cases.length + 2
+            : 0)
+      : compact
+        ? NODE_HEADER_HEIGHT
+        : NODE_HEADER_HEIGHT + bodyLines.length * NODE_BODY_ROW_HEIGHT;
+  const minPortHeight =
+    NODE_HEADER_HEIGHT + (maxSidePortCount - 1) * PORT_SLOT_MIN_GAP;
+  const height = Math.max(contentHeight, minPortHeight);
   return { width: Math.ceil(width), height: Math.ceil(height) };
 };
 
@@ -752,11 +883,11 @@ const defaultDraw: NodeCanvasRenderDefinition['draw'] = (
   const lines = getNodeLayoutLines(node);
   const title = compact
     ? toNodeLabel(node.type)
-    : node.title?.trim() || node.id || node.type;
-  const bodyLines = [
-    lines[0]?.text,
-    ...lines.slice(2).map((line) => line.text),
-  ].filter(Boolean) as string[];
+    : node.title?.trim() || node.type;
+  const bodyLines = lines
+    .slice(2)
+    .map((line) => line.text)
+    .filter(Boolean) as string[];
   const icon = resolveNodeIcon(node.type);
   const hasInputPort = resolveNodePorts(node).some(
     (port) => port.role === 'in'
@@ -818,7 +949,132 @@ const defaultDraw: NodeCanvasRenderDefinition['draw'] = (
     ctx.textAlign = 'left';
   }
 
-  if (!compact) {
+  if (!compact && node.type === 'switch') {
+    const switchConfig = normalizeSwitchNodeConfig(node.config, node.ports);
+    const ports = resolveNodePorts(node);
+    const inPorts = ports
+      .filter((port) => port.side === 'left')
+      .sort((left, right) => left.slotOrder - right.slotOrder);
+    const outPorts = ports
+      .filter((port) => port.side === 'right')
+      .sort((left, right) => left.slotOrder - right.slotOrder);
+    const inIndexByPortId = new Map(
+      inPorts.map((port, index) => [port.id, index])
+    );
+    const outIndexByPortId = new Map(
+      outPorts.map((port, index) => [port.id, index])
+    );
+
+    ctx.font = composeFontDeclaration(BODY_FONT);
+    ctx.fillStyle = '#6b7280';
+    ctx.textAlign = 'left';
+    const drawAlignedLabel = (
+      label: string,
+      centerY: number,
+      active = false
+    ) => {
+      const baselineY = resolveCenteredBaselineY(
+        ctx,
+        centerY,
+        BODY_FONT.fontSize
+      );
+      ctx.fillStyle = active ? '#374151' : '#6b7280';
+      ctx.fillText(
+        label,
+        textX,
+        baselineY + NODE_CANVAS_VISUAL_TOKENS.bodyYOffset
+      );
+    };
+    const controls = resolveSwitchControlRects(rect, switchConfig.collapsed);
+    const drawControlIcon = (
+      controlRect: { x: number; y: number; width: number; height: number },
+      sign: '+' | '-',
+      disabled = false
+    ) => {
+      const centerX = controlRect.x + controlRect.width / 2;
+      const centerY = controlRect.y + controlRect.height / 2;
+      ctx.strokeStyle = disabled ? '#d1d5db' : '#475569';
+      ctx.lineWidth = 1.8;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(centerX - 4.8, centerY);
+      ctx.lineTo(centerX + 4.8, centerY);
+      if (sign === '+') {
+        ctx.moveTo(centerX, centerY - 4.8);
+        ctx.lineTo(centerX, centerY + 4.8);
+      }
+      ctx.stroke();
+    };
+    const drawChevronIcon = (
+      controlRect: { x: number; y: number; width: number; height: number },
+      collapsed: boolean
+    ) => {
+      const centerX = controlRect.x + controlRect.width / 2;
+      const centerY = controlRect.y + controlRect.height / 2;
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 1.8;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      if (collapsed) {
+        ctx.moveTo(centerX - 3.8, centerY - 2.2);
+        ctx.lineTo(centerX, centerY + 2.2);
+        ctx.lineTo(centerX + 3.8, centerY - 2.2);
+      } else {
+        ctx.moveTo(centerX - 3.8, centerY + 1.8);
+        ctx.lineTo(centerX, centerY - 2.2);
+        ctx.lineTo(centerX + 3.8, centerY + 1.8);
+      }
+      ctx.stroke();
+    };
+    drawControlIcon(controls.add, '+');
+    drawChevronIcon(controls.fold, switchConfig.collapsed);
+    if (switchConfig.collapsed) {
+      const anchors = getNodePortAnchors(node, rect);
+      anchors.forEach((anchor) => {
+        drawNodePort(ctx, anchor);
+      });
+      ctx.restore();
+      return;
+    }
+    const inValueIndex = inIndexByPortId.get('in.value');
+    if (inValueIndex !== undefined) {
+      drawAlignedLabel(
+        'switch value',
+        resolveSwitchPortCenterY(node, rect, inPorts[inValueIndex]),
+        true
+      );
+    }
+    switchConfig.cases.forEach((item, index) => {
+      const caseInputId = `in.${item.id}`;
+      const caseOutputId = `out.${item.id}`;
+      const inIndex = inIndexByPortId.get(caseInputId);
+      const outIndex = outIndexByPortId.get(caseOutputId);
+      const centerY =
+        inIndex !== undefined
+          ? resolveSwitchPortCenterY(node, rect, inPorts[inIndex])
+          : outIndex !== undefined
+            ? resolveSwitchPortCenterY(node, rect, outPorts[outIndex])
+            : rect.y + NODE_HEADER_HEIGHT;
+      const label = item.value.trim()
+        ? `branch ${index + 1}: ${item.value}`
+        : `branch ${index + 1}`;
+      drawAlignedLabel(label, centerY);
+      const removeControlRect = resolveSwitchCaseRemoveControlRect(
+        rect,
+        index + 1
+      );
+      drawControlIcon(removeControlRect, '-');
+    });
+    const defaultOutIndex = outIndexByPortId.get('out.default');
+    if (defaultOutIndex !== undefined) {
+      drawAlignedLabel(
+        'default',
+        resolveSwitchPortCenterY(node, rect, outPorts[defaultOutIndex])
+      );
+    }
+  } else if (!compact) {
     ctx.font = composeFontDeclaration(BODY_FONT);
     bodyLines.forEach((line, index) => {
       const centerY =

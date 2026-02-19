@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { type ReactElement, useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
 import {
@@ -287,7 +287,7 @@ export function ExportMirPage() {
     }));
   };
 
-  const renderTreeNodes = (nodes: FileTreeNode[], depth = 0): JSX.Element[] =>
+  const renderTreeNodes = (nodes: FileTreeNode[], depth = 0): ReactElement[] =>
     nodes.map((node) => {
       const isFolder = node.children.length > 0 && !node.file;
       const isExpanded = expandedFolders[node.path] ?? true;

@@ -10,7 +10,7 @@ const appResources = {
 
 const appNamespaces = Object.keys(en);
 
-const getInitialLanguage = (): string => {
+const getInitialLanguage = (): 'en' | 'zh-CN' => {
   // Check localStorage first
   const stored =
     typeof window !== 'undefined' ? localStorage.getItem('i18nextLng') : null;

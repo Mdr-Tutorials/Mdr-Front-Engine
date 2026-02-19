@@ -1,4 +1,5 @@
 ﻿import { resolveNodeDefaultPorts } from '../canvas/renderer';
+import { normalizeSwitchNodeConfig } from '../switchNode';
 import type {
   NodeGraphEdge,
   NodeGraphEdgeKind,
@@ -13,11 +14,7 @@ import type {
   NodeGraphPosition,
 } from '../types';
 
-const PORT_KIND_SET = new Set<NodeGraphPortKind>([
-  'control',
-  'condition',
-  'data',
-]);
+const PORT_KIND_SET = new Set<NodeGraphPortKind>(['control', 'data', 'node']);
 const PORT_MULTIPLICITY_SET = new Set<NodeGraphPortMultiplicity>([
   'single',
   'multi',
@@ -26,8 +23,6 @@ const PORT_SHAPE_SET = new Set<NodeGraphPortShape>([
   'circle',
   'diamond',
   'square',
-  'triangle',
-  'hexagon',
 ]);
 
 const createEntityId = (prefix: string) =>
@@ -39,8 +34,15 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const isFiniteNumber = (value: unknown): value is number =>
   typeof value === 'number' && Number.isFinite(value);
 
-const isPortKind = (value: unknown): value is NodeGraphPortKind =>
-  typeof value === 'string' && PORT_KIND_SET.has(value as NodeGraphPortKind);
+const normalizeLegacyPortKind = (
+  value: unknown
+): NodeGraphPortKind | undefined => {
+  if (value === 'condition') return 'node';
+  if (typeof value !== 'string') return undefined;
+  return PORT_KIND_SET.has(value as NodeGraphPortKind)
+    ? (value as NodeGraphPortKind)
+    : undefined;
+};
 
 const isPortMultiplicity = (
   value: unknown
@@ -48,8 +50,22 @@ const isPortMultiplicity = (
   typeof value === 'string' &&
   PORT_MULTIPLICITY_SET.has(value as NodeGraphPortMultiplicity);
 
+const isPortRole = (value: unknown): value is NodeGraphPortRole =>
+  value === 'in' || value === 'out';
+
+const isPortSide = (value: unknown): value is NodeGraphPort['side'] =>
+  value === 'left' || value === 'right';
+
 const isPortShape = (value: unknown): value is NodeGraphPortShape =>
   typeof value === 'string' && PORT_SHAPE_SET.has(value as NodeGraphPortShape);
+
+const resolvePortShapeByKind = (
+  kind: NodeGraphPortKind
+): NodeGraphPortShape => {
+  if (kind === 'data') return 'square';
+  if (kind === 'node') return 'diamond';
+  return 'circle';
+};
 
 const normalizeAcceptKinds = (
   value: unknown,
@@ -58,20 +74,31 @@ const normalizeAcceptKinds = (
   if (!Array.isArray(value)) {
     return fallback?.length ? [...fallback] : undefined;
   }
-  const kinds = value.filter(isPortKind);
+  const kinds = value
+    .map((kind) => normalizeLegacyPortKind(kind))
+    .filter((kind): kind is NodeGraphPortKind => Boolean(kind));
   if (!kinds.length) return undefined;
   return Array.from(new Set(kinds));
 };
 
-const clonePort = (port: NodeGraphPort): NodeGraphPort => ({
-  ...port,
-  acceptsKinds: port.acceptsKinds ? [...port.acceptsKinds] : undefined,
-});
+const clonePort = (port: NodeGraphPort): NodeGraphPort => {
+  const kind = port.kind;
+  return {
+    ...port,
+    multiplicity: port.multiplicity ?? 'single',
+    shape: port.shape ?? resolvePortShapeByKind(kind),
+    acceptsKinds: port.acceptsKinds ? [...port.acceptsKinds] : undefined,
+  };
+};
 
 const clonePorts = (ports: NodeGraphPort[]) => ports.map(clonePort);
 
 const resolveNodePorts = (node: NodeGraphNode): NodeGraphPort[] =>
-  node.ports?.length ? node.ports : resolveNodeDefaultPorts(node.type);
+  node.type === 'switch'
+    ? resolveNodeDefaultPorts(node.type, node.config)
+    : node.ports?.length
+      ? node.ports
+      : resolveNodeDefaultPorts(node.type, node.config);
 
 const findPortById = (
   node: NodeGraphNode,
@@ -116,44 +143,36 @@ const sortPorts = (ports: NodeGraphPort[]) =>
 
 const normalizeNodePorts = (
   nodeType: NodeGraphNodeType,
+  nodeConfig: Record<string, unknown>,
   rawPorts: unknown
 ): NodeGraphPort[] => {
-  const defaults = resolveNodeDefaultPorts(nodeType);
-  const templateById = new Map(defaults.map((port) => [port.id, port]));
+  const defaults = resolveNodeDefaultPorts(nodeType, nodeConfig);
+  if (defaults.length > 0) {
+    return clonePorts(defaults);
+  }
+
   if (!Array.isArray(rawPorts) || !rawPorts.length) {
     return clonePorts(defaults);
   }
 
-  const normalized = rawPorts.flatMap((candidate) => {
+  const normalized: NodeGraphPort[] = rawPorts.flatMap((candidate) => {
     if (!isRecord(candidate) || typeof candidate.id !== 'string') return [];
-    const template = templateById.get(candidate.id);
 
-    const role =
-      candidate.role === 'in' || candidate.role === 'out'
-        ? candidate.role
-        : template?.role;
-    const side =
-      candidate.side === 'left' || candidate.side === 'right'
-        ? candidate.side
-        : template?.side;
+    const role = isPortRole(candidate.role) ? candidate.role : null;
+    const side = isPortSide(candidate.side) ? candidate.side : null;
     if (!role || !side) return [];
 
     const slotOrder = isFiniteNumber(candidate.slotOrder)
       ? candidate.slotOrder
-      : (template?.slotOrder ?? 0);
-    const kind = isPortKind(candidate.kind)
-      ? candidate.kind
-      : (template?.kind ?? 'control');
+      : 0;
+    const kind = normalizeLegacyPortKind(candidate.kind) ?? 'control';
     const multiplicity = isPortMultiplicity(candidate.multiplicity)
       ? candidate.multiplicity
-      : (template?.multiplicity ?? 'single');
-    const acceptsKinds = normalizeAcceptKinds(
-      candidate.acceptsKinds,
-      template?.acceptsKinds
-    );
+      : 'single';
+    const acceptsKinds = normalizeAcceptKinds(candidate.acceptsKinds);
     const shape = isPortShape(candidate.shape)
       ? candidate.shape
-      : template?.shape;
+      : resolvePortShapeByKind(kind);
 
     return [
       {
@@ -165,7 +184,7 @@ const normalizeNodePorts = (
         multiplicity,
         acceptsKinds,
         shape,
-      },
+      } satisfies NodeGraphPort,
     ];
   });
 
@@ -195,15 +214,19 @@ export const createNodeGraphNode = (
   type: NodeGraphNodeType,
   position: NodeGraphPosition,
   title?: string
-): NodeGraphNode => ({
-  id: createEntityId('node'),
-  type,
-  position,
-  title,
-  ports: clonePorts(resolveNodeDefaultPorts(type)),
-  config: {},
-  metadata: {},
-});
+): NodeGraphNode => {
+  const config: Record<string, unknown> =
+    type === 'switch' ? normalizeSwitchNodeConfig(undefined) : {};
+  return {
+    id: createEntityId('node'),
+    type,
+    position,
+    title,
+    ports: clonePorts(resolveNodeDefaultPorts(type, config)),
+    config,
+    metadata: {},
+  };
+};
 
 export const createDefaultNodeGraphModel = (): NodeGraphModel => {
   const startNode = createNodeGraphNode('start', { x: 160, y: 220 }, 'Start');
@@ -259,6 +282,13 @@ export const normalizeNodeGraphModel = (value: unknown): NodeGraphModel => {
             }
           : null;
 
+        const normalizedConfig =
+          candidate.type === 'switch'
+            ? normalizeSwitchNodeConfig(candidate.config, candidate.ports)
+            : isRecord(candidate.config)
+              ? { ...candidate.config }
+              : {};
+
         return [
           {
             id: candidate.id,
@@ -273,8 +303,12 @@ export const normalizeNodeGraphModel = (value: unknown): NodeGraphModel => {
               size && isFiniteNumber(size.width) && isFiniteNumber(size.height)
                 ? { width: size.width, height: size.height }
                 : undefined,
-            config: isRecord(candidate.config) ? { ...candidate.config } : {},
-            ports: normalizeNodePorts(candidate.type, candidate.ports),
+            config: normalizedConfig,
+            ports: normalizeNodePorts(
+              candidate.type,
+              normalizedConfig,
+              candidate.ports
+            ),
             metadata: isRecord(candidate.metadata)
               ? { ...candidate.metadata }
               : {},

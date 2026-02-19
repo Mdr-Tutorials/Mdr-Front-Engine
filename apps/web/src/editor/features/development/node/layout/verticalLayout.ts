@@ -58,29 +58,11 @@ export const DEFAULT_NODE_PORT_ANCHOR_LAYOUT_OPTIONS: NodePortAnchorLayoutOption
 
 export const getNodeLayoutLines = (node: NodeGraphNode): NodeLayoutLine[] => {
   const header = node.type.toUpperCase().replaceAll('-', ' ');
-  const title = node.title?.trim() || node.id || node.type;
-  const lines: NodeLayoutLine[] = [
+  const title = node.title?.trim() || node.type;
+  return [
     { kind: 'header', text: header },
     { kind: 'title', text: title },
   ];
-
-  if (node.config && typeof node.config === 'object') {
-    const entries = Object.entries(node.config).filter(
-      ([, value]) => value !== undefined && value !== null && value !== ''
-    );
-    if (entries.length) {
-      const [key, value] = entries[0];
-      const metaText =
-        typeof value === 'string' ||
-        typeof value === 'number' ||
-        typeof value === 'boolean'
-          ? `${key}: ${String(value)}`
-          : key;
-      lines.push({ kind: 'meta', text: metaText });
-    }
-  }
-
-  return lines;
 };
 
 export const measureNodeVerticalLayout = (

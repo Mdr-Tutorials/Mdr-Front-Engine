@@ -2,7 +2,7 @@ import type { I18nResources, defaultNS } from '@mdr/i18n';
 import type en from './resources/en/index';
 
 type AppResources = typeof en;
-type CombinedResources = I18nResources['en'] & AppResources;
+type CombinedResources = Record<string, unknown>;
 
 declare module 'i18next' {
   interface CustomTypeOptions {

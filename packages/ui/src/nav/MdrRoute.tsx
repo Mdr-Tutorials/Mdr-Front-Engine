@@ -37,6 +37,19 @@ type RouteMatch = {
   matchedPath: string;
 };
 
+type RouteLikeProps = {
+  ['data-route-path']?: string;
+  ['data-route-fallback']?: boolean;
+  ['data-route-index']?: boolean;
+  node?: {
+    props?: {
+      ['data-route-path']?: string;
+      ['data-route-fallback']?: boolean;
+      ['data-route-index']?: boolean;
+    };
+  };
+};
+
 const toRelativeSegments = (value: string) => {
   const nextSegments: string[] = [];
   value
@@ -139,21 +152,23 @@ const matchRoutePath = (
   }, null);
 };
 
-const readChildRoutePath = (child: ReactElement): string | undefined => {
-  const direct = child.props?.['data-route-path'];
+const readChildRoutePath = (
+  child: ReactElement<RouteLikeProps>
+): string | undefined => {
+  const direct = child.props['data-route-path'];
   if (typeof direct === 'string') return direct;
-  const wrapped = child.props?.node?.props?.['data-route-path'];
+  const wrapped = child.props.node?.props?.['data-route-path'];
   return typeof wrapped === 'string' ? wrapped : undefined;
 };
 
-const readChildFallback = (child: ReactElement): boolean => {
-  if (child.props?.['data-route-fallback'] === true) return true;
-  return child.props?.node?.props?.['data-route-fallback'] === true;
+const readChildFallback = (child: ReactElement<RouteLikeProps>): boolean => {
+  if (child.props['data-route-fallback'] === true) return true;
+  return child.props.node?.props?.['data-route-fallback'] === true;
 };
 
-const readChildIndex = (child: ReactElement): boolean => {
-  if (child.props?.['data-route-index'] === true) return true;
-  return child.props?.node?.props?.['data-route-index'] === true;
+const readChildIndex = (child: ReactElement<RouteLikeProps>): boolean => {
+  if (child.props['data-route-index'] === true) return true;
+  return child.props.node?.props?.['data-route-index'] === true;
 };
 
 type RouteCandidate = {
@@ -167,13 +182,14 @@ const resolveRouteCandidate = (
   currentPath: string
 ): RouteCandidate | null => {
   if (!isValidElement(child)) return null;
-  if (readChildFallback(child)) return null;
-  const isIndex = readChildIndex(child);
-  const routePath = readChildRoutePath(child);
+  const routeChild = child as ReactElement<RouteLikeProps>;
+  if (readChildFallback(routeChild)) return null;
+  const isIndex = readChildIndex(routeChild);
+  const routePath = readChildRoutePath(routeChild);
   if (!routePath && !isIndex) return null;
   if (isIndex) {
     return {
-      node: child,
+      node: routeChild,
       score: Number.NEGATIVE_INFINITY,
       index: true,
     };
@@ -181,7 +197,7 @@ const resolveRouteCandidate = (
   const match = matchRoutePath(routePath ?? '', currentPath);
   if (!match) return null;
   return {
-    node: child,
+    node: routeChild,
     score: match.score,
     index: false,
   };
@@ -199,7 +215,7 @@ const pickBestCandidate = (
 const readFallbackNode = (children: React.ReactNode[]) =>
   children.find((child) => {
     if (!isValidElement(child)) return false;
-    return readChildFallback(child);
+    return readChildFallback(child as ReactElement<RouteLikeProps>);
   });
 
 function MdrRoute({
@@ -234,7 +250,7 @@ function MdrRoute({
   return (
     <div
       className={`MdrRoute ${className ?? ''}`.trim()}
-      style={style}
+      style={style as React.CSSProperties | undefined}
       id={id}
       {...dataAttributes}
     >

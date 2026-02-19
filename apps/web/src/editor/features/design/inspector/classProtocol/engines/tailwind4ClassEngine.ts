@@ -477,7 +477,7 @@ const toVariantSuggestions = (
         (parsed.utilityDraft ? 0 : 10);
       return { token, source: 'tailwind' as const, score };
     })
-    .filter((item): item is ClassSuggestion => Boolean(item));
+    .filter((item): item is NonNullable<typeof item> => Boolean(item));
 
   const arbitraryLengthSuggestions = toArbitraryLengthUtilitySuggestions(
     parsed.utilityDraft

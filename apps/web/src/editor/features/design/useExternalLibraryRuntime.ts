@@ -49,7 +49,9 @@ export const useExternalLibraryRuntime = () => {
           if (disposed) return;
           setExternalLibraryStates(states);
         });
-        setRetryExternalLibrary(() => mod.retryExternalLibraryById);
+        setRetryExternalLibrary(() => async (libraryId: string) => {
+          await mod.retryExternalLibraryById(libraryId);
+        });
         setExternalLibraryOptions(mod.getConfiguredExternalLibraries());
         setExternalDiagnostics(mod.getExternalLibraryDiagnostics());
         setExternalLibraryLoading(mod.getExternalLibraryLoadingState());

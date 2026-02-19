@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import {
@@ -21,7 +21,7 @@ import { editorApi } from './editorApi';
 type ProjectAction = {
   key: string;
   path: string;
-  icon: JSX.Element;
+  icon: ReactElement;
 };
 
 function ProjectHome() {

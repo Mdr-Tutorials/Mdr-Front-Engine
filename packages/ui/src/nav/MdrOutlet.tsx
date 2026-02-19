@@ -22,7 +22,7 @@ function MdrOutlet({
   return (
     <div
       className={`MdrOutlet ${className ?? ''}`.trim()}
-      style={style}
+      style={style as React.CSSProperties | undefined}
       id={id}
       {...dataAttributes}
     >

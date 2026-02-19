@@ -18,13 +18,8 @@ export type NodeGraphNodeType =
 
 export type NodeGraphPortRole = 'in' | 'out';
 export type NodeGraphPortSide = 'left' | 'right';
-export type NodeGraphPortKind = 'control' | 'condition' | 'data';
-export type NodeGraphPortShape =
-  | 'circle'
-  | 'diamond'
-  | 'square'
-  | 'triangle'
-  | 'hexagon';
+export type NodeGraphPortKind = 'control' | 'data' | 'node';
+export type NodeGraphPortShape = 'circle' | 'diamond' | 'square';
 export type NodeGraphPortMultiplicity = 'single' | 'multi';
 export type NodeGraphEdgeKind = NodeGraphPortKind;
 

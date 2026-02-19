@@ -47,6 +47,15 @@
 
 ## 4. 端口规范（无常显文本）
 
+### 4.0 Port 语义与形状映射
+
+1. `control` 端口使用圆形。
+2. `data` 端口使用方形。
+3. `node`（分支/节点类语义）端口使用菱形。
+4. `out` 端口为实心，`in` 端口为空心。
+5. `multiplicity=multi` 端口保留灰色外圈（或同等弱强调）样式。
+6. 若实现层历史字段仍为 `condition`，在渲染与校验中按 `node` 语义处理。
+
 ### 4.1 端口几何
 
 1. 端口视觉尺寸：`8~10`。
@@ -64,7 +73,30 @@
 
 1. Hover 到端口时可显示短浮层（可选），默认不常显。
 2. 连线拖拽时高亮可连接端口，降低误连成本。
-3. 不同语义端口可用形状区分（圆/菱/方），不依赖颜色。
+3. 端口语义通过形状与实心/空心表达，不依赖颜色。
+
+### 4.4 连接约束（必须）
+
+1. 仅允许 `out -> in`。
+2. 仅允许同类别连接：
+   - `control -> control`
+   - `data -> data`
+   - `node -> node`
+3. 跨类别连接默认禁止；只有在节点端口显式声明白名单时才可放开。
+
+### 4.5 默认连接数（multiplicity）
+
+默认规则如下（节点定义可覆写）：
+
+1. 控制流：`control.out=single`，`control.in=multi`。
+2. 数据流：`data.out=multi`，`data.in=single`。
+3. 节点类：`node.in=single`，`node.out=multi`。
+
+### 4.6 单连接端口替换策略
+
+1. `single` 源端口发起新连接时，替换该源端口旧连接。
+2. `single` 目标端口接收新连接时，替换该目标端口旧连接。
+3. 不提示“已占用”；连线结果本身即为反馈。
 
 ## 5. 连线规范（控制流）
 
@@ -160,7 +192,9 @@ type PortDef = {
   side: 'left' | 'right';
   slotOrder: number;
   role: 'in' | 'out';
-  kind: 'control';
+  kind: 'control' | 'data' | 'node';
+  multiplicity?: 'single' | 'multi';
+  acceptsKinds?: Array<'control' | 'data' | 'node'>;
 };
 
 type NodeRenderDef = {
@@ -182,9 +216,12 @@ type NodeRenderDef = {
 3. 节点尺寸随内容变化但不破坏端口对齐。
 4. `if-else/for-each/while` 的上下分支位置固定。
 5. 连线创建、重连、删除交互一致。
+6. 跨类别连线被拒绝，不产生脏边数据。
+7. `single` 端口重复连线时表现为稳定替换，且无“已占用”提示。
 
 ## 10. 非目标
 
 1. 不定义节点颜色、主题 token。
 2. 不定义业务执行语义细节（由执行器规范负责）。
 3. 不定义拖拽新建节点（本期不做）。
+4. 不提供“端口已占用”提示文案（菜单项、toast 等）。

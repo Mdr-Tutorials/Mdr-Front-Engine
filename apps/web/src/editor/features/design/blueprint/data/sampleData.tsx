@@ -62,7 +62,12 @@ export const TABLE_DATA = [
 export const GRID_COLUMNS = [
   { key: 'title', title: 'Title', dataIndex: 'title' },
   { key: 'value', title: 'Value', dataIndex: 'value', align: 'Right' },
-];
+] satisfies Array<{
+  key: string;
+  title: string;
+  dataIndex: string;
+  align?: 'Left' | 'Center' | 'Right';
+}>;
 
 export const GRID_DATA = [
   { title: 'Users', value: '128' },
@@ -121,7 +126,11 @@ export const REGION_OPTIONS = [
 export const TIMELINE_ITEMS = [
   { title: 'Draft', time: '09:00', status: 'Success' },
   { title: 'Review', time: '10:30', status: 'Warning' },
-];
+] satisfies Array<{
+  title: string;
+  time: string;
+  status: 'Default' | 'Success' | 'Warning' | 'Danger';
+}>;
 
 export const STEPS_ITEMS = [
   { title: 'Collect' },

@@ -63,6 +63,20 @@ type PreviewWrapperProps = {
   children: ReactNode;
 };
 
+type LibraryTab =
+  | {
+      id: string;
+      label: string;
+      source: 'builtIn' | 'headless';
+      libraryId?: undefined;
+    }
+  | {
+      id: string;
+      label: string;
+      source: 'external';
+      libraryId: string;
+    };
+
 const PreviewWrapper = ({
   scale = DEFAULT_PREVIEW_SCALE,
   className = '',
@@ -198,17 +212,17 @@ export function BlueprintEditorSidebar({
   const [isSearchOpen, setSearchOpen] = useState(false);
   const [activeLibraryId, setActiveLibraryId] = useState('builtIn');
   const searchInputRef = useRef<HTMLInputElement | null>(null);
-  const libraryTabs = useMemo(
+  const libraryTabs = useMemo<LibraryTab[]>(
     () => [
       {
         id: 'builtIn',
         label: t('sidebar.libraries.builtIn'),
-        source: 'builtIn',
+        source: 'builtIn' as const,
       },
       {
         id: 'headless',
         label: t('sidebar.libraries.headless'),
-        source: 'headless',
+        source: 'headless' as const,
       },
       ...externalLibraryOptions.map((item) => ({
         id: `external:${item.id}`,

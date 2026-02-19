@@ -58,7 +58,7 @@ let runtimeRegistryRevision = 0;
 type RuntimeBoundaryState = { hasError: boolean };
 
 class RuntimeComponentBoundary extends React.Component<
-  { typeName: string; children: React.ReactNode },
+  { typeName: string; children?: React.ReactNode },
   RuntimeBoundaryState
 > {
   state: RuntimeBoundaryState = { hasError: false };

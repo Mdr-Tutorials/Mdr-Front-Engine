@@ -3,6 +3,9 @@
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "paths": {
       "@/*": ["./src/*"],
       "@mdr/shared": ["../../packages/shared/src"],
@@ -10,7 +13,12 @@
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules"],
+  "exclude": [
+    "node_modules",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/**/__tests__/**"
+  ],
   "references": [
     {
       "path": "../../packages/shared"

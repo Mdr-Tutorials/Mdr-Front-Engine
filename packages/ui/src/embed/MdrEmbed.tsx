@@ -20,9 +20,29 @@ interface MdrEmbedSpecificProps {
   aspectRatio?: '16:9' | '4:3' | '1:1' | '21:9';
 }
 
+type MdrEmbedNativeProps = Omit<
+  React.IframeHTMLAttributes<HTMLIFrameElement>,
+  | 'src'
+  | 'title'
+  | 'width'
+  | 'height'
+  | 'loading'
+  | 'allowFullScreen'
+  | 'className'
+  | 'style'
+  | 'id'
+  | 'onClick'
+  | 'onLoad'
+  | 'onError'
+>;
+
 export interface MdrEmbedProps
   extends Omit<MdrComponent, 'as'>,
-    MdrEmbedSpecificProps {}
+    MdrEmbedSpecificProps,
+    MdrEmbedNativeProps {
+  onLoad?: React.ReactEventHandler<HTMLIFrameElement>;
+  onError?: React.ReactEventHandler<HTMLIFrameElement>;
+}
 
 function getEmbedUrl(type: EmbedType, url: string): string {
   switch (type) {
@@ -81,7 +101,7 @@ function MdrEmbed({
   const dataProps = { ...dataAttributes };
 
   const containerStyle: React.CSSProperties = {
-    ...style,
+    ...(style as React.CSSProperties | undefined),
     width: width || '100%',
     height: height || 'auto',
   };

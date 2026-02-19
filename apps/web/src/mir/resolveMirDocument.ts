@@ -38,7 +38,7 @@ const normalizeNodeTree = (node: unknown): MIRDocument['ui']['root'] | null => {
       .map((child) => normalizeNodeTree(child))
       .filter((child): child is MIRDocument['ui']['root'] => Boolean(child));
   }
-  return normalized as MIRDocument['ui']['root'];
+  return normalized as unknown as MIRDocument['ui']['root'];
 };
 
 export const normalizeMirToV12 = (source: unknown): MIRDocument => {

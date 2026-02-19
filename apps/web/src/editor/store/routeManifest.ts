@@ -1,7 +1,7 @@
-import type {
+﻿import type {
   WorkspaceRouteManifest,
   WorkspaceRouteNode,
-} from './useEditorStore';
+} from './editorStore.types';
 
 export type RouteItem = {
   id: string;

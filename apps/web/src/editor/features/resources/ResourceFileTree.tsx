@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ChevronDown,
   ChevronRight,
@@ -180,7 +180,7 @@ export function ResourceFileTree({
     };
   }, [contextMenu]);
 
-  const renderNode = (node: PublicResourceNode, depth = 0): JSX.Element => {
+  const renderNode = (node: PublicResourceNode, depth = 0): ReactElement => {
     const isFolder = node.type === 'folder';
     const isExpanded = expanded[node.id] ?? true;
     const isActive = selectedId === node.id;

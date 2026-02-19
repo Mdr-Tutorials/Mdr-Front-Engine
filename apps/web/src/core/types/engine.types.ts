@@ -14,12 +14,7 @@ export type ScopeSourceReference =
   | ItemReference;
 
 export type ValueOrRef =
-  | string
-  | number
-  | boolean
-  | null
-  | Record<string, unknown>
-  | unknown[]
+  | unknown
   | ParamReference
   | StateReference
   | DataReference

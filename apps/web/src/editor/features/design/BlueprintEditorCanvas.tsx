@@ -108,12 +108,19 @@ type RouteCanvasDiagnostic = {
   message: string;
 };
 
+const isComponentNode = (value: unknown): value is ComponentNode => {
+  if (!value || typeof value !== 'object') return false;
+  const record = value as { id?: unknown; type?: unknown };
+  return typeof record.id === 'string' && typeof record.type === 'string';
+};
+
 const countOutletNodes = (node: ComponentNode): number => {
   if (!node || typeof node !== 'object') return 0;
   const selfCount = node.type === 'MdrOutlet' ? 1 : 0;
   const childCount = Array.isArray(node.children)
     ? node.children.reduce(
-        (total: number, child: unknown) => total + countOutletNodes(child),
+        (total: number, child: unknown) =>
+          total + (isComponentNode(child) ? countOutletNodes(child) : 0),
         0
       )
     : 0;

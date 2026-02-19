@@ -100,12 +100,16 @@ const normalizeGlobalSettings = (
   fallback: GlobalSettingsState
 ): GlobalSettingsState => {
   if (!isRecord(value)) return fallback;
-  const next = { ...fallback };
+  const next: GlobalSettingsState = { ...fallback };
+  const mutableNext = next as Record<
+    keyof GlobalSettingsState,
+    GlobalSettingsState[keyof GlobalSettingsState]
+  >;
   (Object.keys(fallback) as Array<keyof GlobalSettingsState>).forEach((key) => {
-    next[key] = normalizeSettingValue(
+    mutableNext[key] = normalizeSettingValue(
       fallback[key],
       value[key]
-    ) as GlobalSettingsState[typeof key];
+    ) as GlobalSettingsState[keyof GlobalSettingsState];
   });
   return next;
 };

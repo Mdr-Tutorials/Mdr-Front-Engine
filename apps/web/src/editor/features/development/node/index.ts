@@ -22,6 +22,7 @@ export {
   createNodeRendererRegistry,
   getNodePortAnchors,
   getNodeRenderer,
+  hitTestSwitchControl,
   resolveNodeDefaultPorts,
   resolveNodePorts,
 } from './canvas/renderer';
