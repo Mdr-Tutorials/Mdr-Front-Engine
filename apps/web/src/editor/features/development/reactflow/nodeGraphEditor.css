@@ -1,0 +1,210 @@
+.nodegraph-native-root {
+  height: 100%;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.nodegraph-native-canvas {
+  background: #fff;
+}
+
+.nodegraph-native-canvas .react-flow__node {
+  border: none;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.06),
+    0 10px 28px rgba(15, 23, 42, 0.1);
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #0f172a;
+}
+
+.nodegraph-native-canvas .react-flow__edge-path {
+  stroke: #475569;
+  stroke-width: 2px;
+}
+
+.native-switch-node {
+  position: relative;
+  min-width: 190px;
+  border: none;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.06),
+    0 12px 30px rgba(15, 23, 42, 0.12);
+}
+
+.native-switch-node.is-selected {
+  box-shadow:
+    0 0 0 1px rgba(15, 23, 42, 0.36),
+    0 12px 30px rgba(15, 23, 42, 0.14);
+}
+
+.native-switch-node__title {
+  padding: 10px 12px 8px;
+  font-family: Poppins, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.native-switch-node__body {
+  position: relative;
+  padding: 4px 0 8px;
+}
+
+.native-switch-node__row {
+  display: flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 12px;
+  font-family: Inter, sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: #334155;
+}
+
+.native-switch-port {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  margin-top: 1px;
+  border: 1.5px solid #334155;
+  background: #fff;
+  border-radius: 999px;
+  overflow: visible;
+}
+
+.native-switch-port.react-flow__handle-source {
+  background: #334155;
+}
+
+.native-switch-port.react-flow__handle-target {
+  background: #fff;
+}
+
+.native-switch-port.semantic-data {
+  border-radius: 2px;
+}
+
+.native-switch-port.semantic-condition {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+.native-switch-port.semantic-condition::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1.5px solid #334155;
+  background: #fff;
+  border-radius: 1px;
+  transform: rotate(45deg);
+  transform-origin: center;
+  box-sizing: border-box;
+}
+
+.native-switch-port.semantic-condition.react-flow__handle-source::before {
+  background: #334155;
+}
+
+.native-switch-port.is-multi {
+  box-shadow: none;
+}
+
+.native-switch-port.is-multi::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border: 1.5px solid #334155;
+  background: #fff;
+  border-radius: inherit;
+}
+
+.native-switch-port.is-multi.react-flow__handle-source::after {
+  background: #334155;
+}
+
+.native-switch-port.is-multi.semantic-condition::after {
+  inset: 2px;
+  border-radius: 1px;
+  transform: rotate(45deg);
+  transform-origin: center;
+  background: #fff;
+}
+
+.native-switch-port.is-multi.semantic-condition.react-flow__handle-source::after {
+  background: #334155;
+}
+
+.native-context-menu {
+  position: fixed;
+  z-index: 1000;
+  display: grid;
+  gap: 4px;
+  width: 220px;
+  border: none;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.08),
+    0 14px 34px rgba(15, 23, 42, 0.16);
+  padding: 6px;
+}
+
+.native-context-menu__group {
+  display: grid;
+  gap: 2px;
+}
+
+.native-context-menu__title {
+  padding: 2px 8px;
+  font-family: Poppins, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.native-context-menu button {
+  border: none;
+  border-radius: 6px;
+  display: grid;
+  grid-template-columns: 14px 1fr;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  text-align: left;
+  padding: 6px 8px;
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #0f172a;
+}
+
+.native-context-menu button:hover {
+  background: rgba(148, 163, 184, 0.12);
+}
+
+.nodegraph-native-hint {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1100;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: #f8fafc;
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #0f172a;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.08),
+    0 10px 26px rgba(15, 23, 42, 0.14);
+}
