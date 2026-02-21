@@ -265,7 +265,7 @@ interface User {
 | 属性        | 类型                                 | 默认值       | 描述       |
 | ----------- | ------------------------------------ | ------------ | ---------- |
 | `data`      | T[]                                  | `[]`         | 数据源     |
-| `columns`   | `MdrTableColumn<T>[]`                | `[]`         | 列配置     |
+| `columns`   | `MdrTableColumn&lt;T&gt;[]`          | `[]`         | 列配置     |
 | `size`      | `'Small'` \| `'Medium'` \| `'Large'` | `'Medium'`   | 尺寸       |
 | `bordered`  | boolean                              | `false`      | 显示边框   |
 | `striped`   | boolean                              | `false`      | 斑马纹     |
@@ -274,7 +274,7 @@ interface User {
 | `caption`   | string                               | -            | 表格说明   |
 | `emptyText` | string                               | `'暂无数据'` | 空数据文本 |
 
-**MdrTableColumn<T>**:
+**`MdrTableColumn<T>`**:
 
 ```ts
 interface MdrTableColumn<T> {

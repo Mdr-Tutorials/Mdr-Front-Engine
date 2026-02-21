@@ -1,7 +1,77 @@
 .nodegraph-native-root {
+  position: relative;
   height: 100%;
   min-height: 100vh;
   width: 100%;
+}
+
+.nodegraph-graph-manager {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 960;
+  display: flex;
+  width: 220px;
+  flex-direction: column;
+  gap: 6px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.08),
+    0 12px 30px rgba(15, 23, 42, 0.16);
+  padding: 8px;
+  backdrop-filter: blur(4px);
+}
+
+.nodegraph-graph-manager__title {
+  font-family: Poppins, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.nodegraph-graph-manager__select,
+.nodegraph-graph-manager__name {
+  width: 100%;
+  height: 28px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #f8fafc;
+  padding: 0 8px;
+  font-family: Inter, sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: #334155;
+  outline: none;
+}
+
+.nodegraph-graph-manager__select:focus,
+.nodegraph-graph-manager__name:focus {
+  border-color: #cbd5e1;
+  background: #fff;
+}
+
+.nodegraph-graph-manager__actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.nodegraph-graph-manager__actions button {
+  height: 26px;
+  border: none;
+  border-radius: 6px;
+  background: #f1f5f9;
+  font-family: Inter, sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: #334155;
+  transition: background 0.15s ease;
+}
+
+.nodegraph-graph-manager__actions button:hover {
+  background: #e2e8f0;
 }
 
 .nodegraph-native-canvas {
@@ -130,23 +200,43 @@
 }
 
 .native-switch-port.is-multi.semantic-condition::after {
-  inset: 2px;
-  border-radius: 1px;
-  transform: rotate(45deg);
-  transform-origin: center;
-  background: #fff;
+  inset: 3.5px;
+  border-radius: 999px;
+  border: none;
+  transform: none;
+  background: #334155;
 }
 
 .native-switch-port.is-multi.semantic-condition.react-flow__handle-source::after {
   background: #334155;
 }
 
+.native-code-node__editor .cm-editor {
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.native-code-node__editor .cm-scroller {
+  min-height: 140px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+}
+
+.native-code-node__editor .cm-gutters {
+  border-right: 1px solid rgba(148, 163, 184, 0.3);
+  background: #f1f5f9;
+}
+
 .native-context-menu {
   position: fixed;
   z-index: 1000;
-  display: grid;
-  gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   width: 220px;
+  max-height: min(76vh, 620px);
+  overflow: auto;
   border: none;
   border-radius: 8px;
   background: #fff;
@@ -156,25 +246,12 @@
   padding: 6px;
 }
 
-.native-context-menu__group {
-  display: grid;
-  gap: 2px;
-}
-
-.native-context-menu__title {
-  padding: 2px 8px;
-  font-family: Poppins, sans-serif;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: #64748b;
-}
-
 .native-context-menu button {
+  width: 100%;
   border: none;
   border-radius: 6px;
   display: grid;
-  grid-template-columns: 14px 1fr;
+  grid-template-columns: 14px 1fr 12px;
   align-items: center;
   gap: 6px;
   background: transparent;
@@ -188,6 +265,19 @@
 
 .native-context-menu button:hover {
   background: rgba(148, 163, 184, 0.12);
+}
+
+.native-context-menu button.is-danger {
+  color: #b91c1c;
+}
+
+.native-context-menu button.is-danger:hover {
+  background: rgba(248, 113, 113, 0.12);
+}
+
+.native-context-menu__arrow {
+  text-align: right;
+  color: #64748b;
 }
 
 .nodegraph-native-hint {
