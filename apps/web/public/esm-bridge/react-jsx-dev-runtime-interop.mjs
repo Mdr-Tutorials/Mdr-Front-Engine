@@ -1,0 +1,13 @@
+const bridge = globalThis.__MDR_HOST_REACT_BRIDGE__;
+
+if (!bridge?.jsxDevRuntime) {
+  throw new Error(
+    '[ELIB-1011] Host React JSX dev runtime bridge is not initialized before loading external ESM modules.'
+  );
+}
+
+const Runtime = bridge.jsxDevRuntime;
+
+export default Runtime;
+export const Fragment = Runtime.Fragment;
+export const jsxDEV = Runtime.jsxDEV;

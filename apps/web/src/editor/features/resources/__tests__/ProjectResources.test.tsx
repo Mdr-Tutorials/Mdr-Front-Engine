@@ -32,6 +32,38 @@ vi.mock('../../design/blueprint/external', () => {
   };
 });
 
+vi.mock('@/mir/renderer/iconRegistry', () => {
+  const getConfiguredIconLibraryIds = () => {
+    const raw = localStorage.getItem('mdr.iconLibraryIds');
+    if (!raw) return [];
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed)
+        ? parsed.filter((item): item is string => typeof item === 'string')
+        : [];
+    } catch {
+      return [];
+    }
+  };
+
+  return {
+    getRegisteredIconLibraries: () => [
+      { id: 'fontawesome', label: 'Font Awesome' },
+      { id: 'mui-icons', label: 'Material Icons' },
+      { id: 'ant-design-icons', label: 'Ant Design Icons' },
+      { id: 'heroicons', label: 'Heroicons' },
+    ],
+    getConfiguredIconLibraryIds,
+    setConfiguredIconLibraryIds: (libraryIds: string[]) => {
+      localStorage.setItem(
+        'mdr.iconLibraryIds',
+        JSON.stringify([...new Set(libraryIds)])
+      );
+      return libraryIds;
+    },
+  };
+});
+
 describe('ProjectResources', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -161,5 +193,20 @@ describe('ProjectResources', () => {
         'custom-lib'
       );
     });
+  });
+
+  it('imports icon library presets from external tab', async () => {
+    renderWithRouter();
+    fireEvent.click(screen.getByRole('button', { name: 'External libs' }));
+    expect(await screen.findByText('External library manager')).toBeTruthy();
+
+    fireEvent.click(screen.getByTestId('icon-library-preset-heroicons'));
+
+    await waitFor(() => {
+      expect(localStorage.getItem('mdr.iconLibraryIds')).toContain('heroicons');
+    });
+    expect(
+      localStorage.getItem('mdr.resourceManager.icon.selection.project-001')
+    ).toContain('heroicons');
   });
 });

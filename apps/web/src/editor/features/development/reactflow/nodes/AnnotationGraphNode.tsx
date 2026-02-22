@@ -1,11 +1,14 @@
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
   type ReactNode,
 } from 'react';
+import CodeMirror from '@uiw/react-codemirror';
+import { createPortal } from 'react-dom';
 import { estimateStickyNoteSize, type GraphNodeData } from '../graphNodeShared';
 import type { NodeI18n } from './nodeI18n';
 import { tNode } from './nodeI18n';
@@ -30,6 +33,16 @@ const parseSize = (
   if (!Number.isFinite(parsed)) return fallback;
   return Math.min(Math.max(parsed, min), max);
 };
+
+const clampSize = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
+
+const STICKY_NOTE_SIZE = {
+  minWidth: 24,
+  minHeight: 30,
+  maxWidth: 1200,
+  maxHeight: 1200,
+} as const;
 
 const GROUP_COLOR_THEMES: Record<
   string,
@@ -387,94 +400,259 @@ const StickyNoteEditor = ({ id, nodeData, selected, t }: Props) => {
   const theme = NOTE_COLOR_THEMES[themeKey] || NOTE_COLOR_THEMES.minimal;
   const isMinimalTheme = themeKey === 'minimal';
   const content = nodeData.description ?? nodeData.value ?? '';
-  const autoSize = useMemo(() => estimateStickyNoteSize(content), [content]);
-  const width = parseSize(nodeData.autoNoteWidth, autoSize.width, 24, 1200);
-  const height = parseSize(nodeData.autoNoteHeight, autoSize.height, 30, 1200);
-  const [editing, setEditing] = useState(!content.trim());
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const fallbackSize = useMemo(() => {
+    const estimatedSize = estimateStickyNoteSize(content);
+    return {
+      width: parseSize(
+        nodeData.autoNoteWidth,
+        estimatedSize.width,
+        STICKY_NOTE_SIZE.minWidth,
+        STICKY_NOTE_SIZE.maxWidth
+      ),
+      height: parseSize(
+        nodeData.autoNoteHeight,
+        estimatedSize.height,
+        STICKY_NOTE_SIZE.minHeight,
+        STICKY_NOTE_SIZE.maxHeight
+      ),
+    };
+  }, [content, nodeData.autoNoteHeight, nodeData.autoNoteWidth]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [draftContent, setDraftContent] = useState(content);
+  const [displaySize, setDisplaySize] = useState(fallbackSize);
+  const measureRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (editing) {
-      textareaRef.current?.focus();
-    }
-  }, [editing]);
+    if (isModalOpen) return;
+    setDraftContent(content);
+  }, [content, isModalOpen]);
 
   useEffect(() => {
-    if (!content.trim()) {
-      setEditing(true);
-    }
-  }, [content]);
+    setDisplaySize(fallbackSize);
+  }, [fallbackSize.height, fallbackSize.width]);
 
-  const openEditor = useCallback(() => {
-    setEditing(true);
-  }, []);
-
-  const commitEdit = useCallback(() => {
-    setEditing(false);
-  }, []);
-
-  const onChangeContent = useCallback(
-    (nextValue: string) => {
-      nodeData.onChangeField?.(id, 'description', nextValue);
-    },
-    [id, nodeData]
+  const renderNoteBody = useCallback(
+    (keyPrefix: string) =>
+      content.trim() ? (
+        <div className={isMinimalTheme ? 'space-y-0.5' : 'space-y-1'}>
+          {renderMarkdownBlocks(content, keyPrefix)}
+        </div>
+      ) : (
+        <span className="text-[11px] text-slate-500/85">
+          {tNode(t, 'annotation.stickyNote.emptyText', 'Click to edit note')}
+        </span>
+      ),
+    [content, isMinimalTheme, t]
   );
 
-  return (
-    <div
-      className={
-        isMinimalTheme
-          ? `relative overflow-visible ${theme.text}`
-          : `relative overflow-hidden rounded-xl border ${theme.border} ${theme.bg} ${
-              selected ? 'ring-1 ring-slate-500/45' : ''
-            }`
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return;
+    const frame = window.requestAnimationFrame(() => {
+      const measured = measureRef.current?.getBoundingClientRect();
+      if (!measured) return;
+      const nextWidth = clampSize(
+        Math.ceil(measured.width),
+        STICKY_NOTE_SIZE.minWidth,
+        STICKY_NOTE_SIZE.maxWidth
+      );
+      const nextHeight = clampSize(
+        Math.ceil(measured.height),
+        STICKY_NOTE_SIZE.minHeight,
+        STICKY_NOTE_SIZE.maxHeight
+      );
+      setDisplaySize((prev) =>
+        prev.width === nextWidth && prev.height === nextHeight
+          ? prev
+          : { width: nextWidth, height: nextHeight }
+      );
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [content, isMinimalTheme, selected]);
+
+  const openEditor = useCallback(() => {
+    setDraftContent(content);
+    setIsModalOpen(true);
+  }, [content]);
+
+  const closeEditor = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
+
+  const saveEditor = useCallback(() => {
+    const normalized = draftContent.replace(/\r\n/g, '\n');
+    if (normalized !== content) {
+      nodeData.onChangeField?.(id, 'description', normalized);
+    }
+    setIsModalOpen(false);
+  }, [content, draftContent, id, nodeData]);
+
+  useEffect(() => {
+    if (!isModalOpen || typeof window === 'undefined') return;
+    const onWindowKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeEditor();
+        return;
       }
-      style={{ width, height }}
-    >
-      {editing ? (
-        <textarea
-          ref={textareaRef}
-          className={`nodrag nopan h-full w-full resize-none border-none bg-transparent outline-none ${theme.text} ${
-            isMinimalTheme
-              ? 'px-2 py-1 text-[12px] leading-5'
-              : 'px-3 py-3 text-[12px] leading-6'
-          }`}
-          onBlur={commitEdit}
-          onChange={(event) => onChangeContent(event.target.value)}
-          placeholder={tNode(
-            t,
-            'annotation.stickyNote.placeholder',
-            'Write markdown note...'
-          )}
-          spellCheck={false}
-          value={content}
-        />
-      ) : (
+      if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+        event.preventDefault();
+        saveEditor();
+      }
+    };
+    window.addEventListener('keydown', onWindowKeyDown);
+    return () => window.removeEventListener('keydown', onWindowKeyDown);
+  }, [closeEditor, isModalOpen, saveEditor]);
+
+  const noteContainerClass = isMinimalTheme
+    ? `relative overflow-visible ${theme.text}`
+    : `relative overflow-hidden rounded-xl border ${theme.border} ${theme.bg} ${
+        selected ? 'ring-1 ring-slate-500/45' : ''
+      }`;
+  const noteMeasureClass = isMinimalTheme
+    ? `inline-block overflow-visible ${theme.text}`
+    : `inline-block overflow-hidden rounded-xl border ${theme.border} ${theme.bg} ${theme.text}`;
+  const noteBodyClass = isMinimalTheme
+    ? 'overflow-visible px-2 py-1 text-[12px] leading-5'
+    : 'overflow-hidden px-3 py-3 text-[12px] leading-6';
+
+  return (
+    <>
+      <div
+        className={noteContainerClass}
+        style={{ width: displaySize.width, height: displaySize.height }}
+      >
         <button
           type="button"
-          className={`h-full w-full cursor-text border-none bg-transparent text-left ${theme.text} ${
-            isMinimalTheme
-              ? 'overflow-visible px-2 py-1 text-[12px] leading-5'
-              : 'overflow-auto px-3 py-3 text-[12px]'
-          }`}
+          className={`nopan h-full w-full cursor-text border-none bg-transparent text-left ${theme.text} ${noteBodyClass}`}
           onClick={openEditor}
         >
-          {content.trim() ? (
-            <div className={isMinimalTheme ? 'space-y-0.5' : 'space-y-1'}>
-              {renderMarkdownBlocks(content, `note-${id}`)}
-            </div>
-          ) : (
-            <span className="text-[11px] text-slate-500/85">
-              {tNode(
-                t,
-                'annotation.stickyNote.emptyText',
-                'Click to edit note'
-              )}
-            </span>
-          )}
+          {renderNoteBody(`note-${id}`)}
         </button>
-      )}
-    </div>
+      </div>
+      <div
+        className="pointer-events-none fixed -left-[9999px] -top-[9999px] opacity-0"
+        aria-hidden
+      >
+        <div
+          ref={measureRef}
+          className={noteMeasureClass}
+          style={{ maxWidth: `${STICKY_NOTE_SIZE.maxWidth}px` }}
+        >
+          <div className={noteBodyClass}>
+            {renderNoteBody(`note-measure-${id}`)}
+          </div>
+        </div>
+      </div>
+      {isModalOpen && typeof document !== 'undefined'
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-[1200] flex items-center justify-center bg-black/45 p-4"
+              role="dialog"
+              aria-modal="true"
+              onMouseDown={(event) => {
+                if (event.target === event.currentTarget) {
+                  closeEditor();
+                }
+              }}
+            >
+              <div
+                className="w-[min(980px,100%)] rounded-xl border border-slate-300 bg-white shadow-[0_22px_60px_rgba(15,23,42,0.35)]"
+                onMouseDown={(event) => event.stopPropagation()}
+              >
+                <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+                  <div className="text-sm font-semibold text-slate-900">
+                    {tNode(
+                      t,
+                      'annotation.stickyNote.modalTitle',
+                      'Edit markdown note'
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    className="rounded px-2 py-1 text-xs text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                    onClick={closeEditor}
+                  >
+                    {tNode(t, 'annotation.stickyNote.close', 'Close')}
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 gap-3 p-3 lg:grid-cols-2">
+                  <section className="min-w-0">
+                    <div className="mb-1 text-[11px] font-medium uppercase tracking-[0.08em] text-slate-500">
+                      {tNode(
+                        t,
+                        'annotation.stickyNote.editorLabel',
+                        'Markdown'
+                      )}
+                    </div>
+                    <CodeMirror
+                      value={draftContent}
+                      onChange={setDraftContent}
+                      basicSetup={{
+                        lineNumbers: true,
+                        foldGutter: false,
+                        highlightActiveLine: false,
+                      }}
+                      height="320px"
+                      className="nodrag nopan native-code-node__editor"
+                    />
+                    <div className="mt-1 text-[10px] text-slate-500">
+                      {tNode(
+                        t,
+                        'annotation.stickyNote.shortcutHint',
+                        'Tip: Ctrl/Cmd + Enter to save'
+                      )}
+                    </div>
+                  </section>
+                  <section className="min-w-0">
+                    <div className="mb-1 text-[11px] font-medium uppercase tracking-[0.08em] text-slate-500">
+                      {tNode(
+                        t,
+                        'annotation.stickyNote.previewLabel',
+                        'Preview'
+                      )}
+                    </div>
+                    <div className="h-[320px] overflow-auto rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-[12px] leading-6 text-slate-800">
+                      {draftContent.trim() ? (
+                        <div className="space-y-1">
+                          {renderMarkdownBlocks(
+                            draftContent,
+                            `note-modal-${id}`
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-[11px] text-slate-500/85">
+                          {tNode(
+                            t,
+                            'annotation.stickyNote.placeholder',
+                            'Write markdown note...'
+                          )}
+                        </span>
+                      )}
+                    </div>
+                  </section>
+                </div>
+                <div className="flex items-center justify-end gap-2 border-t border-slate-200 px-4 py-3">
+                  <button
+                    type="button"
+                    className="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100"
+                    onClick={closeEditor}
+                  >
+                    {tNode(t, 'annotation.stickyNote.cancel', 'Cancel')}
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-slate-700"
+                    onClick={saveEditor}
+                  >
+                    {tNode(t, 'annotation.stickyNote.save', 'Save')}
+                  </button>
+                </div>
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
+    </>
   );
 };
 

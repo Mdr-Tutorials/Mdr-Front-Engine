@@ -16,6 +16,12 @@ export type { ExternalLibraryDiagnostic } from './runtime/types';
 
 const EXTERNAL_LIBRARY_IDS_STORAGE_KEY = 'mdr.externalLibraryIds';
 const DEFAULT_LIBRARY_IDS: string[] = [];
+const LEGACY_ICON_LIBRARY_IDS = new Set([
+  'fontawesome',
+  'ant-design-icons',
+  'mui-icons',
+  'heroicons',
+]);
 const EXTERNAL_LIBRARY_DISPLAY_NAME: Record<string, string> = {
   antd: 'Ant Design',
   mui: 'Material UI',
@@ -62,6 +68,14 @@ export const getExternalLibraryDisplayName = (libraryId: string) => {
   if (packageName === 'antd') return 'Ant Design';
   return normalizedId;
 };
+
+const normalizeLibraryId = (libraryId: string) =>
+  libraryId.trim().toLowerCase();
+
+const sanitizeConfiguredExternalLibraryIds = (libraryIds: string[]) =>
+  libraryIds.filter(
+    (libraryId) => !LEGACY_ICON_LIBRARY_IDS.has(normalizeLibraryId(libraryId))
+  );
 
 const unknownLibraryDiagnostic = (
   libraryId: string
@@ -116,7 +130,7 @@ export const getConfiguredExternalLibraryIds = (): string[] => {
       (item): item is string =>
         typeof item === 'string' && item.trim().length > 0
     );
-    return ids;
+    return sanitizeConfiguredExternalLibraryIds(ids);
   } catch {
     return [...DEFAULT_LIBRARY_IDS];
   }
@@ -124,8 +138,10 @@ export const getConfiguredExternalLibraryIds = (): string[] => {
 
 export const setConfiguredExternalLibraryIds = (libraryIds: string[]) => {
   ensureBootstrap();
-  const uniqueIds = [...new Set(libraryIds.map((item) => item.trim()))].filter(
-    (item) => item.length > 0
+  const uniqueIds = sanitizeConfiguredExternalLibraryIds(
+    [...new Set(libraryIds.map((item) => item.trim()))].filter(
+      (item) => item.length > 0
+    )
   );
   if (typeof window !== 'undefined') {
     window.localStorage.setItem(

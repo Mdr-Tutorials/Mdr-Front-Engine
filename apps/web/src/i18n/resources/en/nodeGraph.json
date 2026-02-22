@@ -345,7 +345,14 @@
       "annotation": {
         "stickyNote": {
           "placeholder": "Write markdown note...",
-          "emptyText": "Click to edit note"
+          "emptyText": "Click to edit note",
+          "modalTitle": "Edit markdown note",
+          "editorLabel": "Markdown",
+          "previewLabel": "Preview",
+          "shortcutHint": "Tip: Ctrl/Cmd + Enter to save",
+          "close": "Close",
+          "cancel": "Cancel",
+          "save": "Save"
         },
         "groupBox": {
           "titlePlaceholder": "Group title"

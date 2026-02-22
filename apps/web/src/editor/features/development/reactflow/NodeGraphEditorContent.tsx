@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
@@ -13,18 +13,27 @@ import {
   type Edge,
   type Node,
 } from '@xyflow/react';
+import { useEditorStore } from '@/editor/store/useEditorStore';
 import type { GraphNodeData, GraphNodeKind } from './GraphNode';
 import { NODE_MENU_GROUPS } from './nodeCatalog';
 import type { ConnectionValidationReason } from './graphConnectionValidation';
 
 import {
+  applyNodeGraphEditorStateToGraphs,
+  buildNodeGraphEditorState,
   createNode,
   createStorageKey,
+  ensureProjectGraphSnapshot,
   loadProjectSnapshot,
+  NODE_GRAPH_EDITOR_STATE_KEY,
   nodeTypes,
+  normalizeNodeGraphEditorState,
+  normalizeGraphDocuments,
+  serializeGraphsForMirLogic,
   type ContextMenuState,
   type GraphDocument,
   type NodeValidationText,
+  type NodeGraphEditorMirState,
   type ProjectGraphSnapshot,
 } from './nodeGraphEditorModel';
 
@@ -43,29 +52,65 @@ import { useNodeGraphGraphActions } from './nodeGraphGraphActions';
 import { useNodeGraphGroupLayout } from './nodeGraphGroupLayout';
 import { useNodeGraphNodeActions } from './nodeGraphNodeActions';
 import { useNodeGraphConnectionActions } from './nodeGraphConnectionActions';
+
+const resolveActiveGraphFromSnapshot = (snapshot: ProjectGraphSnapshot) =>
+  snapshot.graphs.find((graph) => graph.id === snapshot.activeGraphId) ??
+  snapshot.graphs[0];
+
+const serializeProjectSnapshot = (snapshot: ProjectGraphSnapshot) =>
+  JSON.stringify(snapshot);
+
+const readNodeGraphEditorStateFromLogic = (
+  logic: unknown
+): NodeGraphEditorMirState | null => {
+  if (!logic || typeof logic !== 'object' || Array.isArray(logic)) return null;
+  return normalizeNodeGraphEditorState(
+    (logic as Record<string, unknown>)[NODE_GRAPH_EDITOR_STATE_KEY]
+  );
+};
+
+const serializeNodeGraphEditorState = (state: NodeGraphEditorMirState | null) =>
+  JSON.stringify(state);
+
 export const NodeGraphEditorContent = () => {
   const { projectId } = useParams();
   const { t } = useTranslation('editor');
+  const mirDoc = useEditorStore((state) => state.mirDoc);
+  const updateMirDoc = useEditorStore((state) => state.updateMirDoc);
   const resolvedProjectId = projectId?.trim() || 'global';
-  const projectSnapshot = useMemo(
+  const persistedSnapshot = useMemo(
     () => loadProjectSnapshot(resolvedProjectId),
     [resolvedProjectId]
   );
+  const mirGraphs = useMemo(
+    () => normalizeGraphDocuments(mirDoc.logic?.graphs),
+    [mirDoc.logic?.graphs]
+  );
+  const mirEditorState = useMemo(
+    () => readNodeGraphEditorStateFromLogic(mirDoc.logic),
+    [mirDoc.logic]
+  );
+  const mirSnapshot = useMemo(() => {
+    if (!mirGraphs.length) return null;
+    return ensureProjectGraphSnapshot({
+      activeGraphId:
+        mirEditorState?.activeGraphId || persistedSnapshot.activeGraphId,
+      graphs: applyNodeGraphEditorStateToGraphs(mirGraphs, mirEditorState),
+    });
+  }, [mirEditorState, mirGraphs, persistedSnapshot.activeGraphId]);
+  const initialSnapshot = useMemo(() => {
+    return mirSnapshot ?? persistedSnapshot;
+  }, [mirSnapshot, persistedSnapshot]);
+  const initialActiveGraph = resolveActiveGraphFromSnapshot(initialSnapshot);
   const [graphDocs, setGraphDocs] = useState<GraphDocument[]>(
-    projectSnapshot.graphs
+    initialSnapshot.graphs
   );
   const [activeGraphId, setActiveGraphId] = useState<string>(
-    projectSnapshot.activeGraphId
+    initialSnapshot.activeGraphId
   );
-  const [nodes, setNodes] = useNodesState(
-    projectSnapshot.graphs.find(
-      (graph) => graph.id === projectSnapshot.activeGraphId
-    )?.nodes ?? projectSnapshot.graphs[0].nodes
-  );
+  const [nodes, setNodes] = useNodesState(initialActiveGraph.nodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(
-    projectSnapshot.graphs.find(
-      (graph) => graph.id === projectSnapshot.activeGraphId
-    )?.edges ?? projectSnapshot.graphs[0].edges
+    initialActiveGraph.edges
   );
   const [menu, setMenu] = useState<ContextMenuState>(null);
   const [menuPath, setMenuPath] = useState<number[]>([]);
@@ -208,16 +253,121 @@ export const NodeGraphEditorContent = () => {
     [localizeNodeLabel]
   );
 
+  const currentSnapshot = useMemo(
+    () =>
+      ensureProjectGraphSnapshot({
+        activeGraphId,
+        graphs: graphDocs,
+      }),
+    [activeGraphId, graphDocs]
+  );
+  const currentSnapshotSignature = useMemo(
+    () => serializeProjectSnapshot(currentSnapshot),
+    [currentSnapshot]
+  );
+  const activeGraphIdRef = useRef(currentSnapshot.activeGraphId);
+  const currentSnapshotSignatureRef = useRef(currentSnapshotSignature);
+  const committedSnapshotSignatureRef = useRef(currentSnapshotSignature);
+
+  const applySnapshot = useCallback(
+    (snapshot: ProjectGraphSnapshot) => {
+      const activeGraph = resolveActiveGraphFromSnapshot(snapshot);
+      setGraphDocs(snapshot.graphs);
+      setActiveGraphId(snapshot.activeGraphId);
+      setNodes(activeGraph.nodes);
+      setEdges(activeGraph.edges);
+      currentSnapshotSignatureRef.current = serializeProjectSnapshot(snapshot);
+    },
+    [setEdges, setNodes]
+  );
+
   useEffect(() => {
-    setGraphDocs(projectSnapshot.graphs);
-    setActiveGraphId(projectSnapshot.activeGraphId);
-    const activeGraph =
-      projectSnapshot.graphs.find(
-        (graph) => graph.id === projectSnapshot.activeGraphId
-      ) ?? projectSnapshot.graphs[0];
-    setNodes(activeGraph.nodes);
-    setEdges(activeGraph.edges);
-  }, [projectSnapshot, setEdges, setNodes]);
+    activeGraphIdRef.current = activeGraphId;
+  }, [activeGraphId]);
+
+  useEffect(() => {
+    currentSnapshotSignatureRef.current = currentSnapshotSignature;
+  }, [currentSnapshotSignature]);
+
+  useEffect(() => {
+    const nextSnapshot = mirGraphs.length
+      ? ensureProjectGraphSnapshot({
+          activeGraphId:
+            mirEditorState?.activeGraphId ||
+            activeGraphIdRef.current ||
+            persistedSnapshot.activeGraphId,
+          graphs: applyNodeGraphEditorStateToGraphs(mirGraphs, mirEditorState),
+        })
+      : persistedSnapshot;
+    const nextSnapshotSignature = serializeProjectSnapshot(nextSnapshot);
+    if (nextSnapshotSignature !== currentSnapshotSignatureRef.current) {
+      applySnapshot(nextSnapshot);
+    }
+    committedSnapshotSignatureRef.current = nextSnapshotSignature;
+    if (mirGraphs.length) {
+      if (mirEditorState) return;
+      updateMirDoc((doc) => {
+        const existingGraphs = normalizeGraphDocuments(doc.logic?.graphs);
+        if (!existingGraphs.length) return doc;
+        const migratedSnapshot = ensureProjectGraphSnapshot({
+          activeGraphId:
+            activeGraphIdRef.current || persistedSnapshot.activeGraphId,
+          graphs: existingGraphs,
+        });
+        const migratedGraphs = serializeGraphsForMirLogic(
+          migratedSnapshot.graphs
+        );
+        const migratedEditorState = buildNodeGraphEditorState(migratedSnapshot);
+        const existingEditorState = readNodeGraphEditorStateFromLogic(
+          doc.logic
+        );
+        const existingGraphsSignature = JSON.stringify(
+          serializeGraphsForMirLogic(existingGraphs)
+        );
+        if (
+          existingGraphsSignature === JSON.stringify(migratedGraphs) &&
+          serializeNodeGraphEditorState(existingEditorState) ===
+            serializeNodeGraphEditorState(migratedEditorState)
+        ) {
+          return doc;
+        }
+        const nextLogic = {
+          ...(doc.logic ?? {}),
+          graphs: migratedGraphs,
+          [NODE_GRAPH_EDITOR_STATE_KEY]: migratedEditorState,
+        };
+        return {
+          ...doc,
+          logic: nextLogic,
+        };
+      });
+      return;
+    }
+    updateMirDoc((doc) => {
+      const existingGraphs = normalizeGraphDocuments(doc.logic?.graphs);
+      if (existingGraphs.length) return doc;
+      const migratedSnapshot = ensureProjectGraphSnapshot(persistedSnapshot);
+      const migratedGraphs = serializeGraphsForMirLogic(
+        migratedSnapshot.graphs
+      );
+      const migratedEditorState = buildNodeGraphEditorState(migratedSnapshot);
+      const nextLogic = {
+        ...(doc.logic ?? {}),
+        graphs: migratedGraphs,
+        [NODE_GRAPH_EDITOR_STATE_KEY]: migratedEditorState,
+      };
+      return {
+        ...doc,
+        logic: nextLogic,
+      };
+    });
+  }, [
+    applySnapshot,
+    mirEditorState,
+    mirGraphs,
+    persistedSnapshot,
+    updateMirDoc,
+  ]);
 
   useEffect(() => {
     setGraphDocs((current) =>
@@ -235,16 +385,45 @@ export const NodeGraphEditorContent = () => {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const payload: ProjectGraphSnapshot = {
-      version: 2,
-      activeGraphId,
-      graphs: graphDocs,
-    };
     window.localStorage.setItem(
       createStorageKey(resolvedProjectId),
-      JSON.stringify(payload)
+      JSON.stringify(currentSnapshot)
     );
-  }, [activeGraphId, graphDocs, resolvedProjectId]);
+  }, [currentSnapshot, resolvedProjectId]);
+
+  useEffect(() => {
+    if (currentSnapshotSignature === committedSnapshotSignatureRef.current) {
+      return;
+    }
+    committedSnapshotSignatureRef.current = currentSnapshotSignature;
+    const nextGraphs = serializeGraphsForMirLogic(currentSnapshot.graphs);
+    const nextGraphsSignature = JSON.stringify(nextGraphs);
+    const nextEditorState = buildNodeGraphEditorState(currentSnapshot);
+    const nextEditorStateSignature =
+      serializeNodeGraphEditorState(nextEditorState);
+    updateMirDoc((doc) => {
+      const existingGraphs = serializeGraphsForMirLogic(
+        normalizeGraphDocuments(doc.logic?.graphs)
+      );
+      const existingEditorState = readNodeGraphEditorStateFromLogic(doc.logic);
+      if (
+        JSON.stringify(existingGraphs) === nextGraphsSignature &&
+        serializeNodeGraphEditorState(existingEditorState) ===
+          nextEditorStateSignature
+      ) {
+        return doc;
+      }
+      const nextLogic = {
+        ...(doc.logic ?? {}),
+        graphs: nextGraphs,
+        [NODE_GRAPH_EDITOR_STATE_KEY]: nextEditorState,
+      };
+      return {
+        ...doc,
+        logic: nextLogic,
+      };
+    });
+  }, [currentSnapshot, currentSnapshotSignature, updateMirDoc]);
 
   useEffect(() => {
     if (!hint) return;

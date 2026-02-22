@@ -1,8 +1,11 @@
+import { ChevronDown } from 'lucide-react';
 import type { NodeListRender } from '@/core/types/engine.types';
+import { InspectorRow } from '../../components/InspectorRow';
 import { useInspectorSectionContext } from '../InspectorSectionContext';
 
 export function InspectorListTemplateFields() {
-  const { t, selectedNode, updateSelectedNode } = useInspectorSectionContext();
+  const { t, selectedNode, updateSelectedNode, expandedPanels, togglePanel } =
+    useInspectorSectionContext();
   if (!selectedNode) return null;
 
   const enabled = Boolean(selectedNode.list);
@@ -10,72 +13,104 @@ export function InspectorListTemplateFields() {
     typeof selectedNode.list?.arrayField === 'string'
       ? selectedNode.list.arrayField
       : '';
+  const panelKey = 'basic-list-template';
+  const isExpanded = expandedPanels[panelKey] ?? true;
 
   return (
-    <div className="grid gap-1.5 rounded-md border border-black/8 p-2 dark:border-white/14">
-      <div className="text-[10px] font-semibold text-(--color-7)">
-        {t('inspector.fields.listTemplate.title', {
-          defaultValue: 'List Template',
-        })}
-      </div>
-      <label className="inline-flex items-center gap-2 text-xs text-(--color-8)">
-        <input
-          data-testid="inspector-list-template-enable"
-          type="checkbox"
-          checked={enabled}
-          onChange={(event) => {
-            const checked = event.currentTarget.checked;
-            updateSelectedNode((current: any) => {
-              if (!checked) {
-                const next = { ...current };
-                delete next.list;
-                return next;
-              }
-              const nextList: NodeListRender = {
-                arrayField: '',
-                itemAs: 'item',
-                indexAs: 'index',
-              };
-              return { ...current, list: nextList };
-            });
-          }}
+    <div className="pt-1">
+      <button
+        type="button"
+        className="flex min-h-5.5 w-full cursor-pointer items-center justify-between border-0 bg-transparent p-0 text-left"
+        onClick={() => togglePanel(panelKey)}
+      >
+        <span className="InspectorLabel text-[11px] font-semibold text-(--color-8)">
+          {t('inspector.fields.listTemplate.title', {
+            defaultValue: 'List Template',
+          })}
+        </span>
+        <ChevronDown
+          size={14}
+          className={`${isExpanded ? 'rotate-0' : '-rotate-90'} text-(--color-6) transition-transform`}
         />
-        {t('inspector.fields.listTemplate.enable', {
-          defaultValue: 'Promote node as list template',
-        })}
-      </label>
-      {enabled ? (
-        <label className="grid gap-1 text-xs text-(--color-8)">
-          <span className="text-[10px] font-semibold text-(--color-7)">
-            {t('inspector.fields.listTemplate.arrayField', {
-              defaultValue: 'Array Field',
+      </button>
+      {isExpanded ? (
+        <div className="mt-1 flex flex-col gap-1.5">
+          <InspectorRow
+            label={t('inspector.fields.listTemplate.mountLabel', {
+              defaultValue: 'Mounted',
             })}
-          </span>
-          <input
-            data-testid="inspector-list-array-field"
-            className="h-7 min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none dark:border-white/16"
-            value={arrayField}
-            onChange={(event) => {
-              const nextValue = event.target.value;
-              updateSelectedNode((current: any) => {
-                if (!current.list) return current;
-                return {
-                  ...current,
-                  list: {
-                    ...current.list,
-                    arrayField: nextValue,
-                  },
-                };
-              });
-            }}
-            placeholder={t(
-              'inspector.fields.listTemplate.arrayFieldPlaceholder',
-              {
-                defaultValue: 'items',
-              }
-            )}
+            control={
+              <label className="inline-flex items-center gap-2 text-xs text-(--color-8)">
+                <input
+                  data-testid="inspector-list-template-enable"
+                  type="checkbox"
+                  checked={enabled}
+                  onChange={(event) => {
+                    const checked = event.currentTarget.checked;
+                    updateSelectedNode((current: any) => {
+                      if (!checked) {
+                        const next = { ...current };
+                        delete next.list;
+                        return next;
+                      }
+                      const nextList: NodeListRender = {
+                        arrayField: '',
+                        itemAs: 'item',
+                        indexAs: 'index',
+                      };
+                      return { ...current, list: nextList };
+                    });
+                  }}
+                />
+                {t('inspector.fields.listTemplate.enable', {
+                  defaultValue: 'Promote node as list template',
+                })}
+              </label>
+            }
           />
-        </label>
+          {enabled ? (
+            <InspectorRow
+              layout="vertical"
+              label={t('inspector.fields.listTemplate.arrayField', {
+                defaultValue: 'Array Field',
+              })}
+              control={
+                <input
+                  data-testid="inspector-list-array-field"
+                  className="h-7 min-w-0 rounded-md border border-black/10 bg-transparent px-2.5 text-xs text-(--color-9) outline-none dark:border-white/16"
+                  value={arrayField}
+                  onChange={(event) => {
+                    const nextValue = event.target.value;
+                    updateSelectedNode((current: any) => {
+                      if (!current.list) return current;
+                      return {
+                        ...current,
+                        list: {
+                          ...current.list,
+                          arrayField: nextValue,
+                        },
+                      };
+                    });
+                  }}
+                  placeholder={t(
+                    'inspector.fields.listTemplate.arrayFieldPlaceholder',
+                    {
+                      defaultValue: 'items',
+                    }
+                  )}
+                />
+              }
+            />
+          ) : null}
+          {enabled ? (
+            <span className="text-[10px] text-(--color-6)">
+              {t('inspector.fields.listTemplate.hint', {
+                defaultValue:
+                  'Item and index aliases are managed automatically in code generation.',
+              })}
+            </span>
+          ) : null}
+        </div>
       ) : null}
     </div>
   );

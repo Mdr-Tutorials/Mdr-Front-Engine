@@ -14,6 +14,7 @@ const PROJECT_ID = 'project-1';
 
 vi.mock('react-router', () => ({
   useParams: () => ({ projectId: PROJECT_ID }),
+  useNavigate: () => vi.fn(),
 }));
 
 vi.mock('@mdr/ui', () => ({

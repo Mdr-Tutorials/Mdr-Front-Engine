@@ -38,6 +38,37 @@ const stringifyLiteral = (value: unknown): string | null => {
   return json;
 };
 
+const PATH_SEGMENT_PATTERN = /[^.[\]]+|\[(\d+)\]/g;
+const IDENTIFIER_SEGMENT_PATTERN = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+
+const parsePathSegments = (path: string) => {
+  const trimmed = path.trim();
+  if (!trimmed) return [];
+  return Array.from(trimmed.matchAll(PATH_SEGMENT_PATTERN)).map(
+    (token) => token[1] ?? token[0]
+  );
+};
+
+const compilePathAccessExpression = (
+  sourceExpression: string,
+  path: string
+) => {
+  const segments = parsePathSegments(path);
+  const baseExpression = `(${sourceExpression} as any)`;
+  if (segments.length === 0) return baseExpression;
+
+  return segments.reduce((expression, segment) => {
+    const index = Number(segment);
+    if (Number.isInteger(index)) {
+      return `${expression}?.[${index}]`;
+    }
+    if (IDENTIFIER_SEGMENT_PATTERN.test(segment)) {
+      return `${expression}?.${segment}`;
+    }
+    return `${expression}?.[${JSON.stringify(segment)}]`;
+  }, baseExpression);
+};
+
 const compileValueExpression = (value: unknown, scopeVar: string): string => {
   if (typeof value === 'object' && value !== null) {
     const record = value as Record<string, unknown>;
@@ -48,17 +79,17 @@ const compileValueExpression = (value: unknown, scopeVar: string): string => {
       return toIdentifier(record.$state);
     }
     if ('$data' in record && typeof record.$data === 'string') {
-      return `__readByPath(${scopeVar}.data, ${stringify(record.$data)})`;
+      return compilePathAccessExpression(`${scopeVar}.data`, record.$data);
     }
     if ('$item' in record && typeof record.$item === 'string') {
-      return `__readByPath(${scopeVar}.item, ${stringify(record.$item)})`;
+      return compilePathAccessExpression(`${scopeVar}.item`, record.$item);
     }
     if ('$index' in record && record.$index === true) {
       return `${scopeVar}.index`;
     }
   }
   if (typeof value === 'string') {
-    return `__resolvePathOrLiteral(${scopeVar}.data, ${stringify(value)})`;
+    return stringify(value);
   }
   const literal = stringifyLiteral(value);
   return literal ?? 'undefined';
@@ -75,31 +106,57 @@ const compileObjectExpression = (
     )
     .join(', ')} }`;
 
+const isStaticNavigateParam = (value: unknown) =>
+  value === undefined ||
+  value === null ||
+  typeof value === 'string' ||
+  typeof value === 'number' ||
+  typeof value === 'boolean';
+
+const canInlineStaticNavigate = (params: Record<string, unknown>) => {
+  if (typeof params.to !== 'string') return false;
+  return (
+    isStaticNavigateParam(params.target) &&
+    isStaticNavigateParam(params.replace) &&
+    isStaticNavigateParam(params.state)
+  );
+};
+
+const buildStaticNavigateInlineHandler = (params: Record<string, unknown>) => {
+  const to = typeof params.to === 'string' ? params.to.trim() : '';
+  if (!to) return '{() => {}}';
+  const target = params.target === '_self' ? '_self' : '_blank';
+  const replace = Boolean(params.replace);
+  if (target === '_blank') {
+    return `{() => window.open(${stringify(to)}, '_blank', 'noopener,noreferrer')}`;
+  }
+  if (replace) {
+    return `{() => window.location.replace(${stringify(to)})}`;
+  }
+  return `{() => window.location.assign(${stringify(to)})}`;
+};
+
 const buildNavigateInlineHandler = (paramsExpr: string) => {
   return `{() => {
-    const __params = ${paramsExpr};
-    const __to = typeof __params.to === 'string' ? __params.to.trim() : '';
-    if (!__to) return;
-    const __target = __params.target === '_self' ? '_self' : '_blank';
-    const __replace = Boolean(__params.replace);
-    if (__target === '_blank') {
-      window.open(__to, '_blank', 'noopener,noreferrer');
+    const params = ${paramsExpr};
+    const to = typeof params.to === 'string' ? params.to.trim() : '';
+    if (!to) return;
+    const target = params.target === '_self' ? '_self' : '_blank';
+    const replace = Boolean(params.replace);
+    if (target === '_blank') {
+      window.open(to, '_blank', 'noopener,noreferrer');
       return;
     }
-    if (__replace) {
-      window.location.replace(__to);
+    if (replace) {
+      window.location.replace(to);
       return;
     }
-    window.location.assign(__to);
+    window.location.assign(to);
   }}`;
 };
 
 const buildExecuteGraphInlineHandler = (paramsExpr: string) => {
-  return `{() => {
-      window.dispatchEvent(
-        new CustomEvent('mdr:execute-graph', { detail: ${paramsExpr} })
-      );
-    }}`;
+  return `{() => window.dispatchEvent(new CustomEvent('mdr:execute-graph', { detail: ${paramsExpr} }))}`;
 };
 
 const buildBuiltInInlineHandler = (
@@ -107,10 +164,18 @@ const buildBuiltInInlineHandler = (
   params: Record<string, unknown>,
   scopeVar: string
 ) => {
-  const paramsExpr = compileObjectExpression(params, scopeVar);
-  if (action === 'navigate') return buildNavigateInlineHandler(paramsExpr);
+  if (action === 'navigate') {
+    if (canInlineStaticNavigate(params)) {
+      return buildStaticNavigateInlineHandler(params);
+    }
+    return buildNavigateInlineHandler(
+      compileObjectExpression(params, scopeVar)
+    );
+  }
   if (action === 'executeGraph')
-    return buildExecuteGraphInlineHandler(paramsExpr);
+    return buildExecuteGraphInlineHandler(
+      compileObjectExpression(params, scopeVar)
+    );
   return null;
 };
 
@@ -118,13 +183,31 @@ const compilePropExpression = (
   value: unknown,
   scopeVar: string
 ): string | null => {
+  if (typeof value === 'string') {
+    return stringify(value);
+  }
   const expr = compileValueExpression(value, scopeVar);
   if (!expr) return null;
   return `{${expr}}`;
 };
 
+const canInlineJsxTextLiteral = (value: string) =>
+  value.length > 0 && !/^\s|\s$/.test(value) && !/[\n\r\t{}]/.test(value);
+
+const escapeJsxTextLiteral = (value: string) =>
+  value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;');
+
 const compileTextContent = (value: CanonicalNode['text'], scopeVar: string) => {
   if (value === undefined) return '';
+  if (typeof value === 'string') {
+    if (canInlineJsxTextLiteral(value)) {
+      return escapeJsxTextLiteral(value);
+    }
+    return `{${stringify(value)}}`;
+  }
   if (
     typeof value === 'object' &&
     value !== null &&
@@ -170,6 +253,28 @@ const toPascalCase = (value: string) =>
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join('');
+
+type StaticIconRef = {
+  provider: string;
+  name: string;
+};
+
+const NATIVE_ICON_PROVIDERS = new Set([
+  'fontawesome',
+  'ant-design-icons',
+  'mui-icons',
+  'heroicons',
+]);
+
+const readStaticIconRef = (value: unknown): StaticIconRef | null => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const iconRef = value as Record<string, unknown>;
+  const provider =
+    typeof iconRef.provider === 'string' ? iconRef.provider.trim() : '';
+  const name = typeof iconRef.name === 'string' ? iconRef.name.trim() : '';
+  if (!provider || !name) return null;
+  return { provider, name };
+};
 
 type ResolvedAdapterImport = AdapterImportSpec & {
   resolution: ReturnType<typeof resolvePackageImport>;
@@ -467,13 +572,16 @@ export const compileMirToReactComponent = (
   const compileNode = (
     node: CanonicalNode,
     indent = '    ',
-    scopeVar = '__scope'
+    scopeVar = 'scope',
+    extraProps: string[] = []
   ): string => {
     if (node.list) {
       const listSourceExpr =
         node.list.source !== undefined
           ? compileValueExpression(node.list.source, scopeVar)
-          : `${scopeVar}.data`;
+          : scopeVar === 'scope'
+            ? '[]'
+            : `${scopeVar}.data`;
       const itemAlias =
         typeof node.list.itemAs === 'string' && node.list.itemAs.trim()
           ? node.list.itemAs.trim()
@@ -486,15 +594,22 @@ export const compileMirToReactComponent = (
         ...node,
         list: undefined,
       };
-      const bodyNode = compileNode(
-        nodeWithoutList,
-        `${indent}      `,
-        '__nextScope'
-      );
       const keyExpr =
         typeof node.list.keyBy === 'string' && node.list.keyBy.trim()
-          ? `__readByPath(__item, ${stringify(node.list.keyBy)}) ?? __index`
-          : '__index';
+          ? `${compilePathAccessExpression('item', node.list.keyBy)} ?? index`
+          : 'index';
+      const bodyNodeWithItemScope = compileNode(
+        nodeWithoutList,
+        `${indent}    `,
+        'itemScope',
+        [`key={String(${keyExpr})}`]
+      );
+      const needsItemScope = /\bitemScope\b/.test(bodyNodeWithItemScope);
+      const bodyNode = needsItemScope
+        ? bodyNodeWithItemScope
+        : compileNode(nodeWithoutList, `${indent}  `, 'itemScope', [
+            `key={String(${keyExpr})}`,
+          ]);
       let emptyRender = 'null';
       if (
         typeof node.list.emptyNodeId === 'string' &&
@@ -513,36 +628,46 @@ export const compileMirToReactComponent = (
           ).trim();
         }
       }
-      return `${indent}{(() => {
-${indent}  const __list = ${listSourceExpr};
-${indent}  if (!Array.isArray(__list) || __list.length === 0) {
-${indent}    return ${emptyRender};
-${indent}  }
-${indent}  return __list.map((__item, __index) => {
-${indent}    const __nextScope = {
-${indent}      ...${scopeVar},
-${indent}      item: __item,
-${indent}      index: __index,
-${indent}      data:
-${indent}        __item && typeof __item === 'object' && !Array.isArray(__item)
-${indent}          ? {
-${indent}              ...(__isPlainObject(${scopeVar}.data) ? ${scopeVar}.data : {}),
-${indent}              ...(__item as Record<string, unknown>),
-${indent}            }
-${indent}          : __item,
-${indent}      params: {
-${indent}        ...${scopeVar}.params,
-${indent}        ${JSON.stringify(itemAlias)}: __item,
-${indent}        ${JSON.stringify(indexAlias)}: __index,
-${indent}      },
-${indent}    };
-${indent}    return (
-${indent}      <React.Fragment key={String(${keyExpr})}>
+      const normalizedItemsExpr =
+        listSourceExpr === '[]'
+          ? '[]'
+          : `(Array.isArray(${listSourceExpr}) ? ${listSourceExpr} : [])`;
+      const mapPrelude = needsItemScope
+        ? `${indent}  const itemData =
+${indent}    item && typeof item === 'object' && !Array.isArray(item)
+${indent}      ? {
+${indent}          ...(${scopeVar}.data && typeof ${scopeVar}.data === 'object' && !Array.isArray(${scopeVar}.data)
+${indent}            ? (${scopeVar}.data as Record<string, unknown>)
+${indent}            : {}),
+${indent}          ...(item as Record<string, unknown>),
+${indent}        }
+${indent}      : item;
+${indent}  const itemScope = {
+${indent}    ...${scopeVar},
+${indent}    item,
+${indent}    index,
+${indent}    data: itemData,
+${indent}    params: {
+${indent}      ...${scopeVar}.params,
+${indent}      ${JSON.stringify(itemAlias)}: item,
+${indent}      ${JSON.stringify(indexAlias)}: index,
+${indent}    },
+${indent}  };`
+        : '';
+      const mapExpr = mapPrelude
+        ? `${normalizedItemsExpr}.map((item, index) => {
+${mapPrelude}
+${indent}  return (
 ${bodyNode}
-${indent}      </React.Fragment>
-${indent}    );
-${indent}  });
-${indent}})()}`;
+${indent}  );
+${indent}})`
+        : `${normalizedItemsExpr}.map((item, index) => (
+${bodyNode}
+${indent}))`;
+      if (emptyRender === 'null') {
+        return `${indent}{${mapExpr}}`;
+      }
+      return `${indent}{${normalizedItemsExpr}.length > 0 ? ${mapExpr} : ${emptyRender}}`;
     }
     const adapterResult = adapter.resolveNode(node);
     const tag = rewriteElementWithAlias(
@@ -550,21 +675,65 @@ ${indent}})()}`;
       adapterResult.imports,
       importLocalByKey
     );
+    const staticIconRef = readStaticIconRef(node.props?.iconRef);
+    const sanitizedProps = sanitizeNodePropsForExport(node.props);
+    if (staticIconRef && NATIVE_ICON_PROVIDERS.has(staticIconRef.provider)) {
+      delete sanitizedProps.iconRef;
+    }
     const propsArray: string[] = [];
-
-    if (Object.keys(node.style).length > 0) {
-      const styleExpr = stringifyLiteral(node.style);
-      if (styleExpr) propsArray.push(`style={${styleExpr}}`);
+    const nativeIconSize = sanitizedProps.size;
+    if (staticIconRef && NATIVE_ICON_PROVIDERS.has(staticIconRef.provider)) {
+      delete sanitizedProps.size;
     }
 
-    Object.entries(sanitizeNodePropsForExport(node.props)).forEach(
-      ([key, value]) => {
-        const expr = compilePropExpression(value, scopeVar);
-        if (expr !== null) {
-          propsArray.push(`${key}=${expr}`);
-        }
+    const baseStyleExpr =
+      Object.keys(node.style).length > 0 ? stringifyLiteral(node.style) : null;
+    if (
+      nativeIconSize !== undefined &&
+      staticIconRef &&
+      NATIVE_ICON_PROVIDERS.has(staticIconRef.provider)
+    ) {
+      const sizeExpr = compileValueExpression(nativeIconSize, scopeVar);
+      const sizeStyleExpr =
+        staticIconRef.provider === 'heroicons'
+          ? `{ width: ${sizeExpr}, height: ${sizeExpr} }`
+          : `{ fontSize: ${sizeExpr} }`;
+      if (baseStyleExpr) {
+        propsArray.push(`style={{ ...${baseStyleExpr}, ...${sizeStyleExpr} }}`);
+      } else {
+        propsArray.push(`style={${sizeStyleExpr}}`);
       }
-    );
+    } else if (baseStyleExpr) {
+      propsArray.push(`style={${baseStyleExpr}}`);
+    }
+    if (extraProps.length > 0) {
+      propsArray.push(...extraProps);
+    }
+
+    Object.entries(sanitizedProps).forEach(([key, value]) => {
+      const expr = compilePropExpression(value, scopeVar);
+      if (expr !== null) {
+        propsArray.push(`${key}=${expr}`);
+      }
+    });
+
+    if (
+      staticIconRef?.provider === 'fontawesome' &&
+      !Object.prototype.hasOwnProperty.call(sanitizedProps, 'icon')
+    ) {
+      const iconImport = adapterResult.imports?.find(
+        (item) =>
+          item.kind === 'named' &&
+          item.source === '@fortawesome/free-solid-svg-icons'
+      );
+      if (iconImport) {
+        const iconLocal =
+          importLocalByKey.get(toImportKey(iconImport)) ??
+          iconImport.local ??
+          iconImport.imported;
+        propsArray.push(`icon={${iconLocal}}`);
+      }
+    }
 
     Object.entries(node.events).forEach(([eventKey, eventDef]) => {
       const trigger = eventDef.trigger || eventKey;
@@ -595,7 +764,7 @@ ${indent}})()}`;
         .map((child) => compileNode(child, `${indent}  `, scopeVar))
         .join('\n') || '';
 
-    if (!childJsx && !textContent && (tag === 'input' || tag === 'img')) {
+    if (!childJsx && !textContent) {
       return `${indent}<${tag}${allProps} />`;
     }
 
@@ -653,50 +822,27 @@ ${indent}})()}`;
   const mountedCssImportBlock = mountedCssFiles
     .map((file) => `import './${file.path}';`)
     .join('\n');
-  const runtimeHelperBlock = `const __PATH_SEGMENT_PATTERN = /[^.[\\]]+|\\[(\\d+)\\]/g;
-const __isPlainObject = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
-const __readByPath = (source: unknown, path: string): unknown => {
-  const trimmed = path.trim();
-  if (!trimmed) return source;
-  const tokens = Array.from(trimmed.matchAll(__PATH_SEGMENT_PATTERN)).map(
-    (token) => token[1] ?? token[0]
-  );
-  let cursor: unknown = source;
-  for (const token of tokens) {
-    if (cursor === null || cursor === undefined) return undefined;
-    if (Array.isArray(cursor)) {
-      const index = Number(token);
-      if (!Number.isInteger(index)) return undefined;
-      cursor = cursor[index];
-      continue;
-    }
-    if (!__isPlainObject(cursor)) return undefined;
-    cursor = cursor[token];
-  }
-  return cursor;
-};
-const __resolvePathOrLiteral = (source: unknown, value: string): unknown => {
-  const resolved = __readByPath(source, value);
-  return resolved === undefined ? value : resolved;
-};`;
   const functionSignature = `export default function ${componentName}(${
     hasProps ? `{ ${destructuredProps} }: ${interfaceName}` : ''
   }) {`;
+  const shouldEmitScope = rootJsx.includes('scope.');
+  const scopeParamEntries = Object.keys(propsDef)
+    .map((key) => `${JSON.stringify(key)}: ${toIdentifier(key)}`)
+    .join(', ');
+  const scopeBlock = shouldEmitScope
+    ? `  const scope = { data: undefined as unknown, item: undefined as unknown, index: undefined as number | undefined, params: ${scopeParamEntries ? `{ ${scopeParamEntries} }` : '{}'} };`
+    : '';
+  const functionBodyPrelude = [stateBlock, scopeBlock]
+    .filter((block) => block.length > 0)
+    .join('\n');
 
   const code = [
     reactImport,
     adapterImportBlock,
     mountedCssImportBlock,
     interfaceBlock.trim(),
-    runtimeHelperBlock,
     `${functionSignature}
-${stateBlock ? `${stateBlock}\n` : ''}  const __scope = { data: undefined as unknown, item: undefined as unknown, index: undefined as number | undefined, params: { ${Object.keys(
-      propsDef
-    )
-      .map((key) => `${JSON.stringify(key)}: ${toIdentifier(key)}`)
-      .join(', ')} } };
-  return (
+${functionBodyPrelude ? `${functionBodyPrelude}\n` : ''}  return (
 ${rootJsx}
   );
 }`,

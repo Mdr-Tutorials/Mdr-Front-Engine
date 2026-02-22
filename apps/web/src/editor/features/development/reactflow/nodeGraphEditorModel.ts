@@ -57,7 +57,48 @@ export type ProjectGraphSnapshot = {
   graphs: GraphDocument[];
 };
 
+export type MirLogicGraphNode = {
+  id: string;
+  type: string;
+  data: GraphNodeData;
+};
+
+export type MirLogicGraphDocument = {
+  id: string;
+  name: string;
+  nodes: MirLogicGraphNode[];
+  edges: Edge[];
+};
+
+export type NodeGraphEditorNodeState = {
+  id: string;
+  x: number;
+  y: number;
+  width?: number;
+  height?: number;
+  parentId?: string;
+  extent?: 'parent';
+  zIndex?: number;
+  collapsed?: boolean;
+};
+
+export type NodeGraphEditorGraphState = {
+  id: string;
+  nodes: NodeGraphEditorNodeState[];
+};
+
+export type NodeGraphEditorMirState = {
+  version: 1;
+  activeGraphId?: string;
+  graphs: NodeGraphEditorGraphState[];
+};
+
 const STORAGE_PREFIX = 'mdr:nodegraph:native';
+const DEFAULT_GRAPH_NAME = 'Main';
+export const NODE_GRAPH_EDITOR_STATE_KEY = 'x-nodeGraphEditor';
+
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
 
 export const nodeTypes = {
   graphNode: GraphNode,
@@ -594,63 +635,136 @@ export const createStarterGraph = (name: string): GraphDocument => {
   };
 };
 
+type NormalizeGraphDocumentsOptions = {
+  createFallbackWhenEmpty?: boolean;
+  fallbackGraphName?: string;
+};
+
+const normalizeGraphId = (value: unknown) => {
+  if (typeof value !== 'string') return '';
+  return value.trim();
+};
+
+const normalizeGraphName = (value: unknown, fallback: string) => {
+  if (typeof value !== 'string') return fallback;
+  const trimmed = value.trim();
+  return trimmed || fallback;
+};
+
+export const normalizeGraphDocuments = (
+  source: unknown,
+  options: NormalizeGraphDocumentsOptions = {}
+): GraphDocument[] => {
+  const {
+    createFallbackWhenEmpty = false,
+    fallbackGraphName = DEFAULT_GRAPH_NAME,
+  } = options;
+  const inputGraphs = Array.isArray(source) ? source : [];
+  const normalized: GraphDocument[] = [];
+  const usedIds = new Set<string>();
+  inputGraphs.forEach((entry, index) => {
+    let graphId = '';
+    let graphName = '';
+    let nodes: Node<GraphNodeData>[] = [];
+    let edges: Edge[] = [];
+    if (typeof entry === 'string') {
+      const trimmed = entry.trim();
+      if (!trimmed) return;
+      graphId = trimmed;
+      graphName = trimmed;
+    } else if (isPlainObject(entry)) {
+      graphId = normalizeGraphId(entry.id);
+      graphName = normalizeGraphName(
+        entry.name,
+        graphId || `graph-${index + 1}`
+      );
+      nodes = Array.isArray(entry.nodes)
+        ? entry.nodes
+            .map((node, nodeIndex) =>
+              isPlainObject(node)
+                ? normalizePersistedNode(
+                    node as unknown as Node<GraphNodeData>,
+                    nodeIndex
+                  )
+                : null
+            )
+            .filter((node): node is Node<GraphNodeData> => Boolean(node))
+        : [];
+      edges = Array.isArray(entry.edges)
+        ? entry.edges
+            .map((edge) =>
+              isPlainObject(edge)
+                ? normalizePersistedEdge(edge as unknown as Edge)
+                : null
+            )
+            .filter((edge): edge is Edge => Boolean(edge))
+        : [];
+    } else {
+      return;
+    }
+    if (!graphId || usedIds.has(graphId)) {
+      do {
+        graphId = createGraphId();
+      } while (usedIds.has(graphId));
+    }
+    usedIds.add(graphId);
+    normalized.push({
+      id: graphId,
+      name: normalizeGraphName(graphName, graphId),
+      nodes,
+      edges,
+    });
+  });
+  if (!normalized.length && createFallbackWhenEmpty) {
+    return [createStarterGraph(fallbackGraphName)];
+  }
+  return normalized;
+};
+
+export const ensureProjectGraphSnapshot = (
+  source: unknown,
+  options: NormalizeGraphDocumentsOptions = {}
+): ProjectGraphSnapshot => {
+  const normalizedGraphs = normalizeGraphDocuments(
+    isPlainObject(source) ? source.graphs : undefined,
+    {
+      ...options,
+      createFallbackWhenEmpty: true,
+    }
+  );
+  const rawActiveGraphId = isPlainObject(source)
+    ? normalizeGraphId(source.activeGraphId)
+    : '';
+  const activeGraphId = normalizedGraphs.some(
+    (graph) => graph.id === rawActiveGraphId
+  )
+    ? rawActiveGraphId
+    : normalizedGraphs[0].id;
+  return {
+    version: 2,
+    activeGraphId,
+    graphs: normalizedGraphs,
+  };
+};
+
 export const loadProjectSnapshot = (
   projectId: string
 ): ProjectGraphSnapshot => {
-  const fallbackGraph = createStarterGraph('Main');
-  const fallback: ProjectGraphSnapshot = {
-    version: 2,
-    activeGraphId: fallbackGraph.id,
-    graphs: [fallbackGraph],
-  };
+  const fallback = ensureProjectGraphSnapshot(undefined, {
+    fallbackGraphName: DEFAULT_GRAPH_NAME,
+  });
   if (typeof window === 'undefined') return fallback;
   try {
     const raw = window.localStorage.getItem(createStorageKey(projectId));
     if (!raw) return fallback;
-    const parsed = JSON.parse(raw) as
-      | {
-          nodes?: Node<GraphNodeData>[];
-          edges?: Edge[];
-        }
-      | ProjectGraphSnapshot;
-    if (
-      parsed &&
-      typeof parsed === 'object' &&
-      'graphs' in parsed &&
-      Array.isArray(parsed.graphs)
-    ) {
-      const normalizedGraphs = parsed.graphs
-        .map((graph) => ({
-          id: typeof graph.id === 'string' ? graph.id : createGraphId(),
-          name:
-            typeof graph.name === 'string' && graph.name.trim()
-              ? graph.name.trim()
-              : 'Untitled',
-          nodes: Array.isArray(graph.nodes)
-            ? graph.nodes.map(normalizePersistedNode)
-            : [],
-          edges: Array.isArray(graph.edges)
-            ? graph.edges.map(normalizePersistedEdge)
-            : [],
-        }))
-        .filter((graph) => Boolean(graph.id));
-      if (!normalizedGraphs.length) return fallback;
-      const activeGraphId = normalizedGraphs.some(
-        (graph) => graph.id === parsed.activeGraphId
-      )
-        ? parsed.activeGraphId
-        : normalizedGraphs[0].id;
-      return {
-        version: 2,
-        activeGraphId,
-        graphs: normalizedGraphs,
-      };
+    const parsed = JSON.parse(raw) as unknown;
+    if (isPlainObject(parsed) && Array.isArray(parsed.graphs)) {
+      return ensureProjectGraphSnapshot(parsed, {
+        fallbackGraphName: DEFAULT_GRAPH_NAME,
+      });
     }
     if (
-      !parsed ||
-      typeof parsed !== 'object' ||
-      !('nodes' in parsed) ||
-      !('edges' in parsed) ||
+      !isPlainObject(parsed) ||
       !Array.isArray(parsed.nodes) ||
       !Array.isArray(parsed.edges)
     ) {
@@ -658,16 +772,245 @@ export const loadProjectSnapshot = (
     }
     const migratedGraph: GraphDocument = {
       id: createGraphId(),
-      name: 'Main',
-      nodes: parsed.nodes.map(normalizePersistedNode),
+      name: DEFAULT_GRAPH_NAME,
+      nodes: parsed.nodes.map((node, index) =>
+        normalizePersistedNode(node, index)
+      ),
       edges: parsed.edges.map(normalizePersistedEdge),
     };
-    return {
-      version: 2,
-      activeGraphId: migratedGraph.id,
-      graphs: [migratedGraph],
-    };
+    return ensureProjectGraphSnapshot(
+      {
+        activeGraphId: migratedGraph.id,
+        graphs: [migratedGraph],
+      },
+      {
+        fallbackGraphName: DEFAULT_GRAPH_NAME,
+      }
+    );
   } catch {
     return fallback;
   }
 };
+
+const EDITOR_ONLY_NODE_DATA_FIELDS: Array<keyof GraphNodeData> = [
+  'collapsed',
+  'validationMessage',
+  'autoBoxWidth',
+  'autoBoxHeight',
+  'autoNoteWidth',
+  'autoNoteHeight',
+];
+
+const isFiniteNumber = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value);
+
+const normalizeNodeGraphEditorNodeState = (
+  source: unknown
+): NodeGraphEditorNodeState | null => {
+  if (!isPlainObject(source)) return null;
+  const id = normalizeGraphId(source.id);
+  if (!id) return null;
+  if (!isFiniteNumber(source.x) || !isFiniteNumber(source.y)) return null;
+  const normalized: NodeGraphEditorNodeState = {
+    id,
+    x: source.x,
+    y: source.y,
+  };
+  if (isFiniteNumber(source.width) && source.width > 0) {
+    normalized.width = source.width;
+  }
+  if (isFiniteNumber(source.height) && source.height > 0) {
+    normalized.height = source.height;
+  }
+  if (typeof source.parentId === 'string' && source.parentId.trim()) {
+    normalized.parentId = source.parentId.trim();
+  }
+  if (source.extent === 'parent') {
+    normalized.extent = 'parent';
+  }
+  if (isFiniteNumber(source.zIndex)) {
+    normalized.zIndex = source.zIndex;
+  }
+  if (typeof source.collapsed === 'boolean') {
+    normalized.collapsed = source.collapsed;
+  }
+  return normalized;
+};
+
+const normalizeNodeGraphEditorGraphState = (
+  source: unknown
+): NodeGraphEditorGraphState | null => {
+  if (!isPlainObject(source)) return null;
+  const id = normalizeGraphId(source.id);
+  if (!id) return null;
+  const rawNodes = Array.isArray(source.nodes) ? source.nodes : [];
+  const usedNodeIds = new Set<string>();
+  const nodes: NodeGraphEditorNodeState[] = [];
+  rawNodes.forEach((node) => {
+    const normalizedNode = normalizeNodeGraphEditorNodeState(node);
+    if (!normalizedNode) return;
+    if (usedNodeIds.has(normalizedNode.id)) return;
+    usedNodeIds.add(normalizedNode.id);
+    nodes.push(normalizedNode);
+  });
+  return {
+    id,
+    nodes,
+  };
+};
+
+export const normalizeNodeGraphEditorState = (
+  source: unknown
+): NodeGraphEditorMirState | null => {
+  if (!isPlainObject(source)) return null;
+  const rawGraphs = Array.isArray(source.graphs) ? source.graphs : [];
+  const usedGraphIds = new Set<string>();
+  const graphs: NodeGraphEditorGraphState[] = [];
+  rawGraphs.forEach((graph) => {
+    const normalizedGraph = normalizeNodeGraphEditorGraphState(graph);
+    if (!normalizedGraph) return;
+    if (usedGraphIds.has(normalizedGraph.id)) return;
+    usedGraphIds.add(normalizedGraph.id);
+    graphs.push(normalizedGraph);
+  });
+  const activeGraphId = normalizeGraphId(source.activeGraphId);
+  if (!graphs.length && !activeGraphId) return null;
+  return {
+    version: 1,
+    activeGraphId: activeGraphId || undefined,
+    graphs,
+  };
+};
+
+const createFallbackPosition = (index: number) => ({
+  x: (index % 4) * 220,
+  y: Math.floor(index / 4) * 140,
+});
+
+const resolvePositionFromNodeState = (
+  node: Node<GraphNodeData>,
+  nodeState: NodeGraphEditorNodeState | undefined,
+  nodeIndex: number
+) => {
+  if (nodeState) {
+    return {
+      x: nodeState.x,
+      y: nodeState.y,
+    };
+  }
+  if (isFiniteNumber(node.position?.x) && isFiniteNumber(node.position?.y)) {
+    return {
+      x: node.position.x,
+      y: node.position.y,
+    };
+  }
+  return createFallbackPosition(nodeIndex);
+};
+
+export const applyNodeGraphEditorStateToGraphs = (
+  graphs: GraphDocument[],
+  editorState: NodeGraphEditorMirState | null
+): GraphDocument[] => {
+  if (!editorState?.graphs.length) return graphs;
+  const graphStateById = new Map<string, NodeGraphEditorGraphState>();
+  editorState.graphs.forEach((graphState) => {
+    graphStateById.set(graphState.id, graphState);
+  });
+  return graphs.map((graph) => {
+    const graphState = graphStateById.get(graph.id);
+    if (!graphState) return graph;
+    const nodeStateById = new Map<string, NodeGraphEditorNodeState>();
+    graphState.nodes.forEach((nodeState) => {
+      nodeStateById.set(nodeState.id, nodeState);
+    });
+    const nextNodes = graph.nodes.map((node, nodeIndex) => {
+      const nodeState = nodeStateById.get(node.id);
+      const nextData = { ...node.data };
+      if (typeof nodeState?.collapsed === 'boolean') {
+        nextData.collapsed = nodeState.collapsed;
+      }
+      return {
+        ...node,
+        position: resolvePositionFromNodeState(node, nodeState, nodeIndex),
+        width:
+          nodeState?.width ??
+          (isFiniteNumber(node.width) && node.width > 0
+            ? node.width
+            : undefined),
+        height:
+          nodeState?.height ??
+          (isFiniteNumber(node.height) && node.height > 0
+            ? node.height
+            : undefined),
+        parentId: nodeState?.parentId ?? node.parentId,
+        extent: nodeState?.extent ?? node.extent,
+        zIndex: nodeState?.zIndex ?? node.zIndex,
+        data: nextData,
+      };
+    });
+    return {
+      ...graph,
+      nodes: nextNodes,
+    };
+  });
+};
+
+const stripEditorOnlyDataFields = (data: GraphNodeData): GraphNodeData => {
+  const nextData: GraphNodeData = { ...data };
+  EDITOR_ONLY_NODE_DATA_FIELDS.forEach((field) => {
+    delete nextData[field];
+  });
+  return nextData;
+};
+
+export const serializeGraphsForMirLogic = (
+  graphs: GraphDocument[]
+): MirLogicGraphDocument[] =>
+  graphs.map((graph) => ({
+    id: graph.id,
+    name: graph.name,
+    nodes: graph.nodes.map((node) => ({
+      id: node.id,
+      type:
+        typeof node.type === 'string' && node.type.trim()
+          ? node.type
+          : 'graphNode',
+      data: stripEditorOnlyDataFields(node.data),
+    })),
+    edges: graph.edges.map(normalizePersistedEdge),
+  }));
+
+const normalizeCoordinate = (value: unknown) =>
+  isFiniteNumber(value) ? value : 0;
+
+export const buildNodeGraphEditorState = (
+  snapshot: ProjectGraphSnapshot
+): NodeGraphEditorMirState => ({
+  version: 1,
+  activeGraphId: snapshot.activeGraphId,
+  graphs: snapshot.graphs.map((graph) => ({
+    id: graph.id,
+    nodes: graph.nodes.map((node) => {
+      const collapsed =
+        typeof node.data.collapsed === 'boolean' ? node.data.collapsed : false;
+      return {
+        id: node.id,
+        x: normalizeCoordinate(node.position?.x),
+        y: normalizeCoordinate(node.position?.y),
+        width:
+          isFiniteNumber(node.width) && node.width > 0 ? node.width : undefined,
+        height:
+          isFiniteNumber(node.height) && node.height > 0
+            ? node.height
+            : undefined,
+        parentId:
+          typeof node.parentId === 'string' && node.parentId.trim()
+            ? node.parentId
+            : undefined,
+        extent: node.extent === 'parent' ? 'parent' : undefined,
+        zIndex: isFiniteNumber(node.zIndex) ? node.zIndex : undefined,
+        collapsed: collapsed || undefined,
+      };
+    }),
+  })),
+});

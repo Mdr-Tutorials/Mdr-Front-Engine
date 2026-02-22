@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import type { ComponentNode } from '@/core/types/engine.types';
 import type { IconRef } from '@/mir/renderer/iconRegistry';
 import { createDefaultActionParams } from '@/mir/actions/registry';
@@ -8,6 +8,11 @@ import { isIconRef, resolveIconRef } from '@/mir/renderer/iconRegistry';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import type { WorkspaceRouteNode } from '@/editor/store/useEditorStore';
 import { flattenRouteItems } from '@/editor/store/routeManifest';
+import {
+  createDefaultBinding,
+  createDefaultTimeline,
+  normalizeAnimationDefinition,
+} from '../animation/animationEditorModel';
 import { resolveLinkCapability } from '@/mir/renderer/capabilities';
 import {
   getLayoutPatternId,
@@ -28,6 +33,7 @@ import {
 let persistedExpandedSections = {
   basic: true,
   style: true,
+  animation: true,
   triggers: true,
 };
 
@@ -37,6 +43,7 @@ export const resetInspectorExpansionPersistence = () => {
   persistedExpandedSections = {
     basic: true,
     style: true,
+    animation: true,
     triggers: true,
   };
   persistedExpandedPanels = {};
@@ -44,6 +51,7 @@ export const resetInspectorExpansionPersistence = () => {
 
 export const useBlueprintEditorInspectorController = () => {
   const { t } = useTranslation('blueprint');
+  const navigate = useNavigate();
   const { projectId } = useParams();
   const blueprintKey = projectId ?? 'global';
   const mirDoc = useEditorStore((state) => state.mirDoc);
@@ -116,6 +124,29 @@ export const useBlueprintEditorInspectorController = () => {
     }
     return [];
   }, [mirDoc.ui.root, selectedId]);
+  const animationDefinition = useMemo(
+    () =>
+      normalizeAnimationDefinition(mirDoc.animation) ?? {
+        version: 1 as const,
+        timelines: [],
+      },
+    [mirDoc.animation]
+  );
+  const mountedAnimationBindingCount = useMemo(() => {
+    const targetNodeId = selectedNode?.id?.trim();
+    if (!targetNodeId) return 0;
+    return animationDefinition.timelines.reduce((count, timeline) => {
+      const mountedCount = timeline.bindings.reduce((innerCount, binding) => {
+        return binding.targetNodeId.trim() === targetNodeId
+          ? innerCount + 1
+          : innerCount;
+      }, 0);
+      return count + mountedCount;
+    }, 0);
+  }, [animationDefinition.timelines, selectedNode?.id]);
+  const isAnimationMounted = mountedAnimationBindingCount > 0;
+  const hasAnimationDefinition = animationDefinition.timelines.length > 0;
+  const canOpenAnimationEditor = Boolean(projectId?.trim());
 
   useEffect(() => {
     setDraftId(selectedNode?.id ?? '');
@@ -273,6 +304,101 @@ export const useBlueprintEditorInspectorController = () => {
     setBlueprintState(blueprintKey, { selectedId: nextId });
   };
 
+  const mountSelectedNodeToAnimation = useCallback(() => {
+    const targetNodeId = selectedNode?.id?.trim();
+    if (!targetNodeId) return;
+    updateMirDoc((doc) => {
+      const animation = normalizeAnimationDefinition(doc.animation) ?? {
+        version: 1 as const,
+        timelines: [],
+      };
+      const alreadyMounted = animation.timelines.some((timeline) =>
+        timeline.bindings.some(
+          (binding) => binding.targetNodeId.trim() === targetNodeId
+        )
+      );
+      if (alreadyMounted) return doc;
+
+      if (!animation.timelines.length) {
+        const nextTimeline = createDefaultTimeline(0);
+        nextTimeline.bindings = [createDefaultBinding(0, targetNodeId)];
+        return {
+          ...doc,
+          animation: {
+            ...animation,
+            timelines: [nextTimeline],
+            'x-animationEditor': {
+              version: 1,
+              ...(animation['x-animationEditor'] ?? {}),
+              activeTimelineId: nextTimeline.id,
+            },
+          },
+        };
+      }
+
+      const activeTimelineId = animation['x-animationEditor']?.activeTimelineId;
+      const timelineIndex = animation.timelines.findIndex(
+        (timeline) => timeline.id === activeTimelineId
+      );
+      const targetTimelineIndex = timelineIndex >= 0 ? timelineIndex : 0;
+      const nextTimelines = animation.timelines.map((timeline, index) => {
+        if (index !== targetTimelineIndex) return timeline;
+        return {
+          ...timeline,
+          bindings: [
+            ...timeline.bindings,
+            createDefaultBinding(timeline.bindings.length, targetNodeId),
+          ],
+        };
+      });
+
+      return {
+        ...doc,
+        animation: {
+          ...animation,
+          timelines: nextTimelines,
+        },
+      };
+    });
+  }, [selectedNode?.id, updateMirDoc]);
+
+  const unmountSelectedNodeFromAnimation = useCallback(() => {
+    const targetNodeId = selectedNode?.id?.trim();
+    if (!targetNodeId) return;
+    updateMirDoc((doc) => {
+      const animation = normalizeAnimationDefinition(doc.animation);
+      if (!animation) return doc;
+      let changed = false;
+      const nextTimelines = animation.timelines.map((timeline) => {
+        const nextBindings = timeline.bindings.filter(
+          (binding) => binding.targetNodeId.trim() !== targetNodeId
+        );
+        if (nextBindings.length === timeline.bindings.length) {
+          return timeline;
+        }
+        changed = true;
+        return {
+          ...timeline,
+          bindings: nextBindings,
+        };
+      });
+      if (!changed) return doc;
+      return {
+        ...doc,
+        animation: {
+          ...animation,
+          timelines: nextTimelines,
+        },
+      };
+    });
+  }, [selectedNode?.id, updateMirDoc]);
+
+  const openAnimationEditor = useCallback(() => {
+    const resolvedProjectId = projectId?.trim();
+    if (!resolvedProjectId) return;
+    navigate(`/editor/project/${resolvedProjectId}/animation`);
+  }, [navigate, projectId]);
+
   const toggleSection = (key: keyof typeof expandedSections) => {
     setExpandedSections((current) => {
       const next = {
@@ -341,24 +467,7 @@ export const useBlueprintEditorInspectorController = () => {
   };
 
   const graphOptions = useMemo(() => {
-    const graphs = Array.isArray(mirDoc.logic?.graphs)
-      ? mirDoc.logic?.graphs
-      : [];
-    return graphs
-      .map((graph, index) => {
-        if (typeof graph === 'string') return { id: graph, label: graph };
-        if (typeof graph === 'object' && graph !== null) {
-          const id = String(
-            (graph as Record<string, unknown>).id ?? `graph-${index + 1}`
-          );
-          const label = String((graph as Record<string, unknown>).name ?? id);
-          return { id, label };
-        }
-        return null;
-      })
-      .filter((graph): graph is { id: string; label: string } =>
-        Boolean(graph)
-      );
+    return normalizeGraphOptionsFromMir(mirDoc.logic?.graphs);
   }, [mirDoc.logic?.graphs]);
 
   const updateTrigger = (
@@ -424,6 +533,13 @@ export const useBlueprintEditorInspectorController = () => {
       projectId,
       expandedSections,
       toggleSection,
+      hasAnimationDefinition,
+      isAnimationMounted,
+      mountedAnimationBindingCount,
+      mountSelectedNodeToAnimation,
+      unmountSelectedNodeFromAnimation,
+      openAnimationEditor,
+      canOpenAnimationEditor,
       draftId,
       setDraftId,
       applyRename,
@@ -471,6 +587,9 @@ export const useBlueprintEditorInspectorController = () => {
       t,
       projectId,
       expandedSections,
+      hasAnimationDefinition,
+      isAnimationMounted,
+      mountedAnimationBindingCount,
       draftId,
       selectedNode,
       isDirty,
@@ -482,6 +601,10 @@ export const useBlueprintEditorInspectorController = () => {
       mountedCssEntries,
       matchedPanels,
       expandedPanels,
+      mountSelectedNodeToAnimation,
+      unmountSelectedNodeFromAnimation,
+      openAnimationEditor,
+      canOpenAnimationEditor,
       supportsClassProtocol,
       classNameValue,
       isIconNode,
@@ -546,6 +669,44 @@ const findParentNodeById = (
     if (nested) return nested;
   }
   return null;
+};
+
+const normalizeGraphOptionsFromMir = (
+  source: unknown
+): Array<{ id: string; label: string }> => {
+  const graphEntries = Array.isArray(source) ? source : [];
+  const normalizedOptions: Array<{ id: string; label: string }> = [];
+  const usedIds = new Set<string>();
+  graphEntries.forEach((entry, index) => {
+    let id = '';
+    let label = '';
+    if (typeof entry === 'string') {
+      const trimmed = entry.trim();
+      if (!trimmed) return;
+      id = trimmed;
+      label = trimmed;
+    } else if (isPlainObject(entry)) {
+      const objectId = typeof entry.id === 'string' ? entry.id.trim() : '';
+      const objectName =
+        typeof entry.name === 'string' ? entry.name.trim() : '';
+      id = objectId || objectName || `graph-${index + 1}`;
+      label = objectName || id;
+    } else {
+      return;
+    }
+    if (usedIds.has(id)) {
+      let dedupeIndex = 2;
+      let nextId = `${id}-${dedupeIndex}`;
+      while (usedIds.has(nextId)) {
+        dedupeIndex += 1;
+        nextId = `${id}-${dedupeIndex}`;
+      }
+      id = nextId;
+    }
+    usedIds.add(id);
+    normalizedOptions.push({ id, label: label || id });
+  });
+  return normalizedOptions;
 };
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> =>

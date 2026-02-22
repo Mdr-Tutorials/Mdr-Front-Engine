@@ -35,13 +35,11 @@ describe('mirToReact generator', () => {
     const code = generateReactCode(createDoc(), {
       resourceType: 'component',
     });
-    expect(code).toContain('onClick={() => {');
+    expect(code).toContain('onClick={() => window.open(');
     expect(code).toContain(
-      `window.open(__to, '_blank', 'noopener,noreferrer');`
+      `window.open("https://example.com", '_blank', 'noopener,noreferrer')`
     );
-    expect(code).toContain(
-      `const __params = { "to": __resolvePathOrLiteral(__scope.data, "https://example.com"), "target": __resolvePathOrLiteral(__scope.data, "_blank") };`
-    );
+    expect(code).not.toContain('const params =');
     expect(code).not.toContain('runNavigate');
   });
 
@@ -150,7 +148,7 @@ describe('mirToReact generator', () => {
       "import { Input } from 'https://esm.sh/antd@5.28.0';"
     );
     expect(code).toContain('<Form.Item>');
-    expect(code).toContain('<Input>');
+    expect(code).toContain('<Input />');
   });
 
   it('maps Antd runtime types to production imports in default export mode', () => {
@@ -196,6 +194,93 @@ describe('mirToReact generator', () => {
     const code = generateReactCode(doc, { resourceType: 'component' });
     expect(code).toContain("import Button from '@mui/material/Button';");
     expect(code).toContain('<Button');
+  });
+
+  it('maps MdrIcon fontawesome refs to native imports', () => {
+    const doc = createDoc();
+    doc.ui.root = {
+      id: 'root',
+      type: 'MdrIcon',
+      props: {
+        size: 20,
+        iconRef: {
+          provider: 'fontawesome',
+          name: '8',
+        },
+      },
+    };
+
+    const code = generateReactCode(doc, { resourceType: 'component' });
+    expect(code).toContain(
+      "import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';"
+    );
+    expect(code).toContain(
+      "import { fa8 } from '@fortawesome/free-solid-svg-icons';"
+    );
+    expect(code).toContain('<FontAwesomeIcon');
+    expect(code).toContain('style={{ fontSize: 20 }}');
+    expect(code).toContain('icon={fa8}');
+    expect(code).not.toContain('size={20}');
+    expect(code).not.toContain('iconRef=');
+  });
+
+  it('maps MdrIcon ant-design refs to native icon components', () => {
+    const doc = createDoc();
+    doc.ui.root = {
+      id: 'root',
+      type: 'MdrIcon',
+      props: {
+        iconRef: {
+          provider: 'ant-design-icons',
+          name: 'HomeOutlined',
+        },
+      },
+    };
+
+    const code = generateReactCode(doc, { resourceType: 'component' });
+    expect(code).toContain("import { HomeOutlined } from '@ant-design/icons';");
+    expect(code).toContain('<HomeOutlined');
+    expect(code).not.toContain('iconRef=');
+  });
+
+  it('maps MdrIcon heroicons refs to native icon components', () => {
+    const doc = createDoc();
+    doc.ui.root = {
+      id: 'root',
+      type: 'MdrIcon',
+      props: {
+        iconRef: {
+          provider: 'heroicons',
+          name: 'AcademicCap',
+        },
+      },
+    };
+
+    const code = generateReactCode(doc, { resourceType: 'component' });
+    expect(code).toContain(
+      "import { AcademicCapIcon } from '@heroicons/react/24/outline';"
+    );
+    expect(code).toContain('<AcademicCapIcon');
+    expect(code).not.toContain('iconRef=');
+  });
+
+  it('maps MdrIcon mui refs to native icon components', () => {
+    const doc = createDoc();
+    doc.ui.root = {
+      id: 'root',
+      type: 'MdrIcon',
+      props: {
+        iconRef: {
+          provider: 'mui-icons',
+          name: 'Home',
+        },
+      },
+    };
+
+    const code = generateReactCode(doc, { resourceType: 'component' });
+    expect(code).toContain("import Home from '@mui/icons-material/Home';");
+    expect(code).toContain('<Home');
+    expect(code).not.toContain('iconRef=');
   });
 
   it('adds prefixes when multiple libraries import same component name', () => {
@@ -269,9 +354,7 @@ describe('mirToReact generator', () => {
     const code = generateReactCode(doc, { resourceType: 'component' });
     expect(code).not.toContain('data-layout-role');
     expect(code).not.toContain('data-layout-pattern');
-    expect(code).toContain(
-      'data-testid={__resolvePathOrLiteral(__scope.data, "keep-me")}'
-    );
+    expect(code).toContain('data-testid="keep-me"');
     expect(code).toContain('dataAttributes={{"data-theme":"light"}}');
   });
 
@@ -299,11 +382,11 @@ describe('mirToReact generator', () => {
     };
 
     const code = generateReactCode(doc, { resourceType: 'component' });
-    expect(code).toContain('__readByPath');
-    expect(code).toContain('__resolvePathOrLiteral');
-    expect(code).toContain('.map((__item, __index)');
-    expect(code).toContain(
-      'key={String(__readByPath(__item, "id") ?? __index)}'
-    );
+    expect(code).not.toContain('__readByPath');
+    expect(code).not.toContain('__resolvePathOrLiteral');
+    expect(code).not.toContain('{(() => {');
+    expect(code).not.toContain('const itemScope =');
+    expect(code).toContain('.map((item, index)');
+    expect(code).toContain('key={String((item as any)?.id ?? index)}');
   });
 });

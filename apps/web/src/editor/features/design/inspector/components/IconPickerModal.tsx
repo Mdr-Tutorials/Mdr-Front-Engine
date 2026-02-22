@@ -1,11 +1,21 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, X } from 'lucide-react';
 import type { IconRef } from '@/mir/renderer/iconRegistry';
 import {
+  ensureIconProviderReady,
+  getIconProviderState,
+  getIconRegistryRevision,
   listIconNamesByProvider,
   listIconProviders,
   resolveIconRef,
+  subscribeIconRegistry,
 } from '@/mir/renderer/iconRegistry';
 
 type IconPickerModalProps = {
@@ -26,8 +36,16 @@ export function IconPickerModal({
   onSelect,
 }: IconPickerModalProps) {
   const { t } = useTranslation('blueprint');
-  const providers = useMemo(() => listIconProviders(), []);
-  const fallbackProvider = providers[0]?.id ?? 'lucide';
+  const registryRevision = useSyncExternalStore(
+    subscribeIconRegistry,
+    getIconRegistryRevision,
+    getIconRegistryRevision
+  );
+  const providers = useMemo(() => listIconProviders(), [registryRevision]);
+  const fallbackProvider =
+    providers.find((provider) => provider.id === 'lucide')?.id ??
+    providers[0]?.id ??
+    'lucide';
   const [providerId, setProviderId] = useState(
     initialIconRef?.provider ?? fallbackProvider
   );
@@ -58,10 +76,23 @@ export function IconPickerModal({
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [onClose, open]);
 
+  const providerState = useMemo(
+    () => getIconProviderState(providerId),
+    [providerId, registryRevision]
+  );
   const iconNames = useMemo(
     () => listIconNamesByProvider(providerId),
-    [providerId]
+    [providerId, registryRevision]
   );
+  const isProviderLoading =
+    providerState.status === 'loading' || providerState.status === 'idle';
+  const hasProviderError = providerState.status === 'error';
+
+  useEffect(() => {
+    if (!open) return;
+    void ensureIconProviderReady(providerId).catch(() => undefined);
+  }, [open, providerId]);
+
   const filteredNames = useMemo(() => {
     const query = normalizeSearch(search);
     if (!query) return iconNames;
@@ -216,6 +247,36 @@ export function IconPickerModal({
                     })}
               </span>
             </div>
+            {isProviderLoading && !filteredNames.length && (
+              <div className="border-b border-black/8 px-4 py-2 text-[11px] text-(--color-6) dark:border-white/12">
+                {t('inspector.iconPicker.loading', {
+                  defaultValue: 'Loading icons from esm.sh...',
+                })}
+              </div>
+            )}
+            {hasProviderError && !filteredNames.length && (
+              <div className="flex items-center justify-between gap-2 border-b border-black/8 px-4 py-2 text-[11px] text-(--color-6) dark:border-white/12">
+                <span className="truncate">
+                  {t('inspector.iconPicker.loadError', {
+                    defaultValue: 'Icon provider failed to load.',
+                  })}
+                </span>
+                <button
+                  type="button"
+                  className="h-7 rounded-md border border-black/10 px-2 text-[11px] text-(--color-7)"
+                  onClick={() =>
+                    void ensureIconProviderReady(providerId).catch(
+                      () => undefined
+                    )
+                  }
+                  data-testid="icon-picker-retry-provider"
+                >
+                  {t('inspector.iconPicker.retry', {
+                    defaultValue: 'Retry',
+                  })}
+                </button>
+              </div>
+            )}
             <div
               ref={listRef}
               className="grid min-h-0 grid-cols-3 gap-2 overflow-y-auto p-3 md:grid-cols-4 lg:grid-cols-5"

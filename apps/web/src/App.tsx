@@ -16,6 +16,9 @@ const BlueprintEditor = lazy(
 const NodeGraphEditor = lazy(
   () => import('./editor/features/development/NodeGraphEditor')
 );
+const AnimationEditor = lazy(
+  () => import('./editor/features/animation/AnimationEditor')
+);
 const ProjectResources = lazy(() =>
   import('./editor/features/resources/ProjectResources').then((module) => ({
     default: module.ProjectResources,
@@ -85,11 +88,7 @@ export const createRoutes = (t: TFunction) => [
           },
           {
             path: 'animation',
-            element: (
-              <div>
-                {t('animationEditor', 'animationEditor', { ns: 'routes' })}
-              </div>
-            ),
+            element: withEditorSuspense(<AnimationEditor />),
           },
           {
             path: 'resources',

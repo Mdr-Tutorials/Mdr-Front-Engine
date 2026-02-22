@@ -14,6 +14,7 @@ import { useBlueprintAutosave } from './BlueprintEditor.autosave';
 import { useBlueprintDragDrop } from './BlueprintEditor.dragdrop';
 import { executeBlueprintGraph } from './BlueprintGraphExecutor';
 import { createNodeIdFactory } from './BlueprintEditor.palette';
+import type { ComponentNode, MIRDocument } from '@/core/types/engine.types';
 import {
   cloneNodeWithNewIds,
   findNodeById,
@@ -23,6 +24,7 @@ import {
   moveChildById,
   removeNodeById,
 } from './BlueprintEditor.tree';
+import { normalizeAnimationDefinition } from '../animation/animationEditorModel';
 import {
   getNavigateLinkKind,
   resolveNavigateTarget,
@@ -516,10 +518,11 @@ export const useBlueprintEditorController = () => {
       removed = removal.removed;
       if (!removal.removed) return doc;
       nextSelectedId = parentId ?? undefined;
-      return {
+      const nextDoc = {
         ...doc,
         ui: { ...doc.ui, root: removal.node },
       };
+      return cleanupDeletedNodeAnimationBindings(nextDoc);
     });
     if (removed) {
       setBlueprintState(blueprintKey, { selectedId: nextSelectedId });
@@ -539,10 +542,11 @@ export const useBlueprintEditorController = () => {
       if (selectedId === nodeId) {
         nextSelectedId = parentId ?? undefined;
       }
-      return {
+      const nextDoc = {
         ...doc,
         ui: { ...doc.ui, root: removal.node },
       };
+      return cleanupDeletedNodeAnimationBindings(nextDoc);
     });
     if (removed && selectedId === nodeId) {
       setBlueprintState(blueprintKey, { selectedId: nextSelectedId });
@@ -684,4 +688,55 @@ export const useBlueprintEditorController = () => {
       onResetView: handleResetView,
     },
   };
+};
+
+const cleanupDeletedNodeAnimationBindings = (doc: MIRDocument): MIRDocument => {
+  const animation = normalizeAnimationDefinition(doc.animation);
+  if (!animation) return doc;
+
+  const validNodeIds = new Set<string>();
+  collectNodeIds(doc.ui.root, validNodeIds);
+
+  let changed = false;
+  const nextTimelines = animation.timelines.map((timeline) => {
+    let timelineChanged = false;
+    const nextBindings = timeline.bindings.reduce<typeof timeline.bindings>(
+      (result, binding) => {
+        const targetNodeId = binding.targetNodeId.trim();
+        if (!targetNodeId || !validNodeIds.has(targetNodeId)) {
+          timelineChanged = true;
+          return result;
+        }
+        if (targetNodeId !== binding.targetNodeId) {
+          timelineChanged = true;
+          result.push({ ...binding, targetNodeId });
+          return result;
+        }
+        result.push(binding);
+        return result;
+      },
+      []
+    );
+    if (!timelineChanged) return timeline;
+    changed = true;
+    return {
+      ...timeline,
+      bindings: nextBindings,
+    };
+  });
+
+  if (!changed) return doc;
+
+  return {
+    ...doc,
+    animation: {
+      ...animation,
+      timelines: nextTimelines,
+    },
+  };
+};
+
+const collectNodeIds = (node: ComponentNode, bucket: Set<string>) => {
+  bucket.add(node.id);
+  (node.children ?? []).forEach((child) => collectNodeIds(child, bucket));
 };

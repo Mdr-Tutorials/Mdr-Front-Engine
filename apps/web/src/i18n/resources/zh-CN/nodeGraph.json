@@ -345,7 +345,14 @@
       "annotation": {
         "stickyNote": {
           "placeholder": "编写 Markdown 便签...",
-          "emptyText": "点击编辑便签"
+          "emptyText": "点击编辑便签",
+          "modalTitle": "编辑 Markdown 便签",
+          "editorLabel": "Markdown",
+          "previewLabel": "预览",
+          "shortcutHint": "提示：Ctrl/Cmd + Enter 保存",
+          "close": "关闭",
+          "cancel": "取消",
+          "save": "保存"
         },
         "groupBox": {
           "titlePlaceholder": "分组标题"

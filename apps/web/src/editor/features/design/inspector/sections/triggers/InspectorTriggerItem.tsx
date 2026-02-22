@@ -1,3 +1,4 @@
+import { useEffect, useMemo } from 'react';
 import { Trash2 } from 'lucide-react';
 import {
   BUILT_IN_ACTION_OPTIONS,
@@ -31,16 +32,45 @@ export function InspectorTriggerItem({ item }: { item: TriggerItem }) {
   const graphMode = item.params.graphMode === 'existing' ? 'existing' : 'new';
   const graphName =
     typeof item.params.graphName === 'string' ? item.params.graphName : '';
-  const selectedGraphId =
-    typeof item.params.graphId === 'string'
-      ? item.params.graphId
-      : (graphOptions[0]?.id ?? '');
+  const selectedGraphId = useMemo(() => {
+    const rawGraphId =
+      typeof item.params.graphId === 'string' ? item.params.graphId.trim() : '';
+    if (
+      rawGraphId &&
+      graphOptions.some((option: { id: string }) => option.id === rawGraphId)
+    ) {
+      return rawGraphId;
+    }
+    return graphOptions[0]?.id ?? '';
+  }, [graphOptions, item.params.graphId]);
   const stateValue =
     typeof item.params.state === 'string'
       ? item.params.state
       : item.params.state === undefined
         ? ''
         : JSON.stringify(item.params.state);
+
+  useEffect(() => {
+    if (actionValue !== 'executeGraph') return;
+    if (graphMode !== 'existing') return;
+    const rawGraphId =
+      typeof item.params.graphId === 'string' ? item.params.graphId.trim() : '';
+    if (rawGraphId === selectedGraphId) return;
+    updateTrigger(item.key, (currentEvent: any) => ({
+      ...currentEvent,
+      params: {
+        ...(currentEvent.params ?? {}),
+        graphId: selectedGraphId,
+      },
+    }));
+  }, [
+    actionValue,
+    graphMode,
+    item.key,
+    item.params.graphId,
+    selectedGraphId,
+    updateTrigger,
+  ]);
 
   return (
     <div className="grid gap-1.5" data-testid={`inspector-trigger-${item.key}`}>

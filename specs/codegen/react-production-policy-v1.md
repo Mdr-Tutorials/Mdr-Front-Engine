@@ -3,7 +3,7 @@
 ## 状态
 
 - Draft-Frozen
-- 日期：2026-02-17
+- 日期：2026-02-22
 - 关联：
   - `specs/decisions/17.external-library-runtime-and-adapter.md`
   - `specs/implementation/external-library-execution-plan.md`
@@ -124,7 +124,85 @@ type CodegenPolicy = {
 1. 将既有生成映射统一收敛到 Codegen Policy 概念下。
 2. 补齐与 MUI 同级的诊断与测试标准。
 
-## 9. 诊断规范（Codegen）
+## 9. NodeGraph 导出存储分层（v1.1 增补）
+
+### 9.1 分层目标
+
+1. `logic.graphs` 只承载运行语义（执行节点与连线关系）。
+2. 编辑器布局与交互状态通过 `x-` 扩展字段承载，避免污染运行模型。
+3. 导出与回读都保持“运行语义稳定 + 编辑态可恢复”。
+
+### 9.2 MIR 字段约定
+
+```ts
+type RuntimeGraphNode = {
+  id: string;
+  type: string;
+  data: Record<string, unknown>;
+};
+
+type RuntimeGraphEdge = {
+  id: string;
+  source: string;
+  target: string;
+  sourceHandle?: string;
+  targetHandle?: string;
+};
+
+type RuntimeGraph = {
+  id: string;
+  name: string;
+  nodes: RuntimeGraphNode[];
+  edges: RuntimeGraphEdge[];
+};
+
+type NodeGraphEditorNodeState = {
+  id: string;
+  x: number;
+  y: number;
+  width?: number;
+  height?: number;
+  parentId?: string;
+  extent?: 'parent';
+  zIndex?: number;
+  collapsed?: true;
+};
+
+type NodeGraphEditorState = {
+  version: 1;
+  activeGraphId?: string;
+  graphs: Array<{
+    id: string;
+    nodes: NodeGraphEditorNodeState[];
+  }>;
+};
+
+type MirLogicWithNodeGraph = {
+  graphs?: RuntimeGraph[];
+  'x-nodeGraphEditor'?: NodeGraphEditorState;
+};
+```
+
+约束：
+
+1. `collapsed` 仅在值为 `true` 时输出；默认展开态不输出。
+2. `logic.graphs.nodes[*].data` 不允许包含布局字段（如 `x/y/width/height/auto*`）。
+3. `x-nodeGraphEditor` 的 `graphs[*].id` 必须与 `logic.graphs[*].id` 对齐。
+
+### 9.3 导出行为约束
+
+1. 代码生成与运行时编译仅消费 `logic.graphs`。
+2. 导出产物在保留 MIR 原文档场景下必须透传 `x-nodeGraphEditor`。
+3. 导出器不得把编辑器字段回写到 `logic.graphs`（禁止混层）。
+4. 当 `x-nodeGraphEditor.activeGraphId` 无效时，回读流程回退到第一张可用图。
+
+### 9.4 兼容迁移约束
+
+1. 旧结构若在 `logic.graphs` 节点内混入布局字段，保存时必须自动拆分到 `x-nodeGraphEditor`。
+2. 缺失 `x-nodeGraphEditor` 时，编辑器可从当前节点位置推导并补齐。
+3. 未识别的其他 `x-<namespace>` 字段必须原样保留，不得删除。
+
+## 10. 诊断规范（Codegen）
 
 建议编码段：
 
@@ -148,22 +226,22 @@ type CodegenDiagnostic = {
 };
 ```
 
-## 10. 测试与验收
+## 11. 测试与验收
 
-### 10.1 必测项
+### 11.1 必测项
 
 1. 单测：每个策略包至少覆盖映射成功与映射失败两个分支。
 2. 快照：导出代码快照稳定（含 import 顺序）。
 3. 构建冒烟：生成产物可通过最小构建流程。
 4. 回归：Blueprint 渲染语义与导出代码语义一致。
 
-### 10.2 Gate E 验收门槛
+### 11.2 Gate E 验收门槛
 
 1. 首批 MUI 组件导出构建通过率达到约定阈值。
 2. 阻断级导出错误必须具备结构化诊断。
 3. 不允许依赖运行时快照对象拼装生产代码。
 
-## 11. 非目标（v1）
+## 12. 非目标（v1）
 
 1. 不定义完整的状态管理或数据层生成框架。
 2. 不自动生成业务级 API 请求逻辑。

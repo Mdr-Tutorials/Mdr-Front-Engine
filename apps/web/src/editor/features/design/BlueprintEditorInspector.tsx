@@ -4,6 +4,7 @@ import { MountedCssEditorModal } from './inspector/classProtocol/MountedCssEdito
 import { InspectorSectionContext } from './inspector/sections/InspectorSectionContext';
 import { InspectorBasicSection } from './inspector/sections/InspectorBasicSection';
 import { InspectorStyleSection } from './inspector/sections/InspectorStyleSection';
+import { InspectorAnimationSection } from './inspector/sections/InspectorAnimationSection';
 import { InspectorTriggersSection } from './inspector/sections/InspectorTriggersSection';
 import { useBlueprintEditorInspectorController } from './BlueprintEditorInspector.controller';
 
@@ -60,6 +61,7 @@ export function BlueprintEditorInspector({
           <div className="InspectorSection flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden px-3 pb-3 pt-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:h-0 [&::-webkit-scrollbar]:w-0">
             <InspectorBasicSection />
             <InspectorStyleSection />
+            <InspectorAnimationSection />
             <InspectorTriggersSection />
           </div>
         </InspectorSectionContext.Provider>

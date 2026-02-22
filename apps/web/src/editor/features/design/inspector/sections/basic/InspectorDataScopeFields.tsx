@@ -1,4 +1,6 @@
+import { ChevronDown } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { InspectorRow } from '../../components/InspectorRow';
 import { useInspectorSectionContext } from '../InspectorSectionContext';
 
 const LEGACY_DATA_MODEL_KEY = 'x-mdr-data-model';
@@ -15,10 +17,13 @@ const asSchemaText = (value: unknown) => {
 };
 
 export function InspectorDataScopeFields() {
-  const { t, selectedNode, updateSelectedNode } = useInspectorSectionContext();
+  const { t, selectedNode, updateSelectedNode, expandedPanels, togglePanel } =
+    useInspectorSectionContext();
   const selectedNodeData = selectedNode?.data as
     | Record<string, unknown>
     | undefined;
+  const panelKey = 'basic-data-model';
+  const isExpanded = expandedPanels[panelKey] ?? true;
 
   const mountedDataModel = useMemo(() => {
     const data = selectedNodeData;
@@ -146,89 +151,131 @@ export function InspectorDataScopeFields() {
   };
 
   return (
-    <div className="grid gap-1.5 rounded-md border border-black/8 p-2 dark:border-white/14">
-      <div className="text-[10px] font-semibold text-(--color-7)">
-        {t('inspector.fields.dataModel.title', { defaultValue: 'Data Model' })}
-      </div>
-      <label className="inline-flex items-center gap-2 text-xs text-(--color-8)">
-        <input
-          data-testid="inspector-data-model-enable"
-          type="checkbox"
-          checked={isMounted}
-          onChange={(event) => {
-            const checked = event.currentTarget.checked;
-            updateSelectedNode((current: any) => {
-              if (!checked) {
-                const nextNode = { ...current };
-                delete nextNode.data;
-                return nextNode;
-              }
-              const nextData = {
-                ...(current.data ?? {}),
-                value: {},
-                mock: {},
-              } as Record<string, unknown>;
-              delete nextData.extend;
-              delete nextData[LEGACY_DATA_MODEL_KEY];
-              delete nextData[LEGACY_DATA_SCHEMA_KEY];
-              return { ...current, data: nextData };
-            });
-          }}
+    <div className="pt-1">
+      <button
+        type="button"
+        className="flex min-h-5.5 w-full cursor-pointer items-center justify-between border-0 bg-transparent p-0 text-left"
+        onClick={() => togglePanel(panelKey)}
+      >
+        <span className="InspectorLabel text-[11px] font-semibold text-(--color-8)">
+          {t('inspector.fields.dataModel.title', {
+            defaultValue: 'Data Model',
+          })}
+        </span>
+        <ChevronDown
+          size={14}
+          className={`${isExpanded ? 'rotate-0' : '-rotate-90'} text-(--color-6) transition-transform`}
         />
-        {t('inspector.fields.dataModel.enable', {
-          defaultValue: 'Mount data model JSON on this component',
-        })}
-      </label>
-      {isMounted ? (
-        <>
-          <textarea
-            data-testid="inspector-data-model-schema"
-            className="min-h-24 w-full rounded-md border border-black/10 bg-transparent px-2 py-1 text-xs dark:border-white/16"
-            value={schemaDraft}
-            placeholder={t('inspector.fields.dataModel.schemaPlaceholder', {
-              defaultValue:
-                '{\n  "totalCount": "number",\n  "items": [\n    {\n      "data": "string"\n    }\n  ]\n}',
+      </button>
+      {isExpanded ? (
+        <div className="mt-1 flex flex-col gap-1.5">
+          <InspectorRow
+            label={t('inspector.fields.dataModel.mountLabel', {
+              defaultValue: 'Mounted',
             })}
-            onChange={(event) => {
-              setSchemaDraft(event.target.value);
-              setSchemaError(null);
-            }}
-            onBlur={applySchemaDraft}
+            control={
+              <label className="inline-flex items-center gap-2 text-xs text-(--color-8)">
+                <input
+                  data-testid="inspector-data-model-enable"
+                  type="checkbox"
+                  checked={isMounted}
+                  onChange={(event) => {
+                    const checked = event.currentTarget.checked;
+                    updateSelectedNode((current: any) => {
+                      if (!checked) {
+                        const nextNode = { ...current };
+                        delete nextNode.data;
+                        return nextNode;
+                      }
+                      const nextData = {
+                        ...(current.data ?? {}),
+                        value: {},
+                        mock: {},
+                      } as Record<string, unknown>;
+                      delete nextData.extend;
+                      delete nextData[LEGACY_DATA_MODEL_KEY];
+                      delete nextData[LEGACY_DATA_SCHEMA_KEY];
+                      return { ...current, data: nextData };
+                    });
+                  }}
+                />
+                {t('inspector.fields.dataModel.enable', {
+                  defaultValue: 'Mount data model JSON on this component',
+                })}
+              </label>
+            }
           />
-          <div className="text-[10px] font-semibold text-(--color-7)">
-            {t('inspector.fields.dataModel.mockLabel', {
-              defaultValue: 'Mock JSON',
-            })}
-          </div>
-          <textarea
-            data-testid="inspector-data-model-mock"
-            className="min-h-24 w-full rounded-md border border-black/10 bg-transparent px-2 py-1 text-xs dark:border-white/16"
-            value={mockDraft}
-            placeholder={t('inspector.fields.dataModel.mockPlaceholder', {
-              defaultValue:
-                '{\n  "totalCount": 2,\n  "items": [\n    {\n      "data": "mdr"\n    }\n  ]\n}',
-            })}
-            onChange={(event) => {
-              setMockDraft(event.target.value);
-              setMockError(null);
-            }}
-            onBlur={applyMockDraft}
-          />
-          {schemaError ? (
-            <p className="m-0 text-[10px] text-[rgb(208,53,53)]">
-              {schemaError}
-            </p>
+          {isMounted ? (
+            <>
+              <InspectorRow
+                layout="vertical"
+                label={t('inspector.fields.dataModel.schemaLabel', {
+                  defaultValue: 'Schema JSON',
+                })}
+                control={
+                  <textarea
+                    data-testid="inspector-data-model-schema"
+                    className="min-h-24 w-full resize-y rounded-md border border-black/10 bg-transparent px-2.5 py-1 text-xs leading-[1.35] text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+                    value={schemaDraft}
+                    placeholder={t(
+                      'inspector.fields.dataModel.schemaPlaceholder',
+                      {
+                        defaultValue:
+                          '{\n  "totalCount": "number",\n  "items": [\n    {\n      "data": "string"\n    }\n  ]\n}',
+                      }
+                    )}
+                    onChange={(event) => {
+                      setSchemaDraft(event.target.value);
+                      setSchemaError(null);
+                    }}
+                    onBlur={applySchemaDraft}
+                  />
+                }
+              />
+              {schemaError ? (
+                <p className="m-0 text-[10px] text-[rgb(208,53,53)]">
+                  {schemaError}
+                </p>
+              ) : null}
+              <InspectorRow
+                layout="vertical"
+                label={t('inspector.fields.dataModel.mockLabel', {
+                  defaultValue: 'Mock JSON',
+                })}
+                control={
+                  <textarea
+                    data-testid="inspector-data-model-mock"
+                    className="min-h-24 w-full resize-y rounded-md border border-black/10 bg-transparent px-2.5 py-1 text-xs leading-[1.35] text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+                    value={mockDraft}
+                    placeholder={t(
+                      'inspector.fields.dataModel.mockPlaceholder',
+                      {
+                        defaultValue:
+                          '{\n  "totalCount": 2,\n  "items": [\n    {\n      "data": "mdr"\n    }\n  ]\n}',
+                      }
+                    )}
+                    onChange={(event) => {
+                      setMockDraft(event.target.value);
+                      setMockError(null);
+                    }}
+                    onBlur={applyMockDraft}
+                  />
+                }
+              />
+              {mockError ? (
+                <p className="m-0 text-[10px] text-[rgb(208,53,53)]">
+                  {mockError}
+                </p>
+              ) : null}
+              <p className="m-0 text-[10px] text-(--color-6)">
+                {t('inspector.fields.dataModel.hint', {
+                  defaultValue:
+                    'Child properties can bind with field paths directly in their own inputs.',
+                })}
+              </p>
+            </>
           ) : null}
-          {mockError ? (
-            <p className="m-0 text-[10px] text-[rgb(208,53,53)]">{mockError}</p>
-          ) : null}
-          <p className="m-0 text-[10px] text-(--color-6)">
-            {t('inspector.fields.dataModel.hint', {
-              defaultValue:
-                'Child properties can bind with field paths directly in their own inputs.',
-            })}
-          </p>
-        </>
+        </div>
       ) : null}
     </div>
   );

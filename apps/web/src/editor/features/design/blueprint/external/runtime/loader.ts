@@ -2,14 +2,12 @@ import type {
   ExternalLibraryDescriptor,
   ExternalLibraryDiagnostic,
 } from './types';
+import {
+  HOST_REACT_IMPORT_MAP_ID,
+  HOST_REACT_IMPORTS,
+} from '@/esm-bridge/importMap';
 
 let importMapInjected = false;
-const REACT_IMPORTS = {
-  react: '/src/esm-bridge/react-interop.mjs',
-  'react-dom': '/src/esm-bridge/react-dom-interop.mjs',
-  'react/jsx-runtime': '/src/esm-bridge/react-jsx-runtime-interop.mjs',
-  'react/jsx-dev-runtime': '/src/esm-bridge/react-jsx-dev-runtime-interop.mjs',
-};
 
 const createImportMapConflictDiagnostic = (
   details: string
@@ -26,14 +24,14 @@ export const ensureHostReactImportMap = (
   diagnostics: ExternalLibraryDiagnostic[]
 ) => {
   if (importMapInjected || typeof document === 'undefined') return;
-  const existingImportMap = document.getElementById('mdr-esm-importmap');
+  const existingImportMap = document.getElementById(HOST_REACT_IMPORT_MAP_ID);
   if (existingImportMap) {
     try {
       const parsed = JSON.parse(existingImportMap.textContent ?? '{}') as {
         imports?: Record<string, string>;
       };
       const imports = parsed.imports ?? {};
-      const conflicts = Object.entries(REACT_IMPORTS)
+      const conflicts = Object.entries(HOST_REACT_IMPORTS)
         .filter(([name, url]) => imports[name] && imports[name] !== url)
         .map(([name, url]) => `${name}: expected ${url}, got ${imports[name]}`);
       if (conflicts.length > 0) {
@@ -52,10 +50,10 @@ export const ensureHostReactImportMap = (
     return;
   }
   const script = document.createElement('script');
-  script.id = 'mdr-esm-importmap';
+  script.id = HOST_REACT_IMPORT_MAP_ID;
   script.type = 'importmap';
   script.textContent = JSON.stringify({
-    imports: REACT_IMPORTS,
+    imports: HOST_REACT_IMPORTS,
   });
   document.head.appendChild(script);
   importMapInjected = true;
