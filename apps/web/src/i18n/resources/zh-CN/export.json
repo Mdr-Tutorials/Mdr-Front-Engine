@@ -1,0 +1,25 @@
+{
+  "title": "导出代码",
+  "mir": {
+    "title": "MIR",
+    "description": "当前项目的 MIR JSON（临时页）",
+    "empty": "暂无 MIR（先进入蓝图编辑器创建组件）"
+  },
+  "react": {
+    "title": "React",
+    "description": "基于当前 MIR 生成的 React 组件代码",
+    "empty": "暂无 React 代码（先生成 MIR）",
+    "error": "React 代码生成失败"
+  },
+  "close": "关闭",
+  "copy": "复制",
+  "copySuccess": "已复制",
+  "footer": {
+    "generator": "由 Mdr Front Engine 生成"
+  },
+  "tabs": {
+    "mir": "MIR",
+    "react": "React",
+    "vue": "Vue"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "subtitle": "管理你的个人信息。",
+  "sections": {
+    "identity": "身份信息",
+    "session": "会话"
+  },
+  "labels": {
+    "name": "姓名",
+    "email": "邮箱",
+    "id": "用户 ID",
+    "created": "创建时间",
+    "description": "描述",
+    "token": "Token",
+    "expires": "过期时间"
+  },
+  "actions": {
+    "refresh": "刷新",
+    "logout": "退出登录",
+    "login": "去登录",
+    "backHome": "返回首页",
+    "copyId": "复制 ID",
+    "edit": "编辑",
+    "save": "保存",
+    "cancel": "取消"
+  },
+  "edit": {
+    "title": "编辑个人信息"
+  },
+  "messages": {
+    "saved": "已保存。",
+    "copiedId": "已复制用户 ID。",
+    "copiedEmail": "已复制邮箱。",
+    "copyFailed": "复制失败。"
+  },
+  "empty": {
+    "title": "未登录",
+    "subtitle": "登录后查看个人信息。",
+    "panelTitle": "需要登录",
+    "panelBody": "登录后可查看账号信息与会话状态。"
+  },
+  "description": {
+    "empty": "暂未填写描述。"
+  }
+}

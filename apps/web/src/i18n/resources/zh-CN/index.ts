@@ -1,21 +1,21 @@
-import legacy from '../zh-CN.json';
-import blueprintPatch from './blueprint.json';
-import nodeGraphPatch from './nodeGraph.json';
-import { mergeResourceSection } from '../merge';
-
-const blueprint = mergeResourceSection(
-  (legacy.blueprint ?? {}) as Record<string, unknown>,
-  blueprintPatch as Record<string, unknown>
-);
-const editor = mergeResourceSection(
-  (legacy.editor ?? {}) as Record<string, unknown>,
-  nodeGraphPatch as Record<string, unknown>
-);
+import auth from './auth.json';
+import blueprint from './blueprint.json';
+import community from './community.json';
+import editor from './editor.json';
+import exportResource from './export.json';
+import home from './home.json';
+import profile from './profile.json';
+import routes from './routes.json';
 
 const resources = {
-  ...legacy,
+  routes,
+  home,
+  community,
   editor,
+  export: exportResource,
   blueprint,
-};
+  auth,
+  profile,
+} as const;
 
 export default resources;

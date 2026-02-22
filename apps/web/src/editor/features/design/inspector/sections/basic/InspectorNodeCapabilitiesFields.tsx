@@ -171,7 +171,12 @@ export function InspectorNodeCapabilitiesFields() {
                 <input
                   data-testid="inspector-route-current-path"
                   className="w-full rounded-md border border-black/10 bg-transparent px-2 py-1 text-xs dark:border-white/16"
-                  placeholder="/about/team"
+                  placeholder={t(
+                    'inspector.fields.routeCurrentPath.placeholder',
+                    {
+                      defaultValue: '/about/team',
+                    }
+                  )}
                   value={currentPathValue}
                   onChange={(event) => {
                     const value = event.currentTarget.value;
@@ -196,7 +201,12 @@ export function InspectorNodeCapabilitiesFields() {
                 <input
                   data-testid="inspector-route-empty-text"
                   className="w-full rounded-md border border-black/10 bg-transparent px-2 py-1 text-xs dark:border-white/16"
-                  placeholder="No route matched."
+                  placeholder={t(
+                    'inspector.fields.routeEmptyText.placeholder',
+                    {
+                      defaultValue: 'No route matched.',
+                    }
+                  )}
                   value={emptyTextValue}
                   onChange={(event) => {
                     const value = event.currentTarget.value;
@@ -229,7 +239,9 @@ export function InspectorNodeCapabilitiesFields() {
                 <input
                   data-testid="inspector-route-child-path"
                   className="w-full rounded-md border border-black/10 bg-transparent px-2 py-1 text-xs dark:border-white/16"
-                  placeholder="/about or details/:id"
+                  placeholder={t('inspector.fields.routePath.placeholder', {
+                    defaultValue: '/about or details/:id',
+                  })}
                   value={routePathValue}
                   disabled={routeIndexValue}
                   onChange={(event) => {

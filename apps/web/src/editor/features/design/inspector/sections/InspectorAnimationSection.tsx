@@ -87,7 +87,10 @@ export function InspectorAnimationSection() {
                     })}
                 {isAnimationMounted && mountedAnimationBindingCount > 1 ? (
                   <span className="text-(--color-5)">
-                    {` (${mountedAnimationBindingCount} bindings)`}
+                    {t('inspector.groups.animation.bindingCount', {
+                      defaultValue: `(${mountedAnimationBindingCount} bindings)`,
+                      count: mountedAnimationBindingCount,
+                    })}
                   </span>
                 ) : null}
               </div>

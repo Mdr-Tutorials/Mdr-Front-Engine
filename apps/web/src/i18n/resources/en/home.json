@@ -1,0 +1,39 @@
+{
+  "brand": {
+    "name": "MdrFrontEngine"
+  },
+  "nav": {
+    "community": "Community",
+    "tutorials": "Tutorials",
+    "docs": "Docs",
+    "signIn": "Sign in",
+    "github": "GitHub",
+    "languageSwitch": "Switch language"
+  },
+  "hero": {
+    "line1": {
+      "highlight": "Mdr"
+    },
+    "line2": {
+      "before": "Frontend",
+      "highlight": "All in"
+    },
+    "line3": {
+      "before": "Instantly",
+      "highlight": "Transmuted"
+    },
+    "subtitle": "Orchestrate logic, drive data, and transmute inspiration into code."
+  },
+  "actions": {
+    "enterEditor": "Enter Editor",
+    "viewDocs": "View Docs"
+  },
+  "mirTest": {
+    "title": "MIR Preview",
+    "exportButton": "Quick Export"
+  },
+  "footer": {
+    "copy": "(c) 2026 Mdr Front Engine",
+    "placeholder": "Walk with the front-end."
+  }
+}

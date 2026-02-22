@@ -55,7 +55,7 @@ export function ClassProtocolEditor({
   mountedCssEntries = [],
   onOpenMountedCss,
 }: ClassProtocolEditorProps) {
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation('blueprint');
   const [draft, setDraft] = useState('');
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
   const { mode, inlineDraft, nextMode, setMode, setInlineDraft } =
@@ -124,15 +124,21 @@ export function ClassProtocolEditor({
   const getSuggestionLabel = (suggestion: ClassSuggestion) => {
     if (suggestion.kind === 'hint' && suggestion.hint) {
       if (suggestion.hint.type === 'arbitrary-length-template') {
-        const templateText = i18n.resolvedLanguage?.startsWith('zh')
-          ? '带单位长度'
-          : 'length with unit';
+        const templateText = t(
+          'inspector.fields.className.templates.lengthWithUnit',
+          {
+            defaultValue: 'length with unit',
+          }
+        );
         return `${suggestion.hint.prefix}-[${templateText}]`;
       }
       if (suggestion.hint.type === 'color-shade-template') {
-        const templateText = i18n.resolvedLanguage?.startsWith('zh')
-          ? '颜色深度'
-          : 'color shade';
+        const templateText = t(
+          'inspector.fields.className.templates.colorShade',
+          {
+            defaultValue: 'color shade',
+          }
+        );
         return `${suggestion.hint.prefix}-[${templateText}]`;
       }
     }
@@ -142,27 +148,33 @@ export function ClassProtocolEditor({
   const getSuggestionDetail = (suggestion: ClassSuggestion) => {
     if (suggestion.kind === 'hint' && suggestion.hint) {
       if (suggestion.hint.type === 'arbitrary-length-template') {
-        const defaultValue = i18n.resolvedLanguage?.startsWith('zh')
-          ? '例如 {{exampleA}}, {{exampleB}}'
-          : 'Example: {{exampleA}}, {{exampleB}}';
-        return t(
-          'blueprint.inspector.fields.className.hints.arbitraryLengthTemplate',
-          {
-            defaultValue,
-            exampleA: `${suggestion.hint.prefix}-[12px]`,
-            exampleB: `${suggestion.hint.prefix}-[1rem]`,
-          }
-        );
-      }
-      if (suggestion.hint.type === 'color-shade-template') {
-        const defaultValue = i18n.resolvedLanguage?.startsWith('zh')
-          ? '例如 {{example}}'
-          : 'Example: {{example}}';
-        return t('blueprint.inspector.fields.className.hints.colorShade', {
-          defaultValue,
-          example: suggestion.hint.example,
+        const exampleA = `${suggestion.hint.prefix}-[12px]`;
+        const exampleB = `${suggestion.hint.prefix}-[1rem]`;
+        return t('inspector.fields.className.hints.arbitraryLengthTemplate', {
+          defaultValue: `Example: ${exampleA}, ${exampleB}`,
+          exampleA,
+          exampleB,
         });
       }
+      if (suggestion.hint.type === 'color-shade-template') {
+        const example = suggestion.hint.example;
+        return t('inspector.fields.className.hints.colorShade', {
+          defaultValue: `Example: ${example}`,
+          example,
+        });
+      }
+    }
+    const inferredFromScaleMatch = suggestion.detail?.match(
+      /^Inferred from (-?(?:\d+|\d*\.\d+))px using default (-?(?:\d+|\d*\.\d+))px scale$/
+    );
+    if (inferredFromScaleMatch) {
+      const amount = inferredFromScaleMatch[1];
+      const base = inferredFromScaleMatch[2];
+      return t('inspector.fields.className.hints.inferredFromScale', {
+        defaultValue: `Inferred from ${amount}px using default ${base}px scale`,
+        amount,
+        base,
+      });
     }
     return suggestion.detail;
   };
@@ -182,6 +194,14 @@ export function ClassProtocolEditor({
   const emitTokens = (nextTokens: string[]) => {
     onChange(toClassNameValue(nextTokens));
   };
+  const nextModeLabel =
+    nextMode === 'token'
+      ? t('inspector.fields.className.modes.token', {
+          defaultValue: 'token',
+        })
+      : t('inspector.fields.className.modes.inline', {
+          defaultValue: 'inline',
+        });
 
   const commitToken = (rawToken: string) => {
     const token = rawToken.trim();
@@ -249,8 +269,13 @@ export function ClassProtocolEditor({
               title={
                 isOverridden
                   ? overriddenBy
-                    ? `Overridden by "${overriddenBy}"`
-                    : 'Overridden by another class'
+                    ? t('inspector.fields.className.overriddenBy', {
+                        defaultValue: `Overridden by "${overriddenBy}"`,
+                        token: overriddenBy,
+                      })
+                    : t('inspector.fields.className.overriddenByUnknown', {
+                        defaultValue: 'Overridden by another class',
+                      })
                   : undefined
               }
             >
@@ -301,8 +326,20 @@ export function ClassProtocolEditor({
                     })
                   }
                   data-testid={`inspector-classname-open-mounted-css-${index}`}
-                  aria-label={`Open mounted CSS for ${token}`}
-                  title={`Open mounted CSS (${mountedCssTarget.path})`}
+                  aria-label={t(
+                    'inspector.fields.className.actions.openMountedCssFor',
+                    {
+                      defaultValue: `Open mounted CSS for ${token}`,
+                      token,
+                    }
+                  )}
+                  title={t(
+                    'inspector.fields.className.actions.openMountedCssPath',
+                    {
+                      defaultValue: `Open mounted CSS (${mountedCssTarget.path})`,
+                      path: mountedCssTarget.path,
+                    }
+                  )}
                 >
                   <ExternalLink size={11} />
                 </button>
@@ -312,7 +349,13 @@ export function ClassProtocolEditor({
                 className="inline-flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-transparent p-0 text-(--color-6) hover:text-(--color-9)"
                 onClick={() => removeTokenAt(index)}
                 data-testid={`inspector-classname-token-remove-${index}`}
-                aria-label={`Remove ${token}`}
+                aria-label={t(
+                  'inspector.fields.className.actions.removeToken',
+                  {
+                    defaultValue: `Remove ${token}`,
+                    token,
+                  }
+                )}
               >
                 <X size={12} />
               </button>
@@ -384,8 +427,14 @@ export function ClassProtocolEditor({
           className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
           onClick={() => setMode(nextMode)}
           data-testid="inspector-classname-mode-toggle"
-          aria-label={`Switch to ${nextMode} mode`}
-          title={`Switch to ${nextMode} mode`}
+          aria-label={t('inspector.fields.className.actions.switchMode', {
+            defaultValue: `Switch to ${nextModeLabel} mode`,
+            mode: nextModeLabel,
+          })}
+          title={t('inspector.fields.className.actions.switchMode', {
+            defaultValue: `Switch to ${nextModeLabel} mode`,
+            mode: nextModeLabel,
+          })}
         >
           <ModeIcon size={12} />
         </button>
@@ -456,8 +505,14 @@ export function ClassProtocolEditor({
             className="absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
             onClick={() => setMode(nextMode)}
             data-testid="inspector-classname-mode-toggle"
-            aria-label={`Switch to ${nextMode} mode`}
-            title={`Switch to ${nextMode} mode`}
+            aria-label={t('inspector.fields.className.actions.switchMode', {
+              defaultValue: `Switch to ${nextModeLabel} mode`,
+              mode: nextModeLabel,
+            })}
+            title={t('inspector.fields.className.actions.switchMode', {
+              defaultValue: `Switch to ${nextModeLabel} mode`,
+              mode: nextModeLabel,
+            })}
           >
             <ModeIcon size={12} />
           </button>

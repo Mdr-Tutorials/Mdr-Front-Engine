@@ -151,13 +151,11 @@ export function MountedCssEditorModal({
     return [
       css(),
       colorGutter,
-      lintCompartment.of(
-        createSyntaxLinterExtension(DEFAULT_INVALID_CSS_MESSAGE)
-      ),
+      lintCompartment.of(createSyntaxLinterExtension(invalidSyntaxMessage)),
       lintGutter(),
       lintTheme,
     ];
-  }, [lintCompartment]);
+  }, [invalidSyntaxMessage, lintCompartment]);
   const editorRef = useRef<EditorView | null>(null);
 
   useEffect(() => {

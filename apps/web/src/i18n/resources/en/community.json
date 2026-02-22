@@ -1,0 +1,54 @@
+{
+  "backHome": "Back to Home",
+  "badge": "Community",
+  "title": "Public MIR Showcase",
+  "subtitle": "Explore projects, components, and node graphs shared by creators.",
+  "count": "results",
+  "countNone": "No results",
+  "error": {
+    "load": "Could not load community projects."
+  },
+  "search": {
+    "placeholder": "Search by title, author, description..."
+  },
+  "filter": {
+    "all": "All types",
+    "project": "Projects",
+    "component": "Components",
+    "nodegraph": "Node Graphs"
+  },
+  "sort": {
+    "latest": "Latest",
+    "popular": "Popular"
+  },
+  "card": {
+    "untitled": "Untitled",
+    "emptyDesc": "No description provided yet.",
+    "unknown": "Unknown"
+  },
+  "empty": {
+    "title": "No public projects found",
+    "body": "Try another keyword, switch the type filter, or sort by latest."
+  },
+  "pagination": {
+    "prev": "Prev",
+    "page": "Page",
+    "next": "Next"
+  },
+  "detail": {
+    "back": "Back to Community",
+    "author": "Author",
+    "updated": "Updated",
+    "preview": "Read-only Preview",
+    "mir": "MIR Document",
+    "clone": "Clone to My Workspace",
+    "cloning": "Cloning...",
+    "error": {
+      "title": "Unable to load this project",
+      "missing": "Project ID is missing.",
+      "load": "Could not load project detail.",
+      "clone": "Could not clone this project.",
+      "cloneSelf": "You cannot clone your own project from community."
+    }
+  }
+}

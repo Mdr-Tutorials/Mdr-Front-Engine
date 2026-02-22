@@ -1,21 +1,150 @@
 {
+  "address": {
+    "add": "添加",
+    "current": "当前地址",
+    "currentPlaceholder": "https://example.com",
+    "list": "已保存地址",
+    "new": "新地址",
+    "newPlaceholder": "输入或粘贴地址"
+  },
+  "autosave": {
+    "capabilities": {
+      "loading": "正在检查工作区能力…"
+    },
+    "status": {
+      "saving": "正在保存…",
+      "error": "保存失败，将在下次变更时重试。",
+      "workspaceSaved": "已保存到工作区。",
+      "projectSaved": "已保存到项目。",
+      "saved": "已保存。",
+      "idle": "就绪"
+    },
+    "messages": {
+      "workspaceRetry": "工作区保存失败，将在下次变更时重试。",
+      "projectRetry": "项目保存失败，将在下次变更时重试。",
+      "workspaceUnavailableUsingProject": "工作区文档保存不可用，已切换为项目保存。"
+    }
+  },
+  "canvas": {
+    "placeholderTitle": "拖拽组件到画布",
+    "placeholderDescription": "从组件库拖拽开始搭建。"
+  },
   "inspector": {
-    "classProtocol": {
-      "mountedCss": {
-        "title": "挂载 CSS",
-        "untitled": "untitled.css",
-        "close": "关闭挂载 CSS 编辑器",
-        "focusClass": "定位类名",
-        "cancel": "取消",
-        "save": "保存 CSS",
-        "invalidSyntax": "CSS 语法无效"
+    "title": "检查器",
+    "toggle": "切换检查器",
+    "placeholder": "选择组件以编辑。",
+    "groups": {
+      "basic": "基础信息",
+      "style": {
+        "title": "样式",
+        "empty": "当前组件没有可配置的样式项。",
+        "openMountedCss": "打开挂载 CSS",
+        "attachMountedCss": "挂载 CSS"
+      },
+      "triggers": {
+        "title": "触发器",
+        "empty": "暂无触发器配置，事件绑定会显示在这里。",
+        "linkConflict": "该组件同时配置了目标地址和 onClick 触发器，点击时可能会同时执行。",
+        "add": "新建触发器",
+        "delete": "删除触发器",
+        "eventLabel": "触发事件",
+        "eventHelp": "选择触发该动作的 DOM 事件。",
+        "actionLabel": "执行操作",
+        "actionHelp": "选择事件触发后要执行的操作。",
+        "toLabel": "目标地址",
+        "toPlaceholder": "https://example.com",
+        "toHelp": "外链使用 https:// 开头，内部预览路由使用 /path。",
+        "httpsOnly": "外链请使用 https:// 开头，内部链接请使用 /path。",
+        "replace": "替换历史",
+        "replaceHelp": "启用后会替换当前历史记录，而不是新增记录。",
+        "targetHelp": "导航动作使用的浏览器标签页目标。",
+        "statePlaceholder": "state（可选 JSON）",
+        "stateHelp": "可选的导航状态，支持普通文本或 JSON 字符串。",
+        "targets": {
+          "self": "_self",
+          "blank": "_blank"
+        },
+        "actions": {
+          "navigate": "跳转",
+          "executeGraph": "执行节点图"
+        },
+        "graph": {
+          "new": "新建节点图",
+          "newHelp": "创建并执行一个新的节点图。",
+          "select": "选择节点图",
+          "selectHelp": "运行一个已有的节点图。",
+          "namePlaceholder": "新节点图名称",
+          "nameHelp": "要创建的新节点图名称。",
+          "empty": "暂无可选节点图"
+        },
+        "navigation": {
+          "confirm": {
+            "title": "是否打开外部链接？",
+            "url": "URL: {{to}}",
+            "target": "打开目标: {{effectiveTarget}}",
+            "targetOverridden": "配置目标为 {{configuredTarget}}，为保护编辑器，蓝图预览将改用 {{effectiveTarget}} 打开。",
+            "replace": "替换历史: {{replace}}",
+            "source": "来源: {{nodeId}} · {{trigger}}",
+            "yes": "是",
+            "no": "否"
+          }
+        }
+      },
+      "animation": {
+        "title": "动画挂载",
+        "openEditor": "打开动画编辑器",
+        "selectedNode": "当前节点",
+        "noSelection": "请选择一个组件进行动画挂载。",
+        "empty": "当前还没有动画，挂载操作会初始化动画文档。",
+        "mounted": "已挂载到动画",
+        "unmounted": "未挂载",
+        "mount": "挂载",
+        "unmount": "取消挂载",
+        "bindingCount": "（{{count}} 个绑定）"
       }
     },
     "fields": {
       "className": {
-        "placeholder": "例如：p-4 flex items-center"
+        "label": "类名",
+        "placeholder": "例如：p-4 flex items-center",
+        "templates": {
+          "lengthWithUnit": "带单位长度",
+          "colorShade": "颜色深度"
+        },
+        "hints": {
+          "arbitraryLengthTemplate": "例如：{{exampleA}}、{{exampleB}}",
+          "colorShade": "例如：{{example}}",
+          "inferredFromScale": "由 {{amount}}px 推断（使用默认 {{base}}px 比例尺）"
+        },
+        "overriddenBy": "被\"{{token}}\"覆盖",
+        "overriddenByUnknown": "被其他类覆盖",
+        "modes": {
+          "token": "token",
+          "inline": "行内"
+        },
+        "actions": {
+          "openMountedCssFor": "打开 {{token}} 的挂载 CSS",
+          "openMountedCssPath": "打开挂载 CSS（{{path}}）",
+          "removeToken": "移除 {{token}}",
+          "switchMode": "切换到{{mode}}模式"
+        }
+      },
+      "id": {
+        "label": "组件 ID",
+        "description": "在当前蓝图中保持唯一。",
+        "duplicate": "ID 已存在。"
+      },
+      "icon": {
+        "label": "图标",
+        "empty": "未选择图标"
       },
       "link": {
+        "destination": "目标地址",
+        "destinationPlaceholder": "/path 或 https://example.com",
+        "target": "打开目标",
+        "rel": "Rel",
+        "title": "标题",
+        "titlePlaceholder": "打开文档",
         "relPlaceholder": "noopener noreferrer"
       },
       "colorInput": {
@@ -47,64 +176,80 @@
         "mockPlaceholder": "{\n  \"totalCount\": 2,\n  \"items\": [\n    {\n      \"data\": \"mdr\"\n    }\n  ]\n}",
         "invalidJson": "JSON 格式无效。",
         "schemaObjectOnly": "数据模型必须是 JSON 对象。",
-        "hint": "子组件在各自属性输入框中直接填写字段路径即可绑定。"
+        "hint": "子组件在各自属性输入框中直接填写字段路径即可绑定。",
+        "mountLabel": "已挂载",
+        "schemaLabel": "Schema JSON"
       },
       "listTemplate": {
         "title": "列表模板",
         "enable": "提升节点为列表模板",
         "arrayField": "数组字段",
-        "arrayFieldPlaceholder": "items"
+        "arrayFieldPlaceholder": "items",
+        "mountLabel": "已挂载",
+        "hint": "item 与 index 别名会在代码生成时自动处理。"
+      },
+      "routeCurrentPath": {
+        "label": "当前路径",
+        "placeholder": "/about/team"
+      },
+      "routeEmptyText": {
+        "label": "空状态文案",
+        "placeholder": "未匹配到路由。"
+      },
+      "routePath": {
+        "label": "路由路径",
+        "placeholder": "/about 或 details/:id"
+      },
+      "routeIndex": {
+        "label": "索引路由",
+        "hint": "与父级路由路径完全匹配"
+      },
+      "routeFallback": {
+        "label": "兜底路由",
+        "hint": "当没有路由路径匹配时渲染"
+      },
+      "outletRoute": {
+        "label": "Outlet 路由",
+        "placeholder": "选择路由...",
+        "bindActive": "绑定当前激活路由",
+        "clear": "清除"
       }
     },
     "panels": {
       "layout": {
+        "title": "布局",
+        "description": "Flex / Grid 布局细节",
         "fields": {
-          "display": "显示",
-          "gridRows": "行",
-          "gridAutoFlow": "自动流向",
-          "justifyItems": "项目主轴对齐",
-          "alignContent": "内容交叉轴对齐",
           "gap": "间隙",
+          "gapHint": "输入数字（px）或 CSS 尺寸值。",
           "margin": "外边距",
           "padding": "内边距",
-          "collapse": "收起",
+          "spacingHint": "支持 CSS 简写（1、2、3、4 个值），也可展开后按方向分别编辑。",
           "expand": "展开",
+          "collapse": "收起",
+          "flexDirection": "方向",
+          "justifyContent": "主轴对齐",
+          "alignItems": "交叉轴对齐",
+          "gridColumns": "列",
+          "gridColumnsHint": "用于设置 gridTemplateColumns。",
           "sides": {
             "top": "上",
             "right": "右",
             "bottom": "下",
             "left": "左"
           },
+          "display": "显示",
+          "gridRows": "行",
+          "gridAutoFlow": "自动流向",
+          "justifyItems": "项目主轴对齐",
+          "alignContent": "内容交叉轴对齐",
           "width": "宽度",
           "height": "高度",
           "backgroundColor": "背景",
           "border": "边框",
-          "borderRadius": "圆角",
-          "flexDirection": "方向",
-          "justifyContent": "主轴对齐",
-          "alignItems": "交叉轴对齐",
-          "gridColumns": "列",
-          "gridColumnsHint": "用于设置 gridTemplateColumns。"
-        },
-        "placeholders": {
-          "auto": "auto",
-          "backgroundColor": "var(--color-2)",
-          "gridRows": "repeat(2, minmax(0, 1fr))"
+          "borderRadius": "圆角"
         },
         "options": {
-          "display": {
-            "block": "块级",
-            "flex": "弹性",
-            "grid": "网格",
-            "inline": "行内",
-            "inlineBlock": "行内块"
-          },
-          "gridAutoFlow": {
-            "row": "按行",
-            "column": "按列",
-            "rowDense": "按行紧凑",
-            "columnDense": "按列紧凑"
-          },
           "direction": {
             "row": "横向",
             "rowReverse": "横向反转",
@@ -125,10 +270,26 @@
             "end": "结束",
             "stretch": "拉伸",
             "baseline": "基线"
+          },
+          "display": {
+            "block": "块级",
+            "flex": "弹性",
+            "grid": "网格",
+            "inline": "行内",
+            "inlineBlock": "行内块"
+          },
+          "gridAutoFlow": {
+            "row": "按行",
+            "column": "按列",
+            "rowDense": "按行紧凑",
+            "columnDense": "按列紧凑"
           }
         },
-        "title": "布局",
-        "description": "Flex / Grid 布局细节",
+        "placeholders": {
+          "auto": "auto",
+          "backgroundColor": "var(--color-2)",
+          "gridRows": "repeat(2, minmax(0, 1fr))"
+        },
         "patternControlled": "布局结构由范式参数控制。",
         "groups": {
           "spacing": "间距",
@@ -137,6 +298,20 @@
           "flex": "Flex",
           "grid": "Grid"
         }
+      },
+      "text": {
+        "title": "文本",
+        "description": "编辑组件显示的文本内容。",
+        "fields": {
+          "text": "文本",
+          "title": "标题",
+          "label": "标签",
+          "description": "描述"
+        },
+        "expandRich": "展开富文本编辑器",
+        "collapseRich": "收起富文本编辑器",
+        "switchToPlain": "切换为纯文本输入",
+        "switchToRich": "切换为富文本编辑器（加粗/斜体/颜色/字号）"
       },
       "layoutPattern": {
         "title": "范式",
@@ -206,10 +381,111 @@
       "layout-pattern": {
         "title": "范式"
       }
+    },
+    "actions": {
+      "apply": "应用"
+    },
+    "iconPicker": {
+      "title": "选择图标",
+      "subtitle": "按来源与关键词筛选，后续可扩展更多图标库。",
+      "close": "关闭图标选择器",
+      "source": "来源",
+      "search": "搜索",
+      "searchPlaceholder": "输入图标名，例如 sparkles",
+      "matched": "匹配 {{count}} 个",
+      "showingRange": "显示 {{from}}-{{to}} / {{total}}",
+      "showingEmpty": "显示 0/0",
+      "loading": "正在从 esm.sh 加载图标...",
+      "loadError": "图标源加载失败。",
+      "retry": "重试",
+      "empty": "未找到图标。",
+      "page": "第 {{current}}/{{total}} 页",
+      "prev": "上一页",
+      "next": "下一页",
+      "go": "跳转",
+      "preview": "预览",
+      "noIcon": "无图标",
+      "cancel": "取消",
+      "apply": "使用图标"
+    },
+    "classProtocol": {
+      "mountedCss": {
+        "title": "挂载 CSS",
+        "untitled": "untitled.css",
+        "close": "关闭挂载 CSS 编辑器",
+        "focusClass": "定位类名",
+        "cancel": "取消",
+        "save": "保存 CSS",
+        "invalidSyntax": "CSS 语法无效"
+      }
+    }
+  },
+  "sidebar": {
+    "title": "组件库",
+    "libraries": {
+      "builtIn": "内置组件",
+      "headless": "无头组件",
+      "external": "外部组件"
+    },
+    "external": {
+      "loading": "正在从 esm.sh 加载 Ant Design...",
+      "error": "远程组件加载失败。"
+    },
+    "toggleLibrary": "切换组件库",
+    "openSearch": "搜索组件",
+    "searchPlaceholder": "搜索组件...",
+    "clearSearch": "清空搜索",
+    "collapseVariants": "收起变体",
+    "expandVariants": "展开变体"
+  },
+  "tree": {
+    "title": "组件树",
+    "collapse": "收起组件树",
+    "expand": "展开组件树",
+    "deleteSelected": "删除选中组件",
+    "empty": "暂无组件"
+  },
+  "viewport": {
+    "label": "视口",
+    "zoom": "缩放",
+    "reset": "重置视图",
+    "quickPresetMenu": "预设",
+    "size": "{{width}}x{{height}}",
+    "moreDevices": "更多设备",
+    "quickPresets": {
+      "desktop": "桌面",
+      "hd": "高清",
+      "ipad": "iPad",
+      "iphone": "iPhone",
+      "se": "iPhone SE"
     }
   },
   "componentLibrary": {
     "groups": {
+      "base": {
+        "title": "基础组件"
+      },
+      "layout": {
+        "title": "布局组件"
+      },
+      "form": {
+        "title": "表单组件"
+      },
+      "nav": {
+        "title": "导航组件"
+      },
+      "media": {
+        "title": "媒体与嵌入"
+      },
+      "data": {
+        "title": "数据展示"
+      },
+      "feedback": {
+        "title": "反馈组件"
+      },
+      "radix": {
+        "title": "Radix UI"
+      },
       "layout-pattern": {
         "title": "布局范式"
       }
@@ -224,6 +500,97 @@
       "layout-pattern-dashboard-shell": {
         "name": "仪表盘骨架"
       }
+    }
+  },
+  "devices": {
+    "desktopFhd": "桌面（FHD）",
+    "desktopHd": "桌面（HD）",
+    "macbookAir13": "MacBook Air 13\"",
+    "macbookPro14": "MacBook Pro 14\"",
+    "ipadPro11": "iPad Pro 11\"",
+    "ipadMini": "iPad mini",
+    "pixel8": "Pixel 8",
+    "iphone15Pro": "iPhone 15 Pro",
+    "iphone13": "iPhone 13",
+    "iphoneSe": "iPhone SE",
+    "watch41": "Apple Watch 41mm",
+    "kinds": {
+      "desktop": "桌面",
+      "laptop": "笔记本",
+      "tablet": "平板",
+      "phone": "手机",
+      "watch": "手表"
+    }
+  },
+  "unitInput": {
+    "groups": {
+      "absoluteLength": "绝对长度",
+      "fontRelative": "字体相对长度",
+      "viewport": "视口长度",
+      "container": "容器长度",
+      "percentage": "百分比",
+      "angle": "角度",
+      "time": "时间",
+      "frequency": "频率",
+      "resolution": "分辨率",
+      "current": "当前"
+    },
+    "units": {
+      "px": "像素（CSS px，通常 1px = 1/96in）",
+      "cm": "厘米",
+      "mm": "毫米",
+      "Q": "四分之一毫米（1Q = 1/40cm）",
+      "in": "英寸",
+      "pt": "点（1pt = 1/72in）",
+      "pc": "派卡（1pc = 12pt）",
+      "em": "相对当前元素字体大小",
+      "rem": "相对根元素字体大小",
+      "ex": "相对 x-height（依字体而异）",
+      "rex": "相对根元素 x-height",
+      "cap": "相对大写字母高度（cap-height）",
+      "rcap": "相对根元素大写字母高度",
+      "ch": "相对 \"0\" 的宽度（依字体而异）",
+      "rch": "相对根元素 \"0\" 的宽度",
+      "ic": "相对全角字符宽度（依字体而异）",
+      "ric": "相对根元素全角字符宽度",
+      "lh": "相对当前元素行高",
+      "rlh": "相对根元素行高",
+      "vw": "视口宽度的 1%",
+      "vh": "视口高度的 1%",
+      "vi": "视口 inline 方向的 1%",
+      "vb": "视口 block 方向的 1%",
+      "vmin": "视口较小边的 1%",
+      "vmax": "视口较大边的 1%",
+      "svw": "Small viewport 宽度的 1%",
+      "svh": "Small viewport 高度的 1%",
+      "svi": "Small viewport inline 的 1%",
+      "svb": "Small viewport block 的 1%",
+      "lvw": "Large viewport 宽度的 1%",
+      "lvh": "Large viewport 高度的 1%",
+      "lvi": "Large viewport inline 的 1%",
+      "lvb": "Large viewport block 的 1%",
+      "dvw": "Dynamic viewport 宽度的 1%",
+      "dvh": "Dynamic viewport 高度的 1%",
+      "dvi": "Dynamic viewport inline 的 1%",
+      "dvb": "Dynamic viewport block 的 1%",
+      "cqw": "容器查询宽度的 1%",
+      "cqh": "容器查询高度的 1%",
+      "cqi": "容器查询 inline 的 1%",
+      "cqb": "容器查询 block 的 1%",
+      "cqmin": "容器较小边的 1%",
+      "cqmax": "容器较大边的 1%",
+      "%": "百分比（相对父/上下文，具体取决于属性）",
+      "deg": "角度（度）",
+      "grad": "角度（百分度）",
+      "rad": "角度（弧度）",
+      "turn": "角度（圈，1turn = 360deg）",
+      "s": "时间（秒）",
+      "ms": "时间（毫秒）",
+      "Hz": "频率（赫兹）",
+      "kHz": "频率（千赫兹）",
+      "dpi": "分辨率（每英寸点数）",
+      "dpcm": "分辨率（每厘米点数）",
+      "dppx": "分辨率（每像素点数）"
     }
   }
 }

@@ -1,0 +1,39 @@
+{
+  "brand": {
+    "name": "MdrFrontEngine"
+  },
+  "nav": {
+    "community": "社区",
+    "tutorials": "教程",
+    "docs": "文档",
+    "signIn": "登录",
+    "github": "GitHub",
+    "languageSwitch": "切换语言"
+  },
+  "hero": {
+    "line1": {
+      "highlight": "Mdr"
+    },
+    "line2": {
+      "before": "前端",
+      "highlight": "梭哈"
+    },
+    "line3": {
+      "before": "灵感顷刻",
+      "highlight": "炼化"
+    },
+    "subtitle": "可视化设计与代码生成的一体化平台。"
+  },
+  "actions": {
+    "enterEditor": "进入编辑器",
+    "viewDocs": "查看文档"
+  },
+  "mirTest": {
+    "title": "MIR 预览",
+    "exportButton": "快速导出"
+  },
+  "footer": {
+    "copy": "(c) 2026 Mdr Front Engine",
+    "placeholder": "一起走在前端路上。"
+  }
+}

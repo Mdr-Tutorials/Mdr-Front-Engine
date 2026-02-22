@@ -1,21 +1,150 @@
 {
+  "address": {
+    "add": "Add",
+    "current": "Current URL",
+    "currentPlaceholder": "https://example.com",
+    "list": "Saved URLs",
+    "new": "New URL",
+    "newPlaceholder": "Paste or type a URL"
+  },
+  "autosave": {
+    "capabilities": {
+      "loading": "Checking workspace capabilities…"
+    },
+    "status": {
+      "saving": "Saving…",
+      "error": "Save failed. Retrying on next change.",
+      "workspaceSaved": "Saved to workspace.",
+      "projectSaved": "Saved to project.",
+      "saved": "Saved.",
+      "idle": "Ready"
+    },
+    "messages": {
+      "workspaceRetry": "Workspace save failed. Retrying on next change.",
+      "projectRetry": "Project save failed. Retrying on next change.",
+      "workspaceUnavailableUsingProject": "Workspace document save unavailable. Using project save."
+    }
+  },
+  "canvas": {
+    "placeholderTitle": "Drop a component",
+    "placeholderDescription": "Drag from the library to start building."
+  },
   "inspector": {
-    "classProtocol": {
-      "mountedCss": {
-        "title": "Mounted CSS",
-        "untitled": "untitled.css",
-        "close": "Close mounted CSS editor",
-        "focusClass": "Focus class",
-        "cancel": "Cancel",
-        "save": "Save CSS",
-        "invalidSyntax": "Invalid CSS syntax"
+    "title": "Inspector",
+    "toggle": "Toggle inspector",
+    "placeholder": "Select a component to edit.",
+    "groups": {
+      "basic": "Basic Info",
+      "style": {
+        "title": "Style",
+        "empty": "No style settings for this component.",
+        "openMountedCss": "Open mounted CSS",
+        "attachMountedCss": "Attach mounted CSS"
+      },
+      "triggers": {
+        "title": "Triggers",
+        "empty": "No triggers configured yet. Event bindings will appear here.",
+        "linkConflict": "This component has a destination and an onClick trigger. Click may run both.",
+        "add": "Add trigger",
+        "delete": "Delete trigger",
+        "eventLabel": "Trigger Event",
+        "eventHelp": "Choose which DOM event will trigger this action.",
+        "actionLabel": "Run Action",
+        "actionHelp": "Choose what should run when the event is fired.",
+        "toLabel": "Destination",
+        "toPlaceholder": "https://example.com",
+        "toHelp": "Use https:// for external links, or /path for in-app preview routes.",
+        "httpsOnly": "Use https:// for external links or /path for internal links.",
+        "replace": "Replace",
+        "replaceHelp": "When enabled, this navigation replaces the current history entry.",
+        "targetHelp": "Browser tab target used by navigation actions.",
+        "statePlaceholder": "state (optional JSON)",
+        "stateHelp": "Optional navigation state. Plain text or JSON string.",
+        "targets": {
+          "self": "_self",
+          "blank": "_blank"
+        },
+        "actions": {
+          "navigate": "Navigate",
+          "executeGraph": "Execute Graph"
+        },
+        "graph": {
+          "new": "New Graph",
+          "newHelp": "Create and execute a new node graph.",
+          "select": "Select Graph",
+          "selectHelp": "Run one of the existing node graphs.",
+          "namePlaceholder": "New graph name",
+          "nameHelp": "Name for the new node graph to be created.",
+          "empty": "No graph available"
+        },
+        "navigation": {
+          "confirm": {
+            "title": "Open external link?",
+            "url": "URL: {{to}}",
+            "target": "Target: {{effectiveTarget}}",
+            "targetOverridden": "Configured target: {{configuredTarget}} (opened as {{effectiveTarget}} in Blueprint preview for safety).",
+            "replace": "Replace history: {{replace}}",
+            "source": "Source: {{nodeId}} · {{trigger}}",
+            "yes": "Yes",
+            "no": "No"
+          }
+        }
+      },
+      "animation": {
+        "title": "Animation Mount",
+        "openEditor": "Open animation editor",
+        "selectedNode": "Current node",
+        "noSelection": "Select a component to mount animation.",
+        "empty": "No animation yet. Mounting will initialize the animation document.",
+        "mounted": "Mounted to animation",
+        "unmounted": "Not mounted",
+        "mount": "Mount",
+        "unmount": "Unmount",
+        "bindingCount": "({{count}} bindings)"
       }
     },
     "fields": {
       "className": {
-        "placeholder": "e.g. p-4 flex items-center"
+        "label": "Class Name",
+        "placeholder": "e.g. p-4 flex items-center",
+        "templates": {
+          "lengthWithUnit": "length with unit",
+          "colorShade": "color shade"
+        },
+        "hints": {
+          "arbitraryLengthTemplate": "Example: {{exampleA}}, {{exampleB}}",
+          "colorShade": "Example: {{example}}",
+          "inferredFromScale": "Inferred from {{amount}}px using default {{base}}px scale"
+        },
+        "overriddenBy": "Overridden by \"{{token}}\"",
+        "overriddenByUnknown": "Overridden by another class",
+        "modes": {
+          "token": "token",
+          "inline": "inline"
+        },
+        "actions": {
+          "openMountedCssFor": "Open mounted CSS for {{token}}",
+          "openMountedCssPath": "Open mounted CSS ({{path}})",
+          "removeToken": "Remove {{token}}",
+          "switchMode": "Switch to {{mode}} mode"
+        }
+      },
+      "id": {
+        "label": "Component ID",
+        "description": "Unique within the blueprint.",
+        "duplicate": "ID already exists."
+      },
+      "icon": {
+        "label": "Icon",
+        "empty": "No icon selected"
       },
       "link": {
+        "destination": "Destination",
+        "destinationPlaceholder": "/path or https://example.com",
+        "target": "Target",
+        "rel": "Rel",
+        "title": "Title",
+        "titlePlaceholder": "Open docs",
         "relPlaceholder": "noopener noreferrer"
       },
       "colorInput": {
@@ -47,64 +176,80 @@
         "mockPlaceholder": "{\n  \"totalCount\": 2,\n  \"items\": [\n    {\n      \"data\": \"mdr\"\n    }\n  ]\n}",
         "invalidJson": "Invalid JSON format.",
         "schemaObjectOnly": "Data model must be a JSON object.",
-        "hint": "Child properties can bind with field paths directly in their own inputs."
+        "hint": "Child properties can bind with field paths directly in their own inputs.",
+        "mountLabel": "Mounted",
+        "schemaLabel": "Schema JSON"
       },
       "listTemplate": {
         "title": "List Template",
         "enable": "Promote node as list template",
         "arrayField": "Array Field",
-        "arrayFieldPlaceholder": "items"
+        "arrayFieldPlaceholder": "items",
+        "mountLabel": "Mounted",
+        "hint": "Item and index aliases are managed automatically in code generation."
+      },
+      "routeCurrentPath": {
+        "label": "Current Path",
+        "placeholder": "/about/team"
+      },
+      "routeEmptyText": {
+        "label": "Empty Text",
+        "placeholder": "No route matched."
+      },
+      "routePath": {
+        "label": "Route Path",
+        "placeholder": "/about or details/:id"
+      },
+      "routeIndex": {
+        "label": "Index Route",
+        "hint": "Match parent route path exactly"
+      },
+      "routeFallback": {
+        "label": "Fallback",
+        "hint": "Render when no route path matched"
+      },
+      "outletRoute": {
+        "label": "Outlet Route",
+        "placeholder": "Select route...",
+        "bindActive": "Bind Active",
+        "clear": "Clear"
       }
     },
     "panels": {
       "layout": {
+        "title": "Layout",
+        "description": "Flex / Grid layout details",
         "fields": {
-          "display": "Display",
-          "gridRows": "Rows",
-          "gridAutoFlow": "Auto Flow",
-          "justifyItems": "Justify Items",
-          "alignContent": "Align Content",
           "gap": "Gap",
+          "gapHint": "Number (px) or CSS size.",
           "margin": "Margin",
           "padding": "Padding",
-          "collapse": "Collapse",
+          "spacingHint": "Use CSS shorthand (1, 2, 3, or 4 values), or expand to edit each side.",
           "expand": "Expand",
+          "collapse": "Collapse",
+          "flexDirection": "Direction",
+          "justifyContent": "Justify",
+          "alignItems": "Align Items",
+          "gridColumns": "Columns",
+          "gridColumnsHint": "Sets gridTemplateColumns.",
           "sides": {
             "top": "Top",
             "right": "Right",
             "bottom": "Bottom",
             "left": "Left"
           },
+          "display": "Display",
+          "gridRows": "Rows",
+          "gridAutoFlow": "Auto Flow",
+          "justifyItems": "Justify Items",
+          "alignContent": "Align Content",
           "width": "Width",
           "height": "Height",
           "backgroundColor": "Background",
           "border": "Border",
-          "borderRadius": "Radius",
-          "flexDirection": "Direction",
-          "justifyContent": "Justify",
-          "alignItems": "Align Items",
-          "gridColumns": "Columns",
-          "gridColumnsHint": "Sets gridTemplateColumns."
-        },
-        "placeholders": {
-          "auto": "auto",
-          "backgroundColor": "var(--color-2)",
-          "gridRows": "repeat(2, minmax(0, 1fr))"
+          "borderRadius": "Radius"
         },
         "options": {
-          "display": {
-            "block": "Block",
-            "flex": "Flex",
-            "grid": "Grid",
-            "inline": "Inline",
-            "inlineBlock": "InlineBlock"
-          },
-          "gridAutoFlow": {
-            "row": "Row",
-            "column": "Column",
-            "rowDense": "Row Dense",
-            "columnDense": "Col Dense"
-          },
           "direction": {
             "row": "Row",
             "rowReverse": "Row Reverse",
@@ -125,10 +270,26 @@
             "end": "End",
             "stretch": "Stretch",
             "baseline": "Baseline"
+          },
+          "display": {
+            "block": "Block",
+            "flex": "Flex",
+            "grid": "Grid",
+            "inline": "Inline",
+            "inlineBlock": "InlineBlock"
+          },
+          "gridAutoFlow": {
+            "row": "Row",
+            "column": "Column",
+            "rowDense": "Row Dense",
+            "columnDense": "Col Dense"
           }
         },
-        "title": "Layout",
-        "description": "Flex / Grid layout details",
+        "placeholders": {
+          "auto": "auto",
+          "backgroundColor": "var(--color-2)",
+          "gridRows": "repeat(2, minmax(0, 1fr))"
+        },
         "patternControlled": "Layout structure is controlled by pattern params.",
         "groups": {
           "spacing": "Spacing",
@@ -137,6 +298,20 @@
           "flex": "Flex",
           "grid": "Grid"
         }
+      },
+      "text": {
+        "title": "Text",
+        "description": "Edit the text displayed by this component.",
+        "fields": {
+          "text": "Text",
+          "title": "Title",
+          "label": "Label",
+          "description": "Description"
+        },
+        "expandRich": "Expand rich text editor",
+        "collapseRich": "Collapse rich text editor",
+        "switchToPlain": "Switch to plain text input",
+        "switchToRich": "Switch to rich text editor (bold/italic/color/size)"
       },
       "layoutPattern": {
         "title": "Pattern",
@@ -207,10 +382,111 @@
         "title": "Pattern",
         "description": "Layout pattern parameters"
       }
+    },
+    "actions": {
+      "apply": "Apply"
+    },
+    "iconPicker": {
+      "title": "Select icon",
+      "subtitle": "Source + search. Ready for multiple icon providers.",
+      "close": "Close icon picker",
+      "source": "Source",
+      "search": "Search",
+      "searchPlaceholder": "Type icon name, e.g. sparkles",
+      "matched": "{{count}} matched",
+      "showingRange": "showing {{from}}-{{to}} / {{total}}",
+      "showingEmpty": "showing 0/0",
+      "loading": "Loading icons from esm.sh...",
+      "loadError": "Icon provider failed to load.",
+      "retry": "Retry",
+      "empty": "No icons found.",
+      "page": "Page {{current}}/{{total}}",
+      "prev": "Prev",
+      "next": "Next",
+      "go": "Go",
+      "preview": "Preview",
+      "noIcon": "No icon",
+      "cancel": "Cancel",
+      "apply": "Use icon"
+    },
+    "classProtocol": {
+      "mountedCss": {
+        "title": "Mounted CSS",
+        "untitled": "untitled.css",
+        "close": "Close mounted CSS editor",
+        "focusClass": "Focus class",
+        "cancel": "Cancel",
+        "save": "Save CSS",
+        "invalidSyntax": "Invalid CSS syntax"
+      }
+    }
+  },
+  "sidebar": {
+    "title": "Component Library",
+    "libraries": {
+      "builtIn": "Built-in",
+      "headless": "Headless",
+      "external": "External"
+    },
+    "external": {
+      "loading": "Loading Ant Design from esm.sh...",
+      "error": "Failed to load remote components."
+    },
+    "toggleLibrary": "Toggle library",
+    "openSearch": "Search components",
+    "searchPlaceholder": "Search components...",
+    "clearSearch": "Clear search",
+    "collapseVariants": "Collapse variants",
+    "expandVariants": "Expand variants"
+  },
+  "tree": {
+    "title": "Component Tree",
+    "collapse": "Collapse component tree",
+    "expand": "Expand component tree",
+    "deleteSelected": "Delete selected component",
+    "empty": "No components yet."
+  },
+  "viewport": {
+    "label": "Viewport",
+    "zoom": "Zoom",
+    "reset": "Reset view",
+    "quickPresetMenu": "Presets",
+    "size": "Size {{width}}x{{height}}",
+    "moreDevices": "More devices",
+    "quickPresets": {
+      "desktop": "Desktop",
+      "hd": "HD",
+      "ipad": "iPad",
+      "iphone": "iPhone",
+      "se": "iPhone SE"
     }
   },
   "componentLibrary": {
     "groups": {
+      "base": {
+        "title": "Base Components"
+      },
+      "layout": {
+        "title": "Layout Components"
+      },
+      "form": {
+        "title": "Form Components"
+      },
+      "nav": {
+        "title": "Navigation Components"
+      },
+      "media": {
+        "title": "Media & Embed"
+      },
+      "data": {
+        "title": "Data Display"
+      },
+      "feedback": {
+        "title": "Feedback"
+      },
+      "radix": {
+        "title": "Radix UI"
+      },
       "layout-pattern": {
         "title": "Layout Patterns"
       }
@@ -225,6 +501,97 @@
       "layout-pattern-dashboard-shell": {
         "name": "Dashboard Shell"
       }
+    }
+  },
+  "devices": {
+    "desktopFhd": "Desktop (FHD)",
+    "desktopHd": "Desktop (HD)",
+    "macbookAir13": "MacBook Air 13\"",
+    "macbookPro14": "MacBook Pro 14\"",
+    "ipadPro11": "iPad Pro 11\"",
+    "ipadMini": "iPad mini",
+    "pixel8": "Pixel 8",
+    "iphone15Pro": "iPhone 15 Pro",
+    "iphone13": "iPhone 13",
+    "iphoneSe": "iPhone SE",
+    "watch41": "Apple Watch 41mm",
+    "kinds": {
+      "desktop": "Desktop",
+      "laptop": "Laptop",
+      "tablet": "Tablet",
+      "phone": "Phone",
+      "watch": "Watch"
+    }
+  },
+  "unitInput": {
+    "groups": {
+      "absoluteLength": "Absolute length",
+      "fontRelative": "Font-relative",
+      "viewport": "Viewport",
+      "container": "Container",
+      "percentage": "Percentage",
+      "angle": "Angle",
+      "time": "Time",
+      "frequency": "Frequency",
+      "resolution": "Resolution",
+      "current": "Current"
+    },
+    "units": {
+      "px": "Pixel (CSS px, typically 1px = 1/96in)",
+      "cm": "Centimeter",
+      "mm": "Millimeter",
+      "Q": "Quarter-millimeter (1Q = 1/40cm)",
+      "in": "Inch",
+      "pt": "Point (1pt = 1/72in)",
+      "pc": "Pica (1pc = 12pt)",
+      "em": "Relative to current element font size",
+      "rem": "Relative to root element font size",
+      "ex": "Relative to x-height (font-dependent)",
+      "rex": "Relative to root element x-height",
+      "cap": "Relative to cap-height",
+      "rcap": "Relative to root element cap-height",
+      "ch": "Relative to width of \"0\" (font-dependent)",
+      "rch": "Relative to root element \"0\" width",
+      "ic": "Relative to full-width character (font-dependent)",
+      "ric": "Relative to root element full-width character",
+      "lh": "Relative to current element line height",
+      "rlh": "Relative to root element line height",
+      "vw": "1% of viewport width",
+      "vh": "1% of viewport height",
+      "vi": "1% of viewport inline direction",
+      "vb": "1% of viewport block direction",
+      "vmin": "1% of viewport smaller dimension",
+      "vmax": "1% of viewport larger dimension",
+      "svw": "1% of small viewport width",
+      "svh": "1% of small viewport height",
+      "svi": "1% of small viewport inline",
+      "svb": "1% of small viewport block",
+      "lvw": "1% of large viewport width",
+      "lvh": "1% of large viewport height",
+      "lvi": "1% of large viewport inline",
+      "lvb": "1% of large viewport block",
+      "dvw": "1% of dynamic viewport width",
+      "dvh": "1% of dynamic viewport height",
+      "dvi": "1% of dynamic viewport inline",
+      "dvb": "1% of dynamic viewport block",
+      "cqw": "1% of container query width",
+      "cqh": "1% of container query height",
+      "cqi": "1% of container query inline",
+      "cqb": "1% of container query block",
+      "cqmin": "1% of container smaller dimension",
+      "cqmax": "1% of container larger dimension",
+      "%": "Percentage (relative to parent/context, property-specific)",
+      "deg": "Degree",
+      "grad": "Gradian",
+      "rad": "Radian",
+      "turn": "Turn (1turn = 360deg)",
+      "s": "Second",
+      "ms": "Millisecond",
+      "Hz": "Hertz",
+      "kHz": "Kilohertz",
+      "dpi": "Dots per inch",
+      "dpcm": "Dots per centimeter",
+      "dppx": "Dots per pixel"
     }
   }
 }

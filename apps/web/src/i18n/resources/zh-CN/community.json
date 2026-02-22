@@ -1,0 +1,54 @@
+{
+  "backHome": "返回首页",
+  "badge": "社区",
+  "title": "公开 MIR 展示",
+  "subtitle": "探索创作者分享的项目、组件与节点图。",
+  "count": "条结果",
+  "countNone": "无结果",
+  "error": {
+    "load": "加载社区项目失败。"
+  },
+  "search": {
+    "placeholder": "按标题、作者、描述搜索..."
+  },
+  "filter": {
+    "all": "全部类型",
+    "project": "项目",
+    "component": "组件",
+    "nodegraph": "节点图"
+  },
+  "sort": {
+    "latest": "最新",
+    "popular": "最热"
+  },
+  "card": {
+    "untitled": "未命名",
+    "emptyDesc": "暂无描述。",
+    "unknown": "未知"
+  },
+  "empty": {
+    "title": "没有找到公开项目",
+    "body": "试试其他关键词、切换类型筛选，或按最新排序。"
+  },
+  "pagination": {
+    "prev": "上一页",
+    "page": "第",
+    "next": "下一页"
+  },
+  "detail": {
+    "back": "返回社区",
+    "author": "作者",
+    "updated": "更新于",
+    "preview": "只读预览",
+    "mir": "MIR 文档",
+    "clone": "克隆到我的工作区",
+    "cloning": "克隆中...",
+    "error": {
+      "title": "无法加载该项目",
+      "missing": "缺少项目 ID。",
+      "load": "加载项目详情失败。",
+      "clone": "克隆项目失败。",
+      "cloneSelf": "不能从社区克隆你自己的项目。"
+    }
+  }
+}

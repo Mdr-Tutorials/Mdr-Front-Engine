@@ -1,0 +1,13 @@
+{
+  "nodeGraphEditor": "节点图",
+  "componentEditor": "组件",
+  "animationEditor": "动画",
+  "resourceManager": "资源管理",
+  "testing": "测试",
+  "exportSettings": "导出",
+  "deploymentSettings": "部署",
+  "editorSettings": "设置",
+  "projectSettings": "项目设置",
+  "communityPage": "社区",
+  "aboutPage": "关于"
+}

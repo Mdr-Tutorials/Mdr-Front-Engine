@@ -1,0 +1,13 @@
+{
+  "nodeGraphEditor": "Node Graph",
+  "componentEditor": "Components",
+  "animationEditor": "Animations",
+  "resourceManager": "Resources",
+  "testing": "Tests",
+  "exportSettings": "Export",
+  "deploymentSettings": "Deployment",
+  "editorSettings": "Settings",
+  "projectSettings": "Project Settings",
+  "communityPage": "Community",
+  "aboutPage": "About"
+}
