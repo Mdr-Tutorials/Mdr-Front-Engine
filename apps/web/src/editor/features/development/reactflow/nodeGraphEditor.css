@@ -1,8 +1,50 @@
 .nodegraph-native-root {
+  --nodegraph-canvas-bg: var(--color-0);
+  --nodegraph-surface-bg: rgb(var(--color-0-rgb) / 0.96);
+  --nodegraph-surface-border: rgb(var(--color-3-rgb) / 0.9);
+  --nodegraph-surface-shadow:
+    0 1px 2px rgb(15 23 42 / 0.08), 0 12px 30px rgb(15 23 42 / 0.16);
+  --nodegraph-text: var(--color-8);
+  --nodegraph-strong-text: var(--color-9);
+  --nodegraph-muted-text: var(--color-6);
+  --nodegraph-subtle-text: rgb(var(--color-5-rgb) / 0.9);
+  --nodegraph-node-bg: var(--color-0);
+  --nodegraph-node-soft-bg: var(--color-1);
+  --nodegraph-node-soft-hover: var(--color-2);
+  --nodegraph-node-border: rgb(var(--color-3-rgb) / 0.92);
+  --nodegraph-node-border-strong: rgb(var(--color-4-rgb) / 0.92);
+  --nodegraph-node-shadow:
+    0 1px 2px rgb(15 23 42 / 0.06), 0 10px 28px rgb(15 23 42 / 0.1);
+  --nodegraph-node-shadow-selected:
+    0 0 0 1px rgb(var(--color-6-rgb) / 0.42), 0 12px 30px rgb(15 23 42 / 0.14);
+  --nodegraph-edge: rgb(var(--color-7-rgb) / 0.9);
+  --nodegraph-handle: rgb(var(--color-7-rgb) / 0.96);
+  --nodegraph-code-inline-bg: rgb(0 0 0 / 0.1);
+  --nodegraph-code-block-bg: rgb(0 0 0 / 0.8);
+  --nodegraph-code-block-text: rgb(248 250 252 / 0.95);
+  --nodegraph-danger: var(--color-danger);
+  --nodegraph-danger-bg: rgb(var(--color-danger-rgb) / 0.14);
   position: relative;
   height: 100%;
   min-height: 100vh;
   width: 100%;
+  color: var(--nodegraph-text);
+}
+
+.nodegraph-native-root[data-theme='dark'] {
+  --nodegraph-surface-shadow:
+    0 1px 2px rgb(0 0 0 / 0.46), 0 16px 34px rgb(0 0 0 / 0.5);
+  --nodegraph-node-border: rgb(var(--color-5-rgb) / 0.72);
+  --nodegraph-node-border-strong: rgb(var(--color-6-rgb) / 0.86);
+  --nodegraph-node-shadow:
+    0 0 0 1px rgb(var(--color-5-rgb) / 0.54), 0 2px 6px rgb(0 0 0 / 0.4),
+    0 14px 30px rgb(0 0 0 / 0.46);
+  --nodegraph-node-shadow-selected:
+    0 0 0 1px rgb(var(--color-6-rgb) / 0.8),
+    0 0 0 3px rgb(var(--color-7-rgb) / 0.24), 0 16px 36px rgb(0 0 0 / 0.52);
+  --nodegraph-code-inline-bg: rgb(255 255 255 / 0.12);
+  --nodegraph-code-block-bg: rgb(0 0 0 / 0.56);
+  --nodegraph-code-block-text: rgb(var(--color-10-rgb) / 0.92);
 }
 
 .nodegraph-graph-manager {
@@ -14,12 +56,10 @@
   width: 220px;
   flex-direction: column;
   gap: 6px;
-  border: none;
+  border: 1px solid var(--nodegraph-surface-border);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.08),
-    0 12px 30px rgba(15, 23, 42, 0.16);
+  background: var(--nodegraph-surface-bg);
+  box-shadow: var(--nodegraph-surface-shadow);
   padding: 8px;
   backdrop-filter: blur(4px);
 }
@@ -28,28 +68,28 @@
   font-family: Poppins, sans-serif;
   font-size: 12px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--nodegraph-strong-text);
 }
 
 .nodegraph-graph-manager__select,
 .nodegraph-graph-manager__name {
   width: 100%;
   height: 28px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--nodegraph-node-border);
   border-radius: 6px;
-  background: #f8fafc;
+  background: var(--nodegraph-node-soft-bg);
   padding: 0 8px;
   font-family: Inter, sans-serif;
   font-size: 11px;
   font-weight: 400;
-  color: #334155;
+  color: var(--nodegraph-text);
   outline: none;
 }
 
 .nodegraph-graph-manager__select:focus,
 .nodegraph-graph-manager__name:focus {
-  border-color: #cbd5e1;
-  background: #fff;
+  border-color: var(--nodegraph-node-border-strong);
+  background: var(--nodegraph-node-bg);
 }
 
 .nodegraph-graph-manager__actions {
@@ -62,37 +102,73 @@
   height: 26px;
   border: none;
   border-radius: 6px;
-  background: #f1f5f9;
+  background: var(--nodegraph-node-soft-bg);
   font-family: Inter, sans-serif;
   font-size: 11px;
   font-weight: 400;
-  color: #334155;
+  color: var(--nodegraph-text);
   transition: background 0.15s ease;
 }
 
 .nodegraph-graph-manager__actions button:hover {
-  background: #e2e8f0;
+  background: var(--nodegraph-node-soft-hover);
 }
 
 .nodegraph-native-canvas {
-  background: #fff;
+  background: var(--nodegraph-canvas-bg);
+}
+
+.nodegraph-native-canvas .react-flow__background {
+  background-color: var(--nodegraph-canvas-bg);
+}
+
+.nodegraph-native-canvas .react-flow__background-pattern line,
+.nodegraph-native-canvas .react-flow__background-pattern circle {
+  stroke: rgb(var(--color-5-rgb) / 0.34);
+  fill: rgb(var(--color-5-rgb) / 0.34);
+}
+
+.nodegraph-native-canvas .react-flow__controls {
+  border: 1px solid var(--nodegraph-surface-border);
+  border-radius: 8px;
+  background: var(--nodegraph-surface-bg);
+  box-shadow: var(--nodegraph-surface-shadow);
+}
+
+.nodegraph-native-canvas .react-flow__controls-button {
+  border-bottom: 1px solid var(--nodegraph-node-border);
+  background: transparent;
+  color: var(--nodegraph-text);
+}
+
+.nodegraph-native-canvas .react-flow__controls-button:hover {
+  background: var(--nodegraph-node-soft-bg);
+}
+
+.nodegraph-native-canvas .react-flow__controls-button:last-child {
+  border-bottom: none;
+}
+
+.nodegraph-native-canvas .react-flow__minimap {
+  border: 1px solid var(--nodegraph-surface-border);
+  border-radius: 8px;
+  background: var(--nodegraph-surface-bg);
+  box-shadow: var(--nodegraph-surface-shadow);
 }
 
 .nodegraph-native-canvas .react-flow__node {
   border: none;
   border-radius: 10px;
-  background: #fff;
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.06),
-    0 10px 28px rgba(15, 23, 42, 0.1);
+  background: var(--nodegraph-node-bg);
+  box-shadow: var(--nodegraph-node-shadow);
   font-family: Inter, sans-serif;
   font-size: 12px;
   font-weight: 400;
-  color: #0f172a;
+  color: var(--nodegraph-strong-text);
 }
 
 .nodegraph-native-canvas .react-flow__edge-path {
-  stroke: #475569;
+  stroke: var(--nodegraph-edge);
   stroke-width: 2px;
 }
 
@@ -101,16 +177,12 @@
   min-width: 190px;
   border: none;
   border-radius: 10px;
-  background: #fff;
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.06),
-    0 12px 30px rgba(15, 23, 42, 0.12);
+  background: var(--nodegraph-node-bg);
+  box-shadow: var(--nodegraph-node-shadow-selected);
 }
 
 .native-switch-node.is-selected {
-  box-shadow:
-    0 0 0 1px rgba(15, 23, 42, 0.36),
-    0 12px 30px rgba(15, 23, 42, 0.14);
+  box-shadow: var(--nodegraph-node-shadow-selected);
 }
 
 .native-switch-node__title {
@@ -134,7 +206,7 @@
   font-family: Inter, sans-serif;
   font-size: 11px;
   font-weight: 400;
-  color: #334155;
+  color: var(--nodegraph-text);
 }
 
 .native-switch-port {
@@ -142,18 +214,18 @@
   width: 10px;
   height: 10px;
   margin-top: 1px;
-  border: 1.5px solid #334155;
-  background: #fff;
+  border: 1.5px solid var(--nodegraph-handle);
+  background: var(--nodegraph-node-bg);
   border-radius: 999px;
   overflow: visible;
 }
 
 .native-switch-port.react-flow__handle-source {
-  background: #334155;
+  background: var(--nodegraph-handle);
 }
 
 .native-switch-port.react-flow__handle-target {
-  background: #fff;
+  background: var(--nodegraph-node-bg);
 }
 
 .native-switch-port.semantic-data {
@@ -170,8 +242,8 @@
   content: '';
   position: absolute;
   inset: 0;
-  border: 1.5px solid #334155;
-  background: #fff;
+  border: 1.5px solid var(--nodegraph-handle);
+  background: var(--nodegraph-node-bg);
   border-radius: 1px;
   transform: rotate(45deg);
   transform-origin: center;
@@ -179,7 +251,7 @@
 }
 
 .native-switch-port.semantic-condition.react-flow__handle-source::before {
-  background: #334155;
+  background: var(--nodegraph-handle);
 }
 
 .native-switch-port.is-multi {
@@ -190,13 +262,13 @@
   content: '';
   position: absolute;
   inset: 2px;
-  border: 1.5px solid #334155;
-  background: #fff;
+  border: 1.5px solid var(--nodegraph-handle);
+  background: var(--nodegraph-node-bg);
   border-radius: inherit;
 }
 
 .native-switch-port.is-multi.react-flow__handle-source::after {
-  background: #334155;
+  background: var(--nodegraph-handle);
 }
 
 .native-switch-port.is-multi.semantic-condition::after {
@@ -204,17 +276,17 @@
   border-radius: 999px;
   border: none;
   transform: none;
-  background: #334155;
+  background: var(--nodegraph-handle);
 }
 
 .native-switch-port.is-multi.semantic-condition.react-flow__handle-source::after {
-  background: #334155;
+  background: var(--nodegraph-handle);
 }
 
 .native-code-node__editor .cm-editor {
-  border: 1px solid rgba(148, 163, 184, 0.35);
+  border: 1px solid var(--nodegraph-node-border);
   border-radius: 8px;
-  background: #f8fafc;
+  background: var(--nodegraph-node-soft-bg);
 }
 
 .native-code-node__editor .cm-scroller {
@@ -224,8 +296,8 @@
 }
 
 .native-code-node__editor .cm-gutters {
-  border-right: 1px solid rgba(148, 163, 184, 0.3);
-  background: #f1f5f9;
+  border-right: 1px solid var(--nodegraph-node-border);
+  background: var(--nodegraph-node-soft-bg);
 }
 
 .native-context-menu {
@@ -237,12 +309,10 @@
   width: 220px;
   max-height: min(76vh, 620px);
   overflow: auto;
-  border: none;
+  border: 1px solid var(--nodegraph-surface-border);
   border-radius: 8px;
-  background: #fff;
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.08),
-    0 14px 34px rgba(15, 23, 42, 0.16);
+  background: var(--nodegraph-surface-bg);
+  box-shadow: var(--nodegraph-surface-shadow);
   padding: 6px;
 }
 
@@ -260,24 +330,24 @@
   font-family: Inter, sans-serif;
   font-size: 12px;
   font-weight: 400;
-  color: #0f172a;
+  color: var(--nodegraph-strong-text);
 }
 
 .native-context-menu button:hover {
-  background: rgba(148, 163, 184, 0.12);
+  background: var(--nodegraph-node-soft-bg);
 }
 
 .native-context-menu button.is-danger {
-  color: #b91c1c;
+  color: var(--nodegraph-danger);
 }
 
 .native-context-menu button.is-danger:hover {
-  background: rgba(248, 113, 113, 0.12);
+  background: var(--nodegraph-danger-bg);
 }
 
 .native-context-menu__arrow {
   text-align: right;
-  color: #64748b;
+  color: var(--nodegraph-subtle-text);
 }
 
 .nodegraph-native-hint {
@@ -287,14 +357,140 @@
   transform: translateX(-50%);
   z-index: 1100;
   padding: 8px 12px;
-  border: none;
+  border: 1px solid var(--nodegraph-surface-border);
   border-radius: 8px;
-  background: #f8fafc;
+  background: var(--nodegraph-surface-bg);
   font-family: Inter, sans-serif;
   font-size: 12px;
   font-weight: 400;
-  color: #0f172a;
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.08),
-    0 10px 26px rgba(15, 23, 42, 0.14);
+  color: var(--nodegraph-strong-text);
+  box-shadow: var(--nodegraph-surface-shadow);
+}
+
+.nodegraph-native-root [class~='bg-slate-50'] {
+  background-color: var(--nodegraph-node-soft-bg) !important;
+}
+
+.nodegraph-native-root [class~='bg-white'] {
+  background-color: var(--nodegraph-node-bg) !important;
+}
+
+.nodegraph-native-root [class~='bg-white/70'] {
+  background-color: rgb(var(--color-0-rgb) / 0.7) !important;
+}
+
+.nodegraph-native-root [class~='bg-black/10'] {
+  background-color: var(--nodegraph-code-inline-bg) !important;
+}
+
+.nodegraph-native-root [class~='bg-black/80'] {
+  background-color: var(--nodegraph-code-block-bg) !important;
+}
+
+.nodegraph-native-root [class~='text-slate-100'] {
+  color: var(--nodegraph-code-block-text) !important;
+}
+
+.nodegraph-native-root [class~='text-slate-900'] {
+  color: var(--nodegraph-strong-text) !important;
+}
+
+.nodegraph-native-root [class~='text-slate-800'] {
+  color: var(--nodegraph-strong-text) !important;
+}
+
+.nodegraph-native-root [class~='text-slate-700'] {
+  color: var(--nodegraph-text) !important;
+}
+
+.nodegraph-native-root [class~='text-slate-600'] {
+  color: var(--nodegraph-muted-text) !important;
+}
+
+.nodegraph-native-root [class~='text-slate-500'] {
+  color: var(--nodegraph-muted-text) !important;
+}
+
+.nodegraph-native-root [class~='text-slate-500/85'] {
+  color: rgb(var(--color-6-rgb) / 0.85) !important;
+}
+
+.nodegraph-native-root [class~='text-slate-400'] {
+  color: var(--nodegraph-subtle-text) !important;
+}
+
+.nodegraph-native-root [class~='text-amber-900'],
+.nodegraph-native-root [class~='text-amber-600'] {
+  color: rgb(var(--color-warning-rgb) / 0.95) !important;
+}
+
+.nodegraph-native-root [class~='border-slate-200'] {
+  border-color: var(--nodegraph-node-border) !important;
+}
+
+.nodegraph-native-root [class~='border-slate-300'] {
+  border-color: var(--nodegraph-node-border-strong) !important;
+}
+
+.nodegraph-native-root [class~='border-slate-300/90'] {
+  border-color: rgb(var(--color-4-rgb) / 0.9) !important;
+}
+
+.nodegraph-native-root [class~='border-slate-500/55'] {
+  border-color: rgb(var(--color-6-rgb) / 0.55) !important;
+}
+
+.nodegraph-native-root [class~='border-black/10'] {
+  border-color: rgb(var(--color-10-rgb) / 0.14) !important;
+}
+
+.nodegraph-native-root [class~='border-amber-300'],
+.nodegraph-native-root [class~='border-amber-500/55'] {
+  border-color: rgb(var(--color-warning-rgb) / 0.58) !important;
+}
+
+.nodegraph-native-root [class~='ring-slate-500/45'] {
+  --tw-ring-color: rgb(var(--color-7-rgb) / 0.45) !important;
+}
+
+.nodegraph-native-root
+  :is(input, textarea, select)[class*='focus:border-slate-300']:focus {
+  border-color: var(--nodegraph-node-border-strong) !important;
+}
+
+.nodegraph-native-root
+  :is(input, textarea, select)[class*='focus:bg-white']:focus {
+  background-color: var(--nodegraph-node-bg) !important;
+}
+
+.nodegraph-native-root
+  :is(input, textarea, select)[class*='focus:border-black/25']:focus {
+  border-color: rgb(var(--color-10-rgb) / 0.28) !important;
+}
+
+.nodegraph-native-root
+  :is(input, textarea, select)[class*='disabled:border-slate-200']:disabled {
+  border-color: var(--nodegraph-node-border) !important;
+}
+
+.nodegraph-native-root
+  :is(input, textarea, select)[class*='disabled:bg-slate-100']:disabled {
+  background-color: var(--nodegraph-node-soft-bg) !important;
+}
+
+.nodegraph-native-root
+  :is(input, textarea, select)[class*='disabled:text-slate-400']:disabled {
+  color: var(--nodegraph-subtle-text) !important;
+}
+
+.nodegraph-native-root button[class*='hover:bg-slate-100']:hover {
+  background-color: var(--nodegraph-node-soft-hover) !important;
+}
+
+.nodegraph-native-root button[class*='hover:text-slate-700']:hover {
+  color: var(--nodegraph-text) !important;
+}
+
+.nodegraph-native-root button[class*='hover:text-slate-800']:hover {
+  color: var(--nodegraph-strong-text) !important;
 }

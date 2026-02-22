@@ -1,6 +1,5 @@
 import { Plus } from 'lucide-react';
 import {
-  formatCountLabel,
   normalizeCases,
   renderSource,
   renderTarget,
@@ -12,10 +11,17 @@ import {
   buildNodeContainerClass,
   NodeHeader,
 } from './nodePrimitives';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 
-export const renderSwitchGraphNode = ({ id, nodeData, selected }: Props) => {
+export const renderSwitchGraphNode = ({ id, nodeData, selected, t }: Props) => {
   const cases = normalizeCases(nodeData.cases);
   const isCollapsed = Boolean(nodeData.collapsed);
   return (
@@ -59,7 +65,15 @@ export const renderSwitchGraphNode = ({ id, nodeData, selected }: Props) => {
         title={nodeData.label}
         collapsed={isCollapsed}
         onToggleCollapse={() => nodeData.onToggleCollapse?.(id)}
-        collapseAriaLabel={isCollapsed ? 'expand switch' : 'collapse switch'}
+        collapseAriaLabel={
+          isCollapsed
+            ? tNode(t, 'common.aria.expandKind', 'expand {{kind}}', {
+                kind: nodeData.label,
+              })
+            : tNode(t, 'common.aria.collapseKind', 'collapse {{kind}}', {
+                kind: nodeData.label,
+              })
+        }
         leftSlot={
           isCollapsed
             ? null
@@ -80,7 +94,7 @@ export const renderSwitchGraphNode = ({ id, nodeData, selected }: Props) => {
               event.stopPropagation();
               nodeData.onAddCase?.(id);
             }}
-            aria-label="add case"
+            aria-label={tNode(t, 'switch.aria.addCase', 'add case')}
           >
             <Plus size={14} />
           </button>
@@ -88,7 +102,11 @@ export const renderSwitchGraphNode = ({ id, nodeData, selected }: Props) => {
       />
       {isCollapsed ? (
         <div className="relative flex min-h-7 items-center px-4 pb-2 font-[Inter,sans-serif] text-[11px] font-normal text-slate-500">
-          <span>{formatCountLabel(cases.length, 'case', 'cases')}</span>
+          <span>
+            {tNode(t, 'switch.caseCount', '{{count}} cases', {
+              count: cases.length,
+            })}
+          </span>
           {cases.map((caseItem) => (
             <div key={`collapsed-output-${caseItem.id}`} className="contents">
               {renderSource(
@@ -121,9 +139,10 @@ export const renderSwitchGraphNode = ({ id, nodeData, selected }: Props) => {
               undefined,
               nodeData.onPortContextMenu
             )}
-            <span>switch value</span>
+            <span>{tNode(t, 'switch.rows.switchValue', 'switch value')}</span>
           </div>
           <BranchListEditor
+            t={t}
             items={cases}
             onRemove={(branchId) => nodeData.onRemoveCase?.(id, branchId)}
             onChangeLabel={
@@ -154,7 +173,7 @@ export const renderSwitchGraphNode = ({ id, nodeData, selected }: Props) => {
             }
           />
           <div className="relative flex min-h-7 items-center gap-2 px-4 text-[11px] font-normal text-slate-700">
-            <span>default</span>
+            <span>{tNode(t, 'common.rows.default', 'default')}</span>
             {renderSource(
               id,
               'out.control.default',

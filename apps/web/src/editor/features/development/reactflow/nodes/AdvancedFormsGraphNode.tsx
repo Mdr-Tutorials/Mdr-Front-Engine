@@ -12,8 +12,15 @@ import {
   NodeValidationHint,
   SelectField,
 } from './nodePrimitives';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 
 const row = (
   id: string,
@@ -55,6 +62,7 @@ export const renderAdvancedFormsGraphNode = ({
   id,
   nodeData,
   selected,
+  t,
 }: Props) => {
   if (nodeData.kind === 'validate') {
     return (
@@ -79,9 +87,30 @@ export const renderAdvancedFormsGraphNode = ({
                 nodeData.onChangeField?.(id, 'ruleType', value)
               }
               options={[
-                { value: 'schema', label: 'schema' },
-                { value: 'rules', label: 'rules' },
-                { value: 'custom', label: 'custom' },
+                {
+                  value: 'schema',
+                  label: tNode(
+                    t,
+                    'advancedForms.validate.ruleType.schema',
+                    'schema'
+                  ),
+                },
+                {
+                  value: 'rules',
+                  label: tNode(
+                    t,
+                    'advancedForms.validate.ruleType.rules',
+                    'rules'
+                  ),
+                },
+                {
+                  value: 'custom',
+                  label: tNode(
+                    t,
+                    'advancedForms.validate.ruleType.custom',
+                    'custom'
+                  ),
+                },
               ]}
             />
             <SelectField
@@ -91,8 +120,22 @@ export const renderAdvancedFormsGraphNode = ({
                 nodeData.onChangeField?.(id, 'stopAtFirstError', value)
               }
               options={[
-                { value: 'false', label: 'collect all' },
-                { value: 'true', label: 'stop first' },
+                {
+                  value: 'false',
+                  label: tNode(
+                    t,
+                    'advancedForms.validate.stopAtFirstError.false',
+                    'collect all'
+                  ),
+                },
+                {
+                  value: 'true',
+                  label: tNode(
+                    t,
+                    'advancedForms.validate.stopAtFirstError.true',
+                    'stop first'
+                  ),
+                },
               ]}
             />
           </div>
@@ -104,25 +147,33 @@ export const renderAdvancedFormsGraphNode = ({
                 nodeData.onChangeField?.(id, 'schema', event.target.value)
               }
               rows={2}
-              placeholder="schema / rule DSL"
+              placeholder={tNode(
+                t,
+                'advancedForms.validate.schemaPlaceholder',
+                'schema / rule DSL'
+              )}
               spellCheck={false}
             />
           </div>
-          {row(id, nodeData, 'value', {
+          {row(id, nodeData, tNode(t, 'common.rows.value', 'value'), {
             inHandle: 'in.data.value',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'rules', {
+          {row(id, nodeData, tNode(t, 'common.rows.rules', 'rules'), {
             inHandle: 'in.data.rules',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'valid', { outHandle: 'out.control.valid' })}
-          {row(id, nodeData, 'invalid', { outHandle: 'out.control.invalid' })}
-          {row(id, nodeData, 'cleaned', {
+          {row(id, nodeData, tNode(t, 'common.rows.valid', 'valid'), {
+            outHandle: 'out.control.valid',
+          })}
+          {row(id, nodeData, tNode(t, 'common.rows.invalid', 'invalid'), {
+            outHandle: 'out.control.invalid',
+          })}
+          {row(id, nodeData, tNode(t, 'common.rows.cleaned', 'cleaned'), {
             outHandle: 'out.data.cleaned',
             outSemantic: 'data',
           })}
-          {row(id, nodeData, 'errors', {
+          {row(id, nodeData, tNode(t, 'common.rows.errors', 'errors'), {
             outHandle: 'out.data.errors',
             outSemantic: 'data',
           })}
@@ -153,8 +204,22 @@ export const renderAdvancedFormsGraphNode = ({
               value={nodeData.mode ?? 'debounce'}
               onChange={(value) => nodeData.onChangeField?.(id, 'mode', value)}
               options={[
-                { value: 'debounce', label: 'debounce' },
-                { value: 'throttle', label: 'throttle' },
+                {
+                  value: 'debounce',
+                  label: tNode(
+                    t,
+                    'advancedForms.rateLimit.mode.debounce',
+                    'debounce'
+                  ),
+                },
+                {
+                  value: 'throttle',
+                  label: tNode(
+                    t,
+                    'advancedForms.rateLimit.mode.throttle',
+                    'throttle'
+                  ),
+                },
               ]}
             />
             <input
@@ -163,7 +228,11 @@ export const renderAdvancedFormsGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'waitMs', event.target.value)
               }
-              placeholder="wait ms"
+              placeholder={tNode(
+                t,
+                'advancedForms.rateLimit.waitMsPlaceholder',
+                'wait ms'
+              )}
               spellCheck={false}
             />
           </div>
@@ -175,8 +244,22 @@ export const renderAdvancedFormsGraphNode = ({
                 nodeData.onChangeField?.(id, 'leading', value)
               }
               options={[
-                { value: 'false', label: 'leading off' },
-                { value: 'true', label: 'leading on' },
+                {
+                  value: 'false',
+                  label: tNode(
+                    t,
+                    'advancedForms.rateLimit.leading.false',
+                    'leading off'
+                  ),
+                },
+                {
+                  value: 'true',
+                  label: tNode(
+                    t,
+                    'advancedForms.rateLimit.leading.true',
+                    'leading on'
+                  ),
+                },
               ]}
             />
             <SelectField
@@ -186,8 +269,22 @@ export const renderAdvancedFormsGraphNode = ({
                 nodeData.onChangeField?.(id, 'trailing', value)
               }
               options={[
-                { value: 'true', label: 'trailing on' },
-                { value: 'false', label: 'trailing off' },
+                {
+                  value: 'true',
+                  label: tNode(
+                    t,
+                    'advancedForms.rateLimit.trailing.true',
+                    'trailing on'
+                  ),
+                },
+                {
+                  value: 'false',
+                  label: tNode(
+                    t,
+                    'advancedForms.rateLimit.trailing.false',
+                    'trailing off'
+                  ),
+                },
               ]}
             />
             <input
@@ -196,16 +293,22 @@ export const renderAdvancedFormsGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'maxWaitMs', event.target.value)
               }
-              placeholder="max wait"
+              placeholder={tNode(
+                t,
+                'advancedForms.rateLimit.maxWaitPlaceholder',
+                'max wait'
+              )}
               spellCheck={false}
             />
           </div>
-          {row(id, nodeData, 'value', {
+          {row(id, nodeData, tNode(t, 'common.rows.value', 'value'), {
             inHandle: 'in.data.value',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'fire', { outHandle: 'out.control.fire' })}
-          {row(id, nodeData, 'value', {
+          {row(id, nodeData, tNode(t, 'advancedForms.rateLimit.fire', 'fire'), {
+            outHandle: 'out.control.fire',
+          })}
+          {row(id, nodeData, tNode(t, 'common.rows.value', 'value'), {
             outHandle: 'out.data.value',
             outSemantic: 'data',
           })}
@@ -236,7 +339,11 @@ export const renderAdvancedFormsGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'formId', event.target.value)
               }
-              placeholder="form id"
+              placeholder={tNode(
+                t,
+                'advancedForms.formContext.formIdPlaceholder',
+                'form id'
+              )}
               spellCheck={false}
             />
           </div>
@@ -248,8 +355,22 @@ export const renderAdvancedFormsGraphNode = ({
                 nodeData.onChangeField?.(id, 'autoCreate', value)
               }
               options={[
-                { value: 'true', label: 'auto create' },
-                { value: 'false', label: 'manual' },
+                {
+                  value: 'true',
+                  label: tNode(
+                    t,
+                    'advancedForms.formContext.autoCreate.true',
+                    'auto create'
+                  ),
+                },
+                {
+                  value: 'false',
+                  label: tNode(
+                    t,
+                    'advancedForms.formContext.autoCreate.false',
+                    'manual'
+                  ),
+                },
               ]}
             />
             <SelectField
@@ -259,21 +380,37 @@ export const renderAdvancedFormsGraphNode = ({
                 nodeData.onChangeField?.(id, 'resetOnSubmit', value)
               }
               options={[
-                { value: 'false', label: 'keep values' },
-                { value: 'true', label: 'reset submit' },
+                {
+                  value: 'false',
+                  label: tNode(
+                    t,
+                    'advancedForms.formContext.resetOnSubmit.false',
+                    'keep values'
+                  ),
+                },
+                {
+                  value: 'true',
+                  label: tNode(
+                    t,
+                    'advancedForms.formContext.resetOnSubmit.true',
+                    'reset submit'
+                  ),
+                },
               ]}
             />
           </div>
-          {row(id, nodeData, 'changed', { outHandle: 'out.control.changed' })}
-          {row(id, nodeData, 'form', {
+          {row(id, nodeData, tNode(t, 'common.rows.changed', 'changed'), {
+            outHandle: 'out.control.changed',
+          })}
+          {row(id, nodeData, tNode(t, 'common.rows.form', 'form'), {
             outHandle: 'out.data.form',
             outSemantic: 'data',
           })}
-          {row(id, nodeData, 'values', {
+          {row(id, nodeData, tNode(t, 'common.rows.values', 'values'), {
             outHandle: 'out.data.values',
             outSemantic: 'data',
           })}
-          {row(id, nodeData, 'errors', {
+          {row(id, nodeData, tNode(t, 'common.rows.errors', 'errors'), {
             outHandle: 'out.data.errors',
             outSemantic: 'data',
           })}
@@ -304,7 +441,11 @@ export const renderAdvancedFormsGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'fieldName', event.target.value)
               }
-              placeholder="field"
+              placeholder={tNode(
+                t,
+                'advancedForms.formField.fieldPlaceholder',
+                'field'
+              )}
               spellCheck={false}
             />
             <SelectField
@@ -314,10 +455,30 @@ export const renderAdvancedFormsGraphNode = ({
                 nodeData.onChangeField?.(id, 'action', value)
               }
               options={[
-                { value: 'bind', label: 'bind' },
-                { value: 'get', label: 'get' },
-                { value: 'set', label: 'set' },
-                { value: 'reset', label: 'reset' },
+                {
+                  value: 'bind',
+                  label: tNode(
+                    t,
+                    'advancedForms.formField.actions.bind',
+                    'bind'
+                  ),
+                },
+                {
+                  value: 'get',
+                  label: tNode(t, 'advancedForms.formField.actions.get', 'get'),
+                },
+                {
+                  value: 'set',
+                  label: tNode(t, 'advancedForms.formField.actions.set', 'set'),
+                },
+                {
+                  value: 'reset',
+                  label: tNode(
+                    t,
+                    'advancedForms.formField.actions.reset',
+                    'reset'
+                  ),
+                },
               ]}
             />
           </div>
@@ -328,24 +489,30 @@ export const renderAdvancedFormsGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'defaultValue', event.target.value)
               }
-              placeholder="default value"
+              placeholder={tNode(
+                t,
+                'advancedForms.formField.defaultValuePlaceholder',
+                'default value'
+              )}
               spellCheck={false}
             />
           </div>
-          {row(id, nodeData, 'form', {
+          {row(id, nodeData, tNode(t, 'common.rows.form', 'form'), {
             inHandle: 'in.data.form',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'value', {
+          {row(id, nodeData, tNode(t, 'common.rows.value', 'value'), {
             inHandle: 'in.data.value',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'changed', { outHandle: 'out.control.changed' })}
-          {row(id, nodeData, 'value', {
+          {row(id, nodeData, tNode(t, 'common.rows.changed', 'changed'), {
+            outHandle: 'out.control.changed',
+          })}
+          {row(id, nodeData, tNode(t, 'common.rows.value', 'value'), {
             outHandle: 'out.data.value',
             outSemantic: 'data',
           })}
-          {row(id, nodeData, 'error', {
+          {row(id, nodeData, tNode(t, 'common.rows.error', 'error'), {
             outHandle: 'out.data.error',
             outSemantic: 'data',
           })}

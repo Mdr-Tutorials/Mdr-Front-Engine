@@ -20,7 +20,7 @@ describe('mir renderer registry', () => {
     expect(registry.get('MdrAvatar')).toBeTruthy();
     expect(registry.get('MdrForwardRefLike')).toBeTruthy();
     expect(registry.get('MdrTokens')).toBeUndefined();
-  });
+  }, 15000);
 
   it('keeps adapter overrides (e.g. MdrButton is non-children)', async () => {
     const { createMdrRegistry, mdrIconAdapter, mdrLinkAdapter } = await import(

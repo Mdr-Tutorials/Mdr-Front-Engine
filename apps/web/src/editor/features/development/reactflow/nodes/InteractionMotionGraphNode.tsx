@@ -11,8 +11,15 @@ import {
   NodeValidationHint,
   SelectField,
 } from './nodePrimitives';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 
 const row = (
   id: string,
@@ -54,6 +61,7 @@ export const renderInteractionMotionGraphNode = ({
   id,
   nodeData,
   selected,
+  t,
 }: Props) => {
   if (nodeData.kind === 'playAnimation') {
     return (
@@ -77,7 +85,11 @@ export const renderInteractionMotionGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'targetId', event.target.value)
               }
-              placeholder="target id"
+              placeholder={tNode(
+                t,
+                'interactionMotion.playAnimation.targetIdPlaceholder',
+                'target id'
+              )}
               spellCheck={false}
             />
             <input
@@ -86,7 +98,11 @@ export const renderInteractionMotionGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'timelineName', event.target.value)
               }
-              placeholder="timeline"
+              placeholder={tNode(
+                t,
+                'interactionMotion.playAnimation.timelinePlaceholder',
+                'timeline'
+              )}
               spellCheck={false}
             />
           </div>
@@ -98,10 +114,38 @@ export const renderInteractionMotionGraphNode = ({
                 nodeData.onChangeField?.(id, 'action', value)
               }
               options={[
-                { value: 'play', label: 'play' },
-                { value: 'pause', label: 'pause' },
-                { value: 'reverse', label: 'reverse' },
-                { value: 'stop', label: 'stop' },
+                {
+                  value: 'play',
+                  label: tNode(
+                    t,
+                    'interactionMotion.playAnimation.actions.play',
+                    'play'
+                  ),
+                },
+                {
+                  value: 'pause',
+                  label: tNode(
+                    t,
+                    'interactionMotion.playAnimation.actions.pause',
+                    'pause'
+                  ),
+                },
+                {
+                  value: 'reverse',
+                  label: tNode(
+                    t,
+                    'interactionMotion.playAnimation.actions.reverse',
+                    'reverse'
+                  ),
+                },
+                {
+                  value: 'stop',
+                  label: tNode(
+                    t,
+                    'interactionMotion.playAnimation.actions.stop',
+                    'stop'
+                  ),
+                },
               ]}
             />
             <input
@@ -110,7 +154,11 @@ export const renderInteractionMotionGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'speed', event.target.value)
               }
-              placeholder="speed"
+              placeholder={tNode(
+                t,
+                'interactionMotion.playAnimation.speedPlaceholder',
+                'speed'
+              )}
               spellCheck={false}
             />
             <input
@@ -119,21 +167,31 @@ export const renderInteractionMotionGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'iterations', event.target.value)
               }
-              placeholder="loops"
+              placeholder={tNode(
+                t,
+                'interactionMotion.playAnimation.loopsPlaceholder',
+                'loops'
+              )}
               spellCheck={false}
             />
           </div>
-          {row(id, nodeData, 'target', {
+          {row(id, nodeData, tNode(t, 'common.rows.target', 'target'), {
             inHandle: 'in.data.target',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'timeline', {
+          {row(id, nodeData, tNode(t, 'common.rows.timeline', 'timeline'), {
             inHandle: 'in.data.timeline',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'start', { outHandle: 'out.control.start' })}
-          {row(id, nodeData, 'complete', { outHandle: 'out.control.complete' })}
-          {row(id, nodeData, 'error', { outHandle: 'out.control.error' })}
+          {row(id, nodeData, tNode(t, 'common.rows.start', 'start'), {
+            outHandle: 'out.control.start',
+          })}
+          {row(id, nodeData, tNode(t, 'common.rows.complete', 'complete'), {
+            outHandle: 'out.control.complete',
+          })}
+          {row(id, nodeData, tNode(t, 'common.rows.error', 'error'), {
+            outHandle: 'out.control.error',
+          })}
         </div>
         <NodeValidationHint message={nodeData.validationMessage} />
       </div>
@@ -163,9 +221,30 @@ export const renderInteractionMotionGraphNode = ({
                 nodeData.onChangeField?.(id, 'target', value)
               }
               options={[
-                { value: 'top', label: 'top' },
-                { value: 'bottom', label: 'bottom' },
-                { value: 'selector', label: 'selector' },
+                {
+                  value: 'top',
+                  label: tNode(
+                    t,
+                    'interactionMotion.scrollTo.targets.top',
+                    'top'
+                  ),
+                },
+                {
+                  value: 'bottom',
+                  label: tNode(
+                    t,
+                    'interactionMotion.scrollTo.targets.bottom',
+                    'bottom'
+                  ),
+                },
+                {
+                  value: 'selector',
+                  label: tNode(
+                    t,
+                    'interactionMotion.scrollTo.targets.selector',
+                    'selector'
+                  ),
+                },
               ]}
             />
             <SelectField
@@ -175,8 +254,22 @@ export const renderInteractionMotionGraphNode = ({
                 nodeData.onChangeField?.(id, 'behavior', value)
               }
               options={[
-                { value: 'smooth', label: 'smooth' },
-                { value: 'auto', label: 'auto' },
+                {
+                  value: 'smooth',
+                  label: tNode(
+                    t,
+                    'interactionMotion.scrollTo.behaviors.smooth',
+                    'smooth'
+                  ),
+                },
+                {
+                  value: 'auto',
+                  label: tNode(
+                    t,
+                    'interactionMotion.scrollTo.behaviors.auto',
+                    'auto'
+                  ),
+                },
               ]}
             />
             <input
@@ -185,7 +278,11 @@ export const renderInteractionMotionGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'offset', event.target.value)
               }
-              placeholder="offset"
+              placeholder={tNode(
+                t,
+                'interactionMotion.scrollTo.offsetPlaceholder',
+                'offset'
+              )}
               spellCheck={false}
             />
           </div>
@@ -197,17 +294,25 @@ export const renderInteractionMotionGraphNode = ({
                 onChange={(event) =>
                   nodeData.onChangeField?.(id, 'selector', event.target.value)
                 }
-                placeholder="#selector"
+                placeholder={tNode(
+                  t,
+                  'interactionMotion.scrollTo.selectorPlaceholder',
+                  '#selector'
+                )}
                 spellCheck={false}
               />
             </div>
           ) : null}
-          {row(id, nodeData, 'target', {
+          {row(id, nodeData, tNode(t, 'common.rows.target', 'target'), {
             inHandle: 'in.data.target',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'done', { outHandle: 'out.control.done' })}
-          {row(id, nodeData, 'error', { outHandle: 'out.control.error' })}
+          {row(id, nodeData, tNode(t, 'common.rows.done', 'done'), {
+            outHandle: 'out.control.done',
+          })}
+          {row(id, nodeData, tNode(t, 'common.rows.error', 'error'), {
+            outHandle: 'out.control.error',
+          })}
         </div>
         <NodeValidationHint message={nodeData.validationMessage} />
       </div>
@@ -237,9 +342,30 @@ export const renderInteractionMotionGraphNode = ({
                 nodeData.onChangeField?.(id, 'action', value)
               }
               options={[
-                { value: 'focus', label: 'focus' },
-                { value: 'blur', label: 'blur' },
-                { value: 'select', label: 'select' },
+                {
+                  value: 'focus',
+                  label: tNode(
+                    t,
+                    'interactionMotion.focusControl.actions.focus',
+                    'focus'
+                  ),
+                },
+                {
+                  value: 'blur',
+                  label: tNode(
+                    t,
+                    'interactionMotion.focusControl.actions.blur',
+                    'blur'
+                  ),
+                },
+                {
+                  value: 'select',
+                  label: tNode(
+                    t,
+                    'interactionMotion.focusControl.actions.select',
+                    'select'
+                  ),
+                },
               ]}
             />
             <input
@@ -248,16 +374,24 @@ export const renderInteractionMotionGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'selector', event.target.value)
               }
-              placeholder="#input"
+              placeholder={tNode(
+                t,
+                'interactionMotion.focusControl.selectorPlaceholder',
+                '#input'
+              )}
               spellCheck={false}
             />
           </div>
-          {row(id, nodeData, 'target', {
+          {row(id, nodeData, tNode(t, 'common.rows.target', 'target'), {
             inHandle: 'in.data.target',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'done', { outHandle: 'out.control.done' })}
-          {row(id, nodeData, 'error', { outHandle: 'out.control.error' })}
+          {row(id, nodeData, tNode(t, 'common.rows.done', 'done'), {
+            outHandle: 'out.control.done',
+          })}
+          {row(id, nodeData, tNode(t, 'common.rows.error', 'error'), {
+            outHandle: 'out.control.error',
+          })}
         </div>
         <NodeValidationHint message={nodeData.validationMessage} />
       </div>
@@ -285,18 +419,36 @@ export const renderInteractionMotionGraphNode = ({
               value={nodeData.mode ?? 'copy'}
               onChange={(value) => nodeData.onChangeField?.(id, 'mode', value)}
               options={[
-                { value: 'copy', label: 'copy' },
-                { value: 'read', label: 'read' },
+                {
+                  value: 'copy',
+                  label: tNode(
+                    t,
+                    'interactionMotion.clipboard.modes.copy',
+                    'copy'
+                  ),
+                },
+                {
+                  value: 'read',
+                  label: tNode(
+                    t,
+                    'interactionMotion.clipboard.modes.read',
+                    'read'
+                  ),
+                },
               ]}
             />
           </div>
-          {row(id, nodeData, 'value in', {
+          {row(id, nodeData, tNode(t, 'clipboard.rows.valueIn', 'value in'), {
             inHandle: 'in.data.value',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'done', { outHandle: 'out.control.done' })}
-          {row(id, nodeData, 'error', { outHandle: 'out.control.error' })}
-          {row(id, nodeData, 'value out', {
+          {row(id, nodeData, tNode(t, 'common.rows.done', 'done'), {
+            outHandle: 'out.control.done',
+          })}
+          {row(id, nodeData, tNode(t, 'common.rows.error', 'error'), {
+            outHandle: 'out.control.error',
+          })}
+          {row(id, nodeData, tNode(t, 'clipboard.rows.valueOut', 'value out'), {
             outHandle: 'out.data.value',
             outSemantic: 'data',
           })}

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { BlueprintEditorInspector } from '../BlueprintEditorInspector';
@@ -65,8 +65,19 @@ beforeEach(() => {
   resetEditorStore();
 });
 
+const ensureLayoutGroupButton = async (groupName: 'Grid' | 'Spacing') => {
+  if (!screen.queryByRole('button', { name: 'Layout' })) {
+    const styleToggle = await screen.findByRole('button', { name: 'Style' });
+    fireEvent.click(styleToggle);
+  }
+  if (!screen.queryByRole('button', { name: groupName })) {
+    fireEvent.click(await screen.findByRole('button', { name: 'Layout' }));
+  }
+  return await screen.findByRole('button', { name: groupName });
+};
+
 describe('BlueprintEditorInspector layout panel', () => {
-  it('updates gap for a Flex node', () => {
+  it('updates gap for a Flex node', async () => {
     resetEditorStore({
       mirDoc: createMirDoc([
         {
@@ -91,7 +102,7 @@ describe('BlueprintEditorInspector layout panel', () => {
       />
     );
 
-    fireEvent.change(screen.getByPlaceholderText('8'), {
+    fireEvent.change(await screen.findByPlaceholderText('8'), {
       target: { value: '24' },
     });
 
@@ -99,7 +110,7 @@ describe('BlueprintEditorInspector layout panel', () => {
     expect(child?.props?.gap).toBe(24);
   });
 
-  it('updates gridTemplateColumns for a Grid node', () => {
+  it('updates gridTemplateColumns for a Grid node', async () => {
     resetEditorStore({
       mirDoc: createMirDoc([
         {
@@ -125,15 +136,25 @@ describe('BlueprintEditorInspector layout panel', () => {
       />
     );
 
+    fireEvent.click(await ensureLayoutGroupButton('Grid'));
+    await waitFor(() => {
+      expect(screen.getAllByTestId('mdr-input').length).toBeGreaterThanOrEqual(
+        2
+      );
+    });
     const inputs = screen.getAllByTestId('mdr-input') as HTMLInputElement[];
     // [0] id, [1] columns (gap uses editor-only UnitInput)
     fireEvent.change(inputs[1], { target: { value: '3' } });
 
-    const child = useEditorStore.getState().mirDoc.ui.root.children?.[0];
-    expect(child?.style?.gridTemplateColumns).toBe('repeat(3, minmax(0, 1fr))');
+    await waitFor(() => {
+      const child = useEditorStore.getState().mirDoc.ui.root.children?.[0];
+      expect(child?.style?.gridTemplateColumns).toBe(
+        'repeat(3, minmax(0, 1fr))'
+      );
+    });
   });
 
-  it('keeps margin shorthand and per-side inputs in sync', () => {
+  it('keeps margin shorthand and per-side inputs in sync', async () => {
     resetEditorStore({
       mirDoc: createMirDoc([
         {
@@ -157,25 +178,27 @@ describe('BlueprintEditorInspector layout panel', () => {
       />
     );
 
-    const shorthandInput = screen.getByTestId(
+    fireEvent.click(await ensureLayoutGroupButton('Spacing'));
+
+    const shorthandInput = (await screen.findByTestId(
       'inspector-margin-shorthand'
-    ) as HTMLInputElement;
+    )) as HTMLInputElement;
     fireEvent.change(shorthandInput, { target: { value: '10px 20px' } });
 
-    fireEvent.click(screen.getByTestId('inspector-margin-toggle'));
+    fireEvent.click(await screen.findByTestId('inspector-margin-toggle'));
 
-    const topInput = screen
-      .getByTestId('inspector-margin-top')
-      .querySelector('input') as HTMLInputElement;
-    const rightInput = screen
-      .getByTestId('inspector-margin-right')
-      .querySelector('input') as HTMLInputElement;
-    const bottomInput = screen
-      .getByTestId('inspector-margin-bottom')
-      .querySelector('input') as HTMLInputElement;
-    const leftInput = screen
-      .getByTestId('inspector-margin-left')
-      .querySelector('input') as HTMLInputElement;
+    const topInput = (
+      await screen.findByTestId('inspector-margin-top')
+    ).querySelector('input') as HTMLInputElement;
+    const rightInput = (
+      await screen.findByTestId('inspector-margin-right')
+    ).querySelector('input') as HTMLInputElement;
+    const bottomInput = (
+      await screen.findByTestId('inspector-margin-bottom')
+    ).querySelector('input') as HTMLInputElement;
+    const leftInput = (
+      await screen.findByTestId('inspector-margin-left')
+    ).querySelector('input') as HTMLInputElement;
 
     expect(topInput.value).toBe('10');
     expect(rightInput.value).toBe('20');

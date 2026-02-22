@@ -10,10 +10,17 @@ import {
   NODE_TEXTAREA_CLASS,
   NodeHeader,
 } from './nodePrimitives';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 
-export const renderValueGraphNode = ({ id, nodeData, selected }: Props) => {
+export const renderValueGraphNode = ({ id, nodeData, selected, t }: Props) => {
   const isCollapsed = Boolean(nodeData.collapsed);
   const defaultValueByKind: Record<
     'string' | 'number' | 'boolean' | 'object' | 'array',
@@ -45,7 +52,13 @@ export const renderValueGraphNode = ({ id, nodeData, selected }: Props) => {
         collapsed={isCollapsed}
         onToggleCollapse={() => nodeData.onToggleCollapse?.(id)}
         collapseAriaLabel={
-          isCollapsed ? `expand ${nodeData.kind}` : `collapse ${nodeData.kind}`
+          isCollapsed
+            ? tNode(t, 'common.aria.expandKind', 'expand {{kind}}', {
+                kind: nodeData.label,
+              })
+            : tNode(t, 'common.aria.collapseKind', 'collapse {{kind}}', {
+                kind: nodeData.label,
+              })
         }
         summary={
           isCollapsed ? (

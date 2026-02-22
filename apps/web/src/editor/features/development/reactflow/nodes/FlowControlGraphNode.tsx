@@ -1,5 +1,4 @@
 import {
-  formatCountLabel,
   normalizeBranches,
   renderSource,
   renderTarget,
@@ -13,8 +12,15 @@ import {
   NODE_TEXT_INPUT_CLASS,
   NodeHeader,
 } from './nodePrimitives';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 
 const renderRowLabel = (
   id: string,
@@ -53,15 +59,28 @@ export const renderFlowControlGraphNode = ({
   id,
   nodeData,
   selected,
+  t,
 }: Props) => {
   const isCollapsed = Boolean(nodeData.collapsed);
+  const expandAriaLabel = tNode(
+    t,
+    'common.aria.expandKind',
+    'expand {{kind}}',
+    { kind: nodeData.label }
+  );
+  const collapseAriaLabel = tNode(
+    t,
+    'common.aria.collapseKind',
+    'collapse {{kind}}',
+    { kind: nodeData.label }
+  );
 
   if (nodeData.kind === 'start') {
     return (
       <div className={buildNodeContainerClass(selected, 'min-w-[190px]')}>
         <NodeHeader title={nodeData.label} />
         <div className="relative flex min-h-7 items-center px-4 pb-2 text-[11px] font-normal text-slate-700">
-          <span>entry</span>
+          <span>{tNode(t, 'common.rows.entry', 'entry')}</span>
           {renderSource(
             id,
             'out.control.next',
@@ -90,7 +109,7 @@ export const renderFlowControlGraphNode = ({
           )}
         />
         <div className="px-4 pb-2 text-[11px] font-normal text-slate-500">
-          exit
+          {tNode(t, 'common.rows.exit', 'exit')}
         </div>
       </div>
     );
@@ -126,11 +145,21 @@ export const renderFlowControlGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'value', event.target.value)
               }
-              placeholder="process step"
+              placeholder={tNode(
+                t,
+                'flowControl.process.stepPlaceholder',
+                'process step'
+              )}
               spellCheck={false}
             />
           </div>
-          {renderRowLabel(id, nodeData, 'next', null, 'out.control.next')}
+          {renderRowLabel(
+            id,
+            nodeData,
+            tNode(t, 'common.rows.next', 'next'),
+            null,
+            'out.control.next'
+          )}
         </div>
       </div>
     );
@@ -143,7 +172,7 @@ export const renderFlowControlGraphNode = ({
           title={nodeData.label}
           collapsed={isCollapsed}
           onToggleCollapse={() => nodeData.onToggleCollapse?.(id)}
-          collapseAriaLabel={isCollapsed ? 'expand if' : 'collapse if'}
+          collapseAriaLabel={isCollapsed ? expandAriaLabel : collapseAriaLabel}
           leftSlot={renderTarget(
             id,
             'in.control.prev',
@@ -154,7 +183,14 @@ export const renderFlowControlGraphNode = ({
           )}
           summary={
             isCollapsed ? (
-              <CollapseSummary text="2 branches" title="true/false branches" />
+              <CollapseSummary
+                text={tNode(t, 'flowControl.if.summaryText', '2 branches')}
+                title={tNode(
+                  t,
+                  'flowControl.if.summaryTitle',
+                  'true/false branches'
+                )}
+              />
             ) : null
           }
         />
@@ -190,13 +226,25 @@ export const renderFlowControlGraphNode = ({
             {renderRowLabel(
               id,
               nodeData,
-              'condition',
+              tNode(t, 'common.rows.condition', 'condition'),
               'in.condition.guard',
               null,
               'condition'
             )}
-            {renderRowLabel(id, nodeData, 'true', null, 'out.control.true')}
-            {renderRowLabel(id, nodeData, 'false', null, 'out.control.false')}
+            {renderRowLabel(
+              id,
+              nodeData,
+              tNode(t, 'common.rows.true', 'true'),
+              null,
+              'out.control.true'
+            )}
+            {renderRowLabel(
+              id,
+              nodeData,
+              tNode(t, 'common.rows.false', 'false'),
+              null,
+              'out.control.false'
+            )}
           </div>
         )}
       </div>
@@ -210,9 +258,7 @@ export const renderFlowControlGraphNode = ({
           title={nodeData.label}
           collapsed={isCollapsed}
           onToggleCollapse={() => nodeData.onToggleCollapse?.(id)}
-          collapseAriaLabel={
-            isCollapsed ? 'expand foreach' : 'collapse foreach'
-          }
+          collapseAriaLabel={isCollapsed ? expandAriaLabel : collapseAriaLabel}
           leftSlot={renderTarget(
             id,
             'in.control.prev',
@@ -224,8 +270,15 @@ export const renderFlowControlGraphNode = ({
           summary={
             isCollapsed ? (
               <CollapseSummary
-                text={nodeData.value?.trim() || 'item'}
-                title="iteration variable"
+                text={
+                  nodeData.value?.trim() ||
+                  tNode(t, 'flowControl.forEach.itemFallback', 'item')
+                }
+                title={tNode(
+                  t,
+                  'flowControl.forEach.summaryTitle',
+                  'iteration variable'
+                )}
               />
             ) : null
           }
@@ -266,24 +319,40 @@ export const renderFlowControlGraphNode = ({
                 onChange={(event) =>
                   nodeData.onChangeField?.(id, 'value', event.target.value)
                 }
-                placeholder="item"
+                placeholder={tNode(
+                  t,
+                  'flowControl.forEach.itemPlaceholder',
+                  'item'
+                )}
                 spellCheck={false}
               />
             </div>
             {renderRowLabel(
               id,
               nodeData,
-              'items',
+              tNode(t, 'common.rows.items', 'items'),
               'in.data.items',
               null,
               'data'
             )}
-            {renderRowLabel(id, nodeData, 'body', null, 'out.control.body')}
-            {renderRowLabel(id, nodeData, 'done', null, 'out.control.done')}
             {renderRowLabel(
               id,
               nodeData,
-              'item',
+              tNode(t, 'common.rows.body', 'body'),
+              null,
+              'out.control.body'
+            )}
+            {renderRowLabel(
+              id,
+              nodeData,
+              tNode(t, 'common.rows.done', 'done'),
+              null,
+              'out.control.done'
+            )}
+            {renderRowLabel(
+              id,
+              nodeData,
+              tNode(t, 'common.rows.item', 'item'),
               null,
               'out.data.item',
               'data'
@@ -301,9 +370,7 @@ export const renderFlowControlGraphNode = ({
           title={nodeData.label}
           collapsed={isCollapsed}
           onToggleCollapse={() => nodeData.onToggleCollapse?.(id)}
-          collapseAriaLabel={
-            isCollapsed ? 'expand try-catch' : 'collapse try-catch'
-          }
+          collapseAriaLabel={isCollapsed ? expandAriaLabel : collapseAriaLabel}
           leftSlot={renderTarget(
             id,
             'in.control.prev',
@@ -315,8 +382,16 @@ export const renderFlowControlGraphNode = ({
           summary={
             isCollapsed ? (
               <CollapseSummary
-                text="3 branches"
-                title="try/catch/finally branches"
+                text={tNode(
+                  t,
+                  'flowControl.tryCatch.summaryText',
+                  '3 branches'
+                )}
+                title={tNode(
+                  t,
+                  'flowControl.tryCatch.summaryTitle',
+                  'try/catch/finally branches'
+                )}
               />
             ) : null
           }
@@ -350,12 +425,24 @@ export const renderFlowControlGraphNode = ({
           </>
         ) : (
           <div className="pb-2">
-            {renderRowLabel(id, nodeData, 'try', null, 'out.control.try')}
-            {renderRowLabel(id, nodeData, 'catch', null, 'out.control.catch')}
             {renderRowLabel(
               id,
               nodeData,
-              'finally',
+              tNode(t, 'common.rows.try', 'try'),
+              null,
+              'out.control.try'
+            )}
+            {renderRowLabel(
+              id,
+              nodeData,
+              tNode(t, 'common.rows.catch', 'catch'),
+              null,
+              'out.control.catch'
+            )}
+            {renderRowLabel(
+              id,
+              nodeData,
+              tNode(t, 'common.rows.finally', 'finally'),
               null,
               'out.control.finally'
             )}
@@ -372,7 +459,7 @@ export const renderFlowControlGraphNode = ({
           title={nodeData.label}
           collapsed={isCollapsed}
           onToggleCollapse={() => nodeData.onToggleCollapse?.(id)}
-          collapseAriaLabel={isCollapsed ? 'expand delay' : 'collapse delay'}
+          collapseAriaLabel={isCollapsed ? expandAriaLabel : collapseAriaLabel}
           leftSlot={renderTarget(
             id,
             'in.control.prev',
@@ -384,8 +471,17 @@ export const renderFlowControlGraphNode = ({
           summary={
             isCollapsed ? (
               <CollapseSummary
-                text={`${nodeData.timeoutMs?.trim() || '300'} ms`}
-                title="delay duration"
+                text={tNode(
+                  t,
+                  'flowControl.delay.summaryText',
+                  '{{timeout}} ms',
+                  { timeout: nodeData.timeoutMs?.trim() || '300' }
+                )}
+                title={tNode(
+                  t,
+                  'flowControl.delay.summaryTitle',
+                  'delay duration'
+                )}
               />
             ) : null
           }
@@ -418,19 +514,29 @@ export const renderFlowControlGraphNode = ({
                 onChange={(event) =>
                   nodeData.onChangeField?.(id, 'timeoutMs', event.target.value)
                 }
-                placeholder="300"
+                placeholder={tNode(
+                  t,
+                  'flowControl.delay.timeoutPlaceholder',
+                  '300'
+                )}
                 spellCheck={false}
               />
             </div>
             {renderRowLabel(
               id,
               nodeData,
-              'duration input',
+              tNode(t, 'flowControl.delay.durationInput', 'duration input'),
               'in.data.ms',
               null,
               'data'
             )}
-            {renderRowLabel(id, nodeData, 'next', null, 'out.control.next')}
+            {renderRowLabel(
+              id,
+              nodeData,
+              tNode(t, 'common.rows.next', 'next'),
+              null,
+              'out.control.next'
+            )}
           </div>
         )}
       </div>
@@ -445,11 +551,7 @@ export const renderFlowControlGraphNode = ({
           title={nodeData.label}
           collapsed={isCollapsed}
           onToggleCollapse={() => nodeData.onToggleCollapse?.(id)}
-          collapseAriaLabel={
-            isCollapsed
-              ? `expand ${nodeData.kind}`
-              : `collapse ${nodeData.kind}`
-          }
+          collapseAriaLabel={isCollapsed ? expandAriaLabel : collapseAriaLabel}
           leftSlot={renderTarget(
             id,
             'in.control.prev',
@@ -461,8 +563,17 @@ export const renderFlowControlGraphNode = ({
           summary={
             isCollapsed ? (
               <CollapseSummary
-                text={formatCountLabel(branches.length, 'branch', 'branches')}
-                title="parallel branches"
+                text={tNode(
+                  t,
+                  'flowControl.parallel.branchCount',
+                  '{{count}} branches',
+                  { count: branches.length }
+                )}
+                title={tNode(
+                  t,
+                  'flowControl.parallel.summaryTitle',
+                  'parallel branches'
+                )}
               />
             ) : null
           }
@@ -493,6 +604,7 @@ export const renderFlowControlGraphNode = ({
         ) : (
           <div className="pb-2">
             <BranchListEditor
+              t={t}
               items={branches}
               onAdd={() => nodeData.onAddBranch?.(id)}
               onRemove={(branchId) => nodeData.onRemoveBranch?.(id, branchId)}
@@ -510,7 +622,13 @@ export const renderFlowControlGraphNode = ({
                 )
               }
             />
-            {renderRowLabel(id, nodeData, 'done', null, 'out.control.done')}
+            {renderRowLabel(
+              id,
+              nodeData,
+              tNode(t, 'common.rows.done', 'done'),
+              null,
+              'out.control.done'
+            )}
           </div>
         )}
       </div>

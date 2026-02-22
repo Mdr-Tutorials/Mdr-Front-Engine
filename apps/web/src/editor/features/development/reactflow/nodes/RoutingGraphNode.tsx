@@ -9,8 +9,15 @@ import {
   NODE_TEXT_INPUT_CLASS,
   NodeHeader,
 } from './nodePrimitives';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 
 const row = (
   id: string,
@@ -54,7 +61,12 @@ const row = (
   );
 };
 
-export const renderRoutingGraphNode = ({ id, nodeData, selected }: Props) => {
+export const renderRoutingGraphNode = ({
+  id,
+  nodeData,
+  selected,
+  t,
+}: Props) => {
   const kind = nodeData.kind;
   const isNavigate = kind === 'navigate';
   const isRouteParams = kind === 'routeParams';
@@ -88,7 +100,9 @@ export const renderRoutingGraphNode = ({ id, nodeData, selected }: Props) => {
                 nodeData.onChangeField?.(id, 'routePath', event.target.value)
               }
               placeholder={
-                isRouteParams || isRouteQuery ? '/orders/:id' : '/dashboard'
+                isRouteParams || isRouteQuery
+                  ? tNode(t, 'routing.placeholders.routePattern', '/orders/:id')
+                  : tNode(t, 'routing.placeholders.navigatePath', '/dashboard')
               }
               spellCheck={false}
             />
@@ -96,7 +110,7 @@ export const renderRoutingGraphNode = ({ id, nodeData, selected }: Props) => {
         )}
 
         {isNavigate
-          ? row(id, nodeData, 'to', {
+          ? row(id, nodeData, tNode(t, 'routing.rows.to', 'to'), {
               inHandle: 'in.data.value',
               outHandle: 'out.control.next',
               inSemantic: 'data',
@@ -104,19 +118,19 @@ export const renderRoutingGraphNode = ({ id, nodeData, selected }: Props) => {
             })
           : null}
         {isRouteParams
-          ? row(id, nodeData, 'params', {
+          ? row(id, nodeData, tNode(t, 'routing.rows.params', 'params'), {
               outHandle: 'out.data.value',
               outSemantic: 'data',
             })
           : null}
         {isRouteQuery
-          ? row(id, nodeData, 'query', {
+          ? row(id, nodeData, tNode(t, 'routing.rows.query', 'query'), {
               outHandle: 'out.data.value',
               outSemantic: 'data',
             })
           : null}
         {isRouteGuard
-          ? row(id, nodeData, 'allow?', {
+          ? row(id, nodeData, tNode(t, 'routing.rows.allow', 'allow?'), {
               inHandle: 'in.condition.value',
               outHandle: 'out.control.next',
               inSemantic: 'condition',

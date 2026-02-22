@@ -40,7 +40,9 @@ describe('EditorHome', () => {
   });
 
   it('opens the new resource modal when clicking the create button', async () => {
-    listProjectsMock.mockResolvedValue({ projects: [] });
+    listProjectsMock.mockImplementation(
+      () => new Promise<{ projects: [] }>(() => undefined)
+    );
     render(<EditorHome />);
 
     fireEvent.click(

@@ -12,8 +12,15 @@ import {
   NodeHeader,
   SelectField,
 } from './nodePrimitives';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 
 const row = (
   id: string,
@@ -55,6 +62,7 @@ export const renderAbstractionGraphNode = ({
   id,
   nodeData,
   selected,
+  t,
 }: Props) => {
   if (nodeData.kind === 'subFlowCall') {
     const inputBindings = normalizeBindingEntries(nodeData.inputBindings);
@@ -80,7 +88,11 @@ export const renderAbstractionGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'subGraphId', event.target.value)
               }
-              placeholder="sub graph id"
+              placeholder={tNode(
+                t,
+                'abstraction.subFlowCall.subGraphIdPlaceholder',
+                'sub graph id'
+              )}
               spellCheck={false}
             />
             <input
@@ -89,24 +101,37 @@ export const renderAbstractionGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'timeoutMs', event.target.value)
               }
-              placeholder="timeout ms"
+              placeholder={tNode(
+                t,
+                'abstraction.subFlowCall.timeoutPlaceholder',
+                'timeout ms'
+              )}
               spellCheck={false}
             />
           </div>
-          {row(id, nodeData, 'args', {
+          {row(id, nodeData, tNode(t, 'common.rows.args', 'args'), {
             inHandle: 'in.data.args',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'done', { outHandle: 'out.control.done' })}
-          {row(id, nodeData, 'error', { outHandle: 'out.control.error' })}
-          {row(id, nodeData, 'result', {
+          {row(id, nodeData, tNode(t, 'common.rows.done', 'done'), {
+            outHandle: 'out.control.done',
+          })}
+          {row(id, nodeData, tNode(t, 'common.rows.error', 'error'), {
+            outHandle: 'out.control.error',
+          })}
+          {row(id, nodeData, tNode(t, 'common.rows.result', 'result'), {
             outHandle: 'out.data.result',
             outSemantic: 'data',
           })}
           <div className="px-4 pb-1 pt-1 text-[10px] uppercase tracking-[0.08em] text-slate-400">
-            input bindings
+            {tNode(
+              t,
+              'abstraction.subFlowCall.inputBindings',
+              'input bindings'
+            )}
           </div>
           <KVListEditor
+            t={t}
             items={inputBindings}
             onAdd={() => nodeData.onAddBindingEntry?.(id, 'inputBindings')}
             onRemove={(entryId) =>
@@ -121,13 +146,22 @@ export const renderAbstractionGraphNode = ({
                 value
               )
             }
-            keyPlaceholder="arg"
-            valuePlaceholder="binding"
+            keyPlaceholder={tNode(t, 'abstraction.placeholders.arg', 'arg')}
+            valuePlaceholder={tNode(
+              t,
+              'abstraction.placeholders.binding',
+              'binding'
+            )}
           />
           <div className="px-4 pb-1 pt-1 text-[10px] uppercase tracking-[0.08em] text-slate-400">
-            output bindings
+            {tNode(
+              t,
+              'abstraction.subFlowCall.outputBindings',
+              'output bindings'
+            )}
           </div>
           <KVListEditor
+            t={t}
             items={outputBindings}
             onAdd={() => nodeData.onAddBindingEntry?.(id, 'outputBindings')}
             onRemove={(entryId) =>
@@ -142,8 +176,16 @@ export const renderAbstractionGraphNode = ({
                 value
               )
             }
-            keyPlaceholder="result"
-            valuePlaceholder="binding"
+            keyPlaceholder={tNode(
+              t,
+              'abstraction.placeholders.result',
+              'result'
+            )}
+            valuePlaceholder={tNode(
+              t,
+              'abstraction.placeholders.binding',
+              'binding'
+            )}
           />
         </div>
       </div>
@@ -162,7 +204,11 @@ export const renderAbstractionGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'name', event.target.value)
               }
-              placeholder="name"
+              placeholder={tNode(
+                t,
+                'abstraction.subFlowInput.namePlaceholder',
+                'name'
+              )}
               spellCheck={false}
             />
             <input
@@ -171,7 +217,11 @@ export const renderAbstractionGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'type', event.target.value)
               }
-              placeholder="type"
+              placeholder={tNode(
+                t,
+                'abstraction.subFlowInput.typePlaceholder',
+                'type'
+              )}
               spellCheck={false}
             />
             <SelectField
@@ -181,8 +231,22 @@ export const renderAbstractionGraphNode = ({
                 nodeData.onChangeField?.(id, 'required', value)
               }
               options={[
-                { value: 'false', label: 'optional' },
-                { value: 'true', label: 'required' },
+                {
+                  value: 'false',
+                  label: tNode(
+                    t,
+                    'abstraction.subFlowInput.required.false',
+                    'optional'
+                  ),
+                },
+                {
+                  value: 'true',
+                  label: tNode(
+                    t,
+                    'abstraction.subFlowInput.required.true',
+                    'required'
+                  ),
+                },
               ]}
             />
           </div>
@@ -193,11 +257,15 @@ export const renderAbstractionGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'defaultValue', event.target.value)
               }
-              placeholder="default value"
+              placeholder={tNode(
+                t,
+                'abstraction.subFlowInput.defaultValuePlaceholder',
+                'default value'
+              )}
               spellCheck={false}
             />
           </div>
-          {row(id, nodeData, 'value', {
+          {row(id, nodeData, tNode(t, 'common.rows.value', 'value'), {
             outHandle: 'out.data.value',
             outSemantic: 'data',
           })}
@@ -228,7 +296,11 @@ export const renderAbstractionGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'name', event.target.value)
               }
-              placeholder="name"
+              placeholder={tNode(
+                t,
+                'abstraction.subFlowOutput.namePlaceholder',
+                'name'
+              )}
               spellCheck={false}
             />
             <input
@@ -237,15 +309,21 @@ export const renderAbstractionGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'type', event.target.value)
               }
-              placeholder="type"
+              placeholder={tNode(
+                t,
+                'abstraction.subFlowOutput.typePlaceholder',
+                'type'
+              )}
               spellCheck={false}
             />
           </div>
-          {row(id, nodeData, 'value', {
+          {row(id, nodeData, tNode(t, 'common.rows.value', 'value'), {
             inHandle: 'in.data.value',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'done', { outHandle: 'out.control.done' })}
+          {row(id, nodeData, tNode(t, 'common.rows.done', 'done'), {
+            outHandle: 'out.control.done',
+          })}
         </div>
       </div>
     );
@@ -274,9 +352,30 @@ export const renderAbstractionGraphNode = ({
                 nodeData.onChangeField?.(id, 'strategy', value)
               }
               options={[
-                { value: 'memory', label: 'memory' },
-                { value: 'session', label: 'session' },
-                { value: 'local', label: 'local' },
+                {
+                  value: 'memory',
+                  label: tNode(
+                    t,
+                    'abstraction.memoCache.strategy.memory',
+                    'memory'
+                  ),
+                },
+                {
+                  value: 'session',
+                  label: tNode(
+                    t,
+                    'abstraction.memoCache.strategy.session',
+                    'session'
+                  ),
+                },
+                {
+                  value: 'local',
+                  label: tNode(
+                    t,
+                    'abstraction.memoCache.strategy.local',
+                    'local'
+                  ),
+                },
               ]}
             />
             <input
@@ -285,7 +384,11 @@ export const renderAbstractionGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'ttlMs', event.target.value)
               }
-              placeholder="ttl"
+              placeholder={tNode(
+                t,
+                'abstraction.memoCache.ttlPlaceholder',
+                'ttl'
+              )}
               spellCheck={false}
             />
             <input
@@ -294,25 +397,38 @@ export const renderAbstractionGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'maxSize', event.target.value)
               }
-              placeholder="max size"
+              placeholder={tNode(
+                t,
+                'abstraction.memoCache.maxSizePlaceholder',
+                'max size'
+              )}
               spellCheck={false}
             />
           </div>
-          {row(id, nodeData, 'key', {
+          {row(id, nodeData, tNode(t, 'common.rows.key', 'key'), {
             inHandle: 'in.data.key',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'value', {
+          {row(id, nodeData, tNode(t, 'common.rows.value', 'value'), {
             inHandle: 'in.data.value',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'deps', {
-            inHandle: 'in.data.deps',
-            inSemantic: 'data',
+          {row(
+            id,
+            nodeData,
+            tNode(t, 'abstraction.memoCache.rows.deps', 'deps'),
+            {
+              inHandle: 'in.data.deps',
+              inSemantic: 'data',
+            }
+          )}
+          {row(id, nodeData, tNode(t, 'common.rows.hit', 'hit'), {
+            outHandle: 'out.control.hit',
           })}
-          {row(id, nodeData, 'hit', { outHandle: 'out.control.hit' })}
-          {row(id, nodeData, 'miss', { outHandle: 'out.control.miss' })}
-          {row(id, nodeData, 'value', {
+          {row(id, nodeData, tNode(t, 'common.rows.miss', 'miss'), {
+            outHandle: 'out.control.miss',
+          })}
+          {row(id, nodeData, tNode(t, 'common.rows.value', 'value'), {
             outHandle: 'out.data.value',
             outSemantic: 'data',
           })}

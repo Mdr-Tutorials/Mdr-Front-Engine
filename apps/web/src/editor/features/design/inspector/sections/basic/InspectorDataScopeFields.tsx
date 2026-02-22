@@ -16,10 +16,12 @@ const asSchemaText = (value: unknown) => {
 
 export function InspectorDataScopeFields() {
   const { t, selectedNode, updateSelectedNode } = useInspectorSectionContext();
-  if (!selectedNode) return null;
+  const selectedNodeData = selectedNode?.data as
+    | Record<string, unknown>
+    | undefined;
 
   const mountedDataModel = useMemo(() => {
-    const data = selectedNode.data as Record<string, unknown> | undefined;
+    const data = selectedNodeData;
     if (isPlainObject(data?.value)) {
       return data.value;
     }
@@ -34,9 +36,9 @@ export function InspectorDataScopeFields() {
     const legacy =
       data?.[LEGACY_DATA_MODEL_KEY] ?? data?.[LEGACY_DATA_SCHEMA_KEY];
     return isPlainObject(legacy) ? legacy : {};
-  }, [selectedNode.data]);
+  }, [selectedNodeData]);
   const mountedMockData = useMemo(() => {
-    const data = selectedNode.data as Record<string, unknown> | undefined;
+    const data = selectedNodeData;
     if (data?.mock !== undefined) {
       return data.mock;
     }
@@ -44,14 +46,14 @@ export function InspectorDataScopeFields() {
       return data.value;
     }
     return {};
-  }, [selectedNode.data]);
+  }, [selectedNodeData]);
   const [schemaDraft, setSchemaDraft] = useState(
     asSchemaText(mountedDataModel)
   );
   const [mockDraft, setMockDraft] = useState(asSchemaText(mountedMockData));
   const [schemaError, setSchemaError] = useState<string | null>(null);
   const [mockError, setMockError] = useState<string | null>(null);
-  const isMounted = selectedNode.data !== undefined;
+  const isMounted = selectedNodeData !== undefined;
 
   useEffect(() => {
     setSchemaDraft(asSchemaText(mountedDataModel));
@@ -61,6 +63,8 @@ export function InspectorDataScopeFields() {
     setMockDraft(asSchemaText(mountedMockData));
     setMockError(null);
   }, [mountedMockData]);
+
+  if (!selectedNode) return null;
 
   const applySchemaDraft = () => {
     const raw = schemaDraft.trim();

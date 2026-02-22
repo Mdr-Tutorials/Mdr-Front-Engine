@@ -9,13 +9,21 @@ import {
   NODE_TEXT_INPUT_CLASS,
   NodeHeader,
 } from './nodePrimitives';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 
 export const renderExpressionGraphNode = ({
   id,
   nodeData,
   selected,
+  t,
 }: Props) => {
   const isCollapsed = Boolean(nodeData.collapsed);
   return (
@@ -25,13 +33,25 @@ export const renderExpressionGraphNode = ({
         collapsed={isCollapsed}
         onToggleCollapse={() => nodeData.onToggleCollapse?.(id)}
         collapseAriaLabel={
-          isCollapsed ? 'expand expression' : 'collapse expression'
+          isCollapsed
+            ? tNode(t, 'common.aria.expandKind', 'expand {{kind}}', {
+                kind: nodeData.label,
+              })
+            : tNode(t, 'common.aria.collapseKind', 'collapse {{kind}}', {
+                kind: nodeData.label,
+              })
         }
         summary={
           isCollapsed ? (
             <CollapseSummary
-              text={nodeData.expression || 'expression'}
-              title={nodeData.expression || 'expression'}
+              text={
+                nodeData.expression ||
+                tNode(t, 'expression.summaryFallback', 'expression')
+              }
+              title={
+                nodeData.expression ||
+                tNode(t, 'expression.summaryFallback', 'expression')
+              }
             />
           ) : null
         }
@@ -65,7 +85,7 @@ export const renderExpressionGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeExpression?.(id, event.target.value)
               }
-              placeholder="a > 0 && b < 3"
+              placeholder={tNode(t, 'expression.placeholder', 'a > 0 && b < 3')}
               spellCheck={false}
             />
           </div>

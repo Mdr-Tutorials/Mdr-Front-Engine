@@ -9,8 +9,15 @@ import {
   NODE_TEXT_INPUT_CLASS,
   NodeHeader,
 } from './nodePrimitives';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 
 const row = (
   id: string,
@@ -54,7 +61,12 @@ const row = (
   );
 };
 
-export const renderNetworkGraphNode = ({ id, nodeData, selected }: Props) => {
+export const renderNetworkGraphNode = ({
+  id,
+  nodeData,
+  selected,
+  t,
+}: Props) => {
   const kind = nodeData.kind;
   const isRetry = kind === 'retry';
   const isTimeout = kind === 'timeout';
@@ -98,20 +110,26 @@ export const renderNetworkGraphNode = ({ id, nodeData, selected }: Props) => {
                   event.target.value
                 )
               }
-              placeholder={isTimeout ? '3000' : isRetry ? '3' : 'cache key'}
+              placeholder={
+                isTimeout
+                  ? tNode(t, 'network.placeholders.timeoutMs', '3000')
+                  : isRetry
+                    ? tNode(t, 'network.placeholders.retryTimes', '3')
+                    : tNode(t, 'network.placeholders.cacheKey', 'cache key')
+              }
               spellCheck={false}
             />
           </div>
         )}
 
         {isRetry
-          ? row(id, nodeData, 'next', {
+          ? row(id, nodeData, tNode(t, 'common.rows.next', 'next'), {
               outHandle: 'out.control.next',
               semantic: 'control',
             })
           : null}
         {isTimeout
-          ? row(id, nodeData, 'ms input', {
+          ? row(id, nodeData, tNode(t, 'network.rows.msInput', 'ms input'), {
               inHandle: 'in.data.value',
               outHandle: 'out.control.next',
               inSemantic: 'data',
@@ -119,20 +137,20 @@ export const renderNetworkGraphNode = ({ id, nodeData, selected }: Props) => {
             })
           : null}
         {isCancel
-          ? row(id, nodeData, 'cancel', {
+          ? row(id, nodeData, tNode(t, 'network.rows.cancel', 'cancel'), {
               outHandle: 'out.control.next',
               semantic: 'control',
             })
           : null}
         {isCacheRead
-          ? row(id, nodeData, 'key', {
+          ? row(id, nodeData, tNode(t, 'common.rows.key', 'key'), {
               inHandle: 'in.data.value',
               outHandle: 'out.data.value',
               semantic: 'data',
             })
           : null}
         {isCacheWrite
-          ? row(id, nodeData, 'value', {
+          ? row(id, nodeData, tNode(t, 'common.rows.value', 'value'), {
               inHandle: 'in.data.value',
               outHandle: 'out.control.next',
               inSemantic: 'data',

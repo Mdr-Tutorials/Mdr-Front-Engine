@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { ChevronDown, ChevronRight, Plus } from 'lucide-react';
 import type { NodeBranchItem, NodeKeyValueItem } from '../graphNodeShared';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
 export const NODE_TEXT_INPUT_CLASS =
   'nodrag nopan h-7 w-full rounded border border-slate-200 bg-slate-50 px-2 font-[Inter,sans-serif] text-[11px] font-normal text-slate-700 outline-none focus:border-slate-300 focus:bg-white';
@@ -115,63 +117,82 @@ export const SelectField = ({
 );
 
 export const KVListEditor = ({
+  t,
   items,
   onAdd,
   onRemove,
   onChange,
-  keyPlaceholder = 'key',
-  valuePlaceholder = 'value',
+  keyPlaceholder,
+  valuePlaceholder,
 }: {
+  t?: NodeI18n;
   items: NodeKeyValueItem[];
   onAdd?: () => void;
   onRemove?: (entryId: string) => void;
   onChange?: (entryId: string, field: 'key' | 'value', value: string) => void;
   keyPlaceholder?: string;
   valuePlaceholder?: string;
-}) => (
-  <div className="space-y-1 px-4 pb-1">
-    {items.map((item) => (
-      <div key={item.id} className="flex items-center gap-2">
-        <input
-          className="nodrag nopan h-6 min-w-0 flex-1 rounded border border-slate-200 bg-slate-50 px-2 text-[11px] font-normal text-slate-700 outline-none focus:border-slate-300 focus:bg-white"
-          value={item.key}
-          onChange={(event) => onChange?.(item.id, 'key', event.target.value)}
-          placeholder={keyPlaceholder}
-          spellCheck={false}
-        />
-        <input
-          className="nodrag nopan h-6 min-w-0 flex-1 rounded border border-slate-200 bg-slate-50 px-2 text-[11px] font-normal text-slate-700 outline-none focus:border-slate-300 focus:bg-white"
-          value={item.value}
-          onChange={(event) => onChange?.(item.id, 'value', event.target.value)}
-          placeholder={valuePlaceholder}
-          spellCheck={false}
-        />
-        {onRemove ? (
-          <button
-            type="button"
-            className="nodrag nopan flex h-5 w-5 items-center justify-center rounded text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
-            onClick={() => onRemove(item.id)}
-            aria-label="remove entry"
-          >
-            ×
-          </button>
-        ) : null}
-      </div>
-    ))}
-    {onAdd ? (
-      <button
-        type="button"
-        className="nodrag nopan inline-flex h-6 items-center gap-1 rounded px-2 text-[11px] font-normal text-slate-600 transition hover:bg-slate-100 hover:text-slate-800"
-        onClick={onAdd}
-      >
-        <Plus size={12} />
-        <span>Add</span>
-      </button>
-    ) : null}
-  </div>
-);
+}) => {
+  const translate = (
+    key: string,
+    defaultValue: string,
+    options?: Record<string, unknown>
+  ) => (t ? tNode(t, key, defaultValue, options) : defaultValue);
+  const resolvedKeyPlaceholder =
+    keyPlaceholder ?? translate('common.placeholders.key', 'key');
+  const resolvedValuePlaceholder =
+    valuePlaceholder ?? translate('common.placeholders.value', 'value');
+  const removeEntryAria = translate('common.aria.removeEntry', 'remove entry');
+  const addEntryLabel = translate('common.actions.add', 'Add');
+
+  return (
+    <div className="space-y-1 px-4 pb-1">
+      {items.map((item) => (
+        <div key={item.id} className="flex items-center gap-2">
+          <input
+            className="nodrag nopan h-6 min-w-0 flex-1 rounded border border-slate-200 bg-slate-50 px-2 text-[11px] font-normal text-slate-700 outline-none focus:border-slate-300 focus:bg-white"
+            value={item.key}
+            onChange={(event) => onChange?.(item.id, 'key', event.target.value)}
+            placeholder={resolvedKeyPlaceholder}
+            spellCheck={false}
+          />
+          <input
+            className="nodrag nopan h-6 min-w-0 flex-1 rounded border border-slate-200 bg-slate-50 px-2 text-[11px] font-normal text-slate-700 outline-none focus:border-slate-300 focus:bg-white"
+            value={item.value}
+            onChange={(event) =>
+              onChange?.(item.id, 'value', event.target.value)
+            }
+            placeholder={resolvedValuePlaceholder}
+            spellCheck={false}
+          />
+          {onRemove ? (
+            <button
+              type="button"
+              className="nodrag nopan flex h-5 w-5 items-center justify-center rounded text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+              onClick={() => onRemove(item.id)}
+              aria-label={removeEntryAria}
+            >
+              ×
+            </button>
+          ) : null}
+        </div>
+      ))}
+      {onAdd ? (
+        <button
+          type="button"
+          className="nodrag nopan inline-flex h-6 items-center gap-1 rounded px-2 text-[11px] font-normal text-slate-600 transition hover:bg-slate-100 hover:text-slate-800"
+          onClick={onAdd}
+        >
+          <Plus size={12} />
+          <span>{addEntryLabel}</span>
+        </button>
+      ) : null}
+    </div>
+  );
+};
 
 export const BranchListEditor = ({
+  t,
   items,
   onAdd,
   onRemove,
@@ -179,61 +200,76 @@ export const BranchListEditor = ({
   renderStart,
   renderEnd,
 }: {
+  t?: NodeI18n;
   items: NodeBranchItem[];
   onAdd?: () => void;
   onRemove?: (branchId: string) => void;
   onChangeLabel?: (branchId: string, label: string) => void;
   renderStart?: (item: NodeBranchItem) => ReactNode;
   renderEnd?: (item: NodeBranchItem) => ReactNode;
-}) => (
-  <div className="pb-1">
-    {items.map((item) => (
-      <div
-        key={item.id}
-        className="group relative flex min-h-7 items-center gap-2 px-4 text-[11px] font-normal text-slate-700"
-      >
-        {renderStart ? renderStart(item) : null}
-        {onChangeLabel ? (
-          <input
-            className="nodrag nopan h-6 min-w-0 flex-1 rounded border border-slate-200 bg-slate-50 px-2 text-[11px] font-normal text-slate-700 outline-none focus:border-slate-300 focus:bg-white"
-            value={item.label}
-            onChange={(event) => onChangeLabel(item.id, event.target.value)}
-            placeholder="branch"
-            spellCheck={false}
-          />
-        ) : (
-          <span>{item.label}</span>
-        )}
-        {renderEnd ? renderEnd(item) : null}
-        {onRemove ? (
+}) => {
+  const translate = (
+    key: string,
+    defaultValue: string,
+    options?: Record<string, unknown>
+  ) => (t ? tNode(t, key, defaultValue, options) : defaultValue);
+  const branchPlaceholder = translate('common.placeholders.branch', 'branch');
+  const removeBranchAria = translate(
+    'common.aria.removeBranch',
+    'remove branch'
+  );
+  const addBranchAria = translate('common.aria.addBranch', 'add branch');
+
+  return (
+    <div className="pb-1">
+      {items.map((item) => (
+        <div
+          key={item.id}
+          className="group relative flex min-h-7 items-center gap-2 px-4 text-[11px] font-normal text-slate-700"
+        >
+          {renderStart ? renderStart(item) : null}
+          {onChangeLabel ? (
+            <input
+              className="nodrag nopan h-6 min-w-0 flex-1 rounded border border-slate-200 bg-slate-50 px-2 text-[11px] font-normal text-slate-700 outline-none focus:border-slate-300 focus:bg-white"
+              value={item.label}
+              onChange={(event) => onChangeLabel(item.id, event.target.value)}
+              placeholder={branchPlaceholder}
+              spellCheck={false}
+            />
+          ) : (
+            <span>{item.label}</span>
+          )}
+          {renderEnd ? renderEnd(item) : null}
+          {onRemove ? (
+            <button
+              type="button"
+              className="nodrag nopan ml-auto flex h-5 w-5 items-center justify-center rounded text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+              onClick={(event) => {
+                event.stopPropagation();
+                onRemove(item.id);
+              }}
+              aria-label={removeBranchAria}
+            >
+              ×
+            </button>
+          ) : null}
+        </div>
+      ))}
+      {onAdd ? (
+        <div className="px-3">
           <button
             type="button"
-            className="nodrag nopan ml-auto flex h-5 w-5 items-center justify-center rounded text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+            className="nodrag nopan inline-flex h-6 w-6 items-center justify-center rounded text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
             onClick={(event) => {
               event.stopPropagation();
-              onRemove(item.id);
+              onAdd();
             }}
-            aria-label="remove branch"
+            aria-label={addBranchAria}
           >
-            ×
+            <Plus size={14} />
           </button>
-        ) : null}
-      </div>
-    ))}
-    {onAdd ? (
-      <div className="px-3">
-        <button
-          type="button"
-          className="nodrag nopan inline-flex h-6 w-6 items-center justify-center rounded text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
-          onClick={(event) => {
-            event.stopPropagation();
-            onAdd();
-          }}
-          aria-label="add branch"
-        >
-          <Plus size={14} />
-        </button>
-      </div>
-    ) : null}
-  </div>
-);
+        </div>
+      ) : null}
+    </div>
+  );
+};

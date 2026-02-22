@@ -11,8 +11,15 @@ import {
   NODE_TEXT_INPUT_CLASS,
   NodeHeader,
 } from './nodePrimitives';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 
 const row = (
   id: string,
@@ -56,7 +63,7 @@ const row = (
   );
 };
 
-export const renderUiGraphNode = ({ id, nodeData, selected }: Props) => {
+export const renderUiGraphNode = ({ id, nodeData, selected, t }: Props) => {
   const kind = nodeData.kind;
   const isRenderComponent = kind === 'renderComponent';
   const isConditionalRender = kind === 'conditionalRender';
@@ -92,12 +99,20 @@ export const renderUiGraphNode = ({ id, nodeData, selected }: Props) => {
               }
               placeholder={
                 isRenderComponent
-                  ? 'ComponentName'
+                  ? tNode(t, 'ui.placeholders.componentName', 'ComponentName')
                   : isConditionalRender
-                    ? 'visible section'
+                    ? tNode(
+                        t,
+                        'ui.placeholders.visibleSection',
+                        'visible section'
+                      )
                     : isListRender
-                      ? 'List item renderer'
-                      : 'modal id'
+                      ? tNode(
+                          t,
+                          'ui.placeholders.listRenderer',
+                          'List item renderer'
+                        )
+                      : tNode(t, 'ui.placeholders.modalId', 'modal id')
               }
               spellCheck={false}
             />
@@ -112,7 +127,11 @@ export const renderUiGraphNode = ({ id, nodeData, selected }: Props) => {
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'description', event.target.value)
               }
-              placeholder="toast message"
+              placeholder={tNode(
+                t,
+                'ui.placeholders.toastMessage',
+                'toast message'
+              )}
               spellCheck={false}
             />
           </div>
@@ -123,14 +142,14 @@ export const renderUiGraphNode = ({ id, nodeData, selected }: Props) => {
         isListRender ||
         isToast ||
         isModal
-          ? row(id, nodeData, 'props/data', {
+          ? row(id, nodeData, tNode(t, 'ui.rows.propsData', 'props/data'), {
               inHandle: 'in.data.value',
               inSemantic: 'data',
             })
           : null}
 
         {isConditionalRender
-          ? row(id, nodeData, 'condition', {
+          ? row(id, nodeData, tNode(t, 'common.rows.condition', 'condition'), {
               inHandle: 'in.condition.value',
               inSemantic: 'condition',
             })
@@ -141,7 +160,7 @@ export const renderUiGraphNode = ({ id, nodeData, selected }: Props) => {
         isListRender ||
         isToast ||
         isModal
-          ? row(id, nodeData, 'next', {
+          ? row(id, nodeData, tNode(t, 'common.rows.next', 'next'), {
               outHandle: 'out.control.next',
               outSemantic: 'control',
             })
@@ -149,6 +168,7 @@ export const renderUiGraphNode = ({ id, nodeData, selected }: Props) => {
 
         {(isRenderComponent || isConditionalRender || isListRender) && (
           <KVListEditor
+            t={t}
             items={entries}
             onAdd={() => nodeData.onAddKeyValueEntry?.(id)}
             onRemove={(entryId) =>
@@ -157,8 +177,8 @@ export const renderUiGraphNode = ({ id, nodeData, selected }: Props) => {
             onChange={(entryId, field, value) =>
               nodeData.onChangeKeyValueEntry?.(id, entryId, field, value)
             }
-            keyPlaceholder="prop"
-            valuePlaceholder="binding"
+            keyPlaceholder={tNode(t, 'ui.placeholders.prop', 'prop')}
+            valuePlaceholder={tNode(t, 'ui.placeholders.binding', 'binding')}
           />
         )}
       </div>

@@ -10,8 +10,15 @@ import {
   NodeHeader,
   SelectField,
 } from './nodePrimitives';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 
 const row = (
   id: string,
@@ -55,6 +62,7 @@ export const renderDataTransformGraphNode = ({
   id,
   nodeData,
   selected,
+  t,
 }: Props) => {
   const kind = nodeData.kind;
   const isCompare = kind === 'compare';
@@ -124,12 +132,28 @@ export const renderDataTransformGraphNode = ({
               }
               placeholder={
                 isTemplate
-                  ? 'Hello ${name}'
+                  ? tNode(
+                      t,
+                      'dataTransform.template.placeholder',
+                      'Hello ${name}'
+                    )
                   : isMap
-                    ? '(item) => item * 2'
+                    ? tNode(
+                        t,
+                        'dataTransform.map.placeholder',
+                        '(item) => item * 2'
+                      )
                     : isFilter
-                      ? '(item) => item.done'
-                      : '(acc, item) => acc + item'
+                      ? tNode(
+                          t,
+                          'dataTransform.filter.placeholder',
+                          '(item) => item.done'
+                        )
+                      : tNode(
+                          t,
+                          'dataTransform.reduce.placeholder',
+                          '(acc, item) => acc + item'
+                        )
               }
               spellCheck={false}
             />
@@ -137,7 +161,7 @@ export const renderDataTransformGraphNode = ({
         )}
 
         {isJsonParse || isJsonStringify
-          ? row(id, nodeData, 'value', {
+          ? row(id, nodeData, tNode(t, 'common.rows.value', 'value'), {
               inHandle: 'in.data.value',
               outHandle: 'out.data.value',
               semantic: 'data',
@@ -145,7 +169,7 @@ export const renderDataTransformGraphNode = ({
           : null}
 
         {!isJsonParse && !isJsonStringify
-          ? row(id, nodeData, 'input', {
+          ? row(id, nodeData, tNode(t, 'common.rows.input', 'input'), {
               inHandle: 'in.data.value',
               outHandle: isCompare ? undefined : 'out.data.value',
               semantic: 'data',
@@ -153,7 +177,7 @@ export const renderDataTransformGraphNode = ({
           : null}
 
         {isCompare || isFilter
-          ? row(id, nodeData, 'condition', {
+          ? row(id, nodeData, tNode(t, 'common.rows.condition', 'condition'), {
               outHandle: 'out.condition.result',
               semantic: 'condition',
             })

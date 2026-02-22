@@ -11,8 +11,15 @@ import {
   NodeValidationHint,
   SelectField,
 } from './nodePrimitives';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 
 const row = (
   id: string,
@@ -54,6 +61,7 @@ export const renderSystemEnvironmentGraphNode = ({
   id,
   nodeData,
   selected,
+  t,
 }: Props) => {
   if (nodeData.kind === 'envVar') {
     return (
@@ -67,7 +75,11 @@ export const renderSystemEnvironmentGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'key', event.target.value)
               }
-              placeholder="ENV_KEY"
+              placeholder={tNode(
+                t,
+                'systemEnvironment.envVar.keyPlaceholder',
+                'ENV_KEY'
+              )}
               spellCheck={false}
             />
           </div>
@@ -78,7 +90,11 @@ export const renderSystemEnvironmentGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'fallback', event.target.value)
               }
-              placeholder="fallback"
+              placeholder={tNode(
+                t,
+                'systemEnvironment.envVar.fallbackPlaceholder',
+                'fallback'
+              )}
               spellCheck={false}
             />
             <SelectField
@@ -86,18 +102,51 @@ export const renderSystemEnvironmentGraphNode = ({
               value={nodeData.parse ?? 'string'}
               onChange={(value) => nodeData.onChangeField?.(id, 'parse', value)}
               options={[
-                { value: 'string', label: 'string' },
-                { value: 'number', label: 'number' },
-                { value: 'boolean', label: 'boolean' },
-                { value: 'json', label: 'json' },
+                {
+                  value: 'string',
+                  label: tNode(
+                    t,
+                    'systemEnvironment.envVar.parse.string',
+                    'string'
+                  ),
+                },
+                {
+                  value: 'number',
+                  label: tNode(
+                    t,
+                    'systemEnvironment.envVar.parse.number',
+                    'number'
+                  ),
+                },
+                {
+                  value: 'boolean',
+                  label: tNode(
+                    t,
+                    'systemEnvironment.envVar.parse.boolean',
+                    'boolean'
+                  ),
+                },
+                {
+                  value: 'json',
+                  label: tNode(
+                    t,
+                    'systemEnvironment.envVar.parse.json',
+                    'json'
+                  ),
+                },
               ]}
             />
           </div>
-          {row(id, nodeData, 'key input', {
-            inHandle: 'in.data.key',
-            inSemantic: 'data',
-          })}
-          {row(id, nodeData, 'value', {
+          {row(
+            id,
+            nodeData,
+            tNode(t, 'systemEnvironment.rows.keyInput', 'key input'),
+            {
+              inHandle: 'in.data.key',
+              inSemantic: 'data',
+            }
+          )}
+          {row(id, nodeData, tNode(t, 'common.rows.value', 'value'), {
             outHandle: 'out.data.value',
             outSemantic: 'data',
           })}
@@ -130,9 +179,26 @@ export const renderSystemEnvironmentGraphNode = ({
                 nodeData.onChangeField?.(id, 'action', value)
               }
               options={[
-                { value: 'set', label: 'set' },
-                { value: 'toggle', label: 'toggle' },
-                { value: 'system', label: 'system' },
+                {
+                  value: 'set',
+                  label: tNode(t, 'systemEnvironment.theme.actions.set', 'set'),
+                },
+                {
+                  value: 'toggle',
+                  label: tNode(
+                    t,
+                    'systemEnvironment.theme.actions.toggle',
+                    'toggle'
+                  ),
+                },
+                {
+                  value: 'system',
+                  label: tNode(
+                    t,
+                    'systemEnvironment.theme.actions.system',
+                    'system'
+                  ),
+                },
               ]}
             />
             <input
@@ -141,7 +207,11 @@ export const renderSystemEnvironmentGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'theme', event.target.value)
               }
-              placeholder="theme"
+              placeholder={tNode(
+                t,
+                'systemEnvironment.theme.themePlaceholder',
+                'theme'
+              )}
               spellCheck={false}
             />
             <SelectField
@@ -151,20 +221,46 @@ export const renderSystemEnvironmentGraphNode = ({
                 nodeData.onChangeField?.(id, 'persist', value)
               }
               options={[
-                { value: 'true', label: 'persist' },
-                { value: 'false', label: 'session' },
+                {
+                  value: 'true',
+                  label: tNode(
+                    t,
+                    'systemEnvironment.theme.persist.true',
+                    'persist'
+                  ),
+                },
+                {
+                  value: 'false',
+                  label: tNode(
+                    t,
+                    'systemEnvironment.theme.persist.false',
+                    'session'
+                  ),
+                },
               ]}
             />
           </div>
-          {row(id, nodeData, 'theme in', {
-            inHandle: 'in.data.theme',
-            inSemantic: 'data',
+          {row(
+            id,
+            nodeData,
+            tNode(t, 'systemEnvironment.rows.themeIn', 'theme in'),
+            {
+              inHandle: 'in.data.theme',
+              inSemantic: 'data',
+            }
+          )}
+          {row(id, nodeData, tNode(t, 'common.rows.done', 'done'), {
+            outHandle: 'out.control.done',
           })}
-          {row(id, nodeData, 'done', { outHandle: 'out.control.done' })}
-          {row(id, nodeData, 'theme out', {
-            outHandle: 'out.data.theme',
-            outSemantic: 'data',
-          })}
+          {row(
+            id,
+            nodeData,
+            tNode(t, 'systemEnvironment.rows.themeOut', 'theme out'),
+            {
+              outHandle: 'out.data.theme',
+              outSemantic: 'data',
+            }
+          )}
         </div>
       </div>
     );
@@ -182,7 +278,11 @@ export const renderSystemEnvironmentGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'locale', event.target.value)
               }
-              placeholder="locale"
+              placeholder={tNode(
+                t,
+                'systemEnvironment.i18n.localePlaceholder',
+                'locale'
+              )}
               spellCheck={false}
             />
             <input
@@ -191,7 +291,11 @@ export const renderSystemEnvironmentGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'namespace', event.target.value)
               }
-              placeholder="namespace"
+              placeholder={tNode(
+                t,
+                'systemEnvironment.i18n.namespacePlaceholder',
+                'namespace'
+              )}
               spellCheck={false}
             />
             <input
@@ -204,23 +308,29 @@ export const renderSystemEnvironmentGraphNode = ({
                   event.target.value
                 )
               }
-              placeholder="fallback"
+              placeholder={tNode(
+                t,
+                'systemEnvironment.i18n.fallbackPlaceholder',
+                'fallback'
+              )}
               spellCheck={false}
             />
           </div>
-          {row(id, nodeData, 'key', {
+          {row(id, nodeData, tNode(t, 'common.rows.key', 'key'), {
             inHandle: 'in.data.key',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'params', {
+          {row(id, nodeData, tNode(t, 'common.rows.params', 'params'), {
             inHandle: 'in.data.params',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'value', {
+          {row(id, nodeData, tNode(t, 'common.rows.value', 'value'), {
             outHandle: 'out.data.value',
             outSemantic: 'data',
           })}
-          {row(id, nodeData, 'missing', { outHandle: 'out.control.missing' })}
+          {row(id, nodeData, tNode(t, 'common.rows.missing', 'missing'), {
+            outHandle: 'out.control.missing',
+          })}
         </div>
       </div>
     );
@@ -238,7 +348,11 @@ export const renderSystemEnvironmentGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'mobileMax', event.target.value)
               }
-              placeholder="mobile max"
+              placeholder={tNode(
+                t,
+                'systemEnvironment.mediaQuery.mobileMaxPlaceholder',
+                'mobile max'
+              )}
               spellCheck={false}
             />
             <input
@@ -247,7 +361,11 @@ export const renderSystemEnvironmentGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'tabletMax', event.target.value)
               }
-              placeholder="tablet max"
+              placeholder={tNode(
+                t,
+                'systemEnvironment.mediaQuery.tabletMaxPlaceholder',
+                'tablet max'
+              )}
               spellCheck={false}
             />
             <input
@@ -256,24 +374,30 @@ export const renderSystemEnvironmentGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'debounceMs', event.target.value)
               }
-              placeholder="debounce"
+              placeholder={tNode(
+                t,
+                'systemEnvironment.mediaQuery.debouncePlaceholder',
+                'debounce'
+              )}
               spellCheck={false}
             />
           </div>
-          {row(id, nodeData, 'changed', { outHandle: 'out.control.changed' })}
-          {row(id, nodeData, 'current', {
+          {row(id, nodeData, tNode(t, 'common.rows.changed', 'changed'), {
+            outHandle: 'out.control.changed',
+          })}
+          {row(id, nodeData, tNode(t, 'common.rows.current', 'current'), {
             outHandle: 'out.data.current',
             outSemantic: 'data',
           })}
-          {row(id, nodeData, 'isMobile', {
+          {row(id, nodeData, tNode(t, 'common.rows.isMobile', 'isMobile'), {
             outHandle: 'out.data.isMobile',
             outSemantic: 'data',
           })}
-          {row(id, nodeData, 'isTablet', {
+          {row(id, nodeData, tNode(t, 'common.rows.isTablet', 'isTablet'), {
             outHandle: 'out.data.isTablet',
             outSemantic: 'data',
           })}
-          {row(id, nodeData, 'isDesktop', {
+          {row(id, nodeData, tNode(t, 'common.rows.isDesktop', 'isDesktop'), {
             outHandle: 'out.data.isDesktop',
             outSemantic: 'data',
           })}

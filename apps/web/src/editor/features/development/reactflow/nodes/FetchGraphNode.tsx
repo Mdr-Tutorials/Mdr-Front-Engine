@@ -1,6 +1,5 @@
 import { Plus } from 'lucide-react';
 import {
-  formatCountLabel,
   normalizeStatusCodes,
   renderSource,
   renderTarget,
@@ -13,12 +12,19 @@ import {
   NodeHeader,
   SelectField,
 } from './nodePrimitives';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 const STATUS_INPUT_CLASS =
   'nodrag nopan h-6 w-16 rounded border border-slate-200 bg-slate-50 px-2 text-[11px] font-normal text-slate-700 outline-none focus:border-slate-300 focus:bg-white';
 
-export const renderFetchGraphNode = ({ id, nodeData, selected }: Props) => {
+export const renderFetchGraphNode = ({ id, nodeData, selected, t }: Props) => {
   const statusCodes = normalizeStatusCodes(nodeData.statusCodes);
   const isCollapsed = Boolean(nodeData.collapsed);
   return (
@@ -27,7 +33,15 @@ export const renderFetchGraphNode = ({ id, nodeData, selected }: Props) => {
         title={nodeData.label}
         collapsed={isCollapsed}
         onToggleCollapse={() => nodeData.onToggleCollapse?.(id)}
-        collapseAriaLabel={isCollapsed ? 'expand fetch' : 'collapse fetch'}
+        collapseAriaLabel={
+          isCollapsed
+            ? tNode(t, 'common.aria.expandKind', 'expand {{kind}}', {
+                kind: nodeData.label,
+              })
+            : tNode(t, 'common.aria.collapseKind', 'collapse {{kind}}', {
+                kind: nodeData.label,
+              })
+        }
         leftSlot={renderTarget(
           id,
           'in.control.prev',
@@ -44,7 +58,7 @@ export const renderFetchGraphNode = ({ id, nodeData, selected }: Props) => {
               event.stopPropagation();
               nodeData.onAddStatusCode?.(id);
             }}
-            aria-label="add status code"
+            aria-label={tNode(t, 'fetch.aria.addStatusCode', 'add status code')}
           >
             <Plus size={14} />
           </button>
@@ -63,7 +77,9 @@ export const renderFetchGraphNode = ({ id, nodeData, selected }: Props) => {
             )}
             <span>
               {nodeData.method || 'GET'} ·{' '}
-              {formatCountLabel(statusCodes.length, 'code', 'codes')}
+              {tNode(t, 'fetch.statusCodeCount', '{{count}} codes', {
+                count: statusCodes.length,
+              })}
             </span>
           </div>
           {statusCodes.map((item) => (
@@ -106,8 +122,16 @@ export const renderFetchGraphNode = ({ id, nodeData, selected }: Props) => {
               }
               placeholder={
                 nodeData.hasUrlInput
-                  ? 'URL comes from connected data input'
-                  : 'https://api.example.com/orders'
+                  ? tNode(
+                      t,
+                      'fetch.urlInput.fromConnection',
+                      'URL comes from connected data input'
+                    )
+                  : tNode(
+                      t,
+                      'fetch.urlInput.placeholder',
+                      'https://api.example.com/orders'
+                    )
               }
               disabled={Boolean(nodeData.hasUrlInput)}
               spellCheck={false}
@@ -164,13 +188,18 @@ export const renderFetchGraphNode = ({ id, nodeData, selected }: Props) => {
                   event.stopPropagation();
                   nodeData.onRemoveStatusCode?.(id, item.id);
                 }}
+                aria-label={tNode(
+                  t,
+                  'fetch.aria.removeStatusCode',
+                  'remove status code'
+                )}
               >
                 ×
               </button>
             </div>
           ))}
           <div className="relative flex min-h-7 items-center px-4 text-[11px] font-normal text-slate-700">
-            <span>request error</span>
+            <span>{tNode(t, 'fetch.rows.requestError', 'request error')}</span>
             {renderSource(
               id,
               'out.control.error-request',
@@ -181,7 +210,9 @@ export const renderFetchGraphNode = ({ id, nodeData, selected }: Props) => {
             )}
           </div>
           <div className="relative flex min-h-7 items-center px-4 text-[11px] font-normal text-slate-700">
-            <span>unexpected status</span>
+            <span>
+              {tNode(t, 'fetch.rows.unexpectedStatus', 'unexpected status')}
+            </span>
             {renderSource(
               id,
               'out.control.error-unexpected',

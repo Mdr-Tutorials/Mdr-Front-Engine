@@ -10,8 +10,15 @@ import {
   NodeHeader,
   SelectField,
 } from './nodePrimitives';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 
 const row = (
   id: string,
@@ -53,6 +60,7 @@ export const renderRealtimeFilesGraphNode = ({
   id,
   nodeData,
   selected,
+  t,
 }: Props) => {
   if (nodeData.kind === 'webSocket') {
     return (
@@ -76,7 +84,11 @@ export const renderRealtimeFilesGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'protocols', event.target.value)
               }
-              placeholder="protocols (comma separated)"
+              placeholder={tNode(
+                t,
+                'realtimeFiles.webSocket.protocolsPlaceholder',
+                'protocols (comma separated)'
+              )}
               spellCheck={false}
             />
           </div>
@@ -88,8 +100,22 @@ export const renderRealtimeFilesGraphNode = ({
                 nodeData.onChangeField?.(id, 'autoReconnect', value)
               }
               options={[
-                { value: 'true', label: 'reconnect' },
-                { value: 'false', label: 'manual' },
+                {
+                  value: 'true',
+                  label: tNode(
+                    t,
+                    'realtimeFiles.webSocket.autoReconnect.true',
+                    'reconnect'
+                  ),
+                },
+                {
+                  value: 'false',
+                  label: tNode(
+                    t,
+                    'realtimeFiles.webSocket.autoReconnect.false',
+                    'manual'
+                  ),
+                },
               ]}
             />
             <input
@@ -98,7 +124,11 @@ export const renderRealtimeFilesGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'reconnectMs', event.target.value)
               }
-              placeholder="reconnect"
+              placeholder={tNode(
+                t,
+                'realtimeFiles.webSocket.reconnectMsPlaceholder',
+                'reconnect'
+              )}
               spellCheck={false}
             />
             <input
@@ -107,31 +137,50 @@ export const renderRealtimeFilesGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'heartbeatMs', event.target.value)
               }
-              placeholder="heartbeat"
+              placeholder={tNode(
+                t,
+                'realtimeFiles.webSocket.heartbeatMsPlaceholder',
+                'heartbeat'
+              )}
               spellCheck={false}
             />
           </div>
-          {row(id, nodeData, 'send', { inHandle: 'in.control.send' })}
-          {row(id, nodeData, 'disconnect', {
+          {row(id, nodeData, tNode(t, 'common.rows.send', 'send'), {
+            inHandle: 'in.control.send',
+          })}
+          {row(id, nodeData, tNode(t, 'common.rows.disconnect', 'disconnect'), {
             inHandle: 'in.control.disconnect',
           })}
-          {row(id, nodeData, 'url', {
+          {row(id, nodeData, tNode(t, 'common.rows.url', 'url'), {
             inHandle: 'in.data.url',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'payload', {
+          {row(id, nodeData, tNode(t, 'common.rows.payload', 'payload'), {
             inHandle: 'in.data.payload',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'open', { outHandle: 'out.control.open' })}
-          {row(id, nodeData, 'message', { outHandle: 'out.control.message' })}
-          {row(id, nodeData, 'close', { outHandle: 'out.control.close' })}
-          {row(id, nodeData, 'error', { outHandle: 'out.control.error' })}
-          {row(id, nodeData, 'message data', {
-            outHandle: 'out.data.message',
-            outSemantic: 'data',
+          {row(id, nodeData, tNode(t, 'common.rows.open', 'open'), {
+            outHandle: 'out.control.open',
           })}
-          {row(id, nodeData, 'state', {
+          {row(id, nodeData, tNode(t, 'common.rows.message', 'message'), {
+            outHandle: 'out.control.message',
+          })}
+          {row(id, nodeData, tNode(t, 'common.rows.close', 'close'), {
+            outHandle: 'out.control.close',
+          })}
+          {row(id, nodeData, tNode(t, 'common.rows.error', 'error'), {
+            outHandle: 'out.control.error',
+          })}
+          {row(
+            id,
+            nodeData,
+            tNode(t, 'realtimeFiles.rows.messageData', 'message data'),
+            {
+              outHandle: 'out.data.message',
+              outSemantic: 'data',
+            }
+          )}
+          {row(id, nodeData, tNode(t, 'common.rows.state', 'state'), {
             outHandle: 'out.data.state',
             outSemantic: 'data',
           })}
@@ -162,7 +211,11 @@ export const renderRealtimeFilesGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'endpoint', event.target.value)
               }
-              placeholder="/api/upload"
+              placeholder={tNode(
+                t,
+                'realtimeFiles.upload.endpointPlaceholder',
+                '/api/upload'
+              )}
               spellCheck={false}
             />
           </div>
@@ -185,7 +238,11 @@ export const renderRealtimeFilesGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'fieldName', event.target.value)
               }
-              placeholder="field"
+              placeholder={tNode(
+                t,
+                'realtimeFiles.upload.fieldNamePlaceholder',
+                'field'
+              )}
               spellCheck={false}
             />
             <input
@@ -194,7 +251,11 @@ export const renderRealtimeFilesGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'maxSizeMB', event.target.value)
               }
-              placeholder="MB"
+              placeholder={tNode(
+                t,
+                'realtimeFiles.upload.maxSizePlaceholder',
+                'MB'
+              )}
               spellCheck={false}
             />
           </div>
@@ -205,30 +266,45 @@ export const renderRealtimeFilesGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'accept', event.target.value)
               }
-              placeholder="accept"
+              placeholder={tNode(
+                t,
+                'realtimeFiles.upload.acceptPlaceholder',
+                'accept'
+              )}
               spellCheck={false}
             />
           </div>
-          {row(id, nodeData, 'file', {
+          {row(id, nodeData, tNode(t, 'common.rows.file', 'file'), {
             inHandle: 'in.data.file',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'extra', {
+          {row(id, nodeData, tNode(t, 'common.rows.extra', 'extra'), {
             inHandle: 'in.data.extra',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'progress', { outHandle: 'out.control.progress' })}
-          {row(id, nodeData, 'success', { outHandle: 'out.control.success' })}
-          {row(id, nodeData, 'error', { outHandle: 'out.control.error' })}
-          {row(id, nodeData, 'progress data', {
-            outHandle: 'out.data.progress',
-            outSemantic: 'data',
+          {row(id, nodeData, tNode(t, 'common.rows.progress', 'progress'), {
+            outHandle: 'out.control.progress',
           })}
-          {row(id, nodeData, 'url', {
+          {row(id, nodeData, tNode(t, 'common.rows.success', 'success'), {
+            outHandle: 'out.control.success',
+          })}
+          {row(id, nodeData, tNode(t, 'common.rows.error', 'error'), {
+            outHandle: 'out.control.error',
+          })}
+          {row(
+            id,
+            nodeData,
+            tNode(t, 'realtimeFiles.rows.progressData', 'progress data'),
+            {
+              outHandle: 'out.data.progress',
+              outSemantic: 'data',
+            }
+          )}
+          {row(id, nodeData, tNode(t, 'common.rows.url', 'url'), {
             outHandle: 'out.data.url',
             outSemantic: 'data',
           })}
-          {row(id, nodeData, 'response', {
+          {row(id, nodeData, tNode(t, 'common.rows.response', 'response'), {
             outHandle: 'out.data.response',
             outSemantic: 'data',
           })}
@@ -259,7 +335,11 @@ export const renderRealtimeFilesGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'filename', event.target.value)
               }
-              placeholder="filename"
+              placeholder={tNode(
+                t,
+                'realtimeFiles.download.filenamePlaceholder',
+                'filename'
+              )}
               spellCheck={false}
             />
             <SelectField
@@ -269,8 +349,22 @@ export const renderRealtimeFilesGraphNode = ({
                 nodeData.onChangeField?.(id, 'openMode', value)
               }
               options={[
-                { value: 'save', label: 'save' },
-                { value: 'open', label: 'open' },
+                {
+                  value: 'save',
+                  label: tNode(
+                    t,
+                    'realtimeFiles.download.openMode.save',
+                    'save'
+                  ),
+                },
+                {
+                  value: 'open',
+                  label: tNode(
+                    t,
+                    'realtimeFiles.download.openMode.open',
+                    'open'
+                  ),
+                },
               ]}
             />
           </div>
@@ -281,20 +375,28 @@ export const renderRealtimeFilesGraphNode = ({
               onChange={(event) =>
                 nodeData.onChangeField?.(id, 'mimeType', event.target.value)
               }
-              placeholder="mime"
+              placeholder={tNode(
+                t,
+                'realtimeFiles.download.mimeTypePlaceholder',
+                'mime'
+              )}
               spellCheck={false}
             />
           </div>
-          {row(id, nodeData, 'url', {
+          {row(id, nodeData, tNode(t, 'common.rows.url', 'url'), {
             inHandle: 'in.data.url',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'blob', {
+          {row(id, nodeData, tNode(t, 'common.rows.blob', 'blob'), {
             inHandle: 'in.data.blob',
             inSemantic: 'data',
           })}
-          {row(id, nodeData, 'done', { outHandle: 'out.control.done' })}
-          {row(id, nodeData, 'error', { outHandle: 'out.control.error' })}
+          {row(id, nodeData, tNode(t, 'common.rows.done', 'done'), {
+            outHandle: 'out.control.done',
+          })}
+          {row(id, nodeData, tNode(t, 'common.rows.error', 'error'), {
+            outHandle: 'out.control.error',
+          })}
         </div>
       </div>
     );
