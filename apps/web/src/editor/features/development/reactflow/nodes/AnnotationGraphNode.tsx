@@ -7,8 +7,15 @@ import {
   type ReactNode,
 } from 'react';
 import { estimateStickyNoteSize, type GraphNodeData } from '../graphNodeShared';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 
 const parseSize = (
   value: string | number | undefined,
@@ -375,7 +382,7 @@ const renderMarkdownBlocks = (
   return blocks;
 };
 
-const StickyNoteEditor = ({ id, nodeData, selected }: Props) => {
+const StickyNoteEditor = ({ id, nodeData, selected, t }: Props) => {
   const themeKey = nodeData.color || 'minimal';
   const theme = NOTE_COLOR_THEMES[themeKey] || NOTE_COLOR_THEMES.minimal;
   const isMinimalTheme = themeKey === 'minimal';
@@ -434,7 +441,11 @@ const StickyNoteEditor = ({ id, nodeData, selected }: Props) => {
           }`}
           onBlur={commitEdit}
           onChange={(event) => onChangeContent(event.target.value)}
-          placeholder="Write markdown note..."
+          placeholder={tNode(
+            t,
+            'annotation.stickyNote.placeholder',
+            'Write markdown note...'
+          )}
           spellCheck={false}
           value={content}
         />
@@ -454,7 +465,11 @@ const StickyNoteEditor = ({ id, nodeData, selected }: Props) => {
             </div>
           ) : (
             <span className="text-[11px] text-slate-500/85">
-              Click to edit note
+              {tNode(
+                t,
+                'annotation.stickyNote.emptyText',
+                'Click to edit note'
+              )}
             </span>
           )}
         </button>
@@ -467,6 +482,7 @@ export const renderAnnotationGraphNode = ({
   id,
   nodeData,
   selected,
+  t,
 }: Props) => {
   if (nodeData.kind === 'groupBox') {
     const themeKey = nodeData.color || 'minimal';
@@ -514,7 +530,11 @@ export const renderAnnotationGraphNode = ({
             onChange={(event) =>
               nodeData.onChangeField?.(id, 'value', event.target.value)
             }
-            placeholder="Group title"
+            placeholder={tNode(
+              t,
+              'annotation.groupBox.titlePlaceholder',
+              'Group title'
+            )}
             spellCheck={false}
           />
         </div>
@@ -530,7 +550,9 @@ export const renderAnnotationGraphNode = ({
   }
 
   if (nodeData.kind === 'stickyNote')
-    return <StickyNoteEditor id={id} nodeData={nodeData} selected={selected} />;
+    return (
+      <StickyNoteEditor id={id} nodeData={nodeData} selected={selected} t={t} />
+    );
 
   return null;
 };

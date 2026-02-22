@@ -6,10 +6,17 @@ import {
 } from '../graphNodeShared';
 import { getNodePortHandle } from '../nodeCatalog';
 import { buildNodeContainerClass } from './nodePrimitives';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 
-export const renderFlowGraphNode = ({ id, nodeData, selected }: Props) => {
+export const renderFlowGraphNode = ({ id, nodeData, selected, t }: Props) => {
   const rows = [
     {
       semantic: 'control' as const,
@@ -49,7 +56,11 @@ export const renderFlowGraphNode = ({ id, nodeData, selected }: Props) => {
                   nodeData.onPortContextMenu
                 )
               : null}
-            <span>{rows.length === 1 ? nodeData.kind : row.semantic}</span>
+            <span>
+              {rows.length === 1
+                ? nodeData.label
+                : tNode(t, `common.semantic.${row.semantic}`, row.semantic)}
+            </span>
             {row.outHandle
               ? renderSource(
                   id,

@@ -9,8 +9,15 @@ import {
   NODE_TEXT_INPUT_CLASS,
   NodeHeader,
 } from './nodePrimitives';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 
 const row = (
   id: string,
@@ -54,7 +61,7 @@ const row = (
   );
 };
 
-export const renderDebugGraphNode = ({ id, nodeData, selected }: Props) => {
+export const renderDebugGraphNode = ({ id, nodeData, selected, t }: Props) => {
   const kind = nodeData.kind;
   const isLog = kind === 'log';
   const isAssert = kind === 'assert';
@@ -90,10 +97,18 @@ export const renderDebugGraphNode = ({ id, nodeData, selected }: Props) => {
               }
               placeholder={
                 isAssert
-                  ? 'assertion message'
+                  ? tNode(
+                      t,
+                      'debug.placeholders.assertionMessage',
+                      'assertion message'
+                    )
                   : isPerfMark
-                    ? 'perf mark name'
-                    : 'log tag'
+                    ? tNode(
+                        t,
+                        'debug.placeholders.perfMarkName',
+                        'perf mark name'
+                      )
+                    : tNode(t, 'debug.placeholders.logTag', 'log tag')
               }
               spellCheck={false}
             />
@@ -101,7 +116,7 @@ export const renderDebugGraphNode = ({ id, nodeData, selected }: Props) => {
         )}
 
         {isLog
-          ? row(id, nodeData, 'payload', {
+          ? row(id, nodeData, tNode(t, 'common.rows.payload', 'payload'), {
               inHandle: 'in.data.value',
               outHandle: 'out.control.next',
               inSemantic: 'data',
@@ -109,7 +124,7 @@ export const renderDebugGraphNode = ({ id, nodeData, selected }: Props) => {
             })
           : null}
         {isAssert
-          ? row(id, nodeData, 'condition', {
+          ? row(id, nodeData, tNode(t, 'common.rows.condition', 'condition'), {
               inHandle: 'in.condition.value',
               outHandle: 'out.control.next',
               inSemantic: 'condition',
@@ -117,7 +132,7 @@ export const renderDebugGraphNode = ({ id, nodeData, selected }: Props) => {
             })
           : null}
         {isBreakpoint
-          ? row(id, nodeData, 'pause', {
+          ? row(id, nodeData, tNode(t, 'debug.rows.pause', 'pause'), {
               outHandle: 'out.control.next',
               outSemantic: 'control',
             })
@@ -131,18 +146,22 @@ export const renderDebugGraphNode = ({ id, nodeData, selected }: Props) => {
                 onChange={(event) =>
                   nodeData.onChangeField?.(id, 'value', event.target.value)
                 }
-                placeholder='{"mock":true}'
+                placeholder={tNode(
+                  t,
+                  'debug.placeholders.mockData',
+                  '{"mock":true}'
+                )}
                 spellCheck={false}
               />
             </div>
-            {row(id, nodeData, 'mock', {
+            {row(id, nodeData, tNode(t, 'debug.rows.mock', 'mock'), {
               outHandle: 'out.data.value',
               outSemantic: 'data',
             })}
           </>
         ) : null}
         {isPerfMark
-          ? row(id, nodeData, 'payload', {
+          ? row(id, nodeData, tNode(t, 'common.rows.payload', 'payload'), {
               inHandle: 'in.data.value',
               outHandle: 'out.control.next',
               inSemantic: 'data',

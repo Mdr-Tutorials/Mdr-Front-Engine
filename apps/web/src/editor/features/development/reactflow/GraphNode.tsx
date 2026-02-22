@@ -1,4 +1,5 @@
 import type { NodeProps } from '@xyflow/react';
+import { useTranslation } from 'react-i18next';
 import { renderAbstractionGraphNode } from './nodes/AbstractionGraphNode';
 import { renderAdvancedFormsGraphNode } from './nodes/AdvancedFormsGraphNode';
 import { renderAnnotationGraphNode } from './nodes/AnnotationGraphNode';
@@ -29,22 +30,23 @@ export type {
 } from './graphNodeShared';
 
 export const GraphNode = ({ id, data, selected }: NodeProps) => {
+  const { t } = useTranslation('editor');
   const nodeData = data as GraphNodePayload;
 
   if (nodeData.kind === 'switch') {
-    return renderSwitchGraphNode({ id, nodeData, selected });
+    return renderSwitchGraphNode({ id, nodeData, selected, t });
   }
 
   if (nodeData.kind === 'fetch') {
-    return renderFetchGraphNode({ id, nodeData, selected });
+    return renderFetchGraphNode({ id, nodeData, selected, t });
   }
 
   if (nodeData.kind === 'code') {
-    return renderCodeGraphNode({ id, nodeData, selected });
+    return renderCodeGraphNode({ id, nodeData, selected, t });
   }
 
   if (nodeData.kind === 'expression') {
-    return renderExpressionGraphNode({ id, nodeData, selected });
+    return renderExpressionGraphNode({ id, nodeData, selected, t });
   }
 
   if (
@@ -55,7 +57,7 @@ export const GraphNode = ({ id, data, selected }: NodeProps) => {
     nodeData.kind === 'onRouteEnter' ||
     nodeData.kind === 'onTimer'
   ) {
-    return renderEventGraphNode({ id, nodeData, selected });
+    return renderEventGraphNode({ id, nodeData, selected, t });
   }
 
   if (
@@ -68,7 +70,7 @@ export const GraphNode = ({ id, data, selected }: NodeProps) => {
     nodeData.kind === 'filter' ||
     nodeData.kind === 'reduce'
   ) {
-    return renderDataTransformGraphNode({ id, nodeData, selected });
+    return renderDataTransformGraphNode({ id, nodeData, selected, t });
   }
 
   if (
@@ -79,7 +81,7 @@ export const GraphNode = ({ id, data, selected }: NodeProps) => {
     nodeData.kind === 'localStorageRead' ||
     nodeData.kind === 'localStorageWrite'
   ) {
-    return renderStateGraphNode({ id, nodeData, selected });
+    return renderStateGraphNode({ id, nodeData, selected, t });
   }
 
   if (
@@ -89,7 +91,7 @@ export const GraphNode = ({ id, data, selected }: NodeProps) => {
     nodeData.kind === 'cacheRead' ||
     nodeData.kind === 'cacheWrite'
   ) {
-    return renderNetworkGraphNode({ id, nodeData, selected });
+    return renderNetworkGraphNode({ id, nodeData, selected, t });
   }
 
   if (
@@ -98,7 +100,7 @@ export const GraphNode = ({ id, data, selected }: NodeProps) => {
     nodeData.kind === 'routeQuery' ||
     nodeData.kind === 'routeGuard'
   ) {
-    return renderRoutingGraphNode({ id, nodeData, selected });
+    return renderRoutingGraphNode({ id, nodeData, selected, t });
   }
 
   if (
@@ -108,7 +110,7 @@ export const GraphNode = ({ id, data, selected }: NodeProps) => {
     nodeData.kind === 'toast' ||
     nodeData.kind === 'modal'
   ) {
-    return renderUiGraphNode({ id, nodeData, selected });
+    return renderUiGraphNode({ id, nodeData, selected, t });
   }
 
   if (
@@ -118,7 +120,7 @@ export const GraphNode = ({ id, data, selected }: NodeProps) => {
     nodeData.kind === 'mockData' ||
     nodeData.kind === 'perfMark'
   ) {
-    return renderDebugGraphNode({ id, nodeData, selected });
+    return renderDebugGraphNode({ id, nodeData, selected, t });
   }
 
   if (
@@ -127,7 +129,7 @@ export const GraphNode = ({ id, data, selected }: NodeProps) => {
     nodeData.kind === 'focusControl' ||
     nodeData.kind === 'clipboard'
   ) {
-    return renderInteractionMotionGraphNode({ id, nodeData, selected });
+    return renderInteractionMotionGraphNode({ id, nodeData, selected, t });
   }
 
   if (
@@ -136,7 +138,7 @@ export const GraphNode = ({ id, data, selected }: NodeProps) => {
     nodeData.kind === 'formContext' ||
     nodeData.kind === 'formField'
   ) {
-    return renderAdvancedFormsGraphNode({ id, nodeData, selected });
+    return renderAdvancedFormsGraphNode({ id, nodeData, selected, t });
   }
 
   if (
@@ -144,7 +146,7 @@ export const GraphNode = ({ id, data, selected }: NodeProps) => {
     nodeData.kind === 'uploadFile' ||
     nodeData.kind === 'download'
   ) {
-    return renderRealtimeFilesGraphNode({ id, nodeData, selected });
+    return renderRealtimeFilesGraphNode({ id, nodeData, selected, t });
   }
 
   if (
@@ -153,7 +155,7 @@ export const GraphNode = ({ id, data, selected }: NodeProps) => {
     nodeData.kind === 'i18n' ||
     nodeData.kind === 'mediaQuery'
   ) {
-    return renderSystemEnvironmentGraphNode({ id, nodeData, selected });
+    return renderSystemEnvironmentGraphNode({ id, nodeData, selected, t });
   }
 
   if (
@@ -162,11 +164,11 @@ export const GraphNode = ({ id, data, selected }: NodeProps) => {
     nodeData.kind === 'subFlowOutput' ||
     nodeData.kind === 'memoCache'
   ) {
-    return renderAbstractionGraphNode({ id, nodeData, selected });
+    return renderAbstractionGraphNode({ id, nodeData, selected, t });
   }
 
   if (nodeData.kind === 'groupBox' || nodeData.kind === 'stickyNote') {
-    return renderAnnotationGraphNode({ id, nodeData, selected });
+    return renderAnnotationGraphNode({ id, nodeData, selected, t });
   }
 
   if (
@@ -180,7 +182,7 @@ export const GraphNode = ({ id, data, selected }: NodeProps) => {
     nodeData.kind === 'parallel' ||
     nodeData.kind === 'race'
   ) {
-    return renderFlowControlGraphNode({ id, nodeData, selected });
+    return renderFlowControlGraphNode({ id, nodeData, selected, t });
   }
 
   if (
@@ -190,8 +192,8 @@ export const GraphNode = ({ id, data, selected }: NodeProps) => {
     nodeData.kind === 'object' ||
     nodeData.kind === 'array'
   ) {
-    return renderValueGraphNode({ id, nodeData, selected });
+    return renderValueGraphNode({ id, nodeData, selected, t });
   }
 
-  return renderFlowGraphNode({ id, nodeData, selected });
+  return renderFlowGraphNode({ id, nodeData, selected, t });
 };

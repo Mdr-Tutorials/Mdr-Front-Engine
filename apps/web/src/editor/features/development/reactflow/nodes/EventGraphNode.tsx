@@ -9,50 +9,69 @@ import {
   NODE_TEXT_INPUT_CLASS,
   NodeHeader,
 } from './nodePrimitives';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 
-const getFieldMeta = (kind: GraphNodeData['kind']) => {
+const getFieldMeta = (kind: GraphNodeData['kind'], t: NodeI18n) => {
   if (kind === 'onClick') {
     return {
       field: 'selector' as const,
-      placeholder: '#submit-btn',
-      label: 'selector',
+      placeholder: tNode(t, 'event.onClick.selectorPlaceholder', '#submit-btn'),
+      label: tNode(t, 'common.rows.selector', 'selector'),
     };
   }
   if (kind === 'onInput') {
     return {
       field: 'selector' as const,
-      placeholder: 'input[name="email"]',
-      label: 'selector',
+      placeholder: tNode(
+        t,
+        'event.onInput.selectorPlaceholder',
+        'input[name="email"]'
+      ),
+      label: tNode(t, 'common.rows.selector', 'selector'),
     };
   }
   if (kind === 'onSubmit') {
     return {
       field: 'selector' as const,
-      placeholder: 'form#checkout',
-      label: 'selector',
+      placeholder: tNode(
+        t,
+        'event.onSubmit.selectorPlaceholder',
+        'form#checkout'
+      ),
+      label: tNode(t, 'common.rows.selector', 'selector'),
     };
   }
   if (kind === 'onRouteEnter') {
     return {
       field: 'routePath' as const,
-      placeholder: '/orders/:id',
-      label: 'route',
+      placeholder: tNode(
+        t,
+        'event.onRouteEnter.routePlaceholder',
+        '/orders/:id'
+      ),
+      label: tNode(t, 'common.rows.route', 'route'),
     };
   }
   if (kind === 'onTimer') {
     return {
       field: 'timeoutMs' as const,
-      placeholder: '1000',
-      label: 'interval(ms)',
+      placeholder: tNode(t, 'event.onTimer.intervalPlaceholder', '1000'),
+      label: tNode(t, 'event.onTimer.intervalLabel', 'interval(ms)'),
     };
   }
   return null;
 };
 
-export const renderEventGraphNode = ({ id, nodeData, selected }: Props) => {
-  const meta = getFieldMeta(nodeData.kind);
+export const renderEventGraphNode = ({ id, nodeData, selected, t }: Props) => {
+  const meta = getFieldMeta(nodeData.kind, t);
   const summaryValue = meta ? String(nodeData[meta.field] ?? '') : '';
   return (
     <div className={buildNodeContainerClass(selected, 'min-w-[220px]')}>
@@ -79,7 +98,9 @@ export const renderEventGraphNode = ({ id, nodeData, selected }: Props) => {
           </div>
         ) : null}
         <div className="relative flex min-h-7 items-center px-4 text-[11px] font-normal text-slate-700">
-          <span>{meta ? meta.label : 'trigger'}</span>
+          <span>
+            {meta ? meta.label : tNode(t, 'event.trigger', 'trigger')}
+          </span>
           {renderSource(
             id,
             'out.control.next',

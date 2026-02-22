@@ -162,10 +162,10 @@ export const useBlueprintAutosave = ({
     if (!token) return;
     if (hasWorkspaceTarget && !workspaceCapabilitiesLoaded) return;
     if (lastQueuedSaveDocRef.current === mirDoc) return;
-    lastQueuedSaveDocRef.current = mirDoc;
     let disposed = false;
 
     const timeoutId = window.setTimeout(() => {
+      lastQueuedSaveDocRef.current = mirDoc;
       const validation = validateMirDocument(mirDoc);
       if (validation.hasError) {
         setSaveTransport(null);

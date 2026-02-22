@@ -11,8 +11,15 @@ import {
   NODE_TEXT_INPUT_CLASS,
   NodeHeader,
 } from './nodePrimitives';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 
 const row = (
   id: string,
@@ -52,7 +59,7 @@ const row = (
   );
 };
 
-export const renderStateGraphNode = ({ id, nodeData, selected }: Props) => {
+export const renderStateGraphNode = ({ id, nodeData, selected, t }: Props) => {
   const kind = nodeData.kind;
   const isGetState = kind === 'getState';
   const isSetState = kind === 'setState';
@@ -88,7 +95,9 @@ export const renderStateGraphNode = ({ id, nodeData, selected }: Props) => {
               nodeData.onChangeField?.(id, 'stateKey', event.target.value)
             }
             placeholder={
-              isStorageRead || isStorageWrite ? 'storage key' : 'state key'
+              isStorageRead || isStorageWrite
+                ? tNode(t, 'state.placeholders.storageKey', 'storage key')
+                : tNode(t, 'state.placeholders.stateKey', 'state key')
             }
             spellCheck={false}
           />
@@ -104,10 +113,22 @@ export const renderStateGraphNode = ({ id, nodeData, selected }: Props) => {
               }
               placeholder={
                 isComputed
-                  ? '(state) => state.count * 2'
+                  ? tNode(
+                      t,
+                      'state.placeholders.computedExpression',
+                      '(state) => state.count * 2'
+                    )
                   : isStorageWrite
-                    ? 'JSON.stringify(value)'
-                    : 'next value expression'
+                    ? tNode(
+                        t,
+                        'state.placeholders.storageWriteExpression',
+                        'JSON.stringify(value)'
+                      )
+                    : tNode(
+                        t,
+                        'state.placeholders.nextValueExpression',
+                        'next value expression'
+                      )
               }
               spellCheck={false}
             />
@@ -116,6 +137,7 @@ export const renderStateGraphNode = ({ id, nodeData, selected }: Props) => {
 
         {(isComputed || isSetState) && (
           <KVListEditor
+            t={t}
             items={entries}
             onAdd={() => nodeData.onAddKeyValueEntry?.(id)}
             onRemove={(entryId) =>
@@ -124,42 +146,48 @@ export const renderStateGraphNode = ({ id, nodeData, selected }: Props) => {
             onChange={(entryId, field, value) =>
               nodeData.onChangeKeyValueEntry?.(id, entryId, field, value)
             }
-            keyPlaceholder="dep key"
-            valuePlaceholder="dep path"
+            keyPlaceholder={tNode(t, 'state.placeholders.depKey', 'dep key')}
+            valuePlaceholder={tNode(
+              t,
+              'state.placeholders.depPath',
+              'dep path'
+            )}
           />
         )}
 
         {isGetState
-          ? row(id, nodeData, 'value', { outHandle: 'out.data.value' })
+          ? row(id, nodeData, tNode(t, 'common.rows.value', 'value'), {
+              outHandle: 'out.data.value',
+            })
           : null}
         {isWatchState
-          ? row(id, nodeData, 'changed', {
+          ? row(id, nodeData, tNode(t, 'common.rows.changed', 'changed'), {
               inHandle: 'in.data.value',
               outHandle: 'out.control.next',
               semantic: 'control',
             })
           : null}
         {isStorageRead
-          ? row(id, nodeData, 'value', {
+          ? row(id, nodeData, tNode(t, 'common.rows.value', 'value'), {
               inHandle: 'in.data.value',
               outHandle: 'out.data.value',
             })
           : null}
         {isSetState
-          ? row(id, nodeData, 'value', {
+          ? row(id, nodeData, tNode(t, 'common.rows.value', 'value'), {
               inHandle: 'in.data.value',
               outHandle: 'out.control.next',
               semantic: 'control',
             })
           : null}
         {isComputed
-          ? row(id, nodeData, 'result', {
+          ? row(id, nodeData, tNode(t, 'common.rows.result', 'result'), {
               inHandle: 'in.data.value',
               outHandle: 'out.data.value',
             })
           : null}
         {isStorageWrite
-          ? row(id, nodeData, 'value', {
+          ? row(id, nodeData, tNode(t, 'common.rows.value', 'value'), {
               inHandle: 'in.data.value',
               outHandle: 'out.control.next',
               semantic: 'control',

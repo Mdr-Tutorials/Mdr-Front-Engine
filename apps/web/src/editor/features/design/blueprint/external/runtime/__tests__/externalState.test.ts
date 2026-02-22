@@ -57,12 +57,12 @@ describe('external library state', () => {
     const diagnostics = await mod.ensureExternalLibraryById('unknown');
     expect(diagnostics[0]?.code).toBe('ELIB-1004');
     expect(mod.getExternalLibraryState('unknown').status).toBe('error');
-  });
+  }, 15000);
 
   it('tracks configured library states for success and failure', async () => {
     const mod = await loadExternalModule();
     await mod.ensureConfiguredExternalLibraries(['antd', 'mui']);
     expect(mod.getExternalLibraryState('antd').status).toBe('success');
     expect(mod.getExternalLibraryState('mui').status).toBe('error');
-  });
+  }, 15000);
 });

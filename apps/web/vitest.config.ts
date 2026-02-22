@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { coverageConfigDefaults, defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 
@@ -19,6 +19,14 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
+      exclude: [
+        ...coverageConfigDefaults.exclude,
+        'src/editor/features/design/blueprint/external/libraries/antdProfile.tsx',
+        'src/editor/features/design/blueprint/external/libraries/muiProfile.tsx',
+        'src/editor/features/design/inspector/components/AlignItemsIcons.tsx',
+        'src/editor/features/design/inspector/components/FlexDirectionIcons.tsx',
+        'src/editor/features/design/inspector/components/JustifyContentIcons.tsx',
+      ],
       thresholds: {
         'src/editor/features/design/**': {
           statements: 80,

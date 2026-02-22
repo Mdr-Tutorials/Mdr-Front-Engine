@@ -2,7 +2,6 @@ import CodeMirror from '@uiw/react-codemirror';
 import { autocompletion, completeFromList } from '@codemirror/autocomplete';
 import {
   CODE_LANGUAGE_KEYWORDS,
-  formatCountLabel,
   renderSource,
   renderTarget,
   resolveCodeLanguageExtension,
@@ -15,10 +14,17 @@ import {
   NodeHeader,
   SelectField,
 } from './nodePrimitives';
+import type { NodeI18n } from './nodeI18n';
+import { tNode } from './nodeI18n';
 
-type Props = { id: string; nodeData: GraphNodeData; selected: boolean };
+type Props = {
+  id: string;
+  nodeData: GraphNodeData;
+  selected: boolean;
+  t: NodeI18n;
+};
 
-export const renderCodeGraphNode = ({ id, nodeData, selected }: Props) => {
+export const renderCodeGraphNode = ({ id, nodeData, selected, t }: Props) => {
   const isCollapsed = Boolean(nodeData.collapsed);
   const codeSize = nodeData.codeSize ?? 'md';
   const codeLanguage = nodeData.codeLanguage ?? 'tsx';
@@ -39,7 +45,15 @@ export const renderCodeGraphNode = ({ id, nodeData, selected }: Props) => {
         title={nodeData.label}
         collapsed={isCollapsed}
         onToggleCollapse={() => nodeData.onToggleCollapse?.(id)}
-        collapseAriaLabel={isCollapsed ? 'expand code' : 'collapse code'}
+        collapseAriaLabel={
+          isCollapsed
+            ? tNode(t, 'common.aria.expandKind', 'expand {{kind}}', {
+                kind: nodeData.label,
+              })
+            : tNode(t, 'common.aria.collapseKind', 'collapse {{kind}}', {
+                kind: nodeData.label,
+              })
+        }
         leftSlot={renderTarget(
           id,
           'in.control.prev',
@@ -51,7 +65,9 @@ export const renderCodeGraphNode = ({ id, nodeData, selected }: Props) => {
         summary={
           isCollapsed ? (
             <CollapseSummary
-              text={formatCountLabel(lineCount, 'line', 'lines')}
+              text={tNode(t, 'code.lineCount', '{{count}} lines', {
+                count: lineCount,
+              })}
             />
           ) : null
         }

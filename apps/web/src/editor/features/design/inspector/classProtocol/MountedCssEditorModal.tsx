@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import {
   Compartment,
@@ -92,16 +92,23 @@ export function MountedCssEditorModal({
   onClose,
   onSave,
 }: MountedCssEditorModalProps) {
+  const resolveTheme = () => {
+    if (typeof document === 'undefined') return 'light';
+    const theme = document.documentElement.getAttribute('data-theme');
+    return theme === 'dark' ? 'dark' : 'light';
+  };
   const { t } = useTranslation('blueprint');
+  const [editorTheme, setEditorTheme] = useState<'light' | 'dark'>(
+    () => resolveTheme() as 'light' | 'dark'
+  );
   const invalidSyntaxMessage = t(
     'inspector.classProtocol.mountedCss.invalidSyntax',
     {
       defaultValue: DEFAULT_INVALID_CSS_MESSAGE,
     }
   );
-  const lintCompartmentRef = useRef(new Compartment());
+  const [lintCompartment] = useState(() => new Compartment());
   const extensions = useMemo(() => {
-    const lintCompartment = lintCompartmentRef.current;
     const colorGutter = gutter({
       class: 'MountedCssColorGutter',
       markers(view) {
@@ -150,18 +157,40 @@ export function MountedCssEditorModal({
       lintGutter(),
       lintTheme,
     ];
-  }, []);
+  }, [lintCompartment]);
   const editorRef = useRef<EditorView | null>(null);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const root = document.documentElement;
+    const syncTheme = () => {
+      const nextTheme = root.getAttribute('data-theme');
+      setEditorTheme(nextTheme === 'dark' ? 'dark' : 'light');
+    };
+    syncTheme();
+    const observer = new MutationObserver((mutations) => {
+      if (
+        mutations.some((mutation) => mutation.attributeName === 'data-theme')
+      ) {
+        syncTheme();
+      }
+    });
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const editor = editorRef.current;
     if (!editor) return;
     editor.dispatch({
-      effects: lintCompartmentRef.current.reconfigure(
+      effects: lintCompartment.reconfigure(
         createSyntaxLinterExtension(invalidSyntaxMessage)
       ),
     });
-  }, [invalidSyntaxMessage]);
+  }, [invalidSyntaxMessage, lintCompartment]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -243,12 +272,12 @@ export function MountedCssEditorModal({
               value={value || DEFAULT_CSS_CONTENT}
               height="100%"
               extensions={extensions}
-              theme="light"
+              theme={editorTheme}
               onChange={(next) => onChange(next)}
               onCreateEditor={(view) => {
                 editorRef.current = view;
                 view.dispatch({
-                  effects: lintCompartmentRef.current.reconfigure(
+                  effects: lintCompartment.reconfigure(
                     createSyntaxLinterExtension(invalidSyntaxMessage)
                   ),
                 });
