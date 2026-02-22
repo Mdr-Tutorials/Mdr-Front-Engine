@@ -31,6 +31,7 @@ func (handler *Handler) Routes(requireAuth gin.HandlerFunc) RouteHandlers {
 		ListProjects:   handler.HandleListProjects,
 		CreateProject:  handler.HandleCreateProject,
 		GetProject:     handler.HandleGetProject,
+		UpdateProject:  handler.HandleUpdateProject,
 		GetProjectMIR:  handler.HandleGetProjectMIR,
 		SaveProjectMIR: handler.HandleSaveProjectMIR,
 		PublishProject: handler.HandlePublishProject,
@@ -110,6 +111,37 @@ func (handler *Handler) HandleGetProject(c *gin.Context) {
 			return
 		}
 		respondError(c, http.StatusInternalServerError, "project_get_failed", "Could not load project.")
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"project": project})
+}
+
+func (handler *Handler) HandleUpdateProject(c *gin.Context) {
+	user, ok := backendauth.GetAuthUser[backendauth.User](c)
+	if !ok {
+		respondError(c, http.StatusUnauthorized, "unauthorized", "Authentication required.")
+		return
+	}
+	var request struct {
+		Name        *string `json:"name"`
+		Description *string `json:"description"`
+	}
+	if err := c.ShouldBindJSON(&request); err != nil {
+		respondError(c, http.StatusBadRequest, "invalid_payload", "Invalid request payload.")
+		return
+	}
+	if request.Name == nil && request.Description == nil {
+		respondError(c, http.StatusBadRequest, "invalid_payload", "No fields to update.")
+		return
+	}
+
+	project, err := handler.store.UpdateProject(user.ID, c.Param("id"), request.Name, request.Description)
+	if err != nil {
+		if errors.Is(err, ErrProjectNotFound) {
+			respondError(c, http.StatusNotFound, "not_found", "Project not found.")
+			return
+		}
+		respondError(c, http.StatusInternalServerError, "project_update_failed", "Could not update project.")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"project": project})

@@ -1,12 +1,30 @@
-import { useEffect, useMemo, useState } from 'react';
-
-type LibraryEntry = {
-  id: string;
-  label: string;
-};
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { ExternalLibraryAddModal } from './externalLibraryManager/ExternalLibraryAddModal';
+import { ExternalLibraryDetailsPanel } from './externalLibraryManager/ExternalLibraryDetailsPanel';
+import { ExternalLibraryListPanel } from './externalLibraryManager/ExternalLibraryListPanel';
+import { ExternalLibraryToolbar } from './externalLibraryManager/ExternalLibraryToolbar';
+import type {
+  ActiveLibrary,
+  LibraryCatalog,
+  LibraryEntry,
+  LibraryMode,
+  LibraryScope,
+  PackageSizeThresholds,
+  PersistedLibrary,
+} from './externalLibraryManager/types';
+import {
+  DEFAULT_PACKAGE_SIZE_THRESHOLDS,
+  normalizePackageSizeThresholds,
+} from './externalLibraryManager/viewUtils';
 
 type ExternalLibraryManagerProps = {
   projectId?: string;
+};
+
+type NpmMetadata = {
+  description: string | null;
+  license: string | null;
+  updatedAt: number;
 };
 
 const EXTERNAL_COMPONENT_LIBRARY_PRESET_IDS = ['antd', 'mui'];
@@ -16,13 +34,127 @@ const ICON_LIBRARY_PRESET_IDS = [
   'mui-icons',
   'heroicons',
 ];
+const QUICK_LIBRARY_IDS = ['react', 'lodash', 'antd', 'mui', 'heroicons'];
 const LEGACY_ICON_LIBRARY_IDS = new Set(ICON_LIBRARY_PRESET_IDS);
+const PRE_RELEASE_PATTERN = /(alpha|beta|rc|next|canary|dev|broken)/i;
+const METADATA_CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
-const getResourceManagerExternalSelectionStorageKey = (projectId?: string) =>
+const MODE_OPTIONS: Array<{ id: LibraryMode; label: string }> = [
+  { id: 'locked', label: 'Locked' },
+  { id: 'latest', label: 'Latest' },
+  { id: 'dev', label: 'Dev' },
+];
+
+const LIBRARY_CATALOG: Record<string, LibraryCatalog> = {
+  antd: {
+    id: 'antd',
+    label: 'Ant Design',
+    scope: 'component',
+    description: 'Enterprise React component library for dashboard and forms.',
+    license: 'MIT',
+    packageSizeKb: 1218,
+    components: ['Button', 'Input', 'Form', 'Modal', 'Table', 'Tabs'],
+    versions: ['5.28.0', '5.27.6', '5.26.4', '5.29.0-beta.1'],
+  },
+  mui: {
+    id: 'mui',
+    label: 'Material UI',
+    scope: 'component',
+    description: 'Material design component system for shell and editor UIs.',
+    license: 'MIT',
+    packageSizeKb: 936,
+    components: ['Button', 'TextField', 'Card', 'Dialog', 'Grid'],
+    versions: ['7.3.2', '7.2.8', '7.1.1', '8.0.0-alpha.2'],
+  },
+  react: {
+    id: 'react',
+    label: 'React',
+    scope: 'utility',
+    description: 'Core rendering runtime and hooks APIs.',
+    license: 'MIT',
+    packageSizeKb: 132,
+    components: ['useState', 'useEffect', 'useMemo', 'useRef', 'createElement'],
+    versions: ['19.2.0', '19.1.1', '19.0.0', '19.0.0-rc.1'],
+  },
+  lodash: {
+    id: 'lodash',
+    label: 'Lodash',
+    scope: 'utility',
+    description: 'Utility helper set for object and collection transforms.',
+    license: 'MIT',
+    packageSizeKb: 72,
+    components: ['debounce', 'throttle', 'merge', 'cloneDeep', 'uniqBy'],
+    versions: ['4.17.21', '4.17.20', '4.17.15', '5.0.0-dev.2'],
+  },
+  fontawesome: {
+    id: 'fontawesome',
+    label: 'Font Awesome',
+    scope: 'icon',
+    description: 'Large icon pack for status and navigation.',
+    license: 'CC BY 4.0 + MIT',
+    packageSizeKb: 566,
+    components: ['faUser', 'faBell', 'faCloud', 'faCode'],
+    versions: ['6.7.2', '6.6.0', '6.5.1', '7.0.0-beta.1'],
+  },
+  'ant-design-icons': {
+    id: 'ant-design-icons',
+    label: 'Ant Design Icons',
+    scope: 'icon',
+    description: 'Icon set aligned with Ant Design visual language.',
+    license: 'MIT',
+    packageSizeKb: 502,
+    components: ['HomeOutlined', 'SearchOutlined', 'SettingOutlined'],
+    versions: ['5.6.1', '5.5.0', '5.4.2', '6.0.0-rc.0'],
+  },
+  'mui-icons': {
+    id: 'mui-icons',
+    label: 'Material Icons',
+    scope: 'icon',
+    description: 'Material icon provider for MUI ecosystem.',
+    license: 'MIT',
+    packageSizeKb: 548,
+    components: ['Add', 'Delete', 'Edit', 'ArrowForward'],
+    versions: ['7.3.2', '7.2.8', '7.1.1', '8.0.0-alpha.1'],
+  },
+  heroicons: {
+    id: 'heroicons',
+    label: 'Heroicons',
+    scope: 'icon',
+    description: 'Monochrome icon set for modern product UIs.',
+    license: 'MIT',
+    packageSizeKb: 436,
+    components: ['HomeIcon', 'BoltIcon', 'CodeBracketIcon', 'CubeIcon'],
+    versions: ['2.2.0', '2.1.5', '2.0.18', '3.0.0-beta.0'],
+  },
+};
+
+const getExternalSelectionStorageKey = (projectId?: string) =>
   `mdr.resourceManager.external.selection.${projectId?.trim() || 'default'}`;
 
-const getResourceManagerIconSelectionStorageKey = (projectId?: string) =>
+const getIconSelectionStorageKey = (projectId?: string) =>
   `mdr.resourceManager.icon.selection.${projectId?.trim() || 'default'}`;
+
+const getManagerStateStorageKey = (projectId?: string) =>
+  `mdr.resourceManager.external.manager.${projectId?.trim() || 'default'}`;
+
+const getManagerModeStorageKey = (projectId?: string) =>
+  `mdr.resourceManager.external.mode.${projectId?.trim() || 'default'}`;
+
+const getManagerSizeThresholdsStorageKey = (projectId?: string) =>
+  `mdr.resourceManager.external.sizeThresholds.${projectId?.trim() || 'default'}`;
+
+const getManagerMetadataStorageKey = (projectId?: string) =>
+  `mdr.resourceManager.external.metadata.${projectId?.trim() || 'default'}`;
+
+const normalizeLibraryIds = (libraryIds: string[]) =>
+  [...new Set(libraryIds.map((libraryId) => libraryId.trim().toLowerCase()))]
+    .map((libraryId) => libraryId.trim())
+    .filter((libraryId) => libraryId.length > 0);
+
+const normalizeExternalComponentLibraryIds = (libraryIds: string[]) =>
+  normalizeLibraryIds(libraryIds).filter(
+    (libraryId) => !LEGACY_ICON_LIBRARY_IDS.has(libraryId)
+  );
 
 const parseStoredLibraryIds = (raw: string | null) => {
   if (!raw) return null;
@@ -35,15 +167,147 @@ const parseStoredLibraryIds = (raw: string | null) => {
   }
 };
 
-const normalizeLibraryIds = (libraryIds: string[]) =>
-  [...new Set(libraryIds.map((libraryId) => libraryId.trim().toLowerCase()))]
-    .map((libraryId) => libraryId.trim())
-    .filter((libraryId) => libraryId.length > 0);
+const parseStoredManagerState = (raw: string | null): PersistedLibrary[] => {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .map((item): PersistedLibrary | null => {
+        if (!item || typeof item !== 'object') return null;
+        const record = item as Record<string, unknown>;
+        const id =
+          typeof record.id === 'string'
+            ? normalizeLibraryIds([record.id])[0]
+            : '';
+        if (!id) return null;
+        return {
+          id,
+          scope:
+            record.scope === 'component' ||
+            record.scope === 'icon' ||
+            record.scope === 'utility'
+              ? record.scope
+              : 'utility',
+          version:
+            typeof record.version === 'string' &&
+            record.version.trim().length > 0
+              ? record.version.trim()
+              : 'latest',
+          status:
+            record.status === 'loading' ||
+            record.status === 'success' ||
+            record.status === 'warning' ||
+            record.status === 'error'
+              ? record.status
+              : 'idle',
+        };
+      })
+      .filter((item): item is PersistedLibrary => Boolean(item));
+  } catch {
+    return [];
+  }
+};
 
-const normalizeExternalComponentLibraryIds = (libraryIds: string[]) =>
-  normalizeLibraryIds(libraryIds).filter(
-    (libraryId) => !LEGACY_ICON_LIBRARY_IDS.has(libraryId)
+const parseStoredSizeThresholds = (
+  raw: string | null
+): PackageSizeThresholds | null => {
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return null;
+    const record = parsed as Partial<
+      Record<keyof PackageSizeThresholds, unknown>
+    >;
+    const cautionKb =
+      typeof record.cautionKb === 'number' ? record.cautionKb : undefined;
+    const warningKb =
+      typeof record.warningKb === 'number' ? record.warningKb : undefined;
+    const criticalKb =
+      typeof record.criticalKb === 'number' ? record.criticalKb : undefined;
+    if (
+      cautionKb === undefined &&
+      warningKb === undefined &&
+      criticalKb === undefined
+    ) {
+      return null;
+    }
+    return normalizePackageSizeThresholds({
+      cautionKb,
+      warningKb,
+      criticalKb,
+    });
+  } catch {
+    return null;
+  }
+};
+
+const parseStoredMetadataCache = (
+  raw: string | null
+): Record<string, NpmMetadata> => {
+  if (!raw) return {};
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return {};
+    const next: Record<string, NpmMetadata> = {};
+    Object.entries(parsed).forEach(([key, value]) => {
+      if (!value || typeof value !== 'object') return;
+      const record = value as Record<string, unknown>;
+      if (
+        typeof record.updatedAt !== 'number' ||
+        !Number.isFinite(record.updatedAt)
+      ) {
+        return;
+      }
+      next[key] = {
+        description:
+          typeof record.description === 'string' &&
+          record.description.trim().length > 0
+            ? record.description.trim()
+            : null,
+        license:
+          typeof record.license === 'string' && record.license.trim().length > 0
+            ? record.license.trim()
+            : null,
+        updatedAt: record.updatedAt,
+      };
+    });
+    return next;
+  } catch {
+    return {};
+  }
+};
+
+const normalizeLicenseText = (license: unknown): string | null => {
+  if (typeof license === 'string' && license.trim().length > 0) {
+    return license.trim();
+  }
+  if (
+    license &&
+    typeof license === 'object' &&
+    'type' in (license as Record<string, unknown>)
+  ) {
+    const type = (license as Record<string, unknown>).type;
+    if (typeof type === 'string' && type.trim().length > 0) {
+      return type.trim();
+    }
+  }
+  return null;
+};
+
+const pickVersionByMode = (versions: string[], mode: LibraryMode) => {
+  if (versions.length === 0) return 'latest';
+  if (mode === 'dev') {
+    return (
+      versions.find((version) => PRE_RELEASE_PATTERN.test(version)) ??
+      versions[0]
+    );
+  }
+  return (
+    versions.find((version) => !PRE_RELEASE_PATTERN.test(version)) ??
+    versions[0]
   );
+};
 
 export function ExternalLibraryManager({
   projectId,
@@ -58,9 +322,346 @@ export function ExternalLibraryManager({
   const [configuredIconLibraryIds, setConfiguredIconLibraryIds] = useState<
     string[]
   >([]);
+  const [activeLibraries, setActiveLibraries] = useState<ActiveLibrary[]>([]);
+  const [selectedLibraryId, setSelectedLibraryId] = useState<string | null>(
+    null
+  );
+  const [globalMode, setGlobalMode] = useState<LibraryMode>('locked');
+  const [packageSizeThresholds, setPackageSizeThresholds] =
+    useState<PackageSizeThresholds>(DEFAULT_PACKAGE_SIZE_THRESHOLDS);
+  const [metadataCache, setMetadataCache] = useState<
+    Record<string, NpmMetadata>
+  >({});
   const [isBootstrapping, setBootstrapping] = useState(true);
-  const [manualComponentLibraryId, setManualComponentLibraryId] = useState('');
-  const [manualIconLibraryId, setManualIconLibraryId] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearchInput, setDebouncedSearchInput] = useState('');
+  const [isAddModalOpen, setAddModalOpen] = useState(false);
+  const [manualLibraryId, setManualLibraryId] = useState('');
+  const [manualLibraryVersion, setManualLibraryVersion] = useState('');
+  const loadTokensRef = useRef<Map<string, number>>(new Map());
+  const timeoutIdsRef = useRef<Set<number>>(new Set());
+  const metadataRequestsRef = useRef<Set<string>>(new Set());
+
+  const componentLibraryById = useMemo(
+    () =>
+      new Map(
+        registeredComponentLibraries.map((library) => [library.id, library])
+      ),
+    [registeredComponentLibraries]
+  );
+  const iconLibraryById = useMemo(
+    () =>
+      new Map(registeredIconLibraries.map((library) => [library.id, library])),
+    [registeredIconLibraries]
+  );
+  const componentConfiguredSet = useMemo(
+    () => new Set(configuredComponentLibraryIds),
+    [configuredComponentLibraryIds]
+  );
+  const iconConfiguredSet = useMemo(
+    () => new Set(configuredIconLibraryIds),
+    [configuredIconLibraryIds]
+  );
+
+  const inferScope = (
+    libraryId: string,
+    fallback: LibraryScope = 'utility'
+  ) => {
+    const fromCatalog = LIBRARY_CATALOG[libraryId]?.scope;
+    if (fromCatalog) return fromCatalog;
+    if (componentConfiguredSet.has(libraryId)) return 'component';
+    if (iconConfiguredSet.has(libraryId)) return 'icon';
+    if (EXTERNAL_COMPONENT_LIBRARY_PRESET_IDS.includes(libraryId))
+      return 'component';
+    if (ICON_LIBRARY_PRESET_IDS.includes(libraryId)) return 'icon';
+    return fallback;
+  };
+
+  const createLibraryItem = (
+    libraryId: string,
+    scope?: LibraryScope
+  ): ActiveLibrary => {
+    const resolvedScope = scope ?? inferScope(libraryId);
+    const catalog = LIBRARY_CATALOG[libraryId] ?? {
+      id: libraryId,
+      label: libraryId,
+      scope: resolvedScope,
+      description: 'Custom package without built-in metadata profile.',
+      license: 'Unknown',
+      packageSizeKb: 260,
+      components: ['default export'],
+      versions: ['latest', 'stable', 'next'],
+    };
+    return {
+      id: libraryId,
+      label:
+        resolvedScope === 'component'
+          ? (componentLibraryById.get(libraryId)?.label ?? catalog.label)
+          : resolvedScope === 'icon'
+            ? (iconLibraryById.get(libraryId)?.label ?? catalog.label)
+            : catalog.label,
+      scope: resolvedScope,
+      version: pickVersionByMode(catalog.versions, globalMode),
+      status: 'idle',
+      description: catalog.description,
+      license: catalog.license,
+      packageSizeKb: catalog.packageSizeKb,
+      components: catalog.components,
+      versions: catalog.versions,
+      isRegistered:
+        resolvedScope === 'component'
+          ? componentLibraryById.has(libraryId)
+          : resolvedScope === 'icon'
+            ? iconLibraryById.has(libraryId)
+            : false,
+      errorMessage: null,
+      updatedAt: Date.now(),
+    };
+  };
+
+  const persistConfiguredComponentLibraryIds = (libraryIds: string[]) => {
+    const nextIds = normalizeExternalComponentLibraryIds(libraryIds);
+    setConfiguredComponentLibraryIds(nextIds);
+    window.localStorage.setItem(
+      getExternalSelectionStorageKey(projectId),
+      JSON.stringify(nextIds)
+    );
+    void import('../design/blueprint/external').then((externalRuntime) => {
+      externalRuntime.setConfiguredExternalLibraryIds(nextIds);
+    });
+  };
+
+  const persistConfiguredIconLibraryIds = (libraryIds: string[]) => {
+    const nextIds = normalizeLibraryIds(libraryIds);
+    setConfiguredIconLibraryIds(nextIds);
+    window.localStorage.setItem(
+      getIconSelectionStorageKey(projectId),
+      JSON.stringify(nextIds)
+    );
+    void import('@/mir/renderer/iconRegistry').then((iconRegistry) => {
+      iconRegistry.setConfiguredIconLibraryIds(nextIds);
+    });
+  };
+
+  const syncScope = (
+    libraryId: string,
+    scope: LibraryScope,
+    action: 'add' | 'remove'
+  ) => {
+    if (scope === 'component') {
+      const nextIds =
+        action === 'add'
+          ? [...configuredComponentLibraryIds, libraryId]
+          : configuredComponentLibraryIds.filter((item) => item !== libraryId);
+      persistConfiguredComponentLibraryIds(nextIds);
+      return;
+    }
+    if (scope === 'icon') {
+      const nextIds =
+        action === 'add'
+          ? [...configuredIconLibraryIds, libraryId]
+          : configuredIconLibraryIds.filter((item) => item !== libraryId);
+      persistConfiguredIconLibraryIds(nextIds);
+    }
+  };
+
+  const updatePackageSizeThreshold = (
+    field: keyof PackageSizeThresholds,
+    value: number
+  ) => {
+    if (!Number.isFinite(value) || value <= 0) return;
+    setPackageSizeThresholds((current) => {
+      const next = normalizePackageSizeThresholds({
+        ...current,
+        [field]: Math.floor(value),
+      });
+      if (
+        next.cautionKb === current.cautionKb &&
+        next.warningKb === current.warningKb &&
+        next.criticalKb === current.criticalKb
+      ) {
+        return current;
+      }
+      return next;
+    });
+  };
+
+  const applyMetadataToActiveLibraries = (
+    libraryId: string,
+    metadata: NpmMetadata
+  ) => {
+    setActiveLibraries((current) =>
+      current.map((library) => {
+        if (library.id !== libraryId) return library;
+        const nextDescription = metadata.description ?? library.description;
+        const nextLicense = metadata.license ?? library.license;
+        if (
+          nextDescription === library.description &&
+          nextLicense === library.license
+        ) {
+          return library;
+        }
+        return {
+          ...library,
+          description: nextDescription,
+          license: nextLicense,
+          updatedAt: Date.now(),
+        };
+      })
+    );
+  };
+
+  const requestNpmMetadata = async (libraryId: string) => {
+    if (typeof window.fetch !== 'function') return;
+    try {
+      const response = await window.fetch(
+        `https://registry.npmjs.org/${encodeURIComponent(libraryId)}`
+      );
+      if (!response.ok) return;
+      const payload = (await response.json()) as Record<string, unknown>;
+      const distTags =
+        payload['dist-tags'] && typeof payload['dist-tags'] === 'object'
+          ? (payload['dist-tags'] as Record<string, unknown>)
+          : null;
+      const latestVersion =
+        distTags && typeof distTags.latest === 'string'
+          ? distTags.latest
+          : null;
+      const versions =
+        payload.versions && typeof payload.versions === 'object'
+          ? (payload.versions as Record<string, unknown>)
+          : null;
+      const latestManifest =
+        latestVersion &&
+        versions &&
+        versions[latestVersion] &&
+        typeof versions[latestVersion] === 'object'
+          ? (versions[latestVersion] as Record<string, unknown>)
+          : null;
+      const description =
+        (typeof latestManifest?.description === 'string' &&
+        latestManifest.description.trim().length > 0
+          ? latestManifest.description.trim()
+          : null) ??
+        (typeof payload.description === 'string' &&
+        payload.description.trim().length > 0
+          ? payload.description.trim()
+          : null);
+      const license =
+        normalizeLicenseText(latestManifest?.license) ??
+        normalizeLicenseText(payload.license);
+      if (!description && !license) return;
+      const metadata: NpmMetadata = {
+        description,
+        license,
+        updatedAt: Date.now(),
+      };
+      setMetadataCache((current) => ({
+        ...current,
+        [libraryId]: metadata,
+      }));
+      applyMetadataToActiveLibraries(libraryId, metadata);
+    } catch {
+      // ignore metadata fetch failure and keep local fallback
+    }
+  };
+
+  const hydrateNpmMetadata = (libraryIds: string[]) => {
+    const now = Date.now();
+    libraryIds.forEach((libraryId) => {
+      const normalized = normalizeLibraryIds([libraryId])[0];
+      if (!normalized) return;
+      const cached = metadataCache[normalized];
+      if (cached) {
+        applyMetadataToActiveLibraries(normalized, cached);
+        if (now - cached.updatedAt <= METADATA_CACHE_TTL_MS) {
+          return;
+        }
+      }
+      if (metadataRequestsRef.current.has(normalized)) return;
+      metadataRequestsRef.current.add(normalized);
+      void requestNpmMetadata(normalized).finally(() => {
+        metadataRequestsRef.current.delete(normalized);
+      });
+    });
+  };
+
+  const triggerLoad = (libraryId: string, version: string) => {
+    const normalized = normalizeLibraryIds([libraryId])[0];
+    if (!normalized) return;
+    const token = (loadTokensRef.current.get(normalized) ?? 0) + 1;
+    loadTokensRef.current.set(normalized, token);
+    setActiveLibraries((current) =>
+      current.map((library) =>
+        library.id === normalized
+          ? {
+              ...library,
+              version,
+              status: 'loading',
+              errorMessage: null,
+              updatedAt: Date.now(),
+            }
+          : library
+      )
+    );
+    const timeoutId = window.setTimeout(() => {
+      timeoutIdsRef.current.delete(timeoutId);
+      if (loadTokensRef.current.get(normalized) !== token) return;
+      setActiveLibraries((current) =>
+        current.map((library) => {
+          if (library.id !== normalized) return library;
+          if (PRE_RELEASE_PATTERN.test(version)) {
+            return {
+              ...library,
+              version,
+              status: 'error',
+              errorMessage:
+                'Simulated load failure: pre-release channel returned unstable metadata.',
+              updatedAt: Date.now(),
+            };
+          }
+          return {
+            ...library,
+            version,
+            status:
+              library.packageSizeKb > packageSizeThresholds.cautionKb
+                ? 'warning'
+                : 'success',
+            errorMessage: null,
+            updatedAt: Date.now(),
+          };
+        })
+      );
+    }, 620);
+    timeoutIdsRef.current.add(timeoutId);
+  };
+
+  const addLibrary = (libraryId: string, preferredVersion?: string) => {
+    const normalized = normalizeLibraryIds([libraryId])[0];
+    if (!normalized) return;
+    if (activeLibraries.some((library) => library.id === normalized)) {
+      setSelectedLibraryId(normalized);
+      return;
+    }
+    const library = createLibraryItem(normalized);
+    const nextVersion =
+      preferredVersion && preferredVersion.trim().length > 0
+        ? preferredVersion.trim()
+        : pickVersionByMode(library.versions, globalMode);
+    setActiveLibraries((current) => [
+      {
+        ...library,
+        version: nextVersion,
+        status: 'loading',
+        updatedAt: Date.now(),
+      },
+      ...current,
+    ]);
+    setSelectedLibraryId(normalized);
+    syncScope(normalized, library.scope, 'add');
+    hydrateNpmMetadata([normalized]);
+    triggerLoad(normalized, nextVersion);
+  };
 
   useEffect(() => {
     let disposed = false;
@@ -76,33 +677,72 @@ export function ExternalLibraryManager({
         );
         setRegisteredIconLibraries(iconRegistry.getRegisteredIconLibraries());
 
-        const storedComponentSelection =
-          typeof window === 'undefined'
-            ? null
-            : parseStoredLibraryIds(
-                window.localStorage.getItem(
-                  getResourceManagerExternalSelectionStorageKey(projectId)
-                )
-              );
-        const storedIconSelection =
-          typeof window === 'undefined'
-            ? null
-            : parseStoredLibraryIds(
-                window.localStorage.getItem(
-                  getResourceManagerIconSelectionStorageKey(projectId)
-                )
-              );
-
-        const nextComponentLibraryIds = normalizeExternalComponentLibraryIds(
-          storedComponentSelection ??
-            externalRuntime.getConfiguredExternalLibraryIds()
+        const componentIds = normalizeExternalComponentLibraryIds(
+          parseStoredLibraryIds(
+            window.localStorage.getItem(
+              getExternalSelectionStorageKey(projectId)
+            )
+          ) ?? externalRuntime.getConfiguredExternalLibraryIds()
         );
-        const nextIconLibraryIds = normalizeLibraryIds(
-          storedIconSelection ?? iconRegistry.getConfiguredIconLibraryIds()
+        const iconIds = normalizeLibraryIds(
+          parseStoredLibraryIds(
+            window.localStorage.getItem(getIconSelectionStorageKey(projectId))
+          ) ?? iconRegistry.getConfiguredIconLibraryIds()
+        );
+        setConfiguredComponentLibraryIds(componentIds);
+        setConfiguredIconLibraryIds(iconIds);
+
+        const storedMode = window.localStorage.getItem(
+          getManagerModeStorageKey(projectId)
+        );
+        const nextMode: LibraryMode =
+          storedMode === 'latest' || storedMode === 'dev'
+            ? storedMode
+            : 'locked';
+        setGlobalMode(nextMode);
+        setPackageSizeThresholds(
+          parseStoredSizeThresholds(
+            window.localStorage.getItem(
+              getManagerSizeThresholdsStorageKey(projectId)
+            )
+          ) ?? DEFAULT_PACKAGE_SIZE_THRESHOLDS
+        );
+        setMetadataCache(
+          parseStoredMetadataCache(
+            window.localStorage.getItem(getManagerMetadataStorageKey(projectId))
+          )
         );
 
-        setConfiguredComponentLibraryIds(nextComponentLibraryIds);
-        setConfiguredIconLibraryIds(nextIconLibraryIds);
+        const storedManagerState = parseStoredManagerState(
+          window.localStorage.getItem(getManagerStateStorageKey(projectId))
+        );
+        const mergedIds = normalizeLibraryIds([
+          ...storedManagerState.map((item) => item.id),
+          ...componentIds,
+          ...iconIds,
+        ]);
+        const stateById = new Map(
+          storedManagerState.map((item) => [item.id, item])
+        );
+        const nextLibraries = mergedIds.map((libraryId) => {
+          const persisted = stateById.get(libraryId);
+          const scope =
+            persisted?.scope ??
+            (componentIds.includes(libraryId)
+              ? 'component'
+              : iconIds.includes(libraryId)
+                ? 'icon'
+                : 'utility');
+          const library = createLibraryItem(libraryId, scope);
+          return {
+            ...library,
+            version: persisted?.version ?? library.version,
+            status:
+              persisted?.status ?? (scope === 'utility' ? 'idle' : 'success'),
+          };
+        });
+        setActiveLibraries(nextLibraries);
+        hydrateNpmMetadata(mergedIds);
       })
       .finally(() => {
         if (!disposed) setBootstrapping(false);
@@ -112,354 +752,183 @@ export function ExternalLibraryManager({
     };
   }, [projectId]);
 
-  const persistConfiguredComponentLibraryIds = (libraryIds: string[]) => {
-    const nextIds = normalizeExternalComponentLibraryIds(libraryIds);
-    setConfiguredComponentLibraryIds(nextIds);
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(
-        getResourceManagerExternalSelectionStorageKey(projectId),
-        JSON.stringify(nextIds)
-      );
-    }
-    void import('../design/blueprint/external').then((externalRuntime) => {
-      externalRuntime.setConfiguredExternalLibraryIds(nextIds);
-    });
-  };
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedSearchInput(searchInput.trim().toLowerCase());
+    }, 300);
+    return () => clearTimeout(timeoutId);
+  }, [searchInput]);
 
-  const persistConfiguredIconLibraryIds = (libraryIds: string[]) => {
-    const nextIds = normalizeLibraryIds(libraryIds);
-    setConfiguredIconLibraryIds(nextIds);
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(
-        getResourceManagerIconSelectionStorageKey(projectId),
-        JSON.stringify(nextIds)
-      );
-    }
-    void import('@/mir/renderer/iconRegistry').then((iconRegistry) => {
-      iconRegistry.setConfiguredIconLibraryIds(nextIds);
-    });
-  };
+  useEffect(() => {
+    setSelectedLibraryId((current) =>
+      current && activeLibraries.some((item) => item.id === current)
+        ? current
+        : (activeLibraries[0]?.id ?? null)
+    );
+  }, [activeLibraries]);
 
-  const addComponentLibraryById = (libraryId: string) => {
-    const normalized = normalizeLibraryIds([libraryId])[0];
-    if (!normalized) return;
-    if (LEGACY_ICON_LIBRARY_IDS.has(normalized)) return;
-    if (configuredComponentLibraryIds.includes(normalized)) return;
-    persistConfiguredComponentLibraryIds([
-      ...configuredComponentLibraryIds,
-      normalized,
-    ]);
-  };
+  useEffect(() => {
+    window.localStorage.setItem(
+      getManagerModeStorageKey(projectId),
+      globalMode
+    );
+  }, [globalMode, projectId]);
 
-  const addIconLibraryById = (libraryId: string) => {
-    const normalized = normalizeLibraryIds([libraryId])[0];
-    if (!normalized) return;
-    if (configuredIconLibraryIds.includes(normalized)) return;
-    persistConfiguredIconLibraryIds([...configuredIconLibraryIds, normalized]);
-  };
+  useEffect(() => {
+    if (isBootstrapping) return;
+    window.localStorage.setItem(
+      getManagerSizeThresholdsStorageKey(projectId),
+      JSON.stringify(packageSizeThresholds)
+    );
+  }, [isBootstrapping, packageSizeThresholds, projectId]);
 
-  const configuredComponentIdSet = useMemo(
-    () => new Set(configuredComponentLibraryIds),
-    [configuredComponentLibraryIds]
-  );
-  const configuredIconIdSet = useMemo(
-    () => new Set(configuredIconLibraryIds),
-    [configuredIconLibraryIds]
-  );
-  const registeredComponentLibraryById = useMemo(
-    () =>
-      new Map(
-        registeredComponentLibraries.map((library) => [library.id, library])
-      ),
-    [registeredComponentLibraries]
-  );
-  const registeredIconLibraryById = useMemo(
-    () =>
-      new Map(registeredIconLibraries.map((library) => [library.id, library])),
-    [registeredIconLibraries]
-  );
+  useEffect(() => {
+    if (isBootstrapping) return;
+    window.localStorage.setItem(
+      getManagerMetadataStorageKey(projectId),
+      JSON.stringify(metadataCache)
+    );
+  }, [isBootstrapping, metadataCache, projectId]);
 
-  const importedComponentLibraries = useMemo(
-    () =>
-      configuredComponentLibraryIds.map((libraryId) => {
-        const registered = registeredComponentLibraryById.get(libraryId);
+  useEffect(() => {
+    if (isBootstrapping) return;
+    setActiveLibraries((current) =>
+      current.map((library) => {
+        if (library.status !== 'success' && library.status !== 'warning') {
+          return library;
+        }
+        const nextStatus =
+          library.packageSizeKb > packageSizeThresholds.cautionKb
+            ? 'warning'
+            : 'success';
+        if (nextStatus === library.status) return library;
         return {
-          id: libraryId,
-          label: registered?.label ?? libraryId,
-          isRegistered: Boolean(registered),
+          ...library,
+          status: nextStatus,
+          updatedAt: Date.now(),
         };
-      }),
-    [configuredComponentLibraryIds, registeredComponentLibraryById]
+      })
+    );
+  }, [isBootstrapping, packageSizeThresholds.cautionKb]);
+
+  useEffect(() => {
+    if (isBootstrapping || activeLibraries.length === 0) return;
+    hydrateNpmMetadata(activeLibraries.map((library) => library.id));
+  }, [activeLibraries, isBootstrapping, metadataCache]);
+
+  useEffect(() => {
+    if (isBootstrapping) return;
+    window.localStorage.setItem(
+      getManagerStateStorageKey(projectId),
+      JSON.stringify(
+        activeLibraries.map((library) => ({
+          id: library.id,
+          scope: library.scope,
+          version: library.version,
+          status: library.status,
+        }))
+      )
+    );
+  }, [activeLibraries, isBootstrapping, projectId]);
+
+  useEffect(
+    () => () => {
+      timeoutIdsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
+      timeoutIdsRef.current.clear();
+      loadTokensRef.current.clear();
+      metadataRequestsRef.current.clear();
+    },
+    []
   );
 
-  const importedIconLibraries = useMemo(
-    () =>
-      configuredIconLibraryIds.map((libraryId) => {
-        const registered = registeredIconLibraryById.get(libraryId);
-        return {
-          id: libraryId,
-          label: registered?.label ?? libraryId,
-          isRegistered: Boolean(registered),
-        };
-      }),
-    [configuredIconLibraryIds, registeredIconLibraryById]
-  );
+  const filteredLibraries = useMemo(() => {
+    if (!debouncedSearchInput) return activeLibraries;
+    return activeLibraries.filter((library) =>
+      [
+        library.id,
+        library.label,
+        library.description,
+        library.components.join(' '),
+      ]
+        .join(' ')
+        .toLowerCase()
+        .includes(debouncedSearchInput)
+    );
+  }, [activeLibraries, debouncedSearchInput]);
 
-  const componentLibraryPresets = useMemo(
-    () =>
-      EXTERNAL_COMPONENT_LIBRARY_PRESET_IDS.map((libraryId) => {
-        const registered = registeredComponentLibraryById.get(libraryId);
-        return {
-          id: libraryId,
-          label: registered?.label ?? libraryId,
-          imported: configuredComponentIdSet.has(libraryId),
-        };
-      }),
-    [configuredComponentIdSet, registeredComponentLibraryById]
-  );
-
-  const iconLibraryPresets = useMemo(
-    () =>
-      ICON_LIBRARY_PRESET_IDS.map((libraryId) => {
-        const registered = registeredIconLibraryById.get(libraryId);
-        return {
-          id: libraryId,
-          label: registered?.label ?? libraryId,
-          imported: configuredIconIdSet.has(libraryId),
-        };
-      }),
-    [configuredIconIdSet, registeredIconLibraryById]
-  );
+  const selectedLibrary =
+    activeLibraries.find((library) => library.id === selectedLibraryId) ?? null;
 
   return (
-    <article className="grid gap-4 rounded-2xl border border-black/8 bg-(--color-0) p-5">
+    <article className="relative grid gap-4 rounded-2xl border border-black/8 bg-(--color-0) p-5">
       <header>
         <h2 className="text-base font-semibold text-(--color-9)">
           External library manager
         </h2>
         <p className="mt-1 text-sm text-(--color-7)">
-          Manage Blueprint component libraries and Icon Picker icon providers
-          separately.
+          Split-view manager for loading state simulation, version switching,
+          and runtime library tracking.
         </p>
       </header>
-
-      <div className="grid gap-2 rounded-xl border border-black/8 bg-black/[0.015] p-3 text-xs text-(--color-7)">
-        <p>
-          Imported component libraries:{' '}
-          <strong>{configuredComponentLibraryIds.length}</strong>
-        </p>
-        <p>
-          Imported icon libraries:{' '}
-          <strong>{configuredIconLibraryIds.length}</strong>
-        </p>
+      <ExternalLibraryToolbar
+        searchInput={searchInput}
+        mode={globalMode}
+        modeOptions={MODE_OPTIONS}
+        quickLibraryIds={QUICK_LIBRARY_IDS}
+        libraryCatalog={LIBRARY_CATALOG}
+        sizeThresholds={packageSizeThresholds}
+        onSearchInputChange={setSearchInput}
+        onModeChange={setGlobalMode}
+        onQuickLibraryAdd={addLibrary}
+        onSizeThresholdChange={updatePackageSizeThreshold}
+      />
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] xl:items-start">
+        <ExternalLibraryListPanel
+          activeLibraries={activeLibraries}
+          filteredLibraries={filteredLibraries}
+          selectedLibraryId={selectedLibraryId}
+          searchInput={searchInput}
+          debouncedSearchInput={debouncedSearchInput}
+          packageSizeThresholds={packageSizeThresholds}
+          onSelectLibrary={setSelectedLibraryId}
+          onOpenAddModal={() => setAddModalOpen(true)}
+          onRemoveLibrary={(libraryId) => {
+            const target = activeLibraries.find(
+              (item) => item.id === libraryId
+            );
+            if (target) syncScope(target.id, target.scope, 'remove');
+            setActiveLibraries((current) =>
+              current.filter((item) => item.id !== libraryId)
+            );
+          }}
+          onRetryLibrary={triggerLoad}
+          onVersionChange={triggerLoad}
+        />
+        <ExternalLibraryDetailsPanel
+          selectedLibrary={selectedLibrary}
+          packageSizeThresholds={packageSizeThresholds}
+          onVersionQuickSwitch={triggerLoad}
+        />
       </div>
-
-      <section className="grid gap-3 rounded-xl border border-black/8 bg-black/[0.015] p-3">
-        <header>
-          <h3 className="text-sm font-semibold text-(--color-9)">
-            External component libraries
-          </h3>
-          <p className="mt-1 text-xs text-(--color-7)">
-            Imported here will appear as dedicated tabs in Blueprint component
-            library.
-          </p>
-        </header>
-        <div className="grid gap-2 rounded-lg border border-black/8 bg-(--color-0) p-3">
-          <p className="text-xs text-(--color-7)">
-            Add by id (example: <code>antd</code>, <code>mui</code>).
-          </p>
-          <div className="flex flex-wrap items-center gap-2">
-            <input
-              data-testid="external-library-id-input"
-              className="h-8 min-w-[220px] flex-1 rounded-lg border border-black/10 bg-transparent px-2 text-sm text-(--color-9)"
-              value={manualComponentLibraryId}
-              onChange={(event) =>
-                setManualComponentLibraryId(event.target.value)
-              }
-              placeholder="library id"
-            />
-            <button
-              type="button"
-              data-testid="external-library-add-button"
-              className="rounded-lg border border-black/10 px-2.5 py-1.5 text-xs text-(--color-8)"
-              onClick={() => {
-                addComponentLibraryById(manualComponentLibraryId);
-                setManualComponentLibraryId('');
-              }}
-            >
-              Import
-            </button>
-          </div>
-        </div>
-        <div className="grid gap-2 rounded-lg border border-black/8 bg-(--color-0) p-3">
-          <p className="text-xs text-(--color-7)">Frequent presets</p>
-          <div className="flex flex-wrap gap-2">
-            {componentLibraryPresets.map((preset) => (
-              <button
-                key={preset.id}
-                type="button"
-                data-testid={`external-library-preset-${preset.id}`}
-                className={`rounded-lg border px-2.5 py-1.5 text-xs ${
-                  preset.imported
-                    ? 'border-black/16 bg-black text-white'
-                    : 'border-black/10 text-(--color-8)'
-                }`}
-                onClick={() => addComponentLibraryById(preset.id)}
-                disabled={preset.imported}
-              >
-                {preset.imported
-                  ? `${preset.label} Imported`
-                  : `Import ${preset.label}`}
-              </button>
-            ))}
-          </div>
-        </div>
-        {importedComponentLibraries.length === 0 ? (
-          <div className="rounded-lg border border-black/8 bg-(--color-0) p-3 text-sm text-(--color-7)">
-            No external component libraries imported.
-          </div>
-        ) : (
-          <div className="grid gap-2">
-            {importedComponentLibraries.map((library) => (
-              <section
-                key={library.id}
-                className="flex items-center justify-between gap-3 rounded-xl border border-black/8 bg-(--color-0) p-3"
-              >
-                <div>
-                  <p className="text-sm font-semibold text-(--color-9)">
-                    {library.label}
-                  </p>
-                  <p className="text-xs text-(--color-6)">
-                    {library.id}
-                    {!library.isRegistered
-                      ? ' (no registered profile yet)'
-                      : ''}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  className="rounded-lg border border-black/10 px-2.5 py-1 text-xs text-(--color-8)"
-                  onClick={() => {
-                    persistConfiguredComponentLibraryIds(
-                      configuredComponentLibraryIds.filter(
-                        (item) => item !== library.id
-                      )
-                    );
-                  }}
-                >
-                  Remove
-                </button>
-              </section>
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section className="grid gap-3 rounded-xl border border-black/8 bg-black/[0.015] p-3">
-        <header>
-          <h3 className="text-sm font-semibold text-(--color-9)">
-            Icon libraries
-          </h3>
-          <p className="mt-1 text-xs text-(--color-7)">
-            Imported here will appear in IconPickerModal provider list.
-          </p>
-        </header>
-        <div className="grid gap-2 rounded-lg border border-black/8 bg-(--color-0) p-3">
-          <p className="text-xs text-(--color-7)">
-            Add by id (example: <code>fontawesome</code>,{' '}
-            <code>ant-design-icons</code>, <code>mui-icons</code>,{' '}
-            <code>heroicons</code>).
-          </p>
-          <div className="flex flex-wrap items-center gap-2">
-            <input
-              data-testid="icon-library-id-input"
-              className="h-8 min-w-[220px] flex-1 rounded-lg border border-black/10 bg-transparent px-2 text-sm text-(--color-9)"
-              value={manualIconLibraryId}
-              onChange={(event) => setManualIconLibraryId(event.target.value)}
-              placeholder="icon library id"
-            />
-            <button
-              type="button"
-              data-testid="icon-library-add-button"
-              className="rounded-lg border border-black/10 px-2.5 py-1.5 text-xs text-(--color-8)"
-              onClick={() => {
-                addIconLibraryById(manualIconLibraryId);
-                setManualIconLibraryId('');
-              }}
-            >
-              Import
-            </button>
-          </div>
-        </div>
-        <div className="grid gap-2 rounded-lg border border-black/8 bg-(--color-0) p-3">
-          <p className="text-xs text-(--color-7)">Frequent presets</p>
-          <div className="flex flex-wrap gap-2">
-            {iconLibraryPresets.map((preset) => (
-              <button
-                key={preset.id}
-                type="button"
-                data-testid={`icon-library-preset-${preset.id}`}
-                className={`rounded-lg border px-2.5 py-1.5 text-xs ${
-                  preset.imported
-                    ? 'border-black/16 bg-black text-white'
-                    : 'border-black/10 text-(--color-8)'
-                }`}
-                onClick={() => addIconLibraryById(preset.id)}
-                disabled={preset.imported}
-              >
-                {preset.imported
-                  ? `${preset.label} Imported`
-                  : `Import ${preset.label}`}
-              </button>
-            ))}
-          </div>
-        </div>
-        {importedIconLibraries.length === 0 ? (
-          <div className="rounded-lg border border-black/8 bg-(--color-0) p-3 text-sm text-(--color-7)">
-            No icon libraries imported.
-          </div>
-        ) : (
-          <div className="grid gap-2">
-            {importedIconLibraries.map((library) => (
-              <section
-                key={library.id}
-                className="flex items-center justify-between gap-3 rounded-xl border border-black/8 bg-(--color-0) p-3"
-              >
-                <div>
-                  <p className="text-sm font-semibold text-(--color-9)">
-                    {library.label}
-                  </p>
-                  <p className="text-xs text-(--color-6)">
-                    {library.id}
-                    {!library.isRegistered
-                      ? ' (no registered provider yet)'
-                      : ''}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  className="rounded-lg border border-black/10 px-2.5 py-1 text-xs text-(--color-8)"
-                  onClick={() => {
-                    persistConfiguredIconLibraryIds(
-                      configuredIconLibraryIds.filter(
-                        (item) => item !== library.id
-                      )
-                    );
-                  }}
-                >
-                  Remove
-                </button>
-              </section>
-            ))}
-          </div>
-        )}
-      </section>
-
       {isBootstrapping ? (
         <div className="rounded-xl border border-black/8 bg-black/[0.015] p-3 text-sm text-(--color-7)">
           Loading registered libraries...
         </div>
       ) : null}
+      <ExternalLibraryAddModal
+        isOpen={isAddModalOpen}
+        libraryId={manualLibraryId}
+        libraryVersion={manualLibraryVersion}
+        onLibraryIdChange={setManualLibraryId}
+        onLibraryVersionChange={setManualLibraryVersion}
+        onClose={() => setAddModalOpen(false)}
+        onSubmit={() => {
+          addLibrary(manualLibraryId, manualLibraryVersion);
+          setManualLibraryId('');
+          setManualLibraryVersion('');
+          setAddModalOpen(false);
+        }}
+      />
     </article>
   );
 }

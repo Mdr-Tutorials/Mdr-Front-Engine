@@ -88,6 +88,26 @@ describe('BlueprintEditorCanvas', () => {
     expect(container.querySelector('.BlueprintEditorCanvasGrid')).toBeTruthy();
   });
 
+  it('keeps canvas container clipped and lets artboard own scrolling', () => {
+    const { container } = render(
+      <BlueprintEditorCanvas
+        viewportWidth="2000"
+        viewportHeight="1400"
+        zoom={100}
+        pan={{ x: 0, y: 0 }}
+        selectedId={undefined}
+        onPanChange={() => {}}
+        onZoomChange={() => {}}
+        onSelectNode={() => {}}
+      />
+    );
+
+    const surface = container.querySelector('.BlueprintEditorCanvasSurface');
+    const artboard = container.querySelector('.BlueprintEditorCanvasArtboard');
+    expect(surface?.className).toContain('overflow-hidden');
+    expect(artboard?.className).toContain('overflow-auto');
+  });
+
   it('calls onNodeSelect when a rendered node is clicked', () => {
     resetEditorStore({
       mirDoc: createMirDoc([{ id: 'child-1', type: 'MdrText', text: 'Hello' }]),
@@ -184,6 +204,44 @@ describe('BlueprintEditorCanvas', () => {
 
     fireEvent.wheel(surface, { deltaX: 0, deltaY: -120, ctrlKey: true });
     expect(onZoomChange).toHaveBeenCalled();
+  });
+
+  it('keeps wheel event for artboard scroll when overflow is consumable', () => {
+    const onPanChange = vi.fn();
+
+    const { container } = render(
+      <BlueprintEditorCanvas
+        viewportWidth="1440"
+        viewportHeight="900"
+        zoom={100}
+        pan={{ x: 0, y: 0 }}
+        selectedId={undefined}
+        onPanChange={onPanChange}
+        onZoomChange={() => {}}
+        onSelectNode={() => {}}
+      />
+    );
+
+    const artboard = container.querySelector(
+      '.BlueprintEditorCanvasArtboard'
+    ) as HTMLElement | null;
+    if (!artboard) throw new Error('Artboard not found');
+
+    Object.defineProperty(artboard, 'scrollHeight', {
+      configurable: true,
+      value: 1200,
+    });
+    Object.defineProperty(artboard, 'clientHeight', {
+      configurable: true,
+      value: 900,
+    });
+    Object.defineProperty(artboard, 'scrollTop', {
+      configurable: true,
+      value: 200,
+    });
+
+    fireEvent.wheel(artboard, { deltaY: 120 });
+    expect(onPanChange).not.toHaveBeenCalled();
   });
 
   it('supports pointer panning and keyboard zoom', () => {

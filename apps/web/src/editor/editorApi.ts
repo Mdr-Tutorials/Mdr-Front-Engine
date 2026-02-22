@@ -197,6 +197,23 @@ export const editorApi = {
       `/projects/${encodeURIComponent(projectId)}`
     ),
 
+  updateProject: async (
+    token: string,
+    projectId: string,
+    data: {
+      name?: string;
+      description?: string;
+    }
+  ) =>
+    request<{ project: ProjectDetail }>(
+      token,
+      `/projects/${encodeURIComponent(projectId)}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      }
+    ),
+
   getWorkspace: async (token: string, workspaceId: string) =>
     request<{ workspace: WorkspaceSnapshot }>(
       token,

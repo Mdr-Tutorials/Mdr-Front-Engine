@@ -91,18 +91,6 @@ function EditorBar() {
                 to={`${basePath}/blueprint`}
               />
               <MdrIconLink
-                icon={<Box size={22} />}
-                size={22}
-                title={t('projectHome.actions.component.label')}
-                to={`${basePath}/component`}
-              />
-              <MdrIconLink
-                icon={<Folder size={22} />}
-                size={22}
-                title={t('projectHome.actions.resources.label')}
-                to={`${basePath}/resources`}
-              />
-              <MdrIconLink
                 icon={<GitBranch size={22} />}
                 size={22}
                 title={t('projectHome.actions.nodegraph.label')}
@@ -113,6 +101,18 @@ function EditorBar() {
                 size={22}
                 title={t('projectHome.actions.animation.label')}
                 to={`${basePath}/animation`}
+              />
+              <MdrIconLink
+                icon={<Box size={22} />}
+                size={22}
+                title={t('projectHome.actions.component.label')}
+                to={`${basePath}/component`}
+              />
+              <MdrIconLink
+                icon={<Folder size={22} />}
+                size={22}
+                title={t('projectHome.actions.resources.label')}
+                to={`${basePath}/resources`}
               />
               <MdrIconLink
                 icon={<TestTube size={22} />}

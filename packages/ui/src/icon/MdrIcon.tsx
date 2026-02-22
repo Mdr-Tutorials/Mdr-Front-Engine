@@ -105,8 +105,15 @@ function enhanceIcon(
 
   const IconComponent = icon;
   const componentProps: Record<string, any> = {};
-  if (size !== undefined) componentProps.size = size;
-  if (color !== undefined) componentProps.color = color;
+  if (size !== undefined) {
+    componentProps.size = size;
+    componentProps.width = size;
+    componentProps.height = size;
+  }
+  if (color !== undefined) {
+    componentProps.color = color;
+    componentProps.style = { color };
+  }
   if (title) componentProps.title = title;
 
   return <IconComponent {...componentProps} />;

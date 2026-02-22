@@ -264,6 +264,28 @@ describe('mirToReact generator', () => {
     expect(code).not.toContain('iconRef=');
   });
 
+  it('maps MdrIcon heroicons solid refs to solid import', () => {
+    const doc = createDoc();
+    doc.ui.root = {
+      id: 'root',
+      type: 'MdrIcon',
+      props: {
+        iconRef: {
+          provider: 'heroicons',
+          name: 'AcademicCap',
+          variant: 'solid',
+        },
+      },
+    };
+
+    const code = generateReactCode(doc, { resourceType: 'component' });
+    expect(code).toContain(
+      "import { AcademicCapIcon } from '@heroicons/react/24/solid';"
+    );
+    expect(code).toContain('<AcademicCapIcon');
+    expect(code).not.toContain('iconRef=');
+  });
+
   it('maps MdrIcon mui refs to native icon components', () => {
     const doc = createDoc();
     doc.ui.root = {

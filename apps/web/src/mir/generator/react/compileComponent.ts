@@ -257,6 +257,7 @@ const toPascalCase = (value: string) =>
 type StaticIconRef = {
   provider: string;
   name: string;
+  variant?: 'outline' | 'solid';
 };
 
 const NATIVE_ICON_PROVIDERS = new Set([
@@ -273,7 +274,8 @@ const readStaticIconRef = (value: unknown): StaticIconRef | null => {
     typeof iconRef.provider === 'string' ? iconRef.provider.trim() : '';
   const name = typeof iconRef.name === 'string' ? iconRef.name.trim() : '';
   if (!provider || !name) return null;
-  return { provider, name };
+  const variant = iconRef.variant === 'solid' ? 'solid' : 'outline';
+  return { provider, name, variant };
 };
 
 type ResolvedAdapterImport = AdapterImportSpec & {

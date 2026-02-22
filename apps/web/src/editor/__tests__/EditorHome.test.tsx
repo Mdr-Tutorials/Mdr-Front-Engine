@@ -15,12 +15,14 @@ vi.mock('react-router', () => ({
 const listProjectsMock = vi.fn();
 const publishProjectMock = vi.fn();
 const deleteProjectMock = vi.fn();
+const updateProjectMock = vi.fn();
 
 vi.mock('../editorApi', () => ({
   editorApi: {
     listProjects: (...args: unknown[]) => listProjectsMock(...args),
     publishProject: (...args: unknown[]) => publishProjectMock(...args),
     deleteProject: (...args: unknown[]) => deleteProjectMock(...args),
+    updateProject: (...args: unknown[]) => updateProjectMock(...args),
   },
 }));
 
@@ -34,6 +36,7 @@ describe('EditorHome', () => {
     listProjectsMock.mockReset();
     publishProjectMock.mockReset();
     deleteProjectMock.mockReset();
+    updateProjectMock.mockReset();
     navigateMock.mockReset();
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     useEditorStore.setState({ projectsById: {} });
@@ -151,6 +154,58 @@ describe('EditorHome', () => {
     fireEvent.keyDown(window, { key: 'Enter' });
     await waitFor(() => {
       expect(navigateMock).toHaveBeenCalledWith('/');
+    });
+  });
+
+  it('renames project inline from card title action', async () => {
+    listProjectsMock.mockResolvedValue({
+      projects: [
+        {
+          id: 'p1',
+          resourceType: 'project',
+          name: 'Project One',
+          description: 'Demo',
+          isPublic: false,
+          starsCount: 0,
+          updatedAt: '2026-02-01T00:00:00Z',
+          createdAt: '2026-02-01T00:00:00Z',
+        },
+      ],
+    });
+    updateProjectMock.mockResolvedValue({
+      project: {
+        id: 'p1',
+        ownerId: 'usr-1',
+        resourceType: 'project',
+        name: 'Project Renamed',
+        description: 'Demo',
+        mir: {
+          version: '1.0',
+          ui: { root: { id: 'root', type: 'container' } },
+        },
+        isPublic: false,
+        starsCount: 0,
+        updatedAt: '2026-02-04T00:00:00Z',
+        createdAt: '2026-02-01T00:00:00Z',
+      },
+    });
+
+    render(<EditorHome />);
+
+    await screen.findByText('Project One');
+    fireEvent.click(screen.getByRole('button', { name: 'home.card.rename' }));
+
+    const renameInput = screen.getByRole('textbox', {
+      name: 'home.card.renameInput',
+    });
+    fireEvent.change(renameInput, { target: { value: 'Project Renamed' } });
+    fireEvent.keyDown(renameInput, { key: 'Enter' });
+
+    await waitFor(() => {
+      expect(updateProjectMock).toHaveBeenCalledWith('token-1', 'p1', {
+        name: 'Project Renamed',
+      });
+      expect(screen.getByText('Project Renamed')).toBeTruthy();
     });
   });
 });

@@ -3,6 +3,22 @@ import { MemoryRouter, Route, Routes } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ProjectResources } from '../ProjectResources';
 
+vi.mock('@uiw/react-codemirror', () => ({
+  default: ({
+    value,
+    onChange,
+  }: {
+    value: string;
+    onChange: (value: string) => void;
+  }) => (
+    <textarea
+      data-testid="project-resources-codemirror"
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+    />
+  ),
+}));
+
 vi.mock('../../design/blueprint/external', () => {
   const getConfiguredExternalLibraryIds = () => {
     const raw = localStorage.getItem('mdr.externalLibraryIds');
@@ -84,9 +100,10 @@ describe('ProjectResources', () => {
   it('renders resource manager tabs', () => {
     renderWithRouter();
     expect(screen.getByText('Project resources')).toBeTruthy();
-    expect(screen.getByText('Overview')).toBeTruthy();
-    expect(screen.getByText('Public')).toBeTruthy();
-    expect(screen.getByText('i18n')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Overview' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Public' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Code' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'i18n' })).toBeTruthy();
   });
 
   it('switches to public tab inside same route', () => {
@@ -94,6 +111,44 @@ describe('ProjectResources', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Public' }));
     expect(screen.getByText('Public Tree (Editable)')).toBeTruthy();
     expect(screen.queryByText('Best practice hints')).toBeNull();
+  });
+
+  it('switches to code tab and renders code workspace', () => {
+    renderWithRouter();
+    fireEvent.click(screen.getByRole('button', { name: 'Code' }));
+    expect(screen.getByText('Code workspace')).toBeTruthy();
+    expect(screen.queryByText('Code assets tab is reserved.')).toBeNull();
+  });
+
+  it('keeps unique code file names when using overview quick actions', () => {
+    renderWithRouter();
+
+    fireEvent.click(screen.getByRole('button', { name: /New script/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'Overview' }));
+    fireEvent.click(screen.getByRole('button', { name: /New script/i }));
+
+    const rawTree = localStorage.getItem('mdr.codeTree.project-001');
+    expect(rawTree).toBeTruthy();
+    const parsedTree = JSON.parse(rawTree ?? '{}');
+    const scriptsFolder = parsedTree.children.find(
+      (node: { id: string }) => node.id === 'code-scripts'
+    );
+    const names = scriptsFolder.children.map(
+      (node: { name: string }) => node.name
+    );
+    expect(names).toContain('untitled.ts');
+    expect(names).toContain('untitled-1.ts');
+    const firstScript = scriptsFolder.children.find(
+      (node: { name: string }) => node.name === 'untitled.ts'
+    );
+    expect(firstScript.textContent).toBe('export const hello = "mdr";\n');
+  });
+
+  it('switches to i18n tab and renders i18n workspace', () => {
+    renderWithRouter();
+    fireEvent.click(screen.getByRole('button', { name: 'i18n' }));
+    expect(screen.getByText('i18n workspace')).toBeTruthy();
+    expect(screen.queryByText('i18n assets tab is reserved.')).toBeNull();
   });
 
   it('restores last opened resource tab', () => {
@@ -149,7 +204,7 @@ describe('ProjectResources', () => {
     fireEvent.click(screen.getByRole('button', { name: 'External libs' }));
     expect(await screen.findByText('External library manager')).toBeTruthy();
 
-    fireEvent.click(screen.getByTestId('external-library-preset-mui'));
+    fireEvent.click(screen.getByTestId('external-library-tag-mui'));
 
     await waitFor(() => {
       expect(localStorage.getItem('mdr.externalLibraryIds')).toContain('mui');
@@ -157,6 +212,70 @@ describe('ProjectResources', () => {
     expect(
       localStorage.getItem('mdr.resourceManager.external.selection.project-001')
     ).toContain('mui');
+  });
+
+  it('persists package size warning thresholds per project', async () => {
+    renderWithRouter();
+    fireEvent.click(screen.getByRole('button', { name: 'External libs' }));
+    expect(await screen.findByText('External library manager')).toBeTruthy();
+
+    fireEvent.change(
+      screen.getByTestId('external-library-size-threshold-caution'),
+      { target: { value: '650' } }
+    );
+    fireEvent.change(
+      screen.getByTestId('external-library-size-threshold-warning'),
+      { target: { value: '980' } }
+    );
+    fireEvent.change(
+      screen.getByTestId('external-library-size-threshold-critical'),
+      { target: { value: '1450' } }
+    );
+
+    await waitFor(() => {
+      expect(
+        localStorage.getItem(
+          'mdr.resourceManager.external.sizeThresholds.project-001'
+        )
+      ).toBe(
+        JSON.stringify({ cautionKb: 650, warningKb: 980, criticalKb: 1450 })
+      );
+    });
+  });
+
+  it('loads npm metadata and caches it for library details', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        description: 'Fallback description',
+        license: 'MIT',
+        'dist-tags': { latest: '19.2.0' },
+        versions: {
+          '19.2.0': {
+            description: 'React lets you build user interfaces.',
+            license: { type: 'MIT' },
+          },
+        },
+      }),
+    } as Response);
+    vi.stubGlobal('fetch', fetchMock);
+
+    renderWithRouter();
+    fireEvent.click(screen.getByRole('button', { name: 'External libs' }));
+    expect(await screen.findByText('External library manager')).toBeTruthy();
+
+    fireEvent.click(screen.getByTestId('external-library-tag-react'));
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalled();
+      expect(
+        localStorage.getItem(
+          'mdr.resourceManager.external.metadata.project-001'
+        )
+      ).toContain('react');
+    });
+
+    vi.unstubAllGlobals();
   });
 
   it('supports removing imported external libraries', async () => {
@@ -168,7 +287,7 @@ describe('ProjectResources', () => {
     fireEvent.click(screen.getByRole('button', { name: 'External libs' }));
     expect(await screen.findByText('External library manager')).toBeTruthy();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Remove' }));
+    fireEvent.click(screen.getByTestId('external-library-remove-antd'));
 
     await waitFor(() => {
       expect(localStorage.getItem('mdr.externalLibraryIds')).toBe('[]');
@@ -183,15 +302,20 @@ describe('ProjectResources', () => {
     fireEvent.click(screen.getByRole('button', { name: 'External libs' }));
     expect(await screen.findByText('External library manager')).toBeTruthy();
 
-    fireEvent.change(screen.getByTestId('external-library-id-input'), {
-      target: { value: 'custom-lib' },
+    fireEvent.click(screen.getByTestId('external-library-open-add-modal'));
+    fireEvent.change(screen.getByTestId('external-library-modal-name-input'), {
+      target: { value: 'antd' },
     });
-    fireEvent.click(screen.getByTestId('external-library-add-button'));
+    fireEvent.change(
+      screen.getByTestId('external-library-modal-version-input'),
+      {
+        target: { value: '5.27.6' },
+      }
+    );
+    fireEvent.click(screen.getByTestId('external-library-modal-submit'));
 
     await waitFor(() => {
-      expect(localStorage.getItem('mdr.externalLibraryIds')).toContain(
-        'custom-lib'
-      );
+      expect(localStorage.getItem('mdr.externalLibraryIds')).toContain('antd');
     });
   });
 
@@ -200,7 +324,7 @@ describe('ProjectResources', () => {
     fireEvent.click(screen.getByRole('button', { name: 'External libs' }));
     expect(await screen.findByText('External library manager')).toBeTruthy();
 
-    fireEvent.click(screen.getByTestId('icon-library-preset-heroicons'));
+    fireEvent.click(screen.getByTestId('external-library-tag-heroicons'));
 
     await waitFor(() => {
       expect(localStorage.getItem('mdr.iconLibraryIds')).toContain('heroicons');

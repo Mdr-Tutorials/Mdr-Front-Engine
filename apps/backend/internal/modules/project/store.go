@@ -159,6 +159,37 @@ RETURNING id, owner_id, resource_type, name, description, mir_json, is_public, s
 	return project, nil
 }
 
+func (store *ProjectStore) UpdateProject(ownerID, projectID string, name, description *string) (*Project, error) {
+	var nextName any
+	var nextDescription any
+	if name != nil {
+		nextName = strings.TrimSpace(*name)
+	}
+	if description != nil {
+		nextDescription = strings.TrimSpace(*description)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	const query = `UPDATE projects
+SET name = COALESCE($3, name),
+    description = COALESCE($4, description),
+    updated_at = NOW()
+WHERE owner_id = $1 AND id = $2
+RETURNING id, owner_id, resource_type, name, description, mir_json, is_public, stars_count, created_at, updated_at`
+
+	row := store.db.QueryRowContext(ctx, query, ownerID, projectID, nextName, nextDescription)
+	project, err := scanProject(row)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrProjectNotFound
+		}
+		return nil, err
+	}
+	return project, nil
+}
+
 func (store *ProjectStore) SetPublic(ownerID, projectID string, isPublic bool) (*Project, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

@@ -15,7 +15,8 @@ const readIconRef = (value: unknown) => {
     typeof iconRef.provider === 'string' ? iconRef.provider.trim() : '';
   const name = typeof iconRef.name === 'string' ? iconRef.name.trim() : '';
   if (!provider || !name) return null;
-  return { provider, name };
+  const variant = iconRef.variant === 'solid' ? 'solid' : 'outline';
+  return { provider, name, variant };
 };
 
 const toFontAwesomeSymbol = (iconName: string) => {
@@ -82,12 +83,16 @@ export const reactAdapter: TargetAdapter = {
       if (iconRef.provider === 'heroicons') {
         const baseName = toPascalCase(iconRef.name);
         const symbol = baseName.endsWith('Icon') ? baseName : `${baseName}Icon`;
+        const heroiconsSource =
+          iconRef.variant === 'solid'
+            ? '@heroicons/react/24/solid'
+            : '@heroicons/react/24/outline';
         if (baseName) {
           return {
             element: symbol,
             imports: [
               {
-                source: '@heroicons/react/24/outline',
+                source: heroiconsSource,
                 kind: 'named',
                 imported: symbol,
               },

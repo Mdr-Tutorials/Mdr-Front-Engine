@@ -28,6 +28,24 @@ type IconPickerModalProps = {
 const ICONS_PER_PAGE = 160;
 
 const normalizeSearch = (value: string) => value.trim().toLowerCase();
+const resolveHeroiconsVariant = (value: unknown): 'outline' | 'solid' =>
+  value === 'solid' ? 'solid' : 'outline';
+const toProviderSelectValue = (
+  providerId: string,
+  variant: 'outline' | 'solid'
+) => (providerId === 'heroicons' ? `heroicons:${variant}` : providerId);
+const parseProviderSelectValue = (
+  value: string
+): { providerId: string; variant: 'outline' | 'solid' } =>
+  value.startsWith('heroicons:')
+    ? {
+        providerId: 'heroicons',
+        variant: resolveHeroiconsVariant(value.split(':')[1]),
+      }
+    : {
+        providerId: value,
+        variant: 'outline',
+      };
 
 export function IconPickerModal({
   open,
@@ -42,6 +60,38 @@ export function IconPickerModal({
     getIconRegistryRevision
   );
   const providers = useMemo(() => listIconProviders(), [registryRevision]);
+  const providerOptions = useMemo(() => {
+    return providers.flatMap((provider) => {
+      if (provider.id !== 'heroicons') {
+        return [
+          {
+            value: provider.id,
+            providerId: provider.id,
+            variant: 'outline' as const,
+            label: provider.label,
+          },
+        ];
+      }
+      return [
+        {
+          value: 'heroicons:outline',
+          providerId: 'heroicons',
+          variant: 'outline' as const,
+          label: t('inspector.iconPicker.heroiconsOutlineLabel', {
+            defaultValue: 'Heroicons: Outline',
+          }),
+        },
+        {
+          value: 'heroicons:solid',
+          providerId: 'heroicons',
+          variant: 'solid' as const,
+          label: t('inspector.iconPicker.heroiconsSolidLabel', {
+            defaultValue: 'Heroicons: Solid',
+          }),
+        },
+      ];
+    });
+  }, [providers, t]);
   const fallbackProvider =
     providers.find((provider) => provider.id === 'lucide')?.id ??
     providers[0]?.id ??
@@ -49,20 +99,46 @@ export function IconPickerModal({
   const [providerId, setProviderId] = useState(
     initialIconRef?.provider ?? fallbackProvider
   );
+  const [heroiconsVariant, setHeroiconsVariant] = useState<'outline' | 'solid'>(
+    () => resolveHeroiconsVariant(initialIconRef?.variant)
+  );
   const [search, setSearch] = useState('');
   const [selectedName, setSelectedName] = useState(initialIconRef?.name ?? '');
   const [page, setPage] = useState(1);
   const [pageInput, setPageInput] = useState('1');
   const listRef = useRef<HTMLDivElement | null>(null);
+  const providerSelectValue = toProviderSelectValue(
+    providerId,
+    heroiconsVariant
+  );
 
   useEffect(() => {
     if (!open) return;
     setProviderId(initialIconRef?.provider ?? fallbackProvider);
+    setHeroiconsVariant(resolveHeroiconsVariant(initialIconRef?.variant));
     setSelectedName(initialIconRef?.name ?? '');
     setSearch('');
     setPage(1);
     setPageInput('1');
-  }, [fallbackProvider, initialIconRef?.name, initialIconRef?.provider, open]);
+  }, [
+    fallbackProvider,
+    initialIconRef?.name,
+    initialIconRef?.provider,
+    initialIconRef?.variant,
+    open,
+  ]);
+
+  useEffect(() => {
+    if (!providerOptions.length) return;
+    const matchedOption = providerOptions.find(
+      (option) => option.value === providerSelectValue
+    );
+    if (matchedOption) return;
+    const fallback = providerOptions[0];
+    if (!fallback) return;
+    setProviderId(fallback.providerId);
+    setHeroiconsVariant(fallback.variant);
+  }, [providerOptions, providerSelectValue]);
 
   useEffect(() => {
     if (!open) return;
@@ -107,7 +183,9 @@ export function IconPickerModal({
   const pageEnd = pageStart + ICONS_PER_PAGE;
   const visibleNames = filteredNames.slice(pageStart, pageEnd);
   const selectedRef = selectedName
-    ? { provider: providerId, name: selectedName }
+    ? providerId === 'heroicons'
+      ? { provider: providerId, name: selectedName, variant: heroiconsVariant }
+      : { provider: providerId, name: selectedName }
     : null;
   const selectedIcon = selectedRef ? resolveIconRef(selectedRef) : null;
   const SelectedIcon = selectedIcon;
@@ -188,17 +266,19 @@ export function IconPickerModal({
             })}
             <select
               className="h-8 rounded-md border border-black/10 bg-transparent px-2 text-[12px] text-(--color-9) outline-none dark:border-white/16"
-              value={providerId}
+              value={providerSelectValue}
               onChange={(event) => {
-                setProviderId(event.target.value);
+                const selection = parseProviderSelectValue(event.target.value);
+                setProviderId(selection.providerId);
+                setHeroiconsVariant(selection.variant);
                 setSelectedName('');
                 setPage(1);
               }}
               data-testid="icon-picker-provider"
             >
-              {providers.map((provider) => (
-                <option key={provider.id} value={provider.id}>
-                  {provider.label}
+              {providerOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
                 </option>
               ))}
             </select>
@@ -282,7 +362,10 @@ export function IconPickerModal({
               className="grid min-h-0 grid-cols-3 gap-2 overflow-y-auto p-3 md:grid-cols-4 lg:grid-cols-5"
             >
               {visibleNames.map((name) => {
-                const iconRef = { provider: providerId, name };
+                const iconRef =
+                  providerId === 'heroicons'
+                    ? { provider: providerId, name, variant: heroiconsVariant }
+                    : { provider: providerId, name };
                 const IconComponent = resolveIconRef(iconRef);
                 const isActive = selectedName === name;
                 return (
@@ -295,7 +378,9 @@ export function IconPickerModal({
                     title={name}
                   >
                     <span className="inline-flex h-5 w-5 items-center justify-center">
-                      {IconComponent ? <IconComponent size={18} /> : null}
+                      {IconComponent ? (
+                        <IconComponent size={18} width={18} height={18} />
+                      ) : null}
                     </span>
                     <span className="w-full truncate text-[10px]">{name}</span>
                   </button>
@@ -385,7 +470,7 @@ export function IconPickerModal({
             </span>
             <div className="mt-3 flex flex-1 flex-col items-center justify-center rounded-md border border-black/8 bg-black/[0.02] dark:border-white/14">
               {SelectedIcon ? (
-                <SelectedIcon size={34} />
+                <SelectedIcon size={34} width={34} height={34} />
               ) : (
                 <span className="text-[11px] text-(--color-5)">
                   {t('inspector.iconPicker.noIcon', {

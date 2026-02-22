@@ -63,6 +63,21 @@ describe('EditorBar', () => {
         .getByTitle('projectHome.actions.resources.label')
         .getAttribute('href')
     ).toBe('/editor/project/project-123/resources');
+    const allLinks = screen
+      .getAllByRole('link')
+      .map((link) => link.getAttribute('title'));
+    expect(allLinks).toEqual([
+      'bar.projectHome',
+      'projectHome.actions.blueprint.label',
+      'projectHome.actions.nodegraph.label',
+      'projectHome.actions.animation.label',
+      'projectHome.actions.component.label',
+      'projectHome.actions.resources.label',
+      'projectHome.actions.testing.label',
+      'projectHome.actions.export.label',
+      'projectHome.actions.deployment.label',
+      'projectHome.actions.settings.label',
+    ]);
   });
 
   it('shows confirmation modal before leaving when prompts include leave', () => {

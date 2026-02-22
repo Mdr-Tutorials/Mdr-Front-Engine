@@ -8,6 +8,8 @@ import {
   MoreHorizontal,
   Globe,
   Trash2,
+  Pencil,
+  Check,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
@@ -69,21 +71,32 @@ function EditorTipsRandom() {
 function ProjectCard({
   project,
   onOpen,
+  onRename,
   onPublish,
   onDelete,
+  isRenaming,
   isPublishing,
   isDeleting,
 }: {
   project: ProjectSummary;
   onOpen: (project: ProjectSummary) => void;
+  onRename: (project: ProjectSummary, name: string) => Promise<boolean>;
   onPublish: (project: ProjectSummary) => void;
   onDelete: (project: ProjectSummary) => void;
+  isRenaming: boolean;
   isPublishing: boolean;
   isDeleting: boolean;
 }) {
   const { t } = useTranslation('editor');
   const [isActionsOpen, setActionsOpen] = useState(false);
+  const [draftName, setDraftName] = useState(project.name || '');
+  const [isEditingName, setEditingName] = useState(false);
   const isClonedProject = /\(copy\)\s*$/i.test(project.name || '');
+
+  useEffect(() => {
+    if (isEditingName) return;
+    setDraftName(project.name || '');
+  }, [project.name, isEditingName]);
 
   const getIcon = () => {
     switch (project.resourceType) {
@@ -107,8 +120,31 @@ function ProjectCard({
     );
   };
 
+  const startRename = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setActionsOpen(false);
+    setDraftName(project.name || '');
+    setEditingName(true);
+  };
+
+  const cancelRename = () => {
+    setDraftName(project.name || '');
+    setEditingName(false);
+  };
+
+  const applyRename = async () => {
+    if (isRenaming) return;
+    const nextName = draftName.trim();
+    if (!nextName || nextName === (project.name || '')) {
+      cancelRename();
+      return;
+    }
+    const renamed = await onRename(project, nextName);
+    if (renamed) setEditingName(false);
+  };
+
   return (
-    <div className="relative flex h-full min-h-[280px] w-full flex-col rounded-[16px] border border-[var(--color-2)] bg-[var(--color-1)] p-[24px] text-left transition-all duration-[300ms] ease-[ease] hover:-translate-y-1 hover:border-[var(--color-4)] hover:bg-[var(--color-0)] hover:shadow-[var(--shadow-lg)]">
+    <div className="group/card relative flex h-full min-h-[280px] w-full flex-col rounded-[16px] border border-[var(--color-2)] bg-[var(--color-1)] p-[24px] text-left transition-all duration-[300ms] ease-[ease] hover:-translate-y-1 hover:border-[var(--color-4)] hover:bg-[var(--color-0)] hover:shadow-[var(--shadow-lg)]">
       <button
         type="button"
         onClick={() => setActionsOpen((prev) => !prev)}
@@ -167,13 +203,46 @@ function ProjectCard({
         </div>
       )}
 
-      <button
-        type="button"
+      {isEditingName ? (
+        <button
+          type="button"
+          aria-label={t('home.card.renameConfirm', 'Confirm rename')}
+          disabled={isRenaming}
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={(event) => {
+            event.stopPropagation();
+            void applyRename();
+          }}
+          className="absolute right-[14px] top-[70px] z-10 inline-flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[6px] border border-[var(--color-3)] text-[var(--color-8)] transition hover:border-[var(--color-5)] hover:text-[var(--color-10)] disabled:opacity-[0.5]"
+        >
+          <Check size={14} />
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={startRename}
+          aria-label={t('home.card.rename', 'Rename project')}
+          className="absolute right-[14px] top-[70px] z-10 inline-flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[6px] border border-transparent text-[var(--color-6)] opacity-0 transition hover:border-[var(--color-3)] hover:text-[var(--color-10)] group-hover/card:opacity-100 focus:opacity-100"
+        >
+          <Pencil size={14} />
+        </button>
+      )}
+
+      <div
+        role="button"
+        tabIndex={0}
         onClick={() => {
           if (isActionsOpen) {
             setActionsOpen(false);
             return;
           }
+          if (isEditingName) return;
+          onOpen(project);
+        }}
+        onKeyDown={(event) => {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault();
+          if (isEditingName || isActionsOpen) return;
           onOpen(project);
         }}
         className="flex flex-1 cursor-pointer flex-col justify-between border-0 bg-transparent p-0 text-left"
@@ -182,9 +251,40 @@ function ProjectCard({
           <div className="mb-[8px] text-[var(--color-primary)]">
             {getIcon()}
           </div>
-          <h3 className="m-0 pr-[36px] text-[18px] font-semibold text-[var(--color-10)]">
-            {project.name || t('home.card.untitled', 'Untitled')}
-          </h3>
+          <div className="pr-[36px]">
+            {isEditingName ? (
+              <input
+                autoFocus
+                value={draftName}
+                disabled={isRenaming}
+                aria-label={t('home.card.renameInput', 'Rename project')}
+                onClick={(event) => event.stopPropagation()}
+                onChange={(event) => setDraftName(event.target.value)}
+                onBlur={() => {
+                  void applyRename();
+                }}
+                onKeyDown={(event) => {
+                  event.stopPropagation();
+                  if (event.key === 'Escape') {
+                    event.preventDefault();
+                    cancelRename();
+                    return;
+                  }
+                  if (event.key === 'Enter') {
+                    event.preventDefault();
+                    void applyRename();
+                  }
+                }}
+                className="h-[30px] w-full rounded-[8px] border border-[var(--color-4)] bg-[var(--color-0)] px-[8px] text-[16px] font-semibold text-[var(--color-10)] outline-none"
+              />
+            ) : (
+              <h3 className="m-0 min-w-0 flex-1 text-[18px] font-semibold text-[var(--color-10)]">
+                <span className="block truncate">
+                  {project.name || t('home.card.untitled', 'Untitled')}
+                </span>
+              </h3>
+            )}
+          </div>
           <p className="flex items-center justify-between border-t border-[var(--color-2)] pt-[16px] text-[12px] leading-[1.5] text-[var(--color-5)]">
             {truncate(project.description || '', 160) ||
               t('home.card.noDescription', 'No description')}
@@ -194,7 +294,7 @@ function ProjectCard({
           <Clock size={14} />
           <span className="text-[12px]">{formatTime(project.updatedAt)}</span>
         </div>
-      </button>
+      </div>
     </div>
   );
 }
@@ -209,7 +309,7 @@ function EditorHome() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [busyByProject, setBusyByProject] = useState<
-    Record<string, 'publishing' | 'deleting' | undefined>
+    Record<string, 'publishing' | 'deleting' | 'renaming' | undefined>
   >({});
   const setProjectsInStore = useEditorStore((state) => state.setProjects);
   const setProjectInStore = useEditorStore((state) => state.setProject);
@@ -340,6 +440,50 @@ function EditorHome() {
     }
   };
 
+  const renameProject = async (project: ProjectSummary, name: string) => {
+    if (!token || busyByProject[project.id]) return false;
+    setBusyByProject((prev) => ({ ...prev, [project.id]: 'renaming' }));
+    try {
+      const { project: renamed } = await editorApi.updateProject(
+        token,
+        project.id,
+        {
+          name,
+        }
+      );
+      setProjects((prev) =>
+        prev.map((item) =>
+          item.id === project.id
+            ? {
+                ...item,
+                name: renamed.name,
+                description: renamed.description,
+                updatedAt: renamed.updatedAt,
+              }
+            : item
+        )
+      );
+      setProjectInStore({
+        id: renamed.id,
+        name: renamed.name,
+        description: renamed.description,
+        type: renamed.resourceType,
+        isPublic: renamed.isPublic,
+        starsCount: renamed.starsCount,
+      });
+      return true;
+    } catch (error) {
+      setLoadError(
+        error instanceof Error
+          ? error.message
+          : t('home.card.renameFailed', 'Failed to rename project.')
+      );
+      return false;
+    } finally {
+      setBusyByProject((prev) => ({ ...prev, [project.id]: undefined }));
+    }
+  };
+
   const deleteProject = async (project: ProjectSummary) => {
     if (!token || busyByProject[project.id]) return;
     const confirmed = window.confirm(
@@ -404,8 +548,10 @@ function EditorHome() {
                 key={project.id}
                 project={project}
                 onOpen={openProject}
+                onRename={renameProject}
                 onPublish={publishProject}
                 onDelete={deleteProject}
+                isRenaming={busyByProject[project.id] === 'renaming'}
                 isPublishing={busyByProject[project.id] === 'publishing'}
                 isDeleting={busyByProject[project.id] === 'deleting'}
               />

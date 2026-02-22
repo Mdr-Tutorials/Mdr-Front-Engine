@@ -103,6 +103,21 @@ const normalizeWheelDelta = (event: WheelEvent) => {
   return { x: event.deltaX, y: event.deltaY };
 };
 
+const canConsumeScroll = (
+  element: HTMLElement,
+  deltaX: number,
+  deltaY: number
+) => {
+  const maxScrollLeft = Math.max(0, element.scrollWidth - element.clientWidth);
+  const maxScrollTop = Math.max(0, element.scrollHeight - element.clientHeight);
+  if (maxScrollLeft === 0 && maxScrollTop === 0) return false;
+  const canScrollLeft = deltaX < 0 && element.scrollLeft > 0;
+  const canScrollRight = deltaX > 0 && element.scrollLeft < maxScrollLeft;
+  const canScrollUp = deltaY < 0 && element.scrollTop > 0;
+  const canScrollDown = deltaY > 0 && element.scrollTop < maxScrollTop;
+  return canScrollLeft || canScrollRight || canScrollUp || canScrollDown;
+};
+
 type RouteCanvasDiagnostic = {
   code: string;
   message: string;
@@ -339,6 +354,10 @@ export function BlueprintEditorCanvas({
         applyZoom(zoomRef.current + direction * zoomStepRef.current);
         return;
       }
+      const artboard = target?.closest('.BlueprintEditorCanvasArtboard');
+      if (artboard instanceof HTMLElement && canConsumeScroll(artboard, x, y)) {
+        return;
+      }
       const panX = event.shiftKey ? -y : -x;
       const panY = event.shiftKey ? 0 : -y;
       if (panX === 0 && panY === 0) return;
@@ -510,7 +529,7 @@ export function BlueprintEditorCanvas({
             style={{ transform: `scale(${scale})` }}
           >
             <div
-              className="BlueprintEditorCanvasArtboard relative overflow-hidden border border-black/8 bg-(--color-0) shadow-[0_22px_45px_rgba(0,0,0,0.12)] dark:border-white/10 dark:shadow-[0_24px_46px_rgba(0,0,0,0.45)] **:data-[mir-selected=true]:outline-2 **:data-[mir-selected=true]:outline-offset-2 **:data-[mir-selected=true]:outline-(--color-primary,var(--color-9)) **:data-[mir-missing=true]:outline **:data-[mir-missing=true]:outline-dashed **:data-[mir-missing=true]:outline-[rgba(240,82,82,0.9)] **:data-[mir-missing=true]:outline-offset-2"
+              className="BlueprintEditorCanvasArtboard relative overflow-auto overscroll-contain [scrollbar-gutter:stable_both-edges] border border-black/8 bg-(--color-0) shadow-[0_22px_45px_rgba(0,0,0,0.12)] dark:border-white/10 dark:shadow-[0_24px_46px_rgba(0,0,0,0.45)] **:data-[mir-selected=true]:outline-2 **:data-[mir-selected=true]:outline-offset-2 **:data-[mir-selected=true]:outline-(--color-primary,var(--color-9)) **:data-[mir-missing=true]:outline **:data-[mir-missing=true]:outline-dashed **:data-[mir-missing=true]:outline-[rgba(240,82,82,0.9)] **:data-[mir-missing=true]:outline-offset-2"
               style={{ width: canvasWidth, height: canvasHeight }}
             >
               {hasChildren ? (

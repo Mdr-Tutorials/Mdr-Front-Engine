@@ -99,7 +99,7 @@ export function InspectorNodeCapabilitiesFields() {
                 >
                   <span className="inline-flex h-4 w-4 items-center justify-center text-(--color-9)">
                     {SelectedIconComponent ? (
-                      <SelectedIconComponent size={14} />
+                      <SelectedIconComponent size={14} width={14} height={14} />
                     ) : null}
                   </span>
                   <span className="truncate">
