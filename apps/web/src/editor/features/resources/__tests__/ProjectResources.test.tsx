@@ -214,35 +214,6 @@ describe('ProjectResources', () => {
     ).toContain('mui');
   });
 
-  it('persists package size warning thresholds per project', async () => {
-    renderWithRouter();
-    fireEvent.click(screen.getByRole('button', { name: 'External libs' }));
-    expect(await screen.findByText('External library manager')).toBeTruthy();
-
-    fireEvent.change(
-      screen.getByTestId('external-library-size-threshold-caution'),
-      { target: { value: '650' } }
-    );
-    fireEvent.change(
-      screen.getByTestId('external-library-size-threshold-warning'),
-      { target: { value: '980' } }
-    );
-    fireEvent.change(
-      screen.getByTestId('external-library-size-threshold-critical'),
-      { target: { value: '1450' } }
-    );
-
-    await waitFor(() => {
-      expect(
-        localStorage.getItem(
-          'mdr.resourceManager.external.sizeThresholds.project-001'
-        )
-      ).toBe(
-        JSON.stringify({ cautionKb: 650, warningKb: 980, criticalKb: 1450 })
-      );
-    });
-  });
-
   it('loads npm metadata and caches it for library details', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,

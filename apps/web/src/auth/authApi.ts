@@ -1,9 +1,6 @@
-export type ApiErrorPayload = {
-  error?: string;
-  code?: string;
-  message?: string;
-  details?: unknown;
-};
+import { apiRequest, type ApiErrorPayload, ApiError } from '@/infra/api';
+
+export { ApiError, type ApiErrorPayload };
 
 export type PublicUser = {
   id: string;
@@ -19,63 +16,10 @@ export type AuthResponse = {
   expiresAt: string;
 };
 
-export class ApiError extends Error {
-  status: number;
-  code?: string;
-  details?: unknown;
-
-  constructor(
-    message: string,
-    status: number,
-    code?: string,
-    details?: unknown
-  ) {
-    super(message);
-    this.name = 'ApiError';
-    this.status = status;
-    this.code = code;
-    this.details = details;
-  }
-}
-
-const resolveBaseUrl = () => {
-  const base = (import.meta as ImportMeta & { env?: Record<string, string> })
-    .env?.VITE_API_BASE;
-  if (base && base.trim()) {
-    return base.replace(/\/+$/, '');
-  }
-  return 'http://localhost:8080';
-};
-
-const API_ROOT = `${resolveBaseUrl()}/api`;
-
 const request = async <T>(
   path: string,
   options: RequestInit = {}
-): Promise<T> => {
-  const response = await fetch(`${API_ROOT}${path}`, options);
-  if (response.status === 204) {
-    return undefined as T;
-  }
-  const contentType = response.headers.get('content-type') || '';
-  const isJson = contentType.includes('application/json');
-  const payload = isJson ? await response.json() : await response.text();
-  if (!response.ok) {
-    const apiPayload = payload as ApiErrorPayload;
-    const message =
-      (typeof apiPayload === 'object' && apiPayload?.message) ||
-      response.statusText ||
-      'Request failed.';
-    const code = typeof apiPayload === 'object' ? apiPayload?.error : undefined;
-    throw new ApiError(
-      message,
-      response.status,
-      apiPayload?.code || code,
-      apiPayload?.details
-    );
-  }
-  return payload as T;
-};
+): Promise<T> => apiRequest<T>(path, options);
 
 export const authApi = {
   register: async (data: {

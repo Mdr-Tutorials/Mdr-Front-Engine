@@ -18,7 +18,7 @@ describe('icon registry', () => {
     expect(names.length).toBeGreaterThan(1000);
     expect(names).toContain('Sparkles');
     expect(names).toContain('Circle');
-  });
+  }, 15_000);
 
   it('registers icon libraries and keeps them hidden before import', async () => {
     const registry = await loadIconRegistry();

@@ -11,6 +11,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import type { CodeResourceNode } from './codeTree';
+import { useWindowKeydown } from '@/shortcuts';
 
 export type CodeFileKind =
   | 'ts'
@@ -140,18 +141,20 @@ export function CodeFileTree({
       if (contextMenuRef.current?.contains(event.target as Node)) return;
       setContextMenu(null);
     };
-    const handleEscape = (event: KeyboardEvent) => {
+    window.addEventListener('pointerdown', handlePointerDown);
+    return () => {
+      window.removeEventListener('pointerdown', handlePointerDown);
+    };
+  }, [contextMenu]);
+
+  useWindowKeydown(
+    (event) => {
       if (event.key === 'Escape') {
         setContextMenu(null);
       }
-    };
-    window.addEventListener('pointerdown', handlePointerDown);
-    window.addEventListener('keydown', handleEscape);
-    return () => {
-      window.removeEventListener('pointerdown', handlePointerDown);
-      window.removeEventListener('keydown', handleEscape);
-    };
-  }, [contextMenu]);
+    },
+    { enabled: Boolean(contextMenu) }
+  );
 
   const renderNode = (node: CodeResourceNode, depth = 0): ReactElement => {
     const isFolder = node.type === 'folder';

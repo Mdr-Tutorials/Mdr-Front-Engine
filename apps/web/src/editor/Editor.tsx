@@ -7,6 +7,7 @@ import { mountGraphExecutionBridge } from '@/core/executor/executor';
 import { editorApi } from './editorApi';
 import { useEditorStore } from './store/useEditorStore';
 import { useSettingsStore } from './store/useSettingsStore';
+import { isEditableTarget, useWindowKeydown } from '@/shortcuts';
 
 function Editor() {
   const { projectId } = useParams();
@@ -96,46 +97,33 @@ function Editor() {
 
   useEffect(() => mountGraphExecutionBridge(), []);
 
-  useEffect(() => {
-    if (!projectId) return;
-
-    const isEditableTarget = (target: EventTarget | null) => {
-      if (!(target instanceof HTMLElement)) return false;
-      if (target.isContentEditable) return true;
-      const tagName = target.tagName.toLowerCase();
-      return (
-        tagName === 'input' || tagName === 'textarea' || tagName === 'select'
-      );
-    };
-
-    const routeByDigit: Record<string, string> = {
-      '1': `/editor/project/${projectId}`,
-      '2': `/editor/project/${projectId}/blueprint`,
-      '3': `/editor/project/${projectId}/nodegraph`,
-      '4': `/editor/project/${projectId}/animation`,
-      '5': `/editor/project/${projectId}/component`,
-      '6': `/editor/project/${projectId}/resources`,
-      '7': `/editor/project/${projectId}/test`,
-      '8': `/editor/project/${projectId}/export`,
-      '9': `/editor/project/${projectId}/deployment`,
-    };
-
-    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+  useWindowKeydown(
+    (event) => {
+      if (!projectId) return;
       if (event.defaultPrevented) return;
       if (isEditableTarget(event.target)) return;
       if (!event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
         return;
       }
+      const routeByDigit: Record<string, string> = {
+        '1': `/editor/project/${projectId}`,
+        '2': `/editor/project/${projectId}/blueprint`,
+        '3': `/editor/project/${projectId}/nodegraph`,
+        '4': `/editor/project/${projectId}/animation`,
+        '5': `/editor/project/${projectId}/component`,
+        '6': `/editor/project/${projectId}/resources`,
+        '7': `/editor/project/${projectId}/test`,
+        '8': `/editor/project/${projectId}/export`,
+        '9': `/editor/project/${projectId}/deployment`,
+      };
       const nextPath = routeByDigit[event.key];
       if (!nextPath) return;
       if (location.pathname === nextPath) return;
       event.preventDefault();
       navigate(nextPath);
-    };
-
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [location.pathname, navigate, projectId]);
+    },
+    { enabled: Boolean(projectId) }
+  );
 
   return (
     <div className="flex min-h-screen max-h-screen flex-row bg-[linear-gradient(120deg,var(--color-0)_20%,var(--color-1)_100%)]">

@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { DndContext, DragOverlay } from '@dnd-kit/core';
 import { BlueprintEditorAddressBar } from './BlueprintEditorAddressBar';
 import { BlueprintEditorCanvas } from './BlueprintEditorCanvas';
@@ -9,6 +8,7 @@ import { BlueprintEditorSaveIndicator } from './BlueprintEditorSaveIndicator';
 import { BlueprintEditorSidebar } from './BlueprintEditorSidebar';
 import { useExternalLibraryRuntime } from './useExternalLibraryRuntime';
 import { BlueprintEditorViewportBar } from './BlueprintEditorViewportBar';
+import { useWindowKeydown } from '@/shortcuts';
 
 export { createNodeFromPaletteItem } from './BlueprintEditor.palette';
 export { getTreeDropPlacement } from './BlueprintEditor.tree';
@@ -19,6 +19,7 @@ function BlueprintEditor() {
     externalLibraryStates,
     externalLibraryOptions,
     isExternalLibraryLoading,
+    reloadExternalLibraries,
     retryExternalLibrary,
   } = useExternalLibraryRuntime();
   const {
@@ -32,33 +33,25 @@ function BlueprintEditor() {
     viewportBar,
   } = useBlueprintEditorController();
 
-  useEffect(() => {
-    const onKeyDown = (event: globalThis.KeyboardEvent) => {
-      if (event.defaultPrevented) return;
-      if (!event.ctrlKey || !event.altKey || event.metaKey) return;
-      const key = event.key.toLowerCase();
-      if (key === 'j') {
-        event.preventDefault();
-        sidebar.onToggleCollapse();
-        return;
-      }
-      if (key === 'k') {
-        event.preventDefault();
-        componentTree.onToggleCollapse();
-        return;
-      }
-      if (key === 'l') {
-        event.preventDefault();
-        inspector.onToggleCollapse();
-      }
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [
-    componentTree.onToggleCollapse,
-    inspector.onToggleCollapse,
-    sidebar.onToggleCollapse,
-  ]);
+  useWindowKeydown((event) => {
+    if (event.defaultPrevented) return;
+    if (!event.ctrlKey || !event.altKey || event.metaKey) return;
+    const key = event.key.toLowerCase();
+    if (key === 'j') {
+      event.preventDefault();
+      sidebar.onToggleCollapse();
+      return;
+    }
+    if (key === 'k') {
+      event.preventDefault();
+      componentTree.onToggleCollapse();
+      return;
+    }
+    if (key === 'l') {
+      event.preventDefault();
+      inspector.onToggleCollapse();
+    }
+  });
 
   return (
     <div className="relative flex h-full min-h-screen flex-col text-(--color-10)">
@@ -100,6 +93,7 @@ function BlueprintEditor() {
             externalLibraryStates={externalLibraryStates}
             externalLibraryOptions={externalLibraryOptions}
             isExternalLibraryLoading={isExternalLibraryLoading}
+            onReloadExternalLibraries={reloadExternalLibraries}
             onRetryExternalLibrary={retryExternalLibrary}
             onToggleCollapse={sidebar.onToggleCollapse}
             onToggleGroup={sidebar.onToggleGroup}

@@ -12,6 +12,7 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  RotateCw,
   Search,
   X,
 } from 'lucide-react';
@@ -41,6 +42,7 @@ type BlueprintEditorSidebarProps = {
   externalLibraryStates?: ExternalLibraryRuntimeState[];
   externalLibraryOptions?: Array<{ id: string; label: string }>;
   isExternalLibraryLoading: boolean;
+  onReloadExternalLibraries?: () => Promise<void> | void;
   onRetryExternalLibrary?: (libraryId: string) => Promise<void> | void;
   onToggleCollapse: () => void;
   onToggleGroup: (groupId: string) => void;
@@ -197,6 +199,7 @@ export function BlueprintEditorSidebar({
   externalLibraryStates = [],
   externalLibraryOptions = [],
   isExternalLibraryLoading,
+  onReloadExternalLibraries,
   onRetryExternalLibrary,
   onToggleCollapse,
   onToggleGroup,
@@ -493,8 +496,20 @@ export function BlueprintEditorSidebar({
         !isExternalLibraryLoading &&
         !hasExternalItems && (
           <div className="px-3 pb-2">
-            <div className="rounded-md border border-black/8 bg-black/[0.02] px-2 py-1.5 text-[10px] text-(--color-7) dark:border-white/14 dark:bg-white/4">
-              No external components available.
+            <div className="flex items-center justify-between gap-2 rounded-md border border-black/8 bg-black/[0.02] px-2 py-1.5 text-[10px] text-(--color-7) dark:border-white/14 dark:bg-white/4">
+              <span>No external components available.</span>
+              <button
+                type="button"
+                className="inline-flex h-4 w-4 items-center justify-center rounded border border-black/10 text-(--color-7) transition-colors hover:border-black/20 hover:text-(--color-9) disabled:cursor-default disabled:opacity-40 dark:border-white/16 dark:hover:border-white/24"
+                onClick={() => {
+                  void onReloadExternalLibraries?.();
+                }}
+                aria-label="Reload external components"
+                title="Reload external components"
+                disabled={!onReloadExternalLibraries}
+              >
+                <RotateCw size={10} />
+              </button>
             </div>
           </div>
         )}

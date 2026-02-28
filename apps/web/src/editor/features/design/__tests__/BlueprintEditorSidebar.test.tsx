@@ -15,6 +15,7 @@ vi.mock('lucide-react', () => ({
   ChevronDown: () => null,
   ChevronLeft: () => null,
   ChevronRight: () => null,
+  RotateCw: () => null,
   Search: () => null,
   X: () => null,
 }));
@@ -213,5 +214,35 @@ describe('BlueprintEditorSidebar', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Material UI' }));
     fireEvent.click(screen.getByRole('button', { name: 'Retry' }));
     expect(onRetryExternalLibrary).toHaveBeenCalledWith('mui');
+  });
+
+  it('shows reload button when external library tab has no components', () => {
+    const onReloadExternalLibraries = vi.fn();
+    render(
+      <BlueprintEditorSidebar
+        isCollapsed={false}
+        collapsedGroups={{}}
+        expandedPreviews={{}}
+        sizeSelections={{}}
+        statusSelections={{}}
+        externalLibraryOptions={[{ id: 'mui', label: 'Material UI' }]}
+        onReloadExternalLibraries={onReloadExternalLibraries}
+        onToggleCollapse={() => {}}
+        onToggleGroup={() => {}}
+        onTogglePreview={() => {}}
+        onPreviewKeyDown={() => {}}
+        onSizeSelect={() => {}}
+        onStatusSelect={() => {}}
+        onStatusCycleStart={() => {}}
+        onStatusCycleStop={() => {}}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Material UI' }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Reload external components' })
+    );
+
+    expect(onReloadExternalLibraries).toHaveBeenCalled();
   });
 });

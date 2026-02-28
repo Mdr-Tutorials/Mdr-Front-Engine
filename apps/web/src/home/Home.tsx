@@ -1,5 +1,5 @@
-﻿import { useTranslation } from 'react-i18next';
-import { Footprints, Github, Languages, Moon, Sun } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Github, Languages, Moon, Sun } from 'lucide-react';
 import { MdrAvatar, MdrButtonLink, MdrLink, MdrNav } from '@mdr/ui';
 import { IconMdr } from '@/components/icons/IconMdr';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
@@ -140,14 +140,12 @@ function Home() {
         </div>
       </div>
 
-      <footer className="mt-auto flex w-full flex-row items-center justify-between px-10 py-4">
-        <div className="flex items-center gap-2 text-[1em] text-(--color-7)">
-          <IconMdr size={16} color={logoColor} />
-          <span>{t('footer.copy')}</span>
-        </div>
-        <div className="flex items-center gap-2 text-[1em] text-(--color-7)">
-          <Footprints size={16} />
-          <span>{t('footer.placeholder')}</span>
+      <footer className="mt-auto w-full px-2 pb-5 pt-14">
+        <div className="flex items-center justify-center px-6 py-4 text-sm text-(--color-7) sm:px-7">
+          <div className="flex items-center gap-2">
+            <IconMdr size={16} color={logoColor} />
+            <span>{t('footer.copy')}</span>
+          </div>
         </div>
       </footer>
     </div>

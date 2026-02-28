@@ -20,6 +20,7 @@ import NewResourceModal from './features/newfile/NewResourceModal';
 import { editorApi, type ProjectSummary } from './editorApi';
 import { useAuthStore } from '@/auth/useAuthStore';
 import { useEditorStore } from './store/useEditorStore';
+import { hasModifierKey, useWindowKeydown } from '@/shortcuts';
 
 function EditorTipsRandom() {
   const { t } = useTranslation('editor');
@@ -315,20 +316,16 @@ function EditorHome() {
   const setProjectInStore = useEditorStore((state) => state.setProject);
   const removeProjectInStore = useEditorStore((state) => state.removeProject);
 
-  useEffect(() => {
-    if (isResourceModalOpen || isExitModalOpen) return;
-    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+  useWindowKeydown(
+    (event) => {
       if (event.defaultPrevented) return;
       if (event.key !== 'Escape') return;
-      if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) {
-        return;
-      }
+      if (hasModifierKey(event)) return;
       event.preventDefault();
       setExitModalOpen(true);
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [isResourceModalOpen, isExitModalOpen]);
+    },
+    { enabled: !isResourceModalOpen && !isExitModalOpen }
+  );
 
   useEffect(() => {
     if (!token) {

@@ -23,6 +23,25 @@ export const useExternalLibraryRuntime = () => {
     RetryExternalLibrary | undefined
   >(undefined);
   const externalModuleRef = useRef<ExternalModule | null>(null);
+  const reloadExternalLibraries = async () => {
+    const ensureWithModule = async (mod: ExternalModule) => {
+      setExternalLibraryOptions(mod.getConfiguredExternalLibraries());
+      await mod.ensureConfiguredExternalLibraries();
+    };
+
+    if (externalModuleRef.current) {
+      await ensureWithModule(externalModuleRef.current);
+      return;
+    }
+
+    try {
+      const mod = await import('./blueprint/external');
+      externalModuleRef.current = mod;
+      await ensureWithModule(mod);
+    } catch (error) {
+      console.warn('[blueprint] failed to reload external runtime', error);
+    }
+  };
 
   useEffect(() => {
     let disposed = false;
@@ -108,6 +127,7 @@ export const useExternalLibraryRuntime = () => {
     externalLibraryStates,
     externalLibraryOptions,
     isExternalLibraryLoading,
+    reloadExternalLibraries,
     retryExternalLibrary,
   };
 };

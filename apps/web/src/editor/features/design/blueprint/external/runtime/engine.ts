@@ -14,14 +14,14 @@ import type {
   ExternalLibraryProfile,
 } from './types';
 
-const loadPromises = new Map<string, Promise<ExternalLibraryDiagnostic[]>>();
+const inFlightEnsures = new Map<string, Promise<ExternalLibraryDiagnostic[]>>();
 
 export const ensureExternalLibrary = async (
   profile: ExternalLibraryProfile
 ): Promise<ExternalLibraryDiagnostic[]> => {
   const descriptor = profile.descriptor();
   const cacheKey = descriptor.libraryId;
-  const current = loadPromises.get(cacheKey);
+  const current = inFlightEnsures.get(cacheKey);
   if (current) return current;
 
   const promise = (async () => {
@@ -80,12 +80,11 @@ export const ensureExternalLibrary = async (
       });
     }
 
-    if (diagnostics.some((item) => item.level === 'error')) {
-      loadPromises.delete(cacheKey);
-    }
     return diagnostics;
-  })();
+  })().finally(() => {
+    inFlightEnsures.delete(cacheKey);
+  });
 
-  loadPromises.set(cacheKey, promise);
+  inFlightEnsures.set(cacheKey, promise);
   return promise;
 };

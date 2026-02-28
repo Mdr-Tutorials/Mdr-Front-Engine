@@ -17,6 +17,7 @@ import {
   resolveIconRef,
   subscribeIconRegistry,
 } from '@/mir/renderer/iconRegistry';
+import { useWindowKeydown } from '@/shortcuts';
 
 type IconPickerModalProps = {
   open: boolean;
@@ -140,17 +141,15 @@ export function IconPickerModal({
     setHeroiconsVariant(fallback.variant);
   }, [providerOptions, providerSelectValue]);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKeyDown = (event: KeyboardEvent) => {
+  useWindowKeydown(
+    (event) => {
       if (event.key === 'Escape') {
         event.preventDefault();
         onClose();
       }
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [onClose, open]);
+    },
+    { enabled: open }
+  );
 
   const providerState = useMemo(
     () => getIconProviderState(providerId),

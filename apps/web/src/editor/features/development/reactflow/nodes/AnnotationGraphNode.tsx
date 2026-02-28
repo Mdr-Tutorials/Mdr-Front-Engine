@@ -12,6 +12,7 @@ import { createPortal } from 'react-dom';
 import { estimateStickyNoteSize, type GraphNodeData } from '../graphNodeShared';
 import type { NodeI18n } from './nodeI18n';
 import { tNode } from './nodeI18n';
+import { isPrimaryShortcut, useWindowKeydown } from '@/shortcuts';
 
 type Props = {
   id: string;
@@ -486,22 +487,20 @@ const StickyNoteEditor = ({ id, nodeData, selected, t }: Props) => {
     setIsModalOpen(false);
   }, [content, draftContent, id, nodeData]);
 
-  useEffect(() => {
-    if (!isModalOpen || typeof window === 'undefined') return;
-    const onWindowKeyDown = (event: KeyboardEvent) => {
+  useWindowKeydown(
+    (event) => {
       if (event.key === 'Escape') {
         event.preventDefault();
         closeEditor();
         return;
       }
-      if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+      if (isPrimaryShortcut(event) && event.key === 'Enter') {
         event.preventDefault();
         saveEditor();
       }
-    };
-    window.addEventListener('keydown', onWindowKeyDown);
-    return () => window.removeEventListener('keydown', onWindowKeyDown);
-  }, [closeEditor, isModalOpen, saveEditor]);
+    },
+    { enabled: isModalOpen }
+  );
 
   const noteContainerClass = isMinimalTheme
     ? `relative overflow-visible ${theme.text}`

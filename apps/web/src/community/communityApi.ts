@@ -1,4 +1,4 @@
-import { ApiError } from '@/auth/authApi';
+import { apiRequest } from '@/infra/api';
 
 export type CommunityResourceType = 'project' | 'component' | 'nodegraph';
 
@@ -36,53 +36,12 @@ type ListProjectsOptions = {
   pageSize?: number;
 };
 
-const resolveBaseUrl = () => {
-  const base = (import.meta as ImportMeta & { env?: Record<string, string> })
-    .env?.VITE_API_BASE;
-  if (base && base.trim()) {
-    return base.replace(/\/+$/, '');
-  }
-  return 'http://localhost:8080';
-};
+const JSON_HEADERS = {
+  'Content-Type': 'application/json',
+} as const;
 
-const API_ROOT = `${resolveBaseUrl()}/api`;
-
-const request = async <T>(path: string): Promise<T> => {
-  const response = await fetch(`${API_ROOT}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  if (response.status === 204) {
-    return undefined as T;
-  }
-  const contentType = response.headers.get('content-type') || '';
-  const isJson = contentType.includes('application/json');
-  const payload = isJson ? await response.json() : await response.text();
-  if (!response.ok) {
-    const message =
-      typeof payload === 'object' && payload && 'message' in payload
-        ? String((payload as { message?: string }).message || '')
-        : response.statusText || 'Request failed.';
-    const code =
-      typeof payload === 'object' && payload && 'code' in payload
-        ? String((payload as { code?: string }).code || '')
-        : typeof payload === 'object' && payload && 'error' in payload
-          ? String((payload as { error?: string }).error || '')
-          : undefined;
-    const details =
-      typeof payload === 'object' && payload && 'details' in payload
-        ? (payload as { details?: unknown }).details
-        : undefined;
-    throw new ApiError(
-      message || 'Request failed.',
-      response.status,
-      code,
-      details
-    );
-  }
-  return payload as T;
-};
+const request = async <T>(path: string): Promise<T> =>
+  apiRequest<T>(path, { defaultHeaders: JSON_HEADERS });
 
 const buildListQuery = (options: ListProjectsOptions) => {
   const params = new URLSearchParams();

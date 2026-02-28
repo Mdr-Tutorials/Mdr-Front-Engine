@@ -876,11 +876,9 @@ export function ExternalLibraryManager({
         modeOptions={MODE_OPTIONS}
         quickLibraryIds={QUICK_LIBRARY_IDS}
         libraryCatalog={LIBRARY_CATALOG}
-        sizeThresholds={packageSizeThresholds}
         onSearchInputChange={setSearchInput}
         onModeChange={setGlobalMode}
         onQuickLibraryAdd={addLibrary}
-        onSizeThresholdChange={updatePackageSizeThreshold}
       />
       <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] xl:items-start">
         <ExternalLibraryListPanel

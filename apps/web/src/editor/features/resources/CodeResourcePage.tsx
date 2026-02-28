@@ -5,6 +5,7 @@ import { javascript } from '@codemirror/lang-javascript';
 import { useParams } from 'react-router';
 import { Save } from 'lucide-react';
 import { CodeFileTree, type CodeFileKind } from './CodeFileTree';
+import { isPrimaryShortcut, useWindowKeydown } from '@/shortcuts';
 import {
   createCodeFile,
   createCodeFolder,
@@ -246,17 +247,13 @@ export function CodeResourcePage({ embedded = false }: CodeResourcePageProps) {
     persistTree(nextTree);
   };
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (!(event.ctrlKey || event.metaKey)) return;
-      if (event.shiftKey || event.altKey) return;
-      if (event.key.toLowerCase() !== 's') return;
-      event.preventDefault();
-      handleSave();
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [editorValue, selectedFile, tree]);
+  useWindowKeydown((event) => {
+    if (!isPrimaryShortcut(event)) return;
+    if (event.shiftKey || event.altKey) return;
+    if (event.key.toLowerCase() !== 's') return;
+    event.preventDefault();
+    handleSave();
+  });
 
   const shellClassName = embedded
     ? 'grid gap-4'
