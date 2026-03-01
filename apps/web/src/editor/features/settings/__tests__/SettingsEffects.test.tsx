@@ -1,6 +1,6 @@
 import { act, render, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { SettingsEffects } from '../SettingsEffects';
+import { SettingsEffects } from '@/editor/features/settings/SettingsEffects';
 import { useAuthStore } from '@/auth/useAuthStore';
 import { editorApi } from '@/editor/editorApi';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';

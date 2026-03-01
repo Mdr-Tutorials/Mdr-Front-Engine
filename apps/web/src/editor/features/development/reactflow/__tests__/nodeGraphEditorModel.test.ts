@@ -1,5 +1,5 @@
 import type { Edge, Node } from '@xyflow/react';
-import type { GraphNodeData } from '../GraphNode';
+import type { GraphNodeData } from '@/editor/features/development/reactflow/GraphNode';
 import {
   applyNodeGraphEditorStateToGraphs,
   buildNodeGraphEditorState,
@@ -7,7 +7,7 @@ import {
   normalizeGraphDocuments,
   serializeGraphsForMirLogic,
   type ProjectGraphSnapshot,
-} from '../nodeGraphEditorModel';
+} from '@/editor/features/development/reactflow/nodeGraphEditorModel';
 
 const createProcessNode = (
   id: string,

@@ -16,6 +16,7 @@ import {
   type CommunityProjectSummary,
   type CommunityResourceType,
 } from './communityApi';
+import { isAbortError } from '@/infra/api';
 
 type ResourceFilter = CommunityResourceType | 'all';
 type SortType = 'latest' | 'popular';
@@ -56,23 +57,31 @@ export function CommunityPage() {
 
   useEffect(() => {
     let cancelled = false;
+    const controller =
+      typeof AbortController === 'function' ? new AbortController() : null;
+    const requestOptions: RequestInit = controller
+      ? { signal: controller.signal }
+      : {};
     setLoading(true);
     setError(null);
 
     communityApi
-      .listProjects({
-        keyword: normalizedKeyword,
-        resourceType,
-        sort,
-        page,
-        pageSize: PAGE_SIZE,
-      })
+      .listProjects(
+        {
+          keyword: normalizedKeyword,
+          resourceType,
+          sort,
+          page,
+          pageSize: PAGE_SIZE,
+        },
+        requestOptions
+      )
       .then((payload) => {
         if (cancelled) return;
         setProjects(payload.projects);
       })
       .catch((requestError: unknown) => {
-        if (cancelled) return;
+        if (cancelled || isAbortError(requestError)) return;
         setError(
           requestError instanceof Error
             ? requestError.message
@@ -86,6 +95,7 @@ export function CommunityPage() {
 
     return () => {
       cancelled = true;
+      controller?.abort();
     };
   }, [normalizedKeyword, page, resourceType, sort, t]);
 

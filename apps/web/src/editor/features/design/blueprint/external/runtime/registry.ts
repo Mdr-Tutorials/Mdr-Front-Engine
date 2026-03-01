@@ -5,7 +5,7 @@ import {
 import {
   registerComponentGroup,
   unregisterComponentGroup,
-} from '../../registry';
+} from '@/editor/features/design/blueprint/registry';
 import {
   resetExternalRuntimeMetaStore,
   setExternalRuntimeMeta,
@@ -13,7 +13,7 @@ import {
 import type {
   ComponentGroup,
   ComponentPreviewItem,
-} from '../../../BlueprintEditor.types';
+} from '@/editor/features/design/BlueprintEditor.types';
 import type {
   CanonicalExternalComponent,
   ExternalCanonicalGroup,

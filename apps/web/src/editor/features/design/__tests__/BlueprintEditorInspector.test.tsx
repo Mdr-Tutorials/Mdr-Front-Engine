@@ -1,13 +1,13 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { BlueprintEditorInspector } from '../BlueprintEditorInspector';
-import { resetInspectorExpansionPersistence } from '../BlueprintEditorInspector.controller';
-import { resetLayoutPanelExpansionPersistence } from '../inspector/panels/LayoutPanel';
+import { BlueprintEditorInspector } from '@/editor/features/design/BlueprintEditorInspector';
+import { resetInspectorExpansionPersistence } from '@/editor/features/design/BlueprintEditorInspector.controller';
+import { resetLayoutPanelExpansionPersistence } from '@/editor/features/design/inspector/panels/LayoutPanel';
 import {
   resetExternalRuntimeMetaStore,
   setExternalRuntimeMeta,
-} from '../blueprint/external/runtime/metaStore';
+} from '@/editor/features/design/blueprint/external/runtime/metaStore';
 import {
   DEFAULT_BLUEPRINT_STATE,
   useEditorStore,

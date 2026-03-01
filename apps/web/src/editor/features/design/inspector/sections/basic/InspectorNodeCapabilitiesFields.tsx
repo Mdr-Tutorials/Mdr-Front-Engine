@@ -1,8 +1,8 @@
 import { Code } from 'lucide-react';
-import { InspectorRow } from '../../components/InspectorRow';
-import { LinkBasicsFields } from '../../components/LinkBasicsFields';
-import { ClassProtocolEditor } from '../../classProtocol/ClassProtocolEditor';
-import { useInspectorSectionContext } from '../InspectorSectionContext';
+import { InspectorRow } from '@/editor/features/design/inspector/components/InspectorRow';
+import { LinkBasicsFields } from '@/editor/features/design/inspector/components/LinkBasicsFields';
+import { ClassProtocolEditor } from '@/editor/features/design/inspector/classProtocol/ClassProtocolEditor';
+import { useInspectorSectionContext } from '@/editor/features/design/inspector/sections/InspectorSectionContext';
 
 export function InspectorNodeCapabilitiesFields() {
   const {

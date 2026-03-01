@@ -4,6 +4,7 @@ import { css } from '@codemirror/lang-css';
 import { javascript } from '@codemirror/lang-javascript';
 import { useParams } from 'react-router';
 import { Save } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { CodeFileTree, type CodeFileKind } from './CodeFileTree';
 import { isPrimaryShortcut, useWindowKeydown } from '@/shortcuts';
 import {
@@ -119,6 +120,7 @@ const resolveLanguageExtensionByName = (name: string) => {
 };
 
 export function CodeResourcePage({ embedded = false }: CodeResourcePageProps) {
+  const { t } = useTranslation('editor');
   const { projectId } = useParams();
   const [tree, setTree] = useState<CodeResourceNode>(() =>
     readCodeTree(projectId)
@@ -263,10 +265,10 @@ export function CodeResourcePage({ embedded = false }: CodeResourcePageProps) {
     <section className={shellClassName}>
       <article className="rounded-2xl border border-black/8 bg-(--color-0) p-5">
         <h2 className="text-base font-semibold text-(--color-9)">
-          Code workspace
+          {t('resourceManager.code.header.title')}
         </h2>
         <p className="mt-1 text-sm text-(--color-7)">
-          Manage scripts, styles and shader resources in one place.
+          {t('resourceManager.code.header.description')}
         </p>
       </article>
 
@@ -297,15 +299,18 @@ export function CodeResourcePage({ embedded = false }: CodeResourcePageProps) {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <p className="text-[11px] uppercase tracking-[0.08em] text-(--color-6)">
-                Selected
+                {t('resourceManager.code.labels.selected')}
               </p>
               <h3 className="text-sm font-semibold text-(--color-9)">
-                {selectedNode.type === 'file' ? selectedNode.name : 'Folder'}
+                {selectedNode.type === 'file'
+                  ? selectedNode.name
+                  : t('resourceManager.code.labels.folder')}
               </h3>
               <p className="text-xs text-(--color-7)">{selectedNode.path}</p>
             </div>
             <div className="text-xs text-(--color-7)">
-              Files: <strong>{allFiles.length}</strong>
+              {t('resourceManager.code.labels.files')}:{' '}
+              <strong>{allFiles.length}</strong>
             </div>
           </div>
 
@@ -313,9 +318,10 @@ export function CodeResourcePage({ embedded = false }: CodeResourcePageProps) {
             <>
               <div className="flex items-center justify-between gap-2">
                 <p className="text-xs text-(--color-7)">
-                  MIME:{' '}
+                  {t('resourceManager.code.labels.mime')}:{' '}
                   {selectedFile.mime || inferMimeByName(selectedFile.name)} |
-                  Size: {selectedFileSize} bytes
+                  {t('resourceManager.code.labels.size')}: {selectedFileSize}{' '}
+                  {t('resourceManager.code.labels.bytes')}
                 </p>
                 <button
                   type="button"
@@ -324,7 +330,7 @@ export function CodeResourcePage({ embedded = false }: CodeResourcePageProps) {
                   disabled={!isDirty}
                 >
                   <Save size={12} />
-                  Save
+                  {t('resourceManager.code.actions.save')}
                 </button>
               </div>
               <CodeMirror
@@ -341,7 +347,7 @@ export function CodeResourcePage({ embedded = false }: CodeResourcePageProps) {
             </>
           ) : (
             <div className="rounded-lg border border-black/10 bg-black/[0.02] p-4 text-sm text-(--color-7)">
-              Select a code file from the tree to edit its content.
+              {t('resourceManager.code.empty')}
             </div>
           )}
         </article>

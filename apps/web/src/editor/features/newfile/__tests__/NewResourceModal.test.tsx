@@ -1,6 +1,6 @@
 ﻿import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import NewResourceModal from '../NewResourceModal';
+import NewResourceModal from '@/editor/features/newfile/NewResourceModal';
 import { resetEditorStore } from '@/test-utils/editorStore';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 

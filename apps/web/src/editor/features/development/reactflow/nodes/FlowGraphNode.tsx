@@ -3,8 +3,8 @@ import {
   renderTarget,
   resolveMultiplicity,
   type GraphNodeData,
-} from '../graphNodeShared';
-import { getNodePortHandle } from '../nodeCatalog';
+} from '@/editor/features/development/reactflow/graphNodeShared';
+import { getNodePortHandle } from '@/editor/features/development/reactflow/nodeCatalog';
 import { buildNodeContainerClass } from './nodePrimitives';
 import type { NodeI18n } from './nodeI18n';
 import { tNode } from './nodeI18n';

@@ -4,6 +4,7 @@ import type {
   ExternalLibraryRuntimeState,
 } from './blueprint/external';
 import { externalLibraryConfigUpdatedEvent } from './blueprint/external';
+import { isAbortError } from '@/infra/api';
 
 type RetryExternalLibrary = (libraryId: string) => Promise<void>;
 type ExternalModule = typeof import('./blueprint/external');
@@ -23,10 +24,26 @@ export const useExternalLibraryRuntime = () => {
     RetryExternalLibrary | undefined
   >(undefined);
   const externalModuleRef = useRef<ExternalModule | null>(null);
+  const reloadControllerRef = useRef<AbortController | null>(null);
+  const configUpdateControllerRef = useRef<AbortController | null>(null);
+  const createAbortController = () =>
+    typeof AbortController === 'function' ? new AbortController() : null;
   const reloadExternalLibraries = async () => {
     const ensureWithModule = async (mod: ExternalModule) => {
       setExternalLibraryOptions(mod.getConfiguredExternalLibraries());
-      await mod.ensureConfiguredExternalLibraries();
+      reloadControllerRef.current?.abort();
+      const controller = createAbortController();
+      reloadControllerRef.current = controller;
+      try {
+        await mod.ensureConfiguredExternalLibraries(
+          undefined,
+          controller ? { signal: controller.signal } : {}
+        );
+      } finally {
+        if (reloadControllerRef.current === controller) {
+          reloadControllerRef.current = null;
+        }
+      }
     };
 
     if (externalModuleRef.current) {
@@ -39,12 +56,14 @@ export const useExternalLibraryRuntime = () => {
       externalModuleRef.current = mod;
       await ensureWithModule(mod);
     } catch (error) {
+      if (isAbortError(error)) return;
       console.warn('[blueprint] failed to reload external runtime', error);
     }
   };
 
   useEffect(() => {
     let disposed = false;
+    const controller = createAbortController();
     let unsubscribeDiagnostics: (() => void) | undefined;
     let unsubscribeLoading: (() => void) | undefined;
     let unsubscribeStates: (() => void) | undefined;
@@ -75,14 +94,31 @@ export const useExternalLibraryRuntime = () => {
         setExternalDiagnostics(mod.getExternalLibraryDiagnostics());
         setExternalLibraryLoading(mod.getExternalLibraryLoadingState());
         setExternalLibraryStates(mod.getExternalLibraryStates());
-        void mod.ensureConfiguredExternalLibraries();
+        void mod
+          .ensureConfiguredExternalLibraries(
+            undefined,
+            controller ? { signal: controller.signal } : {}
+          )
+          .catch((error) => {
+            if (isAbortError(error)) return;
+            console.warn(
+              '[blueprint] failed to preload configured external runtime',
+              error
+            );
+          });
       })
       .catch((error) => {
+        if (isAbortError(error)) return;
         console.warn('[blueprint] failed to preload external runtime', error);
       });
 
     return () => {
       disposed = true;
+      controller?.abort();
+      reloadControllerRef.current?.abort();
+      reloadControllerRef.current = null;
+      configUpdateControllerRef.current?.abort();
+      configUpdateControllerRef.current = null;
       unsubscribeDiagnostics?.();
       unsubscribeLoading?.();
       unsubscribeStates?.();
@@ -97,9 +133,23 @@ export const useExternalLibraryRuntime = () => {
         setExternalLibraryOptions(
           externalModuleRef.current.getConfiguredExternalLibraries()
         );
-        void externalModuleRef.current.ensureConfiguredExternalLibraries(
-          nextIds
-        );
+        configUpdateControllerRef.current?.abort();
+        const controller = createAbortController();
+        configUpdateControllerRef.current = controller;
+        void externalModuleRef.current
+          .ensureConfiguredExternalLibraries(
+            nextIds,
+            controller ? { signal: controller.signal } : {}
+          )
+          .catch((error) => {
+            if (isAbortError(error)) return;
+            console.warn('[blueprint] failed to sync external runtime', error);
+          })
+          .finally(() => {
+            if (configUpdateControllerRef.current === controller) {
+              configUpdateControllerRef.current = null;
+            }
+          });
         return;
       }
       setExternalLibraryOptions(
@@ -115,6 +165,8 @@ export const useExternalLibraryRuntime = () => {
       handleConfigUpdated
     );
     return () => {
+      configUpdateControllerRef.current?.abort();
+      configUpdateControllerRef.current = null;
       window.removeEventListener(
         externalLibraryConfigUpdatedEvent,
         handleConfigUpdated

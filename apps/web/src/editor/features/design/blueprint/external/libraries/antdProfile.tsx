@@ -1,19 +1,19 @@
 import React from 'react';
 import type { ComponentAdapter } from '@/mir/renderer/registry';
-import type { ComponentPreviewItem } from '../../../BlueprintEditor.types';
+import type { ComponentPreviewItem } from '@/editor/features/design/BlueprintEditor.types';
 import type {
   CanonicalExternalComponent,
   ExternalCanonicalGroup,
   ExternalLibraryDescriptor,
   ExternalLibraryProfile,
-} from '../runtime/types';
+} from '@/editor/features/design/blueprint/external/runtime/types';
 import { antdLibraryManifest } from './antdManifest';
 import {
   getValueByPath,
   isRenderableComponent,
   toKebabCase,
   toPascalCase,
-} from '../runtime/utils';
+} from '@/editor/features/design/blueprint/external/runtime/utils';
 
 type AntdModule = Record<string, unknown> & {
   Button?: React.ElementType;

@@ -2,7 +2,8 @@ import type {
   AnimationTimeline,
   AnimationTrack,
 } from '@/core/types/engine.types';
-import { getTrackTitle } from '../animationEditorUi';
+import { useTranslation } from 'react-i18next';
+import { getTrackTitle } from '@/editor/features/animation/animationEditorUi';
 
 export type AnimationEditorTrackRef = {
   timelineId: string;
@@ -32,10 +33,10 @@ type AnimationEditorTimelinePanelProps = {
 const clampMs = (value: number, durationMs: number) =>
   Math.min(durationMs, Math.max(0, Math.round(value)));
 
-const resolveTimelineName = (timeline: AnimationTimeline, index: number) =>
-  timeline.name.trim() || `Timeline ${index + 1}`;
-
-const buildTrackRows = (timelines: AnimationTimeline[]): TrackRow[] =>
+const buildTrackRows = (
+  timelines: AnimationTimeline[],
+  resolveTimelineName: (timeline: AnimationTimeline, index: number) => string
+): TrackRow[] =>
   timelines.flatMap((timeline, index) => {
     const timelineName = resolveTimelineName(timeline, index);
     const trackRows = timeline.bindings.flatMap((binding) =>
@@ -72,19 +73,27 @@ export const AnimationEditorTimelinePanel = ({
   onSelectTimeline,
   onSelectTrack,
 }: AnimationEditorTimelinePanelProps) => {
+  const { t } = useTranslation('editor');
   const maxDurationMs = Math.max(
     1,
     ...timelines.map((timeline) => timeline.durationMs)
   );
   const clampedCursor = clampMs(cursorMs, maxDurationMs);
-  const rows = buildTrackRows(timelines);
+  const rows = buildTrackRows(
+    timelines,
+    (timeline, index) =>
+      timeline.name.trim() ||
+      t('animationEditor.common.timelineIndexed', {
+        index: index + 1,
+      })
+  );
   const ticks = 8;
 
   return (
     <section className="flex h-[var(--anim-timeline-height)] shrink-0 flex-col border-t border-black/8 bg-[rgb(var(--color-0-rgb)_/_0.92)] backdrop-blur-sm">
       <div className="grid h-8 grid-cols-[260px_1fr] items-center border-b border-black/8">
         <div className="px-3 text-[11px] font-medium uppercase tracking-[0.14em] text-(--color-6)">
-          Timeline Lanes
+          {t('animationEditor.timelinePanel.lanes')}
         </div>
         <div className="relative h-full">
           {Array.from({ length: ticks + 1 }).map((_, index) => {
@@ -113,7 +122,9 @@ export const AnimationEditorTimelinePanel = ({
 
       <div className="min-h-0 flex-1 overflow-auto">
         {timelines.length === 0 ? (
-          <div className="p-6 text-sm text-(--color-6)">No timeline.</div>
+          <div className="p-6 text-sm text-(--color-6)">
+            {t('animationEditor.timelinePanel.noTimeline')}
+          </div>
         ) : (
           <div className="relative min-h-0">
             <div
@@ -154,7 +165,9 @@ export const AnimationEditorTimelinePanel = ({
                       {row.bindingLabel}
                     </span>
                     <span className="min-w-0 flex-1 truncate font-medium">
-                      {row.track ? getTrackTitle(row.track) : 'No tracks'}
+                      {row.track
+                        ? getTrackTitle(row.track)
+                        : t('animationEditor.timelinePanel.noTracks')}
                     </span>
                   </button>
 
@@ -205,7 +218,12 @@ export const AnimationEditorTimelinePanel = ({
                                   onSelectTrack?.(row.ref);
                                 }
                               }}
-                              aria-label="Keyframe"
+                              aria-label={t(
+                                'animationEditor.timelinePanel.keyframe'
+                              )}
+                              title={t(
+                                'animationEditor.timelinePanel.keyframe'
+                              )}
                             />
                           );
                         })

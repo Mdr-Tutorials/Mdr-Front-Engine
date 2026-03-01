@@ -981,6 +981,398 @@
       }
     }
   },
+  "resourceManager": {
+    "header": {
+      "badge": "资源管理器",
+      "title": "项目资源",
+      "description": "所有资源页都在同一路由下，通过标签页切换。"
+    },
+    "tabs": {
+      "overview": "概览",
+      "public": "Public",
+      "code": "Code",
+      "i18n": "i18n",
+      "external": "外部库"
+    },
+    "overview": {
+      "tile": {
+        "needsAttention": "需要关注",
+        "lookingGood": "状态良好",
+        "overview": "概览"
+      },
+      "cards": {
+        "public": {
+          "description": "用于导出、部署和运行时预览的静态资源。"
+        },
+        "code": {
+          "description": "脚本、样式、着色器，作为项目资源统一管理。"
+        },
+        "i18n": {
+          "description": "用于语言与翻译键的矩阵编辑器。"
+        },
+        "external": {
+          "description": "运行时组件库与图标库（本地预设 + 自定义库 id）。"
+        }
+      },
+      "metrics": {
+        "files": "文件",
+        "warnings": "告警",
+        "updated": "更新时间",
+        "scriptsStyles": "脚本/样式",
+        "locales": "语言",
+        "namespaces": "命名空间",
+        "missingValues": "缺失值",
+        "components": "组件",
+        "icons": "图标",
+        "status": "状态",
+        "configured": "已配置",
+        "none": "无"
+      },
+      "actions": {
+        "open": "打开"
+      },
+      "quickActions": {
+        "badgeTitle": "快捷操作",
+        "title": "无需离开资源页也能快速构建",
+        "description": "先创建常见资源，再直接跳转到对应编辑标签页。",
+        "badge": "概览在本地运行（无需网络）。",
+        "newScript": "新建脚本",
+        "scriptPath": "在 scripts 中创建 `untitled.ts`",
+        "scriptHint": "逻辑开发默认采用 TypeScript。",
+        "newStyle": "新建样式",
+        "stylePath": "在 styles 中创建 `untitled.css`",
+        "styleHint": "可直接添加工具类或自定义组件样式。",
+        "newShader": "新建着色器",
+        "shaderPath": "在 shaders 中创建 `untitled.glsl`",
+        "shaderHint": "快速开始 GLSL 效果与预览。"
+      },
+      "healthCheck": {
+        "badge": "健康检查",
+        "title": "当前需要关注的项",
+        "publicWarnings": "Public 有 {{count}} 条告警提示。",
+        "publicClean": "Public 资源状态良好。",
+        "i18nMissing": "i18n 有 {{count}} 个空单元格。基准语言：{{baseLocale}}。",
+        "i18nGood": "i18n 覆盖情况良好。",
+        "noComponentLib": "尚未配置组件库。",
+        "worstLocale": "缺失最多的语言：{{locale}}（较基准缺 {{count}} 个键）。"
+      }
+    },
+    "public": {
+      "header": {
+        "title": "Public 资源",
+        "description": "左侧树可编辑，是导出 `public/*` 的唯一来源。"
+      },
+      "actions": {
+        "download": "下载"
+      },
+      "labels": {
+        "kind": "类型",
+        "mime": "MIME",
+        "size": "大小",
+        "unknown": "未知"
+      },
+      "preview": {
+        "preview": "预览",
+        "source": "源码",
+        "fontSample": "字体样例",
+        "noInline": "该文件类型不支持内联预览，请下载查看。",
+        "selectFile": "请选择一个文件进行预览。"
+      },
+      "hints": {
+        "title": "最佳实践提示",
+        "pageHintsLabel": "页面提示：",
+        "pageHints": "Public 文件共 {{warnings}} 条告警，{{suggestions}} 条建议。"
+      }
+    },
+    "code": {
+      "header": {
+        "title": "代码工作区",
+        "description": "在一个页面里统一管理脚本、样式和着色器资源。"
+      },
+      "labels": {
+        "selected": "当前选中",
+        "folder": "文件夹",
+        "files": "文件数",
+        "mime": "MIME",
+        "size": "大小",
+        "bytes": "字节"
+      },
+      "actions": {
+        "save": "保存"
+      },
+      "empty": "请从左侧树中选择一个代码文件进行编辑。"
+    },
+    "i18n": {
+      "header": {
+        "title": "i18n 工作区",
+        "description": "三栏翻译工作流：键表 + 翻译编辑 + 实时预览。"
+      },
+      "searchPlaceholder": "搜索 key 或文案",
+      "filters": {
+        "missingOnly": "仅看缺失",
+        "reviewedOnly": "仅看已审核"
+      },
+      "modules": "模块",
+      "moduleStats": "{{keys}} 个键 / {{missing}} 个缺失",
+      "progress": "进度",
+      "progressComplete": "完成 {{rate}}%",
+      "missingKeys": "缺失键：{{count}}",
+      "newLocalePlaceholder": "新语言",
+      "newModulePlaceholder": "新模块",
+      "newKeyPlaceholder": "新翻译键",
+      "newSourcePlaceholder": "默认值（{{locale}}）",
+      "empty": "空",
+      "new": "新建",
+      "livePreview": "实时预览",
+      "componentPreview": "组件预览",
+      "baseLength": "基准长度",
+      "previewLength": "预览长度",
+      "overflowRisk": "紧凑组件中可能存在溢出风险。",
+      "layoutHealthy": "文本长度看起来正常。",
+      "containsVariables": "包含变量占位符，请保持占位符不变。",
+      "table": {
+        "key": "键",
+        "status": "状态",
+        "action": "操作"
+      },
+      "actions": {
+        "addLocale": "添加语言",
+        "addModule": "添加模块",
+        "export": "导出",
+        "import": "导入",
+        "delete": "删除",
+        "add": "添加"
+      }
+    },
+    "external": {
+      "header": {
+        "title": "外部库管理器",
+        "description": "用于模拟加载状态、切换版本并跟踪运行时库的分栏管理器。"
+      },
+      "loading": "正在加载已注册库...",
+      "searchPlaceholder": "搜索库...",
+      "builtInLibs": "内置库",
+      "addCategory": "添加 {{category}}",
+      "modes": {
+        "locked": "锁定",
+        "latest": "最新",
+        "dev": "开发"
+      },
+      "categories": {
+        "component": "组件库",
+        "icon": "图标库",
+        "other": "其他库"
+      },
+      "activeLibraries": "已激活库",
+      "libraryCount": "{{count}} 个库",
+      "debouncing": "搜索防抖中...",
+      "searchReady": "搜索已就绪",
+      "noMatch": "没有匹配当前搜索的库。",
+      "exports": "{{count}} 个导出",
+      "sizeWarning": "体积 {{level}}：{{hint}}",
+      "status": {
+        "idle": "空闲",
+        "loading": "加载中",
+        "success": "已加载",
+        "warning": "已加载（有告警）",
+        "error": "加载失败"
+      },
+      "package": {
+        "level": {
+          "healthy": "健康",
+          "caution": "L1 注意",
+          "warning": "L2 警告",
+          "critical": "L3 严重"
+        },
+        "hint": {
+          "healthy": "体积在建议阈值内。",
+          "caution": "略高于 500 KB，建议关注打包体积影响。",
+          "warning": "体积较大，建议做 tree-shaking 或路由级拆分。",
+          "critical": "体积很大，建议按需加载或替换为更轻量方案。"
+        }
+      },
+      "actions": {
+        "addNewLibrary": "新增库",
+        "remove": "移除",
+        "retry": "重试",
+        "cancel": "取消",
+        "addLibrary": "添加库"
+      },
+      "modal": {
+        "title": "添加新库",
+        "packageId": "package id",
+        "versionOptional": "版本（可选）"
+      },
+      "details": {
+        "title": "库详情",
+        "empty": "请从左侧列表选择一个库。",
+        "license": "许可证",
+        "sizeHealthy": "体积健康：{{size}}。",
+        "sizeWarning": "体积 {{level}}：{{size}}。{{hint}}",
+        "providedComponents": "提供的组件/导出",
+        "versionSwitcher": "版本历史快速切换"
+      }
+    },
+    "tree": {
+      "publicEditable": "Public 树（可编辑）",
+      "fileReadonly": "文件树（只读）",
+      "codeTree": "代码树",
+      "actions": {
+        "newFolder": "新建文件夹",
+        "newFile": "新建文件",
+        "newCodeFile": "新建代码文件",
+        "importFiles": "导入文件",
+        "renameF2": "重命名（F2）",
+        "delete": "删除"
+      },
+      "menu": {
+        "newFolder": "新建文件夹",
+        "folder": "文件夹",
+        "newFile": "新建文件",
+        "text": "文本",
+        "newFileJson": "新建文件（JSON）",
+        "newFileSvg": "新建文件（SVG）",
+        "importFiles": "导入文件",
+        "any": "任意",
+        "importImage": "导入图片",
+        "importFont": "导入字体",
+        "importDocument": "导入文档",
+        "rename": "重命名",
+        "delete": "删除"
+      },
+      "codeKinds": {
+        "ts": "新建 TypeScript (.ts)",
+        "tsx": "新建 TSX (.tsx)",
+        "js": "新建 JavaScript (.js)",
+        "css": "新建 CSS (.css)",
+        "scss": "新建 SCSS (.scss)",
+        "json": "新建 JSON (.json)",
+        "wgsl": "新建 WGSL (.wgsl)",
+        "glsl": "新建 GLSL (.glsl)"
+      }
+    }
+  },
+  "animationEditor": {
+    "common": {
+      "timelineIndexed": "时间线 {{index}}",
+      "delete": "删除",
+      "remove": "移除",
+      "delShort": "删"
+    },
+    "topBar": {
+      "title": "动画",
+      "new": "新建",
+      "closeTimeline": "关闭时间线"
+    },
+    "timelines": {
+      "title": "时间线",
+      "add": "添加",
+      "deleteTimeline": "删除时间线"
+    },
+    "timelinePanel": {
+      "lanes": "时间线轨道",
+      "noTimeline": "暂无时间线。",
+      "noTracks": "暂无轨道",
+      "keyframe": "关键帧"
+    },
+    "preview": {
+      "jumpToStart": "跳到开头",
+      "pause": "暂停",
+      "play": "播放",
+      "zoomOut": "缩小",
+      "zoomIn": "放大",
+      "resetZoom": "重置缩放",
+      "selectBindingTarget": "请选择一个绑定目标来预览组件。"
+    },
+    "svgFilters": {
+      "title": "SVG 过滤器",
+      "add": "添加",
+      "empty": "暂无 SVG 过滤器。",
+      "units": "过滤器单位",
+      "unitsDefault": "单位：默认",
+      "unitsValue": "单位：{{unit}}",
+      "primitiveType": "图元类型",
+      "addPrimitive": "添加图元"
+    },
+    "keyframes": {
+      "title": "关键帧",
+      "add": "添加",
+      "atMs": "时间（毫秒）",
+      "value": "值",
+      "easing": "缓动",
+      "hold": "保持"
+    },
+    "track": {
+      "expand": "展开轨道",
+      "collapse": "收起轨道",
+      "delete": "删除轨道",
+      "kind": "轨道类型",
+      "styleProperty": "样式属性",
+      "filterFunction": "过滤函数",
+      "unit": "单位",
+      "svgFilter": "SVG 过滤器",
+      "svgPrimitive": "SVG 图元",
+      "svgAttr": "SVG 属性"
+    },
+    "binding": {
+      "targetNode": "目标节点",
+      "delete": "删除绑定",
+      "addStyle": "+ 样式",
+      "addCssFilter": "+ CSS 过滤器",
+      "addSvgFilter": "+ SVG 过滤器"
+    },
+    "bindings": {
+      "summary": "{{count}} 个绑定，{{cursorMs}}ms / {{durationMs}}ms",
+      "createTimelineFirst": "请先创建时间线。",
+      "timelineName": "时间线名称",
+      "timelineDuration": "时间线时长（ms）",
+      "title": "绑定",
+      "addBinding": "添加绑定"
+    },
+    "inspector": {
+      "timeline": {
+        "title": "时间线",
+        "name": "名称",
+        "durationMs": "持续时间（ms）",
+        "delayMs": "延迟（ms）",
+        "direction": "方向",
+        "directionOption": "方向：{{value}}",
+        "fillMode": "填充模式",
+        "fillModeOption": "填充：{{value}}",
+        "iterations": "循环次数",
+        "infinite": "无限",
+        "easing": "缓动"
+      },
+      "binding": {
+        "title": "绑定",
+        "select": "选择绑定",
+        "targetNode": "目标节点",
+        "targetHint": "绑定目标由蓝图检查器管理。",
+        "empty": "暂无已挂载目标，请在蓝图检查器中挂载组件。"
+      },
+      "track": {
+        "title": "轨道",
+        "addStyle": "+样式",
+        "addFilter": "+滤镜",
+        "addSvg": "+SVG",
+        "select": "选择轨道",
+        "kind": "轨道类型",
+        "kindOption": "类型：{{kind}}",
+        "styleProp": "样式属性",
+        "stylePropOption": "属性：{{property}}",
+        "filterFn": "过滤函数",
+        "filterFnOption": "函数：{{fn}}",
+        "unit": "单位",
+        "unitOption": "单位：{{unit}}",
+        "svgFilter": "SVG 过滤器",
+        "svgFilterOption": "过滤器：{{id}}",
+        "svgPrimitive": "SVG 图元",
+        "svgPrimitiveOption": "图元：{{id}}",
+        "attr": "属性",
+        "delete": "删除轨道"
+      }
+    }
+  },
   "nodeGraph": {
     "manager": {
       "title": "节点图",

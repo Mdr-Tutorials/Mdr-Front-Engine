@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { UnitInput } from '../UnitInput';
+import { UnitInput } from '@/editor/features/design/inspector/components/UnitInput';
 
 describe('UnitInput', () => {
   it('does not append unit text while typing incomplete numeric values', () => {

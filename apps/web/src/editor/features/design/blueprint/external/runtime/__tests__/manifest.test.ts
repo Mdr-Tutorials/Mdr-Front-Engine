@@ -2,11 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
   applyManifestToCanonicalComponents,
   applyManifestToGroups,
-} from '../manifest';
+} from '@/editor/features/design/blueprint/external/runtime/manifest';
 import type {
   CanonicalExternalComponent,
   ExternalCanonicalGroup,
-} from '../types';
+} from '@/editor/features/design/blueprint/external/runtime/types';
 
 const createComponent = (
   path: string,

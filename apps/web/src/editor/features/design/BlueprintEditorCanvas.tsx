@@ -1,4 +1,5 @@
 import {
+  createElement,
   type KeyboardEvent,
   type PointerEvent,
   useCallback,
@@ -13,13 +14,18 @@ import { useEditorStore } from '@/editor/store/useEditorStore';
 import type { WorkspaceRouteNode } from '@/editor/store/useEditorStore';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
 import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
-import type { ComponentNode } from '@/core/types/engine.types';
+import type {
+  ComponentNode,
+  SvgFilterDefinition,
+} from '@/core/types/engine.types';
 import {
   createOrderedComponentRegistry,
   getRuntimeRegistryRevision,
   parseResolverOrder,
   runtimeRegistryUpdatedEvent,
 } from '@/mir/renderer/registry';
+import { normalizeAnimationDefinition } from '@/editor/features/animation/animationEditorModel';
+import { buildAnimationPreviewSnapshotFromTimelines } from '@/editor/features/animation/preview/animationPreview';
 import { VIEWPORT_ZOOM_RANGE } from './BlueprintEditor.data';
 
 type BlueprintEditorCanvasProps = {
@@ -148,6 +154,21 @@ const hasNodeId = (node: ComponentNode, nodeId: string): boolean => {
   return children.some((child) => hasNodeId(child, nodeId));
 };
 
+const renderSvgPrimitive = (
+  primitive: SvgFilterDefinition['primitives'][number]
+) => {
+  const props: Record<string, any> = { key: primitive.id };
+  if (primitive.in) props['in'] = primitive.in;
+  if (primitive.in2) props.in2 = primitive.in2;
+  if (primitive.result) props.result = primitive.result;
+  if (primitive.attrs) {
+    Object.entries(primitive.attrs).forEach(([key, value]) => {
+      props[key] = value;
+    });
+  }
+  return createElement(primitive.type, props);
+};
+
 /**
  * 交互链路：
  * 节点点击 -> MIRRenderer -> onSelectNode -> controller；
@@ -268,9 +289,36 @@ export function BlueprintEditorCanvas({
   const scale = Math.min(2, Math.max(0.4, zoom / 100));
   const showGrid = assist.includes('grid');
   const showSelectionDiagnostics = diagnostics.includes('selection');
+  const animationDefinition = useMemo(
+    () => normalizeAnimationDefinition(mirDoc.animation),
+    [mirDoc.animation]
+  );
+  const animationTimelines = animationDefinition?.timelines ?? [];
+  const animationSvgFilters = animationDefinition?.svgFilters ?? [];
+  const animationSignature = useMemo(
+    () => JSON.stringify(animationTimelines),
+    [animationTimelines]
+  );
+  const hasAutoPlayAnimation = useMemo(
+    () =>
+      animationTimelines.some((timeline) =>
+        timeline.bindings.some((binding) => binding.tracks.length > 0)
+      ),
+    [animationTimelines]
+  );
+  const [animationElapsedMs, setAnimationElapsedMs] = useState(0);
   const registry = useMemo(
     () => createOrderedComponentRegistry(parseResolverOrder(resolverOrder)),
     [resolverOrder, runtimeRegistryRevision]
+  );
+  const animationPreview = useMemo(
+    () =>
+      buildAnimationPreviewSnapshotFromTimelines({
+        timelines: animationTimelines,
+        globalMs: animationElapsedMs,
+        svgFilters: animationSvgFilters,
+      }),
+    [animationElapsedMs, animationSvgFilters, animationTimelines]
   );
 
   useEffect(() => {
@@ -314,6 +362,27 @@ export function BlueprintEditorCanvas({
       }
     };
   }, []);
+
+  useEffect(() => {
+    setAnimationElapsedMs(0);
+  }, [animationSignature]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (!hasAutoPlayAnimation) return;
+    let rafId = 0;
+    let startTs: number | null = null;
+    const tick = (ts: number) => {
+      if (startTs === null) startTs = ts;
+      const elapsed = Math.max(0, ts - startTs);
+      setAnimationElapsedMs(elapsed);
+      rafId = window.requestAnimationFrame(tick);
+    };
+    rafId = window.requestAnimationFrame(tick);
+    return () => {
+      window.cancelAnimationFrame(rafId);
+    };
+  }, [hasAutoPlayAnimation, animationSignature]);
 
   const stopInertia = useCallback(() => {
     if (typeof window === 'undefined') return;
@@ -532,6 +601,30 @@ export function BlueprintEditorCanvas({
               className="BlueprintEditorCanvasArtboard relative overflow-auto overscroll-contain [scrollbar-gutter:stable_both-edges] border border-black/8 bg-(--color-0) shadow-[0_22px_45px_rgba(0,0,0,0.12)] dark:border-white/10 dark:shadow-[0_24px_46px_rgba(0,0,0,0.45)] **:data-[mir-selected=true]:outline-2 **:data-[mir-selected=true]:outline-offset-2 **:data-[mir-selected=true]:outline-(--color-primary,var(--color-9)) **:data-[mir-missing=true]:outline **:data-[mir-missing=true]:outline-dashed **:data-[mir-missing=true]:outline-[rgba(240,82,82,0.9)] **:data-[mir-missing=true]:outline-offset-2"
               style={{ width: canvasWidth, height: canvasHeight }}
             >
+              {animationPreview.cssText ? (
+                <style>{animationPreview.cssText}</style>
+              ) : null}
+              {animationPreview.svgFilters.length ? (
+                <svg
+                  width="0"
+                  height="0"
+                  aria-hidden="true"
+                  focusable="false"
+                  className="absolute"
+                >
+                  <defs>
+                    {animationPreview.svgFilters.map((filter) => (
+                      <filter
+                        key={filter.id}
+                        id={filter.id}
+                        filterUnits={filter.units}
+                      >
+                        {filter.primitives.map(renderSvgPrimitive)}
+                      </filter>
+                    ))}
+                  </defs>
+                </svg>
+              ) : null}
               {hasChildren ? (
                 <MIRRenderer
                   node={mirDoc.ui.root}

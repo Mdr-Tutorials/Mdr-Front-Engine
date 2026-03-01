@@ -1,4 +1,5 @@
 import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type {
   AnimationTrack,
   SvgFilterDefinition,
@@ -9,7 +10,7 @@ import {
   STYLE_PROPERTIES,
   TRACK_KINDS,
   getTrackTitle,
-} from '../animationEditorUi';
+} from '@/editor/features/animation/animationEditorUi';
 import { AnimationEditorKeyframesEditor } from './AnimationEditorKeyframesEditor';
 
 type AnimationEditorTrackCardProps = {
@@ -105,6 +106,7 @@ export const AnimationEditorTrackCard = ({
   onUpdateKeyframeEasing,
   onUpdateKeyframeHold,
 }: AnimationEditorTrackCardProps) => {
+  const { t } = useTranslation('editor');
   const matchedFilter =
     track.kind === 'svg-filter-attr'
       ? (svgFilters.find((filter) => filter.id === track.filterId) ??
@@ -119,7 +121,16 @@ export const AnimationEditorTrackCard = ({
           type="button"
           onClick={() => onToggleExpanded(track.id)}
           className="rounded p-1"
-          aria-label={expanded ? 'Collapse track' : 'Expand track'}
+          aria-label={
+            expanded
+              ? t('animationEditor.track.collapse')
+              : t('animationEditor.track.expand')
+          }
+          title={
+            expanded
+              ? t('animationEditor.track.collapse')
+              : t('animationEditor.track.expand')
+          }
         >
           {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
         </button>
@@ -130,7 +141,8 @@ export const AnimationEditorTrackCard = ({
           type="button"
           onClick={() => onDeleteTrack(bindingId, track.id)}
           className="rounded p-1"
-          aria-label="Delete track"
+          aria-label={t('animationEditor.track.delete')}
+          title={t('animationEditor.track.delete')}
         >
           <Trash2 size={12} />
         </button>
@@ -148,6 +160,8 @@ export const AnimationEditorTrackCard = ({
               )
             }
             className="w-full rounded border border-black/15 px-2 py-1.5 text-sm"
+            aria-label={t('animationEditor.track.kind')}
+            title={t('animationEditor.track.kind')}
           >
             {TRACK_KINDS.map((kind) => (
               <option key={kind} value={kind}>
@@ -170,6 +184,8 @@ export const AnimationEditorTrackCard = ({
                 )
               }
               className="w-full rounded border border-black/15 px-2 py-1.5 text-sm"
+              aria-label={t('animationEditor.track.styleProperty')}
+              title={t('animationEditor.track.styleProperty')}
             >
               {STYLE_PROPERTIES.map((property) => (
                 <option key={property} value={property}>
@@ -194,6 +210,8 @@ export const AnimationEditorTrackCard = ({
                   )
                 }
                 className="rounded border border-black/15 px-2 py-1.5 text-sm"
+                aria-label={t('animationEditor.track.filterFunction')}
+                title={t('animationEditor.track.filterFunction')}
               >
                 {CSS_FILTER_FNS.map((fn) => (
                   <option key={fn} value={fn}>
@@ -213,6 +231,8 @@ export const AnimationEditorTrackCard = ({
                   )
                 }
                 className="rounded border border-black/15 px-2 py-1.5 text-sm"
+                aria-label={t('animationEditor.track.unit')}
+                title={t('animationEditor.track.unit')}
               >
                 {CSS_FILTER_UNITS.map((unit) => (
                   <option key={unit} value={unit}>
@@ -236,6 +256,8 @@ export const AnimationEditorTrackCard = ({
                 }
                 className="rounded border border-black/15 px-2 py-1.5 text-sm"
                 disabled={svgFilters.length === 0}
+                aria-label={t('animationEditor.track.svgFilter')}
+                title={t('animationEditor.track.svgFilter')}
               >
                 {svgFilters.map((filter) => (
                   <option key={filter.id} value={filter.id}>
@@ -254,6 +276,8 @@ export const AnimationEditorTrackCard = ({
                 }
                 className="rounded border border-black/15 px-2 py-1.5 text-sm"
                 disabled={primitiveOptions.length === 0}
+                aria-label={t('animationEditor.track.svgPrimitive')}
+                title={t('animationEditor.track.svgPrimitive')}
               >
                 {primitiveOptions.map((primitive) => (
                   <option key={primitive.id} value={primitive.id}>
@@ -267,6 +291,8 @@ export const AnimationEditorTrackCard = ({
                   onUpdateSvgTrackAttr(bindingId, track.id, event.target.value)
                 }
                 className="rounded border border-black/15 px-2 py-1.5 text-sm"
+                aria-label={t('animationEditor.track.svgAttr')}
+                title={t('animationEditor.track.svgAttr')}
               />
             </div>
           ) : null}

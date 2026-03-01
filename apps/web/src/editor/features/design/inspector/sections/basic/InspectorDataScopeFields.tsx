@@ -1,7 +1,7 @@
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { InspectorRow } from '../../components/InspectorRow';
-import { useInspectorSectionContext } from '../InspectorSectionContext';
+import { InspectorRow } from '@/editor/features/design/inspector/components/InspectorRow';
+import { useInspectorSectionContext } from '@/editor/features/design/inspector/sections/InspectorSectionContext';
 
 const LEGACY_DATA_MODEL_KEY = 'x-mdr-data-model';
 const LEGACY_DATA_SCHEMA_KEY = 'x-mdr-data-schema';

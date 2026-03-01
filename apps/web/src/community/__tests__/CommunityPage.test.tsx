@@ -1,6 +1,6 @@
 ﻿import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { CommunityPage } from '../CommunityPage';
+import { CommunityPage } from '@/community/CommunityPage';
 
 const listProjectsMock = vi.fn();
 
@@ -84,6 +84,9 @@ describe('CommunityPage', () => {
           sort: 'popular',
           page: 1,
           pageSize: 12,
+        }),
+        expect.objectContaining({
+          signal: expect.any(Object),
         })
       );
     });

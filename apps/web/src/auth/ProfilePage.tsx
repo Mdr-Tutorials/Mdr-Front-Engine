@@ -14,6 +14,7 @@ import {
 import { Calendar, Copy, Mail, Pencil, UserRound } from 'lucide-react';
 import { authApi, ApiError } from './authApi';
 import { useAuthStore } from './useAuthStore';
+import { isAbortError } from '@/infra/api';
 
 type Flash = { type: 'Info' | 'Success' | 'Warning' | 'Danger'; text: string };
 
@@ -80,24 +81,34 @@ export const ProfilePage = () => {
     };
   }, []);
 
-  const fetchProfile = useCallback(async () => {
-    if (!token) return;
-    setError(null);
-    setLoading(true);
-    try {
-      const response = await authApi.me(token);
-      setUser(response.user);
-    } catch (err) {
-      setError(formatError(err));
-    } finally {
-      setLoading(false);
-    }
-  }, [token, setUser]);
-
   useEffect(() => {
     if (!token || user) return;
-    fetchProfile();
-  }, [token, user, fetchProfile]);
+    let cancelled = false;
+    const controller =
+      typeof AbortController === 'function' ? new AbortController() : null;
+    const requestOptions: RequestInit = controller
+      ? { signal: controller.signal }
+      : {};
+    setError(null);
+    setLoading(true);
+    authApi
+      .me(token, requestOptions)
+      .then((response) => {
+        if (cancelled) return;
+        setUser(response.user);
+      })
+      .catch((err) => {
+        if (cancelled || isAbortError(err)) return;
+        setError(formatError(err));
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+      controller?.abort();
+    };
+  }, [token, user, setUser]);
 
   const copyText = useCallback(
     async (value: string | undefined, message: string) => {

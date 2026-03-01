@@ -1,4 +1,5 @@
 import { Plus, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { AnimationTimeline } from '@/core/types/engine.types';
 
 type AnimationEditorTopBarProps = {
@@ -16,10 +17,12 @@ export const AnimationEditorTopBar = ({
   onAddTimeline,
   onDeleteTimeline,
 }: AnimationEditorTopBarProps) => {
+  const { t } = useTranslation('editor');
+
   return (
     <header className="flex h-11 shrink-0 items-center gap-3 border-b border-black/8 bg-[rgb(var(--color-0-rgb)_/_0.92)] px-3 backdrop-blur-sm">
       <div className="shrink-0 text-xs font-semibold tracking-[0.02em] text-(--color-9)">
-        Animation
+        {t('animationEditor.topBar.title')}
       </div>
 
       <div className="flex min-w-0 flex-1 items-center gap-1 overflow-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -37,7 +40,10 @@ export const AnimationEditorTopBar = ({
               }`}
             >
               <span className="max-w-[160px] truncate">
-                {timeline.name.trim() || `Timeline ${index + 1}`}
+                {timeline.name.trim() ||
+                  t('animationEditor.common.timelineIndexed', {
+                    index: index + 1,
+                  })}
               </span>
               {timelines.length > 1 ? (
                 <span
@@ -49,7 +55,8 @@ export const AnimationEditorTopBar = ({
                     onDeleteTimeline(timeline.id);
                   }}
                   role="button"
-                  aria-label="Close timeline"
+                  aria-label={t('animationEditor.topBar.closeTimeline')}
+                  title={t('animationEditor.topBar.closeTimeline')}
                 >
                   <Trash2 size={12} />
                 </span>
@@ -64,7 +71,7 @@ export const AnimationEditorTopBar = ({
           className="inline-flex shrink-0 items-center gap-1 rounded-full border border-black/10 bg-white px-3 py-1 text-xs text-(--color-8) transition-colors hover:border-black/15 hover:bg-black/[0.03]"
         >
           <Plus size={12} />
-          New
+          {t('animationEditor.topBar.new')}
         </button>
       </div>
     </header>

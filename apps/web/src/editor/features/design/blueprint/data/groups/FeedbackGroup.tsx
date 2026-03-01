@@ -10,8 +10,8 @@
   MdrText,
   MdrTooltip,
 } from '@mdr/ui';
-import type { ComponentGroup } from '../../../BlueprintEditor.types';
-import { buildVariants } from '../helpers';
+import type { ComponentGroup } from '@/editor/features/design/BlueprintEditor.types';
+import { buildVariants } from '@/editor/features/design/blueprint/data/helpers';
 import {
   DRAWER_PLACEMENTS,
   MESSAGE_TYPES,
@@ -19,7 +19,7 @@ import {
   SKELETON_VARIANTS,
   SIZE_OPTIONS,
   TOOLTIP_PLACEMENTS,
-} from '../options';
+} from '@/editor/features/design/blueprint/data/options';
 
 export const FEEDBACK_GROUP: ComponentGroup = {
   id: 'feedback',

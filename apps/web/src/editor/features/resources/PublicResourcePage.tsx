@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { Download, FileWarning } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { ResourceFileTree } from './ResourceFileTree';
 import {
   collectBestPracticeHints,
@@ -83,6 +84,7 @@ const getResourceManagerPublicSelectionStorageKey = (projectId?: string) =>
 export function PublicResourcePage({
   embedded = false,
 }: PublicResourcePageProps) {
+  const { t } = useTranslation('editor');
   const { projectId } = useParams();
   const [tree, setTree] = useState<PublicResourceNode>(() =>
     readPublicTree(projectId)
@@ -301,11 +303,10 @@ export function PublicResourcePage({
       {!embedded ? (
         <header className="rounded-2xl border border-black/8 bg-white/92 p-5 shadow-[0_10px_28px_rgba(0,0,0,0.06)]">
           <h1 className="text-2xl font-semibold text-(--color-10)">
-            Public resources
+            {t('resourceManager.public.header.title')}
           </h1>
           <p className="mt-2 text-sm text-(--color-7)">
-            Left tree is editable and is the single source for export
-            `public/*`.
+            {t('resourceManager.public.header.description')}
           </p>
         </header>
       ) : null}
@@ -344,7 +345,7 @@ export function PublicResourcePage({
                 className="inline-flex items-center gap-1 rounded-lg border border-black/12 px-2.5 py-1.5 text-xs text-(--color-8)"
               >
                 <Download size={12} />
-                Download
+                {t('resourceManager.public.actions.download')}
               </a>
             ) : null}
           </div>
@@ -352,13 +353,20 @@ export function PublicResourcePage({
             <div className="grid gap-4">
               <div className="rounded-xl border border-black/8 bg-black/[0.015] p-3 text-xs">
                 <p>
-                  Kind:{' '}
+                  {t('resourceManager.public.labels.kind')}:{' '}
                   <strong>
                     {resolveCategoryLabel(selectedNode.category ?? 'other')}
                   </strong>
                 </p>
-                <p>MIME: {selectedNode.mime || 'unknown'}</p>
-                <p>Size: {formatBytes(selectedNode.size)}</p>
+                <p>
+                  {t('resourceManager.public.labels.mime')}:{' '}
+                  {selectedNode.mime ||
+                    t('resourceManager.public.labels.unknown')}
+                </p>
+                <p>
+                  {t('resourceManager.public.labels.size')}:{' '}
+                  {formatBytes(selectedNode.size)}
+                </p>
               </div>
               {isSvgFileNode(selectedNode) ? (
                 <div className="rounded-xl border border-black/8 p-3">
@@ -372,7 +380,7 @@ export function PublicResourcePage({
                       }`}
                       onClick={() => setSvgPreviewMode('preview')}
                     >
-                      Preview
+                      {t('resourceManager.public.preview.preview')}
                     </button>
                     <button
                       type="button"
@@ -383,7 +391,7 @@ export function PublicResourcePage({
                       }`}
                       onClick={() => setSvgPreviewMode('source')}
                     >
-                      Source
+                      {t('resourceManager.public.preview.source')}
                     </button>
                   </div>
                   {svgPreviewMode === 'preview' && selectedNode.contentRef ? (
@@ -413,7 +421,9 @@ export function PublicResourcePage({
               {selectedNode.category === 'font' && selectedNode.contentRef ? (
                 <div className="rounded-xl border border-black/8 p-3">
                   <style>{`@font-face{font-family:${fontFamilyName};src:url(${selectedNode.contentRef});}`}</style>
-                  <p className="text-xs text-(--color-6)">Font sample</p>
+                  <p className="text-xs text-(--color-6)">
+                    {t('resourceManager.public.preview.fontSample')}
+                  </p>
                   <p
                     className="mt-2"
                     style={{ fontFamily: fontFamilyName, fontSize: '24px' }}
@@ -447,15 +457,14 @@ export function PublicResourcePage({
               selectedNode.category !== 'image' &&
               selectedNode.category !== 'font' ? (
                 <div className="rounded-xl border border-black/8 bg-black/[0.02] p-4 text-sm text-(--color-7)">
-                  No inline preview for this file type. Use download to inspect
-                  it.
+                  {t('resourceManager.public.preview.noInline')}
                 </div>
               ) : null}
               {selectedHints.length > 0 ? (
                 <section className="rounded-xl border border-amber-200 bg-amber-50/80 p-3">
                   <p className="inline-flex items-center gap-1 text-xs font-semibold text-amber-800">
                     <FileWarning size={12} />
-                    Best practice hints
+                    {t('resourceManager.public.hints.title')}
                   </p>
                   <ul className="mt-2 grid gap-1 text-xs text-amber-900">
                     {selectedHints.map((hint) => (
@@ -469,14 +478,17 @@ export function PublicResourcePage({
             </div>
           ) : (
             <div className="rounded-xl border border-black/8 bg-black/[0.02] p-4 text-sm text-(--color-7)">
-              Select a file to preview.
+              {t('resourceManager.public.preview.selectFile')}
             </div>
           )}
         </article>
       </div>
       <footer className="rounded-xl border border-black/8 bg-(--color-0) px-4 py-3 text-xs text-(--color-7)">
-        <strong>Page hints:</strong> {hintSummary.warnings} warnings,{' '}
-        {hintSummary.info} suggestions across public files.
+        <strong>{t('resourceManager.public.hints.pageHintsLabel')}</strong>{' '}
+        {t('resourceManager.public.hints.pageHints', {
+          warnings: hintSummary.warnings,
+          suggestions: hintSummary.info,
+        })}
       </footer>
     </section>
   );

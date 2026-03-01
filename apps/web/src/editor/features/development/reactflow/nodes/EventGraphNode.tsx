@@ -2,7 +2,7 @@ import {
   renderSource,
   resolveMultiplicity,
   type GraphNodeData,
-} from '../graphNodeShared';
+} from '@/editor/features/development/reactflow/graphNodeShared';
 import {
   buildNodeContainerClass,
   CollapseSummary,

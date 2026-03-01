@@ -1,8 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ExternalLibraryAddModal } from './externalLibraryManager/ExternalLibraryAddModal';
 import { ExternalLibraryDetailsPanel } from './externalLibraryManager/ExternalLibraryDetailsPanel';
 import { ExternalLibraryListPanel } from './externalLibraryManager/ExternalLibraryListPanel';
-import { ExternalLibraryToolbar } from './externalLibraryManager/ExternalLibraryToolbar';
+import {
+  ExternalLibraryToolbar,
+  type BuiltinLibraryCategory,
+} from './externalLibraryManager/ExternalLibraryToolbar';
 import type {
   ActiveLibrary,
   LibraryCatalog,
@@ -16,6 +20,7 @@ import {
   DEFAULT_PACKAGE_SIZE_THRESHOLDS,
   normalizePackageSizeThresholds,
 } from './externalLibraryManager/viewUtils';
+import { isAbortError } from '@/infra/api';
 
 type ExternalLibraryManagerProps = {
   projectId?: string;
@@ -34,15 +39,32 @@ const ICON_LIBRARY_PRESET_IDS = [
   'mui-icons',
   'heroicons',
 ];
-const QUICK_LIBRARY_IDS = ['react', 'lodash', 'antd', 'mui', 'heroicons'];
 const LEGACY_ICON_LIBRARY_IDS = new Set(ICON_LIBRARY_PRESET_IDS);
 const PRE_RELEASE_PATTERN = /(alpha|beta|rc|next|canary|dev|broken)/i;
 const METADATA_CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
-const MODE_OPTIONS: Array<{ id: LibraryMode; label: string }> = [
-  { id: 'locked', label: 'Locked' },
-  { id: 'latest', label: 'Latest' },
-  { id: 'dev', label: 'Dev' },
+const MODE_OPTIONS: Array<{ id: LibraryMode }> = [
+  { id: 'locked' },
+  { id: 'latest' },
+  { id: 'dev' },
+];
+
+const BUILTIN_LIBRARY_CATEGORIES: BuiltinLibraryCategory[] = [
+  {
+    id: 'component',
+    label: 'component',
+    libraryIds: ['antd', 'mui'],
+  },
+  {
+    id: 'icon',
+    label: 'icon',
+    libraryIds: ['fontawesome', 'ant-design-icons', 'mui-icons', 'heroicons'],
+  },
+  {
+    id: 'other',
+    label: 'other',
+    libraryIds: ['lodash', 'react'],
+  },
 ];
 
 const LIBRARY_CATALOG: Record<string, LibraryCatalog> = {
@@ -312,6 +334,7 @@ const pickVersionByMode = (versions: string[], mode: LibraryMode) => {
 export function ExternalLibraryManager({
   projectId,
 }: ExternalLibraryManagerProps) {
+  const { t } = useTranslation('editor');
   const [registeredComponentLibraries, setRegisteredComponentLibraries] =
     useState<LibraryEntry[]>([]);
   const [registeredIconLibraries, setRegisteredIconLibraries] = useState<
@@ -341,6 +364,9 @@ export function ExternalLibraryManager({
   const loadTokensRef = useRef<Map<string, number>>(new Map());
   const timeoutIdsRef = useRef<Set<number>>(new Set());
   const metadataRequestsRef = useRef<Set<string>>(new Set());
+  const metadataControllersRef = useRef<Map<string, AbortController>>(
+    new Map()
+  );
 
   const componentLibraryById = useMemo(
     () =>
@@ -426,9 +452,11 @@ export function ExternalLibraryManager({
       getExternalSelectionStorageKey(projectId),
       JSON.stringify(nextIds)
     );
-    void import('../design/blueprint/external').then((externalRuntime) => {
-      externalRuntime.setConfiguredExternalLibraryIds(nextIds);
-    });
+    void import('@/editor/features/design/blueprint/external').then(
+      (externalRuntime) => {
+        externalRuntime.setConfiguredExternalLibraryIds(nextIds);
+      }
+    );
   };
 
   const persistConfiguredIconLibraryIds = (libraryIds: string[]) => {
@@ -513,9 +541,16 @@ export function ExternalLibraryManager({
 
   const requestNpmMetadata = async (libraryId: string) => {
     if (typeof window.fetch !== 'function') return;
+    const controller =
+      typeof AbortController === 'function' ? new AbortController() : null;
+    if (controller) {
+      metadataControllersRef.current.get(libraryId)?.abort();
+      metadataControllersRef.current.set(libraryId, controller);
+    }
     try {
       const response = await window.fetch(
-        `https://registry.npmjs.org/${encodeURIComponent(libraryId)}`
+        `https://registry.npmjs.org/${encodeURIComponent(libraryId)}`,
+        controller ? { signal: controller.signal } : {}
       );
       if (!response.ok) return;
       const payload = (await response.json()) as Record<string, unknown>;
@@ -561,8 +596,16 @@ export function ExternalLibraryManager({
         [libraryId]: metadata,
       }));
       applyMetadataToActiveLibraries(libraryId, metadata);
-    } catch {
+    } catch (error) {
+      if (isAbortError(error)) return;
       // ignore metadata fetch failure and keep local fallback
+    } finally {
+      if (
+        controller &&
+        metadataControllersRef.current.get(libraryId) === controller
+      ) {
+        metadataControllersRef.current.delete(libraryId);
+      }
     }
   };
 
@@ -667,7 +710,7 @@ export function ExternalLibraryManager({
     let disposed = false;
     setBootstrapping(true);
     void Promise.all([
-      import('../design/blueprint/external'),
+      import('@/editor/features/design/blueprint/external'),
       import('@/mir/renderer/iconRegistry'),
     ])
       .then(([externalRuntime, iconRegistry]) => {
@@ -837,6 +880,10 @@ export function ExternalLibraryManager({
       timeoutIdsRef.current.clear();
       loadTokensRef.current.clear();
       metadataRequestsRef.current.clear();
+      metadataControllersRef.current.forEach((controller) =>
+        controller.abort()
+      );
+      metadataControllersRef.current.clear();
     },
     []
   );
@@ -859,26 +906,43 @@ export function ExternalLibraryManager({
   const selectedLibrary =
     activeLibraries.find((library) => library.id === selectedLibraryId) ?? null;
 
+  const modeOptions = useMemo(
+    () =>
+      MODE_OPTIONS.map((option) => ({
+        id: option.id,
+        label: t(`resourceManager.external.modes.${option.id}`),
+      })),
+    [t]
+  );
+
+  const builtinLibraryCategories = useMemo(
+    () =>
+      BUILTIN_LIBRARY_CATEGORIES.map((category) => ({
+        ...category,
+        label: t(`resourceManager.external.categories.${category.id}`),
+      })),
+    [t]
+  );
+
   return (
     <article className="relative grid gap-4 rounded-2xl border border-black/8 bg-(--color-0) p-5">
       <header>
         <h2 className="text-base font-semibold text-(--color-9)">
-          External library manager
+          {t('resourceManager.external.header.title')}
         </h2>
         <p className="mt-1 text-sm text-(--color-7)">
-          Split-view manager for loading state simulation, version switching,
-          and runtime library tracking.
+          {t('resourceManager.external.header.description')}
         </p>
       </header>
       <ExternalLibraryToolbar
         searchInput={searchInput}
         mode={globalMode}
-        modeOptions={MODE_OPTIONS}
-        quickLibraryIds={QUICK_LIBRARY_IDS}
+        modeOptions={modeOptions}
+        builtinLibraryCategories={builtinLibraryCategories}
         libraryCatalog={LIBRARY_CATALOG}
         onSearchInputChange={setSearchInput}
         onModeChange={setGlobalMode}
-        onQuickLibraryAdd={addLibrary}
+        onBuiltinLibraryAdd={addLibrary}
       />
       <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] xl:items-start">
         <ExternalLibraryListPanel
@@ -909,8 +973,8 @@ export function ExternalLibraryManager({
         />
       </div>
       {isBootstrapping ? (
-        <div className="rounded-xl border border-black/8 bg-black/[0.015] p-3 text-sm text-(--color-7)">
-          Loading registered libraries...
+        <div className="rounded-xl border border-black/8 bg-black/1.5 p-3 text-sm text-(--color-7)">
+          {t('resourceManager.external.loading')}
         </div>
       ) : null}
       <ExternalLibraryAddModal

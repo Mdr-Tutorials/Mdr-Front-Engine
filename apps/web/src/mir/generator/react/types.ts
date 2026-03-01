@@ -1,8 +1,8 @@
 import type { MIRDocument } from '@/core/types/engine.types';
-import type { TargetAdapter } from '../core/adapter';
-import type { CompileDiagnostic } from '../core/diagnostics';
-import type { CanonicalIRDocument } from '../core/canonicalIR';
-import type { PackageResolverOptions } from '../core/packageResolver';
+import type { TargetAdapter } from '@/mir/generator/core/adapter';
+import type { CompileDiagnostic } from '@/mir/generator/core/diagnostics';
+import type { CanonicalIRDocument } from '@/mir/generator/core/canonicalIR';
+import type { PackageResolverOptions } from '@/mir/generator/core/packageResolver';
 
 export type ExportResourceType = 'project' | 'component' | 'nodegraph';
 

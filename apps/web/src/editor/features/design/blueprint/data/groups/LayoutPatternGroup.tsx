@@ -1,5 +1,5 @@
 import { MdrDiv } from '@mdr/ui';
-import type { ComponentGroup } from '../../../BlueprintEditor.types';
+import type { ComponentGroup } from '@/editor/features/design/BlueprintEditor.types';
 
 const PATTERN_PREVIEW_STYLE = {
   borderRadius: '8px',

@@ -3,8 +3,8 @@ import {
   BUILT_IN_META_RESOLUTION_POLICY,
   compareBuiltInMetaSourcePriority,
   pickPreferredBuiltInMeta,
-} from '../builtInMetaPolicy';
-import type { BuiltInComponentMeta } from '../builtInMeta.types';
+} from '@/editor/features/design/inspector/meta/builtInMetaPolicy';
+import type { BuiltInComponentMeta } from '@/editor/features/design/inspector/meta/builtInMeta.types';
 
 const createMeta = (
   source: BuiltInComponentMeta['source'],

@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ReactNode } from 'react';
-import { EditorSettingsPage } from '../EditorSettingsPage';
-import { ProjectSettingsPage } from '../ProjectSettingsPage';
+import { EditorSettingsPage } from '@/editor/features/settings/EditorSettingsPage';
+import { ProjectSettingsPage } from '@/editor/features/settings/ProjectSettingsPage';
 
 const navigateMock = vi.fn();
 let params: { projectId?: string } = { projectId: 'project-99' };

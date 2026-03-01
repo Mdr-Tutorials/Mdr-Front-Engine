@@ -1,7 +1,7 @@
 ﻿import type {
   ComponentGroup,
   ComponentPreviewItem,
-} from '../BlueprintEditor.types';
+} from '@/editor/features/design/BlueprintEditor.types';
 import { COMPONENT_GROUPS as DEFAULT_COMPONENT_GROUPS } from './data/ComponentGroups';
 
 const componentGroups: ComponentGroup[] = [];

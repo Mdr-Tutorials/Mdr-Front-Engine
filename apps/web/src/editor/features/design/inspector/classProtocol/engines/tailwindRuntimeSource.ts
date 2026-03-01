@@ -1,4 +1,4 @@
-import runtimeSnapshot from '../tailwind.runtime.snapshot.json';
+import runtimeSnapshot from '@/editor/features/design/inspector/classProtocol/tailwind.runtime.snapshot.json';
 
 type RuntimeSnapshot = {
   classes?: string[];

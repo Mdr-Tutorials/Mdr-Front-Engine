@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { BlueprintEditorViewportBar } from '../BlueprintEditorViewportBar';
+import { BlueprintEditorViewportBar } from '@/editor/features/design/BlueprintEditorViewportBar';
 
 const QUICK_PRESETS = vi.hoisted(() => [
   {

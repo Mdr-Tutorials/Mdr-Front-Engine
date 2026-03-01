@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import Editor from '../Editor';
+import Editor from '@/editor/Editor';
 
 const navigateMock = vi.fn();
 const getProjectMock = vi.fn();

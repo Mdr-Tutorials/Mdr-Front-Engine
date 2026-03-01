@@ -17,8 +17,10 @@ import type {
 const inFlightEnsures = new Map<string, Promise<ExternalLibraryDiagnostic[]>>();
 
 export const ensureExternalLibrary = async (
-  profile: ExternalLibraryProfile
+  profile: ExternalLibraryProfile,
+  options: { signal?: AbortSignal } = {}
 ): Promise<ExternalLibraryDiagnostic[]> => {
+  if (options.signal?.aborted) return [];
   const descriptor = profile.descriptor();
   const cacheKey = descriptor.libraryId;
   const current = inFlightEnsures.get(cacheKey);
@@ -53,7 +55,8 @@ export const ensureExternalLibrary = async (
       );
       const canonicalWithDts = await enrichCanonicalPropOptionsFromDts(
         descriptor,
-        canonicalComponents
+        canonicalComponents,
+        options
       );
       const canonicalWithManifest = applyManifestToCanonicalComponents(
         canonicalWithDts,

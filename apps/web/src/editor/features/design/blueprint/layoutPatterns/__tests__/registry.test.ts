@@ -3,8 +3,8 @@ import {
   buildLayoutPatternNode,
   getLayoutPatternDefinition,
   listLayoutPatterns,
-} from '../registry';
-import { isLayoutPatternRootNode } from '../dataAttributes';
+} from '@/editor/features/design/blueprint/layoutPatterns/registry';
+import { isLayoutPatternRootNode } from '@/editor/features/design/blueprint/layoutPatterns/dataAttributes';
 
 describe('layout pattern registry', () => {
   it('registers built-in presets by default', () => {

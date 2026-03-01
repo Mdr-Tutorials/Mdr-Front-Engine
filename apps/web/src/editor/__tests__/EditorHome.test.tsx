@@ -1,6 +1,6 @@
 ﻿import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import EditorHome from '../EditorHome';
+import EditorHome from '@/editor/EditorHome';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 
 vi.mock('../features/newfile/NewResourceModal', () => ({

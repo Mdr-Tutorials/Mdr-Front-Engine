@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type {
   AnimationTimeline,
   AnimationTrack,
@@ -117,6 +118,8 @@ export const AnimationEditorBindingsPanel = ({
   onUpdateKeyframeEasing,
   onUpdateKeyframeHold,
 }: AnimationEditorBindingsPanelProps) => {
+  const { t } = useTranslation('editor');
+
   return (
     <main className="flex min-h-0 min-w-0 flex-1 flex-col rounded-2xl border border-black/8 bg-(--color-0) p-4">
       <div className="border-b border-black/8 pb-3">
@@ -125,8 +128,12 @@ export const AnimationEditorBindingsPanel = ({
         </p>
         <p className="mt-1 text-xs text-(--color-6)">
           {activeTimeline
-            ? `${activeTimeline.bindings.length} bindings, ${cursorMs}ms / ${activeTimeline.durationMs}ms`
-            : 'Create a timeline first.'}
+            ? t('animationEditor.bindings.summary', {
+                count: activeTimeline.bindings.length,
+                cursorMs,
+                durationMs: activeTimeline.durationMs,
+              })
+            : t('animationEditor.bindings.createTimelineFirst')}
         </p>
 
         {activeTimeline ? (
@@ -135,7 +142,9 @@ export const AnimationEditorBindingsPanel = ({
               value={activeTimeline.name}
               onChange={(event) => onUpdateTimelineName(event.target.value)}
               className="rounded border border-black/15 px-2 py-1.5 text-sm"
-              placeholder="Timeline name"
+              placeholder={t('animationEditor.bindings.timelineName')}
+              aria-label={t('animationEditor.bindings.timelineName')}
+              title={t('animationEditor.bindings.timelineName')}
             />
             <input
               type="number"
@@ -143,6 +152,8 @@ export const AnimationEditorBindingsPanel = ({
               value={activeTimeline.durationMs}
               onChange={(event) => onUpdateTimelineDuration(event.target.value)}
               className="rounded border border-black/15 px-2 py-1.5 text-sm"
+              aria-label={t('animationEditor.bindings.timelineDuration')}
+              title={t('animationEditor.bindings.timelineDuration')}
             />
             <input
               className="col-span-2 max-[720px]:col-span-1"
@@ -162,14 +173,18 @@ export const AnimationEditorBindingsPanel = ({
         {!activeTimeline ? null : (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold">Bindings</h3>
+              <h3 className="text-sm font-semibold">
+                {t('animationEditor.bindings.title')}
+              </h3>
               <button
                 type="button"
                 onClick={onAddBinding}
                 className="inline-flex items-center gap-1 rounded border border-black/15 px-2 py-1 text-xs"
+                aria-label={t('animationEditor.bindings.addBinding')}
+                title={t('animationEditor.bindings.addBinding')}
               >
                 <Plus size={12} />
-                Add binding
+                {t('animationEditor.bindings.addBinding')}
               </button>
             </div>
 

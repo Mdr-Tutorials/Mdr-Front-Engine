@@ -10,7 +10,7 @@ import {
   resetEditorStore,
   resetSettingsStore,
 } from '@/test-utils/editorStore';
-import BlueprintEditor from '../BlueprintEditor';
+import BlueprintEditor from '@/editor/features/design/BlueprintEditor';
 
 const PROJECT_ID = 'project-1';
 

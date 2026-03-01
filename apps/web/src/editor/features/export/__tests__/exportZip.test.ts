@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { decodeDataUrlToBytes, resolveZipFilePayload } from '../exportZip';
+import {
+  decodeDataUrlToBytes,
+  resolveZipFilePayload,
+} from '@/editor/features/export/exportZip';
 
 const bytesToText = (bytes: Uint8Array) => new TextDecoder().decode(bytes);
 

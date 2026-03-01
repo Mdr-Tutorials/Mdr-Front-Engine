@@ -12,7 +12,7 @@ import {
   executeBuiltInAction,
   isBuiltInActionName,
   type BuiltInActionContext,
-} from '../actions/registry';
+} from '@/mir/actions/registry';
 import { deepResolveValueOrRef, readValueByPath } from '@/mir/shared/valueRef';
 import { resolveLinkCapability } from './capabilities';
 import { renderRichTextValue } from './richText';
@@ -208,6 +208,26 @@ const isSyntheticEvent = (value: unknown): value is React.SyntheticEvent => {
 
 const isClickTrigger = (trigger: string) =>
   toReactEventName(trigger) === 'onClick';
+
+const isInteractiveEventTarget = (target: Element | null) => {
+  if (!target) return false;
+  return Boolean(
+    target.closest(
+      'button, input, textarea, select, option, a, label, [role="button"], [role="checkbox"], [role="radio"], [role="switch"], [contenteditable="true"]'
+    )
+  );
+};
+
+const deferSelectionNotification = (callback: () => void) => {
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.setTimeout === 'function'
+  ) {
+    window.setTimeout(callback, 0);
+    return;
+  }
+  setTimeout(callback, 0);
+};
 
 const collectNodeEvents = (
   node: ComponentNode,
@@ -808,11 +828,18 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
         event.preventDefault();
       }
       const wasSelected = selectedId === nodeId;
+      const shouldDeferSelection =
+        isInteractiveEventTarget(target) && !wasSelected;
 
-      onNodeSelect?.(nodeId, event);
+      if (shouldDeferSelection) {
+        deferSelectionNotification(() => onNodeSelect?.(nodeId, event));
+      } else {
+        onNodeSelect?.(nodeId, event);
+      }
       emitSelectionDebug({
         stage: 'selected',
         nodeId,
+        deferred: shouldDeferSelection,
       });
       if (requireSelectionForEvents && !wasSelected) {
         emitSelectionDebug({

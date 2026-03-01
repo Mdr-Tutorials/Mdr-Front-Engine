@@ -15,14 +15,14 @@
   MdrTreeSelect,
 } from '@mdr/ui';
 import { Sparkles } from 'lucide-react';
-import type { ComponentGroup } from '../../../BlueprintEditor.types';
-import { buildVariants } from '../helpers';
+import type { ComponentGroup } from '@/editor/features/design/BlueprintEditor.types';
+import { buildVariants } from '@/editor/features/design/blueprint/data/helpers';
 import {
   PROGRESS_STATUSES,
   SIZE_OPTIONS,
   STEPS_DIRECTIONS,
   TAG_VARIANTS,
-} from '../options';
+} from '@/editor/features/design/blueprint/data/options';
 import {
   CHECKLIST_ITEMS,
   GRID_COLUMNS,
@@ -34,7 +34,7 @@ import {
   TIMELINE_ITEMS,
   TREE_DATA,
   TREE_SELECT_OPTIONS,
-} from '../sampleData';
+} from '@/editor/features/design/blueprint/data/sampleData';
 
 export const DATA_GROUP: ComponentGroup = {
   id: 'data',

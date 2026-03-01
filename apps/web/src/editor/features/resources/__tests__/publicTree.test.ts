@@ -7,7 +7,7 @@ import {
   findNodeById,
   removeNodeById,
   renameNode,
-} from '../publicTree';
+} from '@/editor/features/resources/publicTree';
 
 describe('publicTree commands', () => {
   it('creates folder and file nodes with hydrated path', () => {

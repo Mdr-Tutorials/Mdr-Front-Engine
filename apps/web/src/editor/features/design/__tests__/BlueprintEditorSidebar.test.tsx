@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { BlueprintEditorSidebar } from '../BlueprintEditorSidebar';
+import { BlueprintEditorSidebar } from '@/editor/features/design/BlueprintEditorSidebar';
 
 vi.mock('@dnd-kit/core', () => ({
   useDraggable: () => ({

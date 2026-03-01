@@ -7,17 +7,20 @@
   MdrImageGallery,
   MdrVideo,
 } from '@mdr/ui';
-import type { ComponentGroup } from '../../../BlueprintEditor.types';
-import { buildVariants } from '../helpers';
-import { AVATAR_SIZE_OPTIONS, SIZE_OPTIONS } from '../options';
-import { GALLERY_IMAGES } from '../sampleData';
+import type { ComponentGroup } from '@/editor/features/design/BlueprintEditor.types';
+import { buildVariants } from '@/editor/features/design/blueprint/data/helpers';
+import {
+  AVATAR_SIZE_OPTIONS,
+  SIZE_OPTIONS,
+} from '@/editor/features/design/blueprint/data/options';
+import { GALLERY_IMAGES } from '@/editor/features/design/blueprint/data/sampleData';
 import {
   EMBED_PLACEHOLDER_URL,
   PLACEHOLDER_AVATAR,
   PLACEHOLDER_IFRAME,
   PLACEHOLDER_IMAGE,
   PLACEHOLDER_VIDEO,
-} from '../placeholders';
+} from '@/editor/features/design/blueprint/data/placeholders';
 
 export const MEDIA_GROUP: ComponentGroup = {
   id: 'media',

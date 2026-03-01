@@ -5,6 +5,7 @@ import { SettingsEffects } from './features/settings/SettingsEffects';
 import { useAuthStore } from '@/auth/useAuthStore';
 import { mountGraphExecutionBridge } from '@/core/executor/executor';
 import { editorApi } from './editorApi';
+import { isAbortError } from '@/infra/api';
 import { useEditorStore } from './store/useEditorStore';
 import { useSettingsStore } from './store/useSettingsStore';
 import { isEditableTarget, useWindowKeydown } from '@/shortcuts';
@@ -32,9 +33,14 @@ function Editor() {
   useEffect(() => {
     if (!projectId || !token) return;
     let cancelled = false;
+    const controller =
+      typeof AbortController === 'function' ? new AbortController() : null;
+    const requestOptions: RequestInit = controller
+      ? { signal: controller.signal }
+      : {};
 
     editorApi
-      .getProject(token, projectId)
+      .getProject(token, projectId, requestOptions)
       .then(({ project }) => {
         if (cancelled) return;
         setProject({
@@ -46,7 +52,7 @@ function Editor() {
           starsCount: project.starsCount,
         });
         editorApi
-          .getWorkspace(token, projectId)
+          .getWorkspace(token, projectId, requestOptions)
           .then(({ workspace }) => {
             if (cancelled) return;
             hydrateWorkspaceSettings(workspace.settings);
@@ -57,7 +63,7 @@ function Editor() {
             }
             setWorkspaceSnapshot(workspace);
             editorApi
-              .getWorkspaceCapabilities(token, workspace.id)
+              .getWorkspaceCapabilities(token, workspace.id, requestOptions)
               .then((response) => {
                 if (cancelled) return;
                 setWorkspaceCapabilities(
@@ -65,24 +71,25 @@ function Editor() {
                   response.capabilities
                 );
               })
-              .catch(() => {
-                if (cancelled) return;
+              .catch((error: unknown) => {
+                if (cancelled || isAbortError(error)) return;
                 setWorkspaceCapabilities(workspace.id, {});
               });
           })
-          .catch(() => {
-            if (cancelled) return;
+          .catch((error: unknown) => {
+            if (cancelled || isAbortError(error)) return;
             clearWorkspaceState();
             setMirDoc(project.mir);
           });
       })
-      .catch(() => {
-        if (cancelled) return;
+      .catch((error: unknown) => {
+        if (cancelled || isAbortError(error)) return;
         clearWorkspaceState();
       });
 
     return () => {
       cancelled = true;
+      controller?.abort();
     };
   }, [
     projectId,

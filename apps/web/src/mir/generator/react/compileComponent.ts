@@ -1,9 +1,9 @@
 import type { ComponentNode } from '@/core/types/engine.types';
-import type { CanonicalNode } from '../core/canonicalIR';
-import { buildCanonicalIR } from '../core/canonicalIR';
-import type { AdapterImportSpec } from '../core/adapter';
-import { createDiagnosticBag } from '../core/diagnostics';
-import { resolvePackageImport } from '../core/packageResolver';
+import type { CanonicalNode } from '@/mir/generator/core/canonicalIR';
+import { buildCanonicalIR } from '@/mir/generator/core/canonicalIR';
+import type { AdapterImportSpec } from '@/mir/generator/core/adapter';
+import { createDiagnosticBag } from '@/mir/generator/core/diagnostics';
+import { resolvePackageImport } from '@/mir/generator/core/packageResolver';
 import { isBuiltInActionName } from '@/mir/actions/registry';
 import type {
   MirDocLike,

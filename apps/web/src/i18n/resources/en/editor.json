@@ -981,6 +981,398 @@
       }
     }
   },
+  "resourceManager": {
+    "header": {
+      "badge": "Resource manager",
+      "title": "Project resources",
+      "description": "All resource pages stay under the same route and switch through tabs."
+    },
+    "tabs": {
+      "overview": "Overview",
+      "public": "Public",
+      "code": "Code",
+      "i18n": "i18n",
+      "external": "External libs"
+    },
+    "overview": {
+      "tile": {
+        "needsAttention": "Needs attention",
+        "lookingGood": "Looking good",
+        "overview": "Overview"
+      },
+      "cards": {
+        "public": {
+          "description": "Static assets for export, deploy, and runtime previews."
+        },
+        "code": {
+          "description": "Scripts, styles, shaders. Versioned as project resources."
+        },
+        "i18n": {
+          "description": "Matrix editor for locales and translation keys."
+        },
+        "external": {
+          "description": "Runtime component + icon libraries (local presets + custom ids)."
+        }
+      },
+      "metrics": {
+        "files": "files",
+        "warnings": "warnings",
+        "updated": "updated",
+        "scriptsStyles": "scripts/styles",
+        "locales": "locales",
+        "namespaces": "namespaces",
+        "missingValues": "missing values",
+        "components": "components",
+        "icons": "icons",
+        "status": "status",
+        "configured": "configured",
+        "none": "none"
+      },
+      "actions": {
+        "open": "Open"
+      },
+      "quickActions": {
+        "badgeTitle": "Quick actions",
+        "title": "Build faster without leaving resources",
+        "description": "Create common assets, then jump straight into the dedicated editor tab.",
+        "badge": "Overview stays local (no network required).",
+        "newScript": "New script",
+        "scriptPath": "`untitled.ts` in scripts",
+        "scriptHint": "TypeScript is the default workflow for logic.",
+        "newStyle": "New style",
+        "stylePath": "`untitled.css` in styles",
+        "styleHint": "Drop in utility or custom component styles.",
+        "newShader": "New shader",
+        "shaderPath": "`untitled.glsl` in shaders",
+        "shaderHint": "Quick-start GLSL for effects and previews."
+      },
+      "healthCheck": {
+        "badge": "Health check",
+        "title": "What needs attention",
+        "publicWarnings": "Public has {{count}} warning hints.",
+        "publicClean": "Public assets look clean.",
+        "i18nMissing": "i18n has {{count}} empty cells. Base: {{baseLocale}}.",
+        "i18nGood": "i18n coverage looks good.",
+        "noComponentLib": "No component library configured yet.",
+        "worstLocale": "Worst locale: {{locale}} missing {{count}} keys vs base."
+      }
+    },
+    "public": {
+      "header": {
+        "title": "Public resources",
+        "description": "Left tree is editable and is the single source for export `public/*`."
+      },
+      "actions": {
+        "download": "Download"
+      },
+      "labels": {
+        "kind": "Kind",
+        "mime": "MIME",
+        "size": "Size",
+        "unknown": "unknown"
+      },
+      "preview": {
+        "preview": "Preview",
+        "source": "Source",
+        "fontSample": "Font sample",
+        "noInline": "No inline preview for this file type. Use download to inspect it.",
+        "selectFile": "Select a file to preview."
+      },
+      "hints": {
+        "title": "Best practice hints",
+        "pageHintsLabel": "Page hints:",
+        "pageHints": "{{warnings}} warnings, {{suggestions}} suggestions across public files."
+      }
+    },
+    "code": {
+      "header": {
+        "title": "Code workspace",
+        "description": "Manage scripts, styles and shader resources in one place."
+      },
+      "labels": {
+        "selected": "Selected",
+        "folder": "Folder",
+        "files": "Files",
+        "mime": "MIME",
+        "size": "Size",
+        "bytes": "bytes"
+      },
+      "actions": {
+        "save": "Save"
+      },
+      "empty": "Select a code file from the tree to edit its content."
+    },
+    "i18n": {
+      "header": {
+        "title": "i18n workspace",
+        "description": "Tri-pane translation workflow with key grid and real-time UI context."
+      },
+      "searchPlaceholder": "Search key or text",
+      "filters": {
+        "missingOnly": "Missing only",
+        "reviewedOnly": "Reviewed only"
+      },
+      "modules": "Modules",
+      "moduleStats": "{{keys}} keys / {{missing}} missing",
+      "progress": "Progress",
+      "progressComplete": "{{rate}}% complete",
+      "missingKeys": "Missing keys: {{count}}",
+      "newLocalePlaceholder": "new locale",
+      "newModulePlaceholder": "new module",
+      "newKeyPlaceholder": "new translation key",
+      "newSourcePlaceholder": "default value ({{locale}})",
+      "empty": "empty",
+      "new": "new",
+      "livePreview": "Live preview",
+      "componentPreview": "Component preview",
+      "baseLength": "Base length",
+      "previewLength": "Preview length",
+      "overflowRisk": "Potential overflow risk in compact components.",
+      "layoutHealthy": "Layout length looks healthy.",
+      "containsVariables": "Contains variables. Keep placeholders unchanged.",
+      "table": {
+        "key": "Key",
+        "status": "Status",
+        "action": "Action"
+      },
+      "actions": {
+        "addLocale": "Add locale",
+        "addModule": "Add module",
+        "export": "Export",
+        "import": "Import",
+        "delete": "Delete",
+        "add": "Add"
+      }
+    },
+    "external": {
+      "header": {
+        "title": "External library manager",
+        "description": "Split-view manager for loading state simulation, version switching, and runtime library tracking."
+      },
+      "loading": "Loading registered libraries...",
+      "searchPlaceholder": "Search libraries...",
+      "builtInLibs": "Built-in libs",
+      "addCategory": "Add {{category}}",
+      "modes": {
+        "locked": "Locked",
+        "latest": "Latest",
+        "dev": "Dev"
+      },
+      "categories": {
+        "component": "Component libs",
+        "icon": "Icon libs",
+        "other": "Other libs"
+      },
+      "activeLibraries": "Active libraries",
+      "libraryCount": "{{count}} libraries",
+      "debouncing": "Debouncing search...",
+      "searchReady": "Search ready",
+      "noMatch": "No library matches current search.",
+      "exports": "{{count}} exports",
+      "sizeWarning": "Size {{level}}: {{hint}}",
+      "status": {
+        "idle": "Idle",
+        "loading": "Loading",
+        "success": "Loaded",
+        "warning": "Loaded with warning",
+        "error": "Load failed"
+      },
+      "package": {
+        "level": {
+          "healthy": "Healthy",
+          "caution": "L1 Caution",
+          "warning": "L2 Warning",
+          "critical": "L3 Critical"
+        },
+        "hint": {
+          "healthy": "Within recommended size threshold.",
+          "caution": "Slightly above 500 KB, monitor bundle impact.",
+          "warning": "Large package, consider tree-shaking and route-level splitting.",
+          "critical": "Very large package, prefer lazy loading or lighter alternatives."
+        }
+      },
+      "actions": {
+        "addNewLibrary": "Add new library",
+        "remove": "Remove",
+        "retry": "Retry",
+        "cancel": "Cancel",
+        "addLibrary": "Add library"
+      },
+      "modal": {
+        "title": "Add new library",
+        "packageId": "package id",
+        "versionOptional": "version (optional)"
+      },
+      "details": {
+        "title": "Library details",
+        "empty": "Select a library from the left list.",
+        "license": "License",
+        "sizeHealthy": "Size healthy: {{size}}.",
+        "sizeWarning": "Size {{level}}: {{size}}. {{hint}}",
+        "providedComponents": "Provided components",
+        "versionSwitcher": "Version history quick switcher"
+      }
+    },
+    "tree": {
+      "publicEditable": "Public Tree (Editable)",
+      "fileReadonly": "File Tree (Readonly)",
+      "codeTree": "Code Tree",
+      "actions": {
+        "newFolder": "New folder",
+        "newFile": "New file",
+        "newCodeFile": "New code file",
+        "importFiles": "Import files",
+        "renameF2": "Rename (F2)",
+        "delete": "Delete"
+      },
+      "menu": {
+        "newFolder": "New folder",
+        "folder": "Folder",
+        "newFile": "New file",
+        "text": "Text",
+        "newFileJson": "New file (JSON)",
+        "newFileSvg": "New file (SVG)",
+        "importFiles": "Import files",
+        "any": "Any",
+        "importImage": "Import image",
+        "importFont": "Import font",
+        "importDocument": "Import document",
+        "rename": "Rename",
+        "delete": "Delete"
+      },
+      "codeKinds": {
+        "ts": "New TypeScript (.ts)",
+        "tsx": "New TSX (.tsx)",
+        "js": "New JavaScript (.js)",
+        "css": "New CSS (.css)",
+        "scss": "New SCSS (.scss)",
+        "json": "New JSON (.json)",
+        "wgsl": "New WGSL (.wgsl)",
+        "glsl": "New GLSL (.glsl)"
+      }
+    }
+  },
+  "animationEditor": {
+    "common": {
+      "timelineIndexed": "Timeline {{index}}",
+      "delete": "Delete",
+      "remove": "Remove",
+      "delShort": "Del"
+    },
+    "topBar": {
+      "title": "Animation",
+      "new": "New",
+      "closeTimeline": "Close timeline"
+    },
+    "timelines": {
+      "title": "Timelines",
+      "add": "Add",
+      "deleteTimeline": "Delete timeline"
+    },
+    "timelinePanel": {
+      "lanes": "Timeline Lanes",
+      "noTimeline": "No timeline.",
+      "noTracks": "No tracks",
+      "keyframe": "Keyframe"
+    },
+    "preview": {
+      "jumpToStart": "Jump to start",
+      "pause": "Pause",
+      "play": "Play",
+      "zoomOut": "Zoom out",
+      "zoomIn": "Zoom in",
+      "resetZoom": "Reset zoom",
+      "selectBindingTarget": "Select a binding target to preview this component."
+    },
+    "svgFilters": {
+      "title": "SVG Filters",
+      "add": "Add",
+      "empty": "No SVG filters.",
+      "units": "Filter units",
+      "unitsDefault": "units: default",
+      "unitsValue": "units: {{unit}}",
+      "primitiveType": "Primitive type",
+      "addPrimitive": "Add primitive"
+    },
+    "keyframes": {
+      "title": "Keyframes",
+      "add": "Add",
+      "atMs": "At milliseconds",
+      "value": "Value",
+      "easing": "easing",
+      "hold": "Hold"
+    },
+    "track": {
+      "expand": "Expand track",
+      "collapse": "Collapse track",
+      "delete": "Delete track",
+      "kind": "Track kind",
+      "styleProperty": "Style property",
+      "filterFunction": "Filter function",
+      "unit": "Unit",
+      "svgFilter": "SVG filter",
+      "svgPrimitive": "SVG primitive",
+      "svgAttr": "SVG attribute"
+    },
+    "binding": {
+      "targetNode": "Target node",
+      "delete": "Delete binding",
+      "addStyle": "+ Style",
+      "addCssFilter": "+ CSS filter",
+      "addSvgFilter": "+ SVG filter"
+    },
+    "bindings": {
+      "summary": "{{count}} bindings, {{cursorMs}}ms / {{durationMs}}ms",
+      "createTimelineFirst": "Create a timeline first.",
+      "timelineName": "Timeline name",
+      "timelineDuration": "Timeline duration (ms)",
+      "title": "Bindings",
+      "addBinding": "Add binding"
+    },
+    "inspector": {
+      "timeline": {
+        "title": "Timeline",
+        "name": "Name",
+        "durationMs": "durationMs",
+        "delayMs": "delayMs",
+        "direction": "direction",
+        "directionOption": "direction: {{value}}",
+        "fillMode": "fillMode",
+        "fillModeOption": "fill mode: {{value}}",
+        "iterations": "iterations",
+        "infinite": "infinite",
+        "easing": "easing"
+      },
+      "binding": {
+        "title": "Binding",
+        "select": "Select binding",
+        "targetNode": "target node",
+        "targetHint": "Binding target is managed in Blueprint Inspector.",
+        "empty": "No mounted targets. Use Blueprint Inspector to mount components."
+      },
+      "track": {
+        "title": "Track",
+        "addStyle": "+Style",
+        "addFilter": "+Filter",
+        "addSvg": "+SVG",
+        "select": "Select track",
+        "kind": "Track kind",
+        "kindOption": "kind: {{kind}}",
+        "styleProp": "Style property",
+        "stylePropOption": "prop: {{property}}",
+        "filterFn": "Filter function",
+        "filterFnOption": "fn: {{fn}}",
+        "unit": "Unit",
+        "unitOption": "unit: {{unit}}",
+        "svgFilter": "SVG filter",
+        "svgFilterOption": "filter: {{id}}",
+        "svgPrimitive": "SVG primitive",
+        "svgPrimitiveOption": "primitive: {{id}}",
+        "attr": "attr",
+        "delete": "Delete track"
+      }
+    }
+  },
   "nodeGraph": {
     "manager": {
       "title": "Node Graphs",

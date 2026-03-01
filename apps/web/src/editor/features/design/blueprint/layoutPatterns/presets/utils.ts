@@ -2,8 +2,8 @@ import type { ComponentNode } from '@/core/types/engine.types';
 import {
   createLayoutPatternRoleDataAttributes,
   createLayoutPatternRootDataAttributes,
-} from '../dataAttributes';
-import type { LayoutPatternRole } from '../layoutPattern.types';
+} from '@/editor/features/design/blueprint/layoutPatterns/dataAttributes';
+import type { LayoutPatternRole } from '@/editor/features/design/blueprint/layoutPatterns/layoutPattern.types';
 
 const withDataAttributes = (
   node: ComponentNode,

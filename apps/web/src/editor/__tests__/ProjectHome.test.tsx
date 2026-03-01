@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import ProjectHome from '../ProjectHome';
+import ProjectHome from '@/editor/ProjectHome';
 import { resetEditorStore } from '@/test-utils/editorStore';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 

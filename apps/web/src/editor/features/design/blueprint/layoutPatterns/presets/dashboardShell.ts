@@ -1,4 +1,4 @@
-import type { LayoutPatternDefinition } from '../layoutPattern.types';
+import type { LayoutPatternDefinition } from '@/editor/features/design/blueprint/layoutPatterns/layoutPattern.types';
 import { createPatternRoleNode, createPatternRootNode } from './utils';
 
 export const DASHBOARD_SHELL_LAYOUT_PATTERN: LayoutPatternDefinition<{

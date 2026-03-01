@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validateMirDocument } from '../validator';
+import { validateMirDocument } from '@/mir/validator/validator';
 
 describe('validateMirDocument', () => {
   it('normalizes legacy document version to 1.2', () => {

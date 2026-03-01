@@ -4,12 +4,12 @@ import { MdrIcon } from '@mdr/ui';
 import {
   createNodeFromPaletteItem,
   getTreeDropPlacement,
-} from '../BlueprintEditor';
-import { getComponentGroups } from '../BlueprintEditor.data';
+} from '@/editor/features/design/BlueprintEditor';
+import { getComponentGroups } from '@/editor/features/design/BlueprintEditor.data';
 import {
   registerComponentGroup,
   resetComponentRegistry,
-} from '../blueprint/registry';
+} from '@/editor/features/design/blueprint/registry';
 import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
 import { mdrAdapter } from '@/mir/renderer/registry';
 import { createMirDoc } from '@/test-utils/editorStore';

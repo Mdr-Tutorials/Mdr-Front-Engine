@@ -1,4 +1,5 @@
 import type { ActiveLibrary, PackageSizeThresholds } from './types';
+import { useTranslation } from 'react-i18next';
 import {
   formatPackageSize,
   getPackageSizeMeta,
@@ -32,18 +33,32 @@ export function ExternalLibraryListPanel({
   onRetryLibrary,
   onVersionChange,
 }: ExternalLibraryListPanelProps) {
+  const { t } = useTranslation('editor');
+
+  const resolveStatusText = (status: ActiveLibrary['status']) =>
+    t(`resourceManager.external.status.${status}`);
+
+  const resolvePackageLevelLabel = (level: string) =>
+    t(`resourceManager.external.package.level.${level}`);
+
+  const resolvePackageHint = (level: string) =>
+    t(`resourceManager.external.package.hint.${level}`);
+
   return (
     <section className="grid gap-3 rounded-xl border border-black/8 bg-black/[0.015] p-3">
       <div className="flex items-center justify-between gap-2">
         <div>
           <h3 className="text-sm font-semibold text-(--color-9)">
-            Active libraries
+            {t('resourceManager.external.activeLibraries')}
           </h3>
           <p className="mt-1 text-xs text-(--color-7)">
-            {activeLibraries.length} libraries ·{' '}
+            {t('resourceManager.external.libraryCount', {
+              count: activeLibraries.length,
+            })}{' '}
+            ·{' '}
             {searchInput.trim().toLowerCase() !== debouncedSearchInput
-              ? 'Debouncing search...'
-              : 'Search ready'}
+              ? t('resourceManager.external.debouncing')
+              : t('resourceManager.external.searchReady')}
           </p>
         </div>
         <button
@@ -52,13 +67,13 @@ export function ExternalLibraryListPanel({
           className="rounded-lg border border-black/12 bg-(--color-0) px-3 py-1.5 text-xs text-(--color-8)"
           onClick={onOpenAddModal}
         >
-          + Add new library
+          + {t('resourceManager.external.actions.addNewLibrary')}
         </button>
       </div>
 
       {filteredLibraries.length === 0 ? (
         <div className="rounded-lg border border-dashed border-black/12 bg-(--color-0) p-4 text-sm text-(--color-7)">
-          No library matches current search.
+          {t('resourceManager.external.noMatch')}
         </div>
       ) : (
         <div className="grid gap-2">
@@ -96,7 +111,7 @@ export function ExternalLibraryListPanel({
                     <span
                       className={`h-2.5 w-2.5 rounded-full ${statusMeta.dot}`}
                     />
-                    <span>{statusMeta.text}</span>
+                    <span>{resolveStatusText(library.status)}</span>
                     <span>·</span>
                     <span>{formatPackageSize(library.packageSizeKb)}</span>
                     {packageSizeMeta.level !== 'healthy' ? (
@@ -105,12 +120,16 @@ export function ExternalLibraryListPanel({
                         <span
                           className={`rounded-md border px-1.5 py-0.5 text-[11px] ${packageSizeMeta.badgeClassName}`}
                         >
-                          {packageSizeMeta.label}
+                          {resolvePackageLevelLabel(packageSizeMeta.level)}
                         </span>
                       </>
                     ) : null}
                     <span>·</span>
-                    <span>{library.components.length} exports</span>
+                    <span>
+                      {t('resourceManager.external.exports', {
+                        count: library.components.length,
+                      })}
+                    </span>
                   </div>
                 </button>
                 {library.status === 'loading' ? (
@@ -128,7 +147,10 @@ export function ExternalLibraryListPanel({
                   <p
                     className={`rounded-lg border px-2 py-1 text-xs ${packageSizeMeta.bannerClassName}`}
                   >
-                    Size {packageSizeMeta.label}: {packageSizeMeta.hint}
+                    {t('resourceManager.external.sizeWarning', {
+                      level: resolvePackageLevelLabel(packageSizeMeta.level),
+                      hint: resolvePackageHint(packageSizeMeta.level),
+                    })}
                   </p>
                 ) : null}
                 <div className="flex flex-wrap items-center gap-2">
@@ -152,7 +174,7 @@ export function ExternalLibraryListPanel({
                     className="rounded-lg border border-black/10 px-2.5 py-1 text-xs text-(--color-8)"
                     onClick={() => onRemoveLibrary(library.id)}
                   >
-                    Remove
+                    {t('resourceManager.external.actions.remove')}
                   </button>
                   {library.status === 'error' ? (
                     <button
@@ -163,7 +185,7 @@ export function ExternalLibraryListPanel({
                         onRetryLibrary(library.id, library.version)
                       }
                     >
-                      Retry
+                      {t('resourceManager.external.actions.retry')}
                     </button>
                   ) : null}
                 </div>
@@ -178,7 +200,7 @@ export function ExternalLibraryListPanel({
         className="rounded-lg border border-dashed border-black/18 bg-(--color-0) px-3 py-2 text-sm text-(--color-8)"
         onClick={onOpenAddModal}
       >
-        + Add new library
+        + {t('resourceManager.external.actions.addNewLibrary')}
       </button>
     </section>
   );

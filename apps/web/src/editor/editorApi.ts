@@ -129,8 +129,8 @@ const request = async <T>(
   });
 
 export const editorApi = {
-  listProjects: async (token: string) =>
-    request<{ projects: ProjectSummary[] }>(token, '/projects'),
+  listProjects: async (token: string, options: RequestInit = {}) =>
+    request<{ projects: ProjectSummary[] }>(token, '/projects', options),
 
   createProject: async (
     token: string,
@@ -147,10 +147,15 @@ export const editorApi = {
       body: JSON.stringify(data),
     }),
 
-  getProject: async (token: string, projectId: string) =>
+  getProject: async (
+    token: string,
+    projectId: string,
+    options: RequestInit = {}
+  ) =>
     request<{ project: ProjectDetail }>(
       token,
-      `/projects/${encodeURIComponent(projectId)}`
+      `/projects/${encodeURIComponent(projectId)}`,
+      options
     ),
 
   updateProject: async (
@@ -170,16 +175,26 @@ export const editorApi = {
       }
     ),
 
-  getWorkspace: async (token: string, workspaceId: string) =>
+  getWorkspace: async (
+    token: string,
+    workspaceId: string,
+    options: RequestInit = {}
+  ) =>
     request<{ workspace: WorkspaceSnapshot }>(
       token,
-      `/workspaces/${encodeURIComponent(workspaceId)}`
+      `/workspaces/${encodeURIComponent(workspaceId)}`,
+      options
     ),
 
-  getWorkspaceCapabilities: async (token: string, workspaceId: string) =>
+  getWorkspaceCapabilities: async (
+    token: string,
+    workspaceId: string,
+    options: RequestInit = {}
+  ) =>
     request<WorkspaceCapabilitiesResponse>(
       token,
-      `/workspaces/${encodeURIComponent(workspaceId)}/capabilities`
+      `/workspaces/${encodeURIComponent(workspaceId)}/capabilities`,
+      options
     ),
 
   saveWorkspaceDocument: async (

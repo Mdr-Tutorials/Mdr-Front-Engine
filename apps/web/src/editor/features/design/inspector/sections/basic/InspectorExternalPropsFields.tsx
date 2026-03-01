@@ -1,5 +1,5 @@
-import { InspectorRow } from '../../components/InspectorRow';
-import { useInspectorSectionContext } from '../InspectorSectionContext';
+import { InspectorRow } from '@/editor/features/design/inspector/components/InspectorRow';
+import { useInspectorSectionContext } from '@/editor/features/design/inspector/sections/InspectorSectionContext';
 
 const isPrimitive = (value: unknown): value is string | number | boolean =>
   typeof value === 'string' ||

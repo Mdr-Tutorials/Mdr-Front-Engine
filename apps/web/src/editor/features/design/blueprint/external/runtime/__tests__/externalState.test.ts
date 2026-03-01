@@ -45,7 +45,8 @@ vi.mock('../../runtime/engine', () => ({
   }),
 }));
 
-const loadExternalModule = async () => import('../../index');
+const loadExternalModule = async () =>
+  import('@/editor/features/design/blueprint/external/index');
 
 describe('external library state', () => {
   beforeEach(() => {

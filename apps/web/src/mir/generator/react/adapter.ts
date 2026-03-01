@@ -1,4 +1,4 @@
-import type { TargetAdapter } from '../core/adapter';
+import type { TargetAdapter } from '@/mir/generator/core/adapter';
 
 const toPascalCase = (value: string) =>
   value

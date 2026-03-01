@@ -8,7 +8,7 @@ import {
   normalizeBuiltInAction,
   type BuiltInActionName,
 } from '@/mir/actions/registry';
-import { useInspectorSectionContext } from '../InspectorSectionContext';
+import { useInspectorSectionContext } from '@/editor/features/design/inspector/sections/InspectorSectionContext';
 import { TriggerNavigateFields } from './TriggerNavigateFields';
 import { TriggerGraphFields } from './TriggerGraphFields';
 

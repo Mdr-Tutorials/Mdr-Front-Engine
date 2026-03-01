@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { generateReactBundle, generateReactCode } from '../mirToReact';
+import {
+  generateReactBundle,
+  generateReactCode,
+} from '@/mir/generator/mirToReact';
 import type { MIRDocument } from '@/core/types/engine.types';
-import { antdReactAdapter } from '../react/antdAdapter';
+import { antdReactAdapter } from '@/mir/generator/react/antdAdapter';
 
 const createDoc = (): MIRDocument => ({
   version: '1.0',

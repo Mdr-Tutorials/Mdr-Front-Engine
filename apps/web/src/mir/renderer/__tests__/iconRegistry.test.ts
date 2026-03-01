@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const loadIconRegistry = () => import('../iconRegistry');
+const loadIconRegistry = () => import('@/mir/renderer/iconRegistry');
 
 describe('icon registry', () => {
   beforeEach(() => {

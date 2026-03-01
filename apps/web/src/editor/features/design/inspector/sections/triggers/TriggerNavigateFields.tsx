@@ -1,4 +1,4 @@
-import { useInspectorSectionContext } from '../InspectorSectionContext';
+import { useInspectorSectionContext } from '@/editor/features/design/inspector/sections/InspectorSectionContext';
 
 type TriggerNavigateFieldsProps = {
   itemKey: string;

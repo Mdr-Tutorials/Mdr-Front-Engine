@@ -5,6 +5,7 @@ import { ArrowLeft, Boxes, Component, Flame, Workflow } from 'lucide-react';
 import { MdrEmpty } from '@mdr/ui';
 import { communityApi, type CommunityProjectDetail } from './communityApi';
 import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
+import { isAbortError } from '@/infra/api';
 import {
   getRuntimeRegistryRevision,
   runtimeRegistryUpdatedEvent,
@@ -59,17 +60,22 @@ export function CommunityDetailPage() {
     }
 
     let cancelled = false;
+    const controller =
+      typeof AbortController === 'function' ? new AbortController() : null;
+    const requestOptions: RequestInit = controller
+      ? { signal: controller.signal }
+      : {};
     setLoading(true);
     setError(null);
 
     communityApi
-      .getProject(projectId)
+      .getProject(projectId, requestOptions)
       .then((payload) => {
         if (cancelled) return;
         setCommunityProject(payload.project);
       })
       .catch((requestError: unknown) => {
-        if (cancelled) return;
+        if (cancelled || isAbortError(requestError)) return;
         setError(
           requestError instanceof Error
             ? requestError.message
@@ -82,6 +88,7 @@ export function CommunityDetailPage() {
 
     return () => {
       cancelled = true;
+      controller?.abort();
     };
   }, [projectId, t]);
 

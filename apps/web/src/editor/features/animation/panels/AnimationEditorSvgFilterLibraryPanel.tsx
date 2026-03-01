@@ -1,6 +1,10 @@
 import { Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { SvgFilterDefinition } from '@/core/types/engine.types';
-import { SVG_TYPES, SVG_UNITS } from '../animationEditorUi';
+import {
+  SVG_TYPES,
+  SVG_UNITS,
+} from '@/editor/features/animation/animationEditorUi';
 
 type AnimationEditorSvgFilterLibraryPanelProps = {
   svgFilters: SvgFilterDefinition[];
@@ -30,17 +34,23 @@ export const AnimationEditorSvgFilterLibraryPanel = ({
   onDeleteSvgPrimitive,
   onUpdateSvgPrimitiveType,
 }: AnimationEditorSvgFilterLibraryPanelProps) => {
+  const { t } = useTranslation('editor');
+
   return (
     <aside className="w-[340px] shrink-0 rounded-2xl border border-black/8 bg-(--color-0) p-4 max-[1280px]:w-full">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold">SVG Filter Library</h2>
+        <h2 className="text-sm font-semibold">
+          {t('animationEditor.svgFilters.title')}
+        </h2>
         <button
           type="button"
           onClick={onAddSvgFilter}
           className="inline-flex items-center gap-1 rounded border border-black/15 px-2 py-1 text-xs"
+          aria-label={t('animationEditor.svgFilters.add')}
+          title={t('animationEditor.svgFilters.add')}
         >
           <Plus size={12} />
-          Add
+          {t('animationEditor.svgFilters.add')}
         </button>
       </div>
 
@@ -57,8 +67,10 @@ export const AnimationEditorSvgFilterLibraryPanel = ({
                 onClick={() => onDeleteSvgFilter(filter.id)}
                 disabled={!canRemoveSvgFilter}
                 className="rounded border border-black/15 px-1.5 py-0.5 text-[11px] disabled:opacity-50"
+                aria-label={t('animationEditor.common.delete')}
+                title={t('animationEditor.common.delete')}
               >
-                Delete
+                {t('animationEditor.common.delete')}
               </button>
             </div>
 
@@ -75,11 +87,15 @@ export const AnimationEditorSvgFilterLibraryPanel = ({
                 )
               }
               className="mt-2 w-full rounded border border-black/15 px-2 py-1 text-xs"
+              title={t('animationEditor.svgFilters.units')}
+              aria-label={t('animationEditor.svgFilters.units')}
             >
-              <option value="">default</option>
+              <option value="">
+                {t('animationEditor.svgFilters.unitsDefault')}
+              </option>
               {SVG_UNITS.map((unit) => (
                 <option key={unit} value={unit}>
-                  {unit}
+                  {t('animationEditor.svgFilters.unitsValue', { unit })}
                 </option>
               ))}
             </select>
@@ -99,8 +115,10 @@ export const AnimationEditorSvgFilterLibraryPanel = ({
                       }
                       disabled={filter.primitives.length <= 1}
                       className="rounded border border-black/15 px-1.5 py-0.5 text-[10px] disabled:opacity-50"
+                      aria-label={t('animationEditor.common.remove')}
+                      title={t('animationEditor.common.remove')}
                     >
-                      Remove
+                      {t('animationEditor.common.remove')}
                     </button>
                   </div>
                   <select
@@ -113,6 +131,8 @@ export const AnimationEditorSvgFilterLibraryPanel = ({
                       )
                     }
                     className="w-full rounded border border-black/15 px-2 py-1 text-xs"
+                    title={t('animationEditor.svgFilters.primitiveType')}
+                    aria-label={t('animationEditor.svgFilters.primitiveType')}
                   >
                     {SVG_TYPES.map((type) => (
                       <option key={type} value={type}>
@@ -126,16 +146,18 @@ export const AnimationEditorSvgFilterLibraryPanel = ({
                 type="button"
                 onClick={() => onAddSvgPrimitive(filter.id)}
                 className="inline-flex items-center gap-1 rounded border border-black/15 px-2 py-1 text-[11px]"
+                aria-label={t('animationEditor.svgFilters.addPrimitive')}
+                title={t('animationEditor.svgFilters.addPrimitive')}
               >
                 <Plus size={10} />
-                Add primitive
+                {t('animationEditor.svgFilters.addPrimitive')}
               </button>
             </div>
           </article>
         ))}
         {svgFilters.length === 0 ? (
           <div className="rounded border border-dashed border-black/15 px-3 py-6 text-center text-sm text-(--color-6)">
-            No SVG filters yet.
+            {t('animationEditor.svgFilters.empty')}
           </div>
         ) : null}
       </div>

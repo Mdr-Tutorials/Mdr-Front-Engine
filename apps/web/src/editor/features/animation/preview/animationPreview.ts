@@ -17,6 +17,78 @@ type PreviewSnapshot = {
   svgFilters: SvgFilterDefinition[];
 };
 
+type NodeFilterEditMap = Map<
+  string,
+  Map<string, Record<string, number | string>>
+>;
+
+const getTimelineIterations = (
+  timeline: AnimationTimeline
+): number | 'infinite' =>
+  timeline.iterations === 'infinite'
+    ? 'infinite'
+    : typeof timeline.iterations === 'number' && timeline.iterations > 0
+      ? Math.floor(timeline.iterations)
+      : 1;
+
+const isReverseAtIteration = (
+  direction: AnimationTimeline['direction'] | undefined,
+  iterationIndex: number
+) => {
+  if (direction === 'reverse') return true;
+  if (direction === 'alternate') return iterationIndex % 2 === 1;
+  if (direction === 'alternate-reverse') return iterationIndex % 2 === 0;
+  return false;
+};
+
+const resolveTimelineCursorMs = (
+  timeline: AnimationTimeline,
+  globalMs: number
+): number | null => {
+  const durationMs = Math.max(1, timeline.durationMs);
+  const delayMs = Math.max(0, timeline.delayMs ?? 0);
+  const elapsedMs = globalMs - delayMs;
+  const iterations = getTimelineIterations(timeline);
+  const totalDurationMs =
+    iterations === 'infinite'
+      ? Number.POSITIVE_INFINITY
+      : durationMs * iterations;
+
+  if (elapsedMs < 0) {
+    const fillMode = timeline.fillMode ?? 'none';
+    if (fillMode !== 'backwards' && fillMode !== 'both') {
+      return null;
+    }
+    return isReverseAtIteration(timeline.direction, 0) ? durationMs : 0;
+  }
+
+  if (elapsedMs >= totalDurationMs) {
+    if (iterations === 'infinite') {
+      const loopMs = elapsedMs % durationMs;
+      return isReverseAtIteration(
+        timeline.direction,
+        Math.floor(elapsedMs / durationMs)
+      )
+        ? durationMs - loopMs
+        : loopMs;
+    }
+    const fillMode = timeline.fillMode ?? 'none';
+    if (fillMode !== 'forwards' && fillMode !== 'both') {
+      return null;
+    }
+    const lastIterationIndex = Math.max(0, iterations - 1);
+    return isReverseAtIteration(timeline.direction, lastIterationIndex)
+      ? 0
+      : durationMs;
+  }
+
+  const iterationIndex = Math.floor(elapsedMs / durationMs);
+  const loopMs = elapsedMs - iterationIndex * durationMs;
+  return isReverseAtIteration(timeline.direction, iterationIndex)
+    ? durationMs - loopMs
+    : loopMs;
+};
+
 const escapeAttrValue = (value: string) =>
   value.replaceAll('\\', '\\\\').replaceAll('"', '\\"');
 
@@ -42,26 +114,20 @@ const ensureFilterPart = (parts: string[], nextPart: string) => {
   parts.push(nextPart);
 };
 
-export const buildAnimationPreviewSnapshot = ({
+const applyTimelineSnapshot = ({
   timeline,
   cursorMs,
-  svgFilters,
+  stylesByNodeId,
+  filterEditsByFilterId,
 }: {
-  timeline: AnimationTimeline | undefined;
+  timeline: AnimationTimeline;
   cursorMs: number;
-  svgFilters: SvgFilterDefinition[];
-}): PreviewSnapshot => {
-  if (!timeline) {
-    return { cssText: '', svgFilters };
-  }
-
-  const stylesByNodeId = new Map<string, NodeStyleDraft>();
-  const filterEditsByFilterId = new Map<
-    string,
-    Map<string, Record<string, number | string>>
-  >();
-
+  stylesByNodeId: Map<string, NodeStyleDraft>;
+  filterEditsByFilterId: NodeFilterEditMap;
+}) => {
   timeline.bindings.forEach((binding) => {
+    const targetNodeId = binding.targetNodeId.trim();
+    if (!targetNodeId) return;
     const translateXTracks: number[] = [];
     const translateYTracks: number[] = [];
     const scaleTracks: number[] = [];
@@ -144,9 +210,91 @@ export const buildAnimationPreviewSnapshot = ({
     }
 
     if (Object.keys(draft).length) {
-      stylesByNodeId.set(binding.targetNodeId, draft);
+      const previousStyle = stylesByNodeId.get(targetNodeId);
+      stylesByNodeId.set(targetNodeId, {
+        ...(previousStyle ?? {}),
+        ...draft,
+      });
     }
   });
+};
+
+export const buildAnimationPreviewSnapshot = ({
+  timeline,
+  cursorMs,
+  svgFilters,
+}: {
+  timeline: AnimationTimeline | undefined;
+  cursorMs: number;
+  svgFilters: SvgFilterDefinition[];
+}): PreviewSnapshot => {
+  if (!timeline) {
+    return { cssText: '', svgFilters };
+  }
+
+  const stylesByNodeId = new Map<string, NodeStyleDraft>();
+  const filterEditsByFilterId: NodeFilterEditMap = new Map();
+  applyTimelineSnapshot({
+    timeline,
+    cursorMs,
+    stylesByNodeId,
+    filterEditsByFilterId,
+  });
+
+  return buildPreviewSnapshot({
+    stylesByNodeId,
+    filterEditsByFilterId,
+    svgFilters,
+  });
+};
+
+export const buildAnimationPreviewSnapshotFromTimelines = ({
+  timelines,
+  globalMs,
+  svgFilters,
+}: {
+  timelines: AnimationTimeline[];
+  globalMs: number;
+  svgFilters: SvgFilterDefinition[];
+}): PreviewSnapshot => {
+  if (!timelines.length) {
+    return { cssText: '', svgFilters };
+  }
+  const stylesByNodeId = new Map<string, NodeStyleDraft>();
+  const filterEditsByFilterId: NodeFilterEditMap = new Map();
+  timelines.forEach((timeline) => {
+    const cursorMs = resolveTimelineCursorMs(timeline, Math.max(0, globalMs));
+    if (cursorMs === null) return;
+    applyTimelineSnapshot({
+      timeline,
+      cursorMs,
+      stylesByNodeId,
+      filterEditsByFilterId,
+    });
+  });
+
+  return buildPreviewSnapshot({
+    stylesByNodeId,
+    filterEditsByFilterId,
+    svgFilters,
+  });
+};
+
+const buildPreviewSnapshot = ({
+  stylesByNodeId,
+  filterEditsByFilterId,
+  svgFilters,
+}: {
+  stylesByNodeId: Map<string, NodeStyleDraft>;
+  filterEditsByFilterId: NodeFilterEditMap;
+  svgFilters: SvgFilterDefinition[];
+}): PreviewSnapshot => {
+  if (!stylesByNodeId.size && !filterEditsByFilterId.size) {
+    return {
+      cssText: '',
+      svgFilters,
+    };
+  }
 
   const rules: string[] = [];
   stylesByNodeId.forEach((style, nodeId) => {
@@ -194,8 +342,5 @@ export const buildAnimationPreviewSnapshot = ({
     };
   });
 
-  return {
-    cssText: rules.join('\n'),
-    svgFilters: animatedSvgFilters,
-  };
+  return { cssText: rules.join('\n'), svgFilters: animatedSvgFilters };
 };

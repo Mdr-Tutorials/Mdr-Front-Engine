@@ -24,7 +24,7 @@ import {
   moveChildById,
   removeNodeById,
 } from './BlueprintEditor.tree';
-import { normalizeAnimationDefinition } from '../animation/animationEditorModel';
+import { normalizeAnimationDefinition } from '@/editor/features/animation/animationEditorModel';
 import {
   getNavigateLinkKind,
   resolveNavigateTarget,
@@ -488,6 +488,7 @@ export const useBlueprintEditorController = () => {
 
   const handleNodeSelect = (nodeId: string) => {
     setInspectorCollapsed(false);
+    if (selectedId === nodeId) return;
     setBlueprintState(blueprintKey, { selectedId: nodeId });
   };
 

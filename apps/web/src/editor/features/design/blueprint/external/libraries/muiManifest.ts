@@ -1,4 +1,4 @@
-import type { ExternalLibraryManifest } from '../runtime/types';
+import type { ExternalLibraryManifest } from '@/editor/features/design/blueprint/external/runtime/types';
 
 const SIZE_OPTIONS = [
   { id: 'small', label: 'S', value: 'small' },

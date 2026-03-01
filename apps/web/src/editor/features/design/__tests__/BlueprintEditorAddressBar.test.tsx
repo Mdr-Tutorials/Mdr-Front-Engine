@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { BlueprintEditorAddressBar } from '../BlueprintEditorAddressBar';
+import { BlueprintEditorAddressBar } from '@/editor/features/design/BlueprintEditorAddressBar';
 
 vi.mock('@mdr/ui', () => ({
   MdrInput: ({

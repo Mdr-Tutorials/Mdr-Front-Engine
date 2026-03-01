@@ -12,9 +12,12 @@
   MdrTabs,
   MdrText,
 } from '@mdr/ui';
-import type { ComponentGroup } from '../../../BlueprintEditor.types';
-import { buildVariants } from '../helpers';
-import { NAV_COLUMNS, SIZE_OPTIONS } from '../options';
+import type { ComponentGroup } from '@/editor/features/design/BlueprintEditor.types';
+import { buildVariants } from '@/editor/features/design/blueprint/data/helpers';
+import {
+  NAV_COLUMNS,
+  SIZE_OPTIONS,
+} from '@/editor/features/design/blueprint/data/options';
 import {
   ANCHOR_ITEMS,
   BREADCRUMB_ITEMS,
@@ -22,7 +25,7 @@ import {
   NAVBAR_ITEMS,
   SIDEBAR_ITEMS,
   TAB_ITEMS,
-} from '../sampleData';
+} from '@/editor/features/design/blueprint/data/sampleData';
 
 export const NAV_GROUP: ComponentGroup = {
   id: 'nav',

@@ -8,14 +8,14 @@ import {
 } from 'lucide-react';
 import { MdrInput, MdrRichTextEditor } from '@mdr/ui';
 import { useState } from 'react';
-import { InspectorRow } from '../../components/InspectorRow';
-import { getTextFieldLabel } from '../../../BlueprintEditorInspector.utils';
+import { InspectorRow } from '@/editor/features/design/inspector/components/InspectorRow';
+import { getTextFieldLabel } from '@/editor/features/design/BlueprintEditorInspector.utils';
 import {
   getNodeTextFieldMode,
   updateNodeTextField,
   updateNodeTextFieldMode,
-} from '../../../blueprintText';
-import { useInspectorSectionContext } from '../InspectorSectionContext';
+} from '@/editor/features/design/blueprintText';
+import { useInspectorSectionContext } from '@/editor/features/design/inspector/sections/InspectorSectionContext';
 
 const INSPECTOR_ACTION_ICON_BUTTON_CLASS =
   'inline-flex h-5 w-4.5 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)';

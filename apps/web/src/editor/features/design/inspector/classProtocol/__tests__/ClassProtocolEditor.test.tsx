@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { ClassProtocolEditor } from '../ClassProtocolEditor';
+import { ClassProtocolEditor } from '@/editor/features/design/inspector/classProtocol/ClassProtocolEditor';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
 
 describe('ClassProtocolEditor', () => {

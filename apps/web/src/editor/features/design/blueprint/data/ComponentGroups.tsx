@@ -1,4 +1,4 @@
-﻿import type { ComponentGroup } from '../../BlueprintEditor.types';
+﻿import type { ComponentGroup } from '@/editor/features/design/BlueprintEditor.types';
 import { BASE_GROUP } from './groups/BaseGroup';
 import { LAYOUT_GROUP } from './groups/LayoutGroup';
 import { LAYOUT_PATTERN_GROUP } from './groups/LayoutPatternGroup';

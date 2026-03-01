@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react';
 import { ChevronDown, ChevronRight, Plus } from 'lucide-react';
-import type { NodeBranchItem, NodeKeyValueItem } from '../graphNodeShared';
+import type {
+  NodeBranchItem,
+  NodeKeyValueItem,
+} from '@/editor/features/development/reactflow/graphNodeShared';
 import type { NodeI18n } from './nodeI18n';
 import { tNode } from './nodeI18n';
 

@@ -1,18 +1,18 @@
 import React from 'react';
 import type { ComponentAdapter } from '@/mir/renderer/registry';
-import type { ComponentPreviewItem } from '../../../BlueprintEditor.types';
+import type { ComponentPreviewItem } from '@/editor/features/design/BlueprintEditor.types';
 import type {
   CanonicalExternalComponent,
   ExternalCanonicalGroup,
   ExternalLibraryDescriptor,
   ExternalLibraryProfile,
-} from '../runtime/types';
+} from '@/editor/features/design/blueprint/external/runtime/types';
 import {
   getValueByPath,
   isRenderableComponent,
   toKebabCase,
   toPascalCase,
-} from '../runtime/utils';
+} from '@/editor/features/design/blueprint/external/runtime/utils';
 import { muiLibraryManifest } from './muiManifest';
 
 type MuiModule = Record<string, unknown>;
@@ -138,6 +138,37 @@ const muiDialogAdapter: ComponentAdapter = {
   },
 };
 
+const muiAccordionAdapter: ComponentAdapter = {
+  kind: 'custom',
+  supportsChildren: true,
+  mapProps: ({ node, resolvedProps, resolvedText }) => {
+    const props = { ...resolvedProps };
+    const hasNodeChildren = Boolean(node.children?.length);
+    if (hasNodeChildren) {
+      return {
+        props,
+      };
+    }
+
+    const summaryId = `${node.id}-summary`;
+    const regionId = `${node.id}-region`;
+    const summaryLabel =
+      typeof resolvedText === 'string' && resolvedText.trim().length > 0
+        ? resolvedText
+        : 'Accordion';
+
+    return {
+      props,
+      children: [
+        <div key="summary" id={summaryId} aria-controls={regionId}>
+          {summaryLabel}
+        </div>,
+        <div key="details">Details</div>,
+      ],
+    };
+  },
+};
+
 const pathToRuntimeType = (path: string) =>
   `Mui${path.split('.').map(toPascalCase).join('')}`;
 
@@ -157,6 +188,7 @@ const getComponentByPath = (
 const getAdapterByPath = (path: string): ComponentAdapter => {
   if (path === 'TextField') return muiInputAdapter;
   if (path === 'Dialog') return muiDialogAdapter;
+  if (path === 'Accordion') return muiAccordionAdapter;
   return muiTextAdapter;
 };
 

@@ -1,4 +1,4 @@
-import type { LayoutPatternDefinition } from '../layoutPattern.types';
+import type { LayoutPatternDefinition } from '@/editor/features/design/blueprint/layoutPatterns/layoutPattern.types';
 import { DASHBOARD_SHELL_LAYOUT_PATTERN } from './dashboardShell';
 import { HOLY_GRAIL_LAYOUT_PATTERN } from './holyGrail';
 import { SPLIT_LAYOUT_PATTERN } from './split';

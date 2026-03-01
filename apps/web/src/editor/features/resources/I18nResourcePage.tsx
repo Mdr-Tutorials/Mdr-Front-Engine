@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { MdrButton, MdrInput, MdrSearch } from '@mdr/ui';
 import { Download, Upload } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
 import {
   collectLocaleMissingStats,
@@ -110,6 +111,7 @@ const getCompletionRate = (
 };
 
 export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
+  const { t } = useTranslation('editor');
   const { projectId } = useParams();
   const [store, setStore] = useState<I18nLocaleStore>(() =>
     readI18nStore(projectId)
@@ -442,10 +444,10 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
     <section className={shellClassName}>
       <article className="rounded-2xl border border-black/8 bg-(--color-0) p-5">
         <h2 className="text-base font-semibold text-(--color-9)">
-          i18n workspace
+          {t('resourceManager.i18n.header.title')}
         </h2>
         <p className="mt-1 text-sm text-(--color-7)">
-          Tri-pane translation workflow with key grid and real-time UI context.
+          {t('resourceManager.i18n.header.description')}
         </p>
       </article>
 
@@ -455,7 +457,7 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
             size="Small"
             value={searchKeyword}
             onChange={setSearchKeyword}
-            placeholder="Search key or text"
+            placeholder={t('resourceManager.i18n.searchPlaceholder')}
           />
 
           <div className="grid gap-1 rounded-lg border border-black/8 bg-black/[0.02] p-2 text-xs">
@@ -465,7 +467,7 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
                 checked={missingOnly}
                 onChange={(event) => setMissingOnly(event.target.checked)}
               />
-              Missing only
+              {t('resourceManager.i18n.filters.missingOnly')}
             </label>
             <label className="inline-flex items-center gap-2">
               <input
@@ -473,13 +475,13 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
                 checked={reviewOnly}
                 onChange={(event) => setReviewOnly(event.target.checked)}
               />
-              Reviewed only
+              {t('resourceManager.i18n.filters.reviewedOnly')}
             </label>
           </div>
 
           <div className="grid gap-2">
             <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-(--color-6)">
-              Modules
+              {t('resourceManager.i18n.modules')}
             </p>
             <div className="grid gap-1">
               {namespaceStats.map((item) => (
@@ -502,7 +504,10 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
                     {item.namespace}
                   </span>
                   <span className="text-[11px] opacity-80">
-                    {item.sourceCount} keys / {item.missingCount} missing
+                    {t('resourceManager.i18n.moduleStats', {
+                      keys: item.sourceCount,
+                      missing: item.missingCount,
+                    })}
                   </span>
                 </button>
               ))}
@@ -511,11 +516,13 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
 
           <div className="grid gap-2 rounded-lg border border-black/8 bg-black/[0.02] p-2">
             <p className="text-[11px] uppercase tracking-[0.08em] text-(--color-6)">
-              Progress
+              {t('resourceManager.i18n.progress')}
             </p>
             <p className="text-xs text-(--color-8)">
               {selection.targetLocale}:{' '}
-              {currentNamespaceStats?.completionRate ?? 100}% complete
+              {t('resourceManager.i18n.progressComplete', {
+                rate: currentNamespaceStats?.completionRate ?? 100,
+              })}
             </p>
             <div className="h-1.5 overflow-hidden rounded-full bg-black/10">
               <div
@@ -526,7 +533,9 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
               />
             </div>
             <p className="text-[11px] text-(--color-7)">
-              Missing keys: {missingStats[selection.targetLocale] ?? 0}
+              {t('resourceManager.i18n.missingKeys', {
+                count: missingStats[selection.targetLocale] ?? 0,
+              })}
             </p>
           </div>
 
@@ -536,10 +545,10 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
               size="Small"
               value={newLocale}
               onChange={setNewLocale}
-              placeholder="new locale"
+              placeholder={t('resourceManager.i18n.newLocalePlaceholder')}
             />
             <MdrButton
-              text="Add locale"
+              text={t('resourceManager.i18n.actions.addLocale')}
               size="Tiny"
               category="Secondary"
               onClick={addLocale}
@@ -549,10 +558,10 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
               size="Small"
               value={newNamespace}
               onChange={setNewNamespace}
-              placeholder="new module"
+              placeholder={t('resourceManager.i18n.newModulePlaceholder')}
             />
             <MdrButton
-              text="Add module"
+              text={t('resourceManager.i18n.actions.addModule')}
               size="Tiny"
               category="Secondary"
               onClick={addNamespace}
@@ -567,7 +576,7 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
             </h3>
             <div className="flex items-center gap-1">
               <MdrButton
-                text="Export"
+                text={t('resourceManager.i18n.actions.export')}
                 size="Tiny"
                 category="Secondary"
                 icon={<Download size={12} />}
@@ -579,7 +588,7 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
                 className="inline-flex h-8 cursor-pointer items-center gap-1 rounded-md border border-black/12 px-2 text-xs hover:bg-black/5"
               >
                 <Upload size={12} />
-                Import
+                {t('resourceManager.i18n.actions.import')}
               </label>
               <input
                 id={fileInputId}
@@ -626,7 +635,7 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
               <thead className="bg-black/[0.04] text-(--color-7)">
                 <tr>
                   <th className="min-w-[220px] px-2 py-2 text-left font-semibold">
-                    Key
+                    {t('resourceManager.i18n.table.key')}
                   </th>
                   {locales.map((locale) => (
                     <th
@@ -636,8 +645,12 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
                       {locale}
                     </th>
                   ))}
-                  <th className="px-2 py-2 text-left font-semibold">Status</th>
-                  <th className="px-2 py-2 text-left font-semibold">Action</th>
+                  <th className="px-2 py-2 text-left font-semibold">
+                    {t('resourceManager.i18n.table.status')}
+                  </th>
+                  <th className="px-2 py-2 text-left font-semibold">
+                    {t('resourceManager.i18n.table.action')}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -716,7 +729,7 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
                         }`}
                         onClick={() => toggleReviewed(row)}
                       >
-                        {row.status}
+                        {t(`resourceManager.i18n.status.${row.status}`)}
                       </button>
                     </td>
                     <td className="px-2 py-2 align-top">
@@ -725,7 +738,7 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
                         className="rounded-md border border-red-200 px-2 py-1 text-[11px] text-red-700 hover:bg-red-50"
                         onClick={() => deleteKey(row.key)}
                       >
-                        Delete
+                        {t('resourceManager.i18n.actions.delete')}
                       </button>
                     </td>
                   </tr>
@@ -747,7 +760,9 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
                         value={newKey}
                         onChange={setNewKey}
                         className="w-full"
-                        placeholder="new.translation.key"
+                        placeholder={t(
+                          'resourceManager.i18n.newKeyPlaceholder'
+                        )}
                       />
                     </div>
                   </td>
@@ -763,23 +778,26 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
                           value={newSourceValue}
                           onChange={setNewSourceValue}
                           className="w-full"
-                          placeholder={`default value (${selection.sourceLocale})`}
+                          placeholder={t(
+                            'resourceManager.i18n.newSourcePlaceholder',
+                            { locale: selection.sourceLocale }
+                          )}
                         />
                       ) : (
                         <div className="inline-flex h-8 w-full items-center rounded border border-dashed border-black/12 px-2 text-[11px] text-(--color-6)">
-                          empty
+                          {t('resourceManager.i18n.empty')}
                         </div>
                       )}
                     </td>
                   ))}
                   <td className="px-2 py-2 align-top">
                     <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-700">
-                      new
+                      {t('resourceManager.i18n.new')}
                     </span>
                   </td>
                   <td className="px-2 py-2 align-top">
                     <MdrButton
-                      text="Add"
+                      text={t('resourceManager.i18n.actions.add')}
                       size="Tiny"
                       category="Secondary"
                       onClick={addKey}
@@ -794,7 +812,7 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
         <aside className="grid gap-3 rounded-xl border border-black/10 bg-(--color-0) p-3">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-(--color-6)">
-              Live preview
+              {t('resourceManager.i18n.livePreview')}
             </p>
             <h4 className="mt-1 text-sm font-semibold text-(--color-9)">
               {selectedRow.key}
@@ -803,7 +821,7 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
 
           <article className="grid gap-2 rounded-lg border border-black/10 bg-black/[0.02] p-3">
             <p className="text-[11px] uppercase tracking-[0.08em] text-(--color-6)">
-              Component preview
+              {t('resourceManager.i18n.componentPreview')}
             </p>
             <button
               type="button"
@@ -818,10 +836,12 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
 
           <div className="grid gap-2 rounded-lg border border-black/10 bg-black/[0.02] p-3 text-xs text-(--color-7)">
             <p>
-              Base length: <strong>{selectedRow.source.length}</strong>
+              {t('resourceManager.i18n.baseLength')}:{' '}
+              <strong>{selectedRow.source.length}</strong>
             </p>
             <p>
-              Preview length: <strong>{selectedRow.target.length}</strong>
+              {t('resourceManager.i18n.previewLength')}:{' '}
+              <strong>{selectedRow.target.length}</strong>
             </p>
             <p
               className={
@@ -833,12 +853,12 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
             >
               {selectedRow.target.length >
               Math.max(selectedRow.source.length * 1.35, 24)
-                ? 'Potential overflow risk in compact components.'
-                : 'Layout length looks healthy.'}
+                ? t('resourceManager.i18n.overflowRisk')
+                : t('resourceManager.i18n.layoutHealthy')}
             </p>
             {selectedRow.hasVariable ? (
               <p className="text-slate-700">
-                Contains variables. Keep placeholders unchanged.
+                {t('resourceManager.i18n.containsVariables')}
               </p>
             ) : null}
           </div>

@@ -1,5 +1,6 @@
 import { Minus, Pause, Play, Plus, RotateCcw, SkipBack } from 'lucide-react';
 import { createElement, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type {
   AnimationTimeline,
   ComponentNode,
@@ -7,7 +8,7 @@ import type {
   SvgFilterDefinition,
 } from '@/core/types/engine.types';
 import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
-import { buildAnimationPreviewSnapshot } from '../preview/animationPreview';
+import { buildAnimationPreviewSnapshot } from '@/editor/features/animation/preview/animationPreview';
 
 type AnimationEditorPreviewCanvasProps = {
   mirDoc: MIRDocument;
@@ -64,6 +65,7 @@ export const AnimationEditorPreviewCanvas = ({
   selectedNodeId,
   onSelectNodeId,
 }: AnimationEditorPreviewCanvasProps) => {
+  const { t } = useTranslation('editor');
   const [playing, setPlaying] = useState(false);
   const cursorRef = useRef(cursorMs);
 
@@ -126,7 +128,8 @@ export const AnimationEditorPreviewCanvas = ({
             setPlaying(false);
           }}
           className="inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors hover:bg-black/8 disabled:opacity-40"
-          aria-label="Jump to start"
+          aria-label={t('animationEditor.preview.jumpToStart')}
+          title={t('animationEditor.preview.jumpToStart')}
           disabled={!timeline || !onCursorChange}
         >
           <SkipBack size={14} />
@@ -138,7 +141,16 @@ export const AnimationEditorPreviewCanvas = ({
             setPlaying((prev) => !prev);
           }}
           className="inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors hover:bg-black/8 disabled:opacity-40"
-          aria-label={playing ? 'Pause' : 'Play'}
+          aria-label={
+            playing
+              ? t('animationEditor.preview.pause')
+              : t('animationEditor.preview.play')
+          }
+          title={
+            playing
+              ? t('animationEditor.preview.pause')
+              : t('animationEditor.preview.play')
+          }
           disabled={!timeline || !onCursorChange}
         >
           {playing ? <Pause size={14} /> : <Play size={14} />}
@@ -148,7 +160,8 @@ export const AnimationEditorPreviewCanvas = ({
           type="button"
           onClick={() => onZoomChange(clampZoom(zoom - 0.1))}
           className="inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors hover:bg-black/8"
-          aria-label="Zoom out"
+          aria-label={t('animationEditor.preview.zoomOut')}
+          title={t('animationEditor.preview.zoomOut')}
         >
           <Minus size={14} />
         </button>
@@ -159,7 +172,8 @@ export const AnimationEditorPreviewCanvas = ({
           type="button"
           onClick={() => onZoomChange(clampZoom(zoom + 0.1))}
           className="inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors hover:bg-black/8"
-          aria-label="Zoom in"
+          aria-label={t('animationEditor.preview.zoomIn')}
+          title={t('animationEditor.preview.zoomIn')}
         >
           <Plus size={14} />
         </button>
@@ -168,7 +182,8 @@ export const AnimationEditorPreviewCanvas = ({
           type="button"
           onClick={() => onZoomChange(1)}
           className="inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors hover:bg-black/8"
-          aria-label="Reset zoom"
+          aria-label={t('animationEditor.preview.resetZoom')}
+          title={t('animationEditor.preview.resetZoom')}
         >
           <RotateCcw size={14} />
         </button>
@@ -216,7 +231,7 @@ export const AnimationEditorPreviewCanvas = ({
             />
           ) : (
             <div className="rounded-xl border border-dashed border-black/20 bg-black/[0.02] px-8 py-6 text-xs tracking-[0.06em] text-(--color-6)">
-              Select a binding target to preview this component.
+              {t('animationEditor.preview.selectBindingTarget')}
             </div>
           )}
         </div>

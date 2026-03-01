@@ -58,7 +58,7 @@ export const SettingsPanel = ({
 }: SettingsPanelProps) => (
   <MdrPanel
     title={title}
-    variant="Bordered"
+    variant="Default"
     padding="Large"
     className="rounded-2xl border border-[rgba(0,0,0,0.06)] bg-(--color-0) shadow-[0_14px_32px_rgba(0,0,0,0.08)] in-data-[theme='dark']:border-[rgba(255,255,255,0.08)] in-data-[theme='dark']:shadow-[0_18px_36px_rgba(0,0,0,0.45)]"
   >

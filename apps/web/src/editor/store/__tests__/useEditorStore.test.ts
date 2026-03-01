@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { WorkspaceSnapshot } from '@/editor/editorApi';
 import { createMirDoc, resetEditorStore } from '@/test-utils/editorStore';
-import { useEditorStore } from '../useEditorStore';
+import { useEditorStore } from '@/editor/store/useEditorStore';
 
 const createWorkspaceSnapshot = (
   workspaceId: string,

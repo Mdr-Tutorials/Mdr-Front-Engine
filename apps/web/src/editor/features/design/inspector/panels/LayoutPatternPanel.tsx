@@ -17,9 +17,9 @@ import type {
   InspectorPanelDefinition,
   InspectorPanelRenderProps,
 } from './types';
-import { InspectorRow } from '../components/InspectorRow';
-import { PresetInput } from '../components/PresetInput';
-import { UnitInput } from '../components/UnitInput';
+import { InspectorRow } from '@/editor/features/design/inspector/components/InspectorRow';
+import { PresetInput } from '@/editor/features/design/inspector/components/PresetInput';
+import { UnitInput } from '@/editor/features/design/inspector/components/UnitInput';
 
 const resolveParams = (
   schema: LayoutPatternParamSchema,

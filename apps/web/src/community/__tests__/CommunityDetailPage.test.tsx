@@ -1,6 +1,6 @@
 ﻿import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { CommunityDetailPage } from '../CommunityDetailPage';
+import { CommunityDetailPage } from '@/community/CommunityDetailPage';
 
 const getProjectMock = vi.fn();
 const createProjectMock = vi.fn();

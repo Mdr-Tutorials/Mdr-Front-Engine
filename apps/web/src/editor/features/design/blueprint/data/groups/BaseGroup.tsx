@@ -9,15 +9,15 @@
   MdrText,
 } from '@mdr/ui';
 import { Sparkles } from 'lucide-react';
-import type { ComponentGroup } from '../../../BlueprintEditor.types';
-import { buildVariants } from '../helpers';
+import type { ComponentGroup } from '@/editor/features/design/BlueprintEditor.types';
+import { buildVariants } from '@/editor/features/design/blueprint/data/helpers';
 import {
   BUTTON_CATEGORIES,
   BUTTON_SIZE_OPTIONS,
   HEADING_LEVELS,
   SIZE_OPTIONS,
   TEXT_SIZE_OPTIONS,
-} from '../options';
+} from '@/editor/features/design/blueprint/data/options';
 
 export const BASE_GROUP: ComponentGroup = {
   id: 'base',

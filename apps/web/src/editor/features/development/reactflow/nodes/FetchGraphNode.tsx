@@ -5,7 +5,7 @@ import {
   renderTarget,
   resolveMultiplicity,
   type GraphNodeData,
-} from '../graphNodeShared';
+} from '@/editor/features/development/reactflow/graphNodeShared';
 import {
   buildNodeContainerClass,
   NODE_TEXT_INPUT_CLASS,

@@ -11,6 +11,7 @@ import {
   Trash2,
   Upload,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { PublicFileCategory, PublicResourceNode } from './publicTree';
 import { useWindowKeydown } from '@/shortcuts';
 
@@ -84,6 +85,7 @@ export function ResourceFileTree({
   onRename,
   onDelete,
 }: ResourceFileTreeProps) {
+  const { t } = useTranslation('editor');
   const [expanded, setExpanded] = useState<Record<string, boolean>>(
     buildInitialExpandedState(tree)
   );
@@ -290,7 +292,7 @@ export function ResourceFileTree({
                     type="button"
                     className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--color-7) hover:border-black/12 hover:text-(--color-9)"
                     aria-label={`create-folder-${node.id}`}
-                    title="New folder"
+                    title={t('resourceManager.tree.actions.newFolder')}
                     onClick={() => onCreateFolder?.(node.id)}
                   >
                     <FolderPlus size={12} />
@@ -299,7 +301,7 @@ export function ResourceFileTree({
                     type="button"
                     className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--color-7) hover:border-black/12 hover:text-(--color-9)"
                     aria-label={`create-file-${node.id}`}
-                    title="New file"
+                    title={t('resourceManager.tree.actions.newFile')}
                     onClick={() => onCreateFile?.(node.id)}
                   >
                     <Plus size={12} />
@@ -308,7 +310,7 @@ export function ResourceFileTree({
                     type="button"
                     className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--color-7) hover:border-black/12 hover:text-(--color-9)"
                     aria-label={`import-${node.id}`}
-                    title="Import files"
+                    title={t('resourceManager.tree.actions.importFiles')}
                     onClick={() => triggerImport(node.id)}
                   >
                     <Upload size={12} />
@@ -321,7 +323,7 @@ export function ResourceFileTree({
                     type="button"
                     className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--color-7) hover:border-black/12 hover:text-(--color-9)"
                     aria-label={`rename-${node.id}`}
-                    title="Rename (F2)"
+                    title={t('resourceManager.tree.actions.renameF2')}
                     onClick={() => startRenaming(node)}
                   >
                     <Pencil size={12} />
@@ -330,7 +332,7 @@ export function ResourceFileTree({
                     type="button"
                     className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--color-7) hover:border-black/12 hover:text-(--color-9)"
                     aria-label={`delete-${node.id}`}
-                    title="Delete"
+                    title={t('resourceManager.tree.actions.delete')}
                     onClick={() => onDelete?.(node.id)}
                   >
                     <Trash2 size={12} />
@@ -352,8 +354,8 @@ export function ResourceFileTree({
       <div className="mb-2 flex items-center justify-between px-1">
         <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-(--color-6)">
           {mode === 'editable'
-            ? 'Public Tree (Editable)'
-            : 'File Tree (Readonly)'}
+            ? t('resourceManager.tree.publicEditable')
+            : t('resourceManager.tree.fileReadonly')}
         </p>
         {editable ? (
           <div className="inline-flex items-center gap-1">
@@ -361,7 +363,7 @@ export function ResourceFileTree({
               type="button"
               className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--color-7) hover:border-black/12 hover:text-(--color-9)"
               aria-label="toolbar-create-folder"
-              title="New folder"
+              title={t('resourceManager.tree.actions.newFolder')}
               onClick={() => onCreateFolder?.(toolbarParentId)}
             >
               <FolderPlus size={12} />
@@ -370,7 +372,7 @@ export function ResourceFileTree({
               type="button"
               className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--color-7) hover:border-black/12 hover:text-(--color-9)"
               aria-label="toolbar-create-file"
-              title="New file"
+              title={t('resourceManager.tree.actions.newFile')}
               onClick={() => onCreateFile?.(toolbarParentId)}
             >
               <Plus size={12} />
@@ -379,7 +381,7 @@ export function ResourceFileTree({
               type="button"
               className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--color-7) hover:border-black/12 hover:text-(--color-9)"
               aria-label="toolbar-import"
-              title="Import files"
+              title={t('resourceManager.tree.actions.importFiles')}
               onClick={() => triggerImport(toolbarParentId)}
             >
               <Upload size={12} />
@@ -429,8 +431,8 @@ export function ResourceFileTree({
                     setContextMenu(null);
                   }}
                 >
-                  <span>New folder</span>
-                  <span>Folder</span>
+                  <span>{t('resourceManager.tree.menu.newFolder')}</span>
+                  <span>{t('resourceManager.tree.menu.folder')}</span>
                 </button>
                 <button
                   type="button"
@@ -440,8 +442,8 @@ export function ResourceFileTree({
                     setContextMenu(null);
                   }}
                 >
-                  <span>New file</span>
-                  <span>Text</span>
+                  <span>{t('resourceManager.tree.menu.newFile')}</span>
+                  <span>{t('resourceManager.tree.menu.text')}</span>
                 </button>
                 <button
                   type="button"
@@ -451,7 +453,7 @@ export function ResourceFileTree({
                     setContextMenu(null);
                   }}
                 >
-                  <span>New file (JSON)</span>
+                  <span>{t('resourceManager.tree.menu.newFileJson')}</span>
                   <span>.json</span>
                 </button>
                 <button
@@ -462,7 +464,7 @@ export function ResourceFileTree({
                     setContextMenu(null);
                   }}
                 >
-                  <span>New file (SVG)</span>
+                  <span>{t('resourceManager.tree.menu.newFileSvg')}</span>
                   <span>.svg</span>
                 </button>
                 <div className="my-1 h-px bg-black/10" />
@@ -474,8 +476,8 @@ export function ResourceFileTree({
                     setContextMenu(null);
                   }}
                 >
-                  <span>Import files</span>
-                  <span>Any</span>
+                  <span>{t('resourceManager.tree.menu.importFiles')}</span>
+                  <span>{t('resourceManager.tree.menu.any')}</span>
                 </button>
                 <button
                   type="button"
@@ -485,7 +487,7 @@ export function ResourceFileTree({
                     setContextMenu(null);
                   }}
                 >
-                  <span>Import image</span>
+                  <span>{t('resourceManager.tree.menu.importImage')}</span>
                   <span>png/jpg/webp/svg</span>
                 </button>
                 <button
@@ -496,7 +498,7 @@ export function ResourceFileTree({
                     setContextMenu(null);
                   }}
                 >
-                  <span>Import font</span>
+                  <span>{t('resourceManager.tree.menu.importFont')}</span>
                   <span>woff/woff2/ttf/otf</span>
                 </button>
                 <button
@@ -507,7 +509,7 @@ export function ResourceFileTree({
                     setContextMenu(null);
                   }}
                 >
-                  <span>Import document</span>
+                  <span>{t('resourceManager.tree.menu.importDocument')}</span>
                   <span>txt/md/json/svg</span>
                 </button>
                 {node.id !== tree.id ? (
@@ -521,7 +523,7 @@ export function ResourceFileTree({
                         setContextMenu(null);
                       }}
                     >
-                      <span>Rename</span>
+                      <span>{t('resourceManager.tree.menu.rename')}</span>
                       <span>F2</span>
                     </button>
                     <button
@@ -532,7 +534,7 @@ export function ResourceFileTree({
                         setContextMenu(null);
                       }}
                     >
-                      <span>Delete</span>
+                      <span>{t('resourceManager.tree.menu.delete')}</span>
                       <span>Del</span>
                     </button>
                   </>

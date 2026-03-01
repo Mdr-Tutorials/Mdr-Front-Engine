@@ -25,9 +25,7 @@ MFE 采用独创的 **三编辑器统一架构**，所有操作最终都收敛�
   时间线、关键帧、过渡曲线、交互动画序列、CSS Filter、SVG Filter
 
 **MIR 是整个系统的“唯一真相源”**：  
-任意编辑器修改都会实时同步到其他视图 → 最终通过“炼化”编译器生成多框架代码。彻底解决传统低代码工具“改一处、乱三处”的顽疾。
-
-（当前进度：蓝图编辑器 + MIR 基础框架正在开发中，节点图与动画编辑器即将启动）
+任意编辑器修改都会实时同步到其他视图 → 最终通过“炼化”编译器生成多框架代码，解决传统低代码工具“改一处、乱三处”的顽疾。
 
 ---
 
@@ -52,20 +50,41 @@ MFE 采用独创的 **三编辑器统一架构**，所有操作最终都收敛�
 
 ## 📂 项目结构 (Monorepo)
 
-采用 **Turbo + pnpm workspaces** 构建，实现前后端、工具链、文档的完全解耦：
+采用 **Turbo + pnpm workspaces** 构建：
 
 ```text
 .
+├── .github/               # CI/CD 与仓库工作流
 ├── apps/
-│   ├── web/          # MFE 核心可视化编辑器（React + TS 重度）
-│   ├── backend/      # Go 驱动的高性能后端服务
-│   ├── cli/          # Mdr 命令行工具
-│   ├── vscode/       # VSCode 插件
-│   └── docs/         # 基于 MFE 自身构建的官方文档
+│   ├── web/               # MFE 核心可视化编辑器（React + TS）
+│   ├── backend/           # Go 驱动的后端服务
+│   ├── cli/               # Mdr 命令行工具
+│   ├── vscode/            # VSCode 插件
+│   └── docs/              # VitePress 文档站点
+├── deploy/                # 部署与本地依赖编排（如 postgres）
 ├── packages/
-│   └── ui/           # 共享组件库 + Storybook
+│   ├── ui/                # 共享组件库（SCSS）+ Storybook
+│   ├── themes/            # 主题与设计变量
+│   ├── shared/            # MIR Schema / Types / 公共工具
+│   ├── i18n/              # 国际化资源与工具
+│   ├── mir-compiler/      # MIR 编译器核心包
+│   ├── eslint-plugin-mdr/ # 自定义 ESLint 插件
+│   └── vscode-debugger/   # VSCode 调试适配器
+├── scripts/               # 仓库级脚本
+├── specs/                 # 规范与设计文档
+├── tests/                 # 仓库级测试
+├── package.json
+├── pnpm-workspace.yaml
 └── turbo.json
 ```
+
+子项目说明文档：
+
+- [apps/web/README.md](apps/web/README.md)
+- [apps/backend/README.md](apps/backend/README.md)
+- [apps/cli/README.md](apps/cli/README.md)
+- [apps/docs/README.md](apps/docs/README.md)
+- [apps/vscode/README.md](apps/vscode/README.md)
 
 ---
 
@@ -107,7 +126,7 @@ pnpm dev
 
 命令有细化版本：比如 `pnpm test:web` 只跑前端测试，`pnpm test:web:coverage` 只跑前端覆盖率测试，等等。
 
-### 子模块开发（专注模式）
+### 子模块开发
 
 | 模块        | 命令               |
 | ----------- | ------------------ |
@@ -157,4 +176,4 @@ pnpm cli sync                     # 同步 MIR 与本地代码
 > **MdrFrontEngine** —— 打破边界，让灵感在可视化与代码间自由跳动。  
 > **Minsecrus** 2026.2.18
 
-**Star 支持我们！** 你的每一个 Star 都是对 MIR 架构的最大肯定！
+**Star 支持我们！**

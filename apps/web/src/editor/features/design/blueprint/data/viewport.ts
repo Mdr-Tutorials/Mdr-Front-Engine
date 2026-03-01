@@ -2,7 +2,7 @@
   QuickViewportPreset,
   RouteItem,
   ViewportPreset,
-} from '../../BlueprintEditor.types';
+} from '@/editor/features/design/BlueprintEditor.types';
 import { Laptop, Monitor, Smartphone, Tablet, Watch } from 'lucide-react';
 
 export const DEFAULT_ROUTES: RouteItem[] = [

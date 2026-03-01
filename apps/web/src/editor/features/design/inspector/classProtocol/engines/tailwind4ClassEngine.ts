@@ -1,7 +1,10 @@
 import { twMerge } from 'tailwind-merge';
-import tailwindCatalog from '../tailwind4.catalog.json';
-import type { ClassProtocolEngine, ClassSuggestion } from '../types';
-import { parseClassProtocolTokens } from '../tokenizer';
+import tailwindCatalog from '@/editor/features/design/inspector/classProtocol/tailwind4.catalog.json';
+import type {
+  ClassProtocolEngine,
+  ClassSuggestion,
+} from '@/editor/features/design/inspector/classProtocol/types';
+import { parseClassProtocolTokens } from '@/editor/features/design/inspector/classProtocol/tokenizer';
 import {
   isArbitraryTailwindToken,
   parseTailwindSuggestionQuery,
@@ -10,7 +13,7 @@ import {
   TAILWIND_RUNTIME_CLASSES,
   TAILWIND_RUNTIME_VARIANTS,
 } from './tailwindRuntimeSource';
-import { CSS_LENGTH_OR_PERCENTAGE_UNITS } from '../../units/cssUnits';
+import { CSS_LENGTH_OR_PERCENTAGE_UNITS } from '@/editor/features/design/inspector/units/cssUnits';
 
 const TAILWIND_CLASSES = [
   ...new Set([

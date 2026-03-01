@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { tailwind4ClassEngine } from '../engines/tailwind4ClassEngine';
+import { tailwind4ClassEngine } from '@/editor/features/design/inspector/classProtocol/engines/tailwind4ClassEngine';
 import {
   isArbitraryTailwindToken,
   parseTailwindSuggestionQuery,
-} from '../engines/tailwindQueryParser';
+} from '@/editor/features/design/inspector/classProtocol/engines/tailwindQueryParser';
 
 describe('tailwindQueryParser', () => {
   it('keeps colons inside brackets as a single utility segment', () => {

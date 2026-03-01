@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getPackageSizeMeta } from '../externalLibraryManager/viewUtils';
+import { getPackageSizeMeta } from '@/editor/features/resources/externalLibraryManager/viewUtils';
 
 describe('externalLibraryManager view utils', () => {
   it('classifies package size warning levels by thresholds', () => {

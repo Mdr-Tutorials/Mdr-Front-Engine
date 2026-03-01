@@ -40,8 +40,14 @@ const JSON_HEADERS = {
   'Content-Type': 'application/json',
 } as const;
 
-const request = async <T>(path: string): Promise<T> =>
-  apiRequest<T>(path, { defaultHeaders: JSON_HEADERS });
+const request = async <T>(
+  path: string,
+  options: RequestInit = {}
+): Promise<T> =>
+  apiRequest<T>(path, {
+    ...options,
+    defaultHeaders: JSON_HEADERS,
+  });
 
 const buildListQuery = (options: ListProjectsOptions) => {
   const params = new URLSearchParams();
@@ -65,16 +71,20 @@ const buildListQuery = (options: ListProjectsOptions) => {
 };
 
 export const communityApi = {
-  listProjects: async (options: ListProjectsOptions = {}) =>
+  listProjects: async (
+    options: ListProjectsOptions = {},
+    requestOptions: RequestInit = {}
+  ) =>
     request<{
       projects: CommunityProjectSummary[];
       page: number;
       pageSize: number;
       sort: 'latest' | 'popular' | string;
-    }>(`/community/projects${buildListQuery(options)}`),
+    }>(`/community/projects${buildListQuery(options)}`, requestOptions),
 
-  getProject: async (projectId: string) =>
+  getProject: async (projectId: string, options: RequestInit = {}) =>
     request<{ project: CommunityProjectDetail }>(
-      `/community/projects/${encodeURIComponent(projectId)}`
+      `/community/projects/${encodeURIComponent(projectId)}`,
+      options
     ),
 };

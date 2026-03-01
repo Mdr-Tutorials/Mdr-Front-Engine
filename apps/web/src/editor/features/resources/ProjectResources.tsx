@@ -10,6 +10,7 @@ import {
   Sparkles,
   TriangleAlert,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
 import { CodeResourcePage } from './CodeResourcePage';
 import { ExternalLibraryManager } from './ExternalLibraryManager';
@@ -34,16 +35,15 @@ type SectionId = 'overview' | 'public' | 'code' | 'i18n' | 'external';
 
 type SectionMeta = {
   id: SectionId;
-  label: string;
   icon: ComponentType<{ size?: number }>;
 };
 
 const sectionMetas: SectionMeta[] = [
-  { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-  { id: 'public', label: 'Public', icon: FileArchive },
-  { id: 'code', label: 'Code', icon: FileCode2 },
-  { id: 'i18n', label: 'i18n', icon: Globe2 },
-  { id: 'external', label: 'External libs', icon: Library },
+  { id: 'overview', icon: LayoutDashboard },
+  { id: 'public', icon: FileArchive },
+  { id: 'code', icon: FileCode2 },
+  { id: 'i18n', icon: Globe2 },
+  { id: 'external', icon: Library },
 ];
 
 const getResourceManagerViewStorageKey = (projectId?: string) =>
@@ -299,57 +299,66 @@ const ResourceTile = ({
   status: 'default' | 'warning';
   actionLabel: string;
   onAction: () => void;
-}) => (
-  <article className="relative overflow-hidden rounded-2xl border border-black/8 bg-(--color-0) p-5 shadow-[0_10px_28px_rgba(0,0,0,0.04)]">
-    <div className="flex items-start justify-between gap-4">
-      <div className="min-w-0">
-        <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-(--color-6)">
-          <Icon size={14} />
-          {title}
-        </p>
-        <p className="mt-2 text-sm text-(--color-7)">{description}</p>
-      </div>
-      <button
-        type="button"
-        className="inline-flex shrink-0 items-center gap-1 rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-(--color-8) hover:border-black/20 hover:bg-black/[0.02]"
-        onClick={onAction}
-      >
-        {actionLabel}
-        <ArrowRight size={12} />
-      </button>
-    </div>
+}) => {
+  const { t } = useTranslation('editor');
 
-    <div className="mt-4 grid gap-2 sm:grid-cols-3">
-      {metrics.map((metric) => (
-        <div
-          key={`${title}-${metric.label}`}
-          className="rounded-xl border border-black/8 bg-black/[0.015] px-3 py-2"
-        >
-          <p className="text-[11px] uppercase tracking-[0.08em] text-(--color-6)">
-            {metric.label}
+  return (
+    <article className="relative overflow-hidden rounded-2xl border border-black/8 bg-(--color-0) p-5 shadow-[0_10px_28px_rgba(0,0,0,0.04)]">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-(--color-6)">
+            <Icon size={14} />
+            {title}
           </p>
-          <p className="mt-1 text-sm font-semibold text-(--color-9)">
-            {metric.value}
-          </p>
+          <p className="mt-2 text-sm text-(--color-7)">{description}</p>
         </div>
-      ))}
-    </div>
+        <button
+          type="button"
+          className="inline-flex shrink-0 items-center gap-1 rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-(--color-8) hover:border-black/20 hover:bg-black/[0.02]"
+          onClick={onAction}
+        >
+          {actionLabel}
+          <ArrowRight size={12} />
+        </button>
+      </div>
 
-    <div className="mt-4 flex items-center justify-between gap-2 text-xs text-(--color-7)">
-      <span className="inline-flex items-center gap-2">
-        <span
-          className={`h-2 w-2 rounded-full ${
-            status === 'warning' ? 'bg-amber-500' : 'bg-emerald-500'
-          }`}
-        />
-        {status === 'warning' ? 'Needs attention' : 'Looking good'}
-      </span>
-      <span className="text-(--color-6)">Overview</span>
-    </div>
-  </article>
-);
+      <div className="mt-4 grid gap-2 sm:grid-cols-3">
+        {metrics.map((metric) => (
+          <div
+            key={`${title}-${metric.label}`}
+            className="rounded-xl border border-black/8 bg-black/[0.015] px-3 py-2"
+          >
+            <p className="text-[11px] uppercase tracking-[0.08em] text-(--color-6)">
+              {metric.label}
+            </p>
+            <p className="mt-1 text-sm font-semibold text-(--color-9)">
+              {metric.value}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-4 flex items-center justify-between gap-2 text-xs text-(--color-7)">
+        <span className="inline-flex items-center gap-2">
+          <span
+            className={`h-2 w-2 rounded-full ${
+              status === 'warning' ? 'bg-amber-500' : 'bg-emerald-500'
+            }`}
+          />
+          {status === 'warning'
+            ? t('resourceManager.overview.tile.needsAttention')
+            : t('resourceManager.overview.tile.lookingGood')}
+        </span>
+        <span className="text-(--color-6)">
+          {t('resourceManager.overview.tile.overview')}
+        </span>
+      </div>
+    </article>
+  );
+};
 
 export function ProjectResources() {
+  const { t } = useTranslation('editor');
   const { projectId } = useParams();
   const [activeSection, setActiveSection] = useState<SectionId>(() => {
     if (typeof window === 'undefined') return 'overview';
@@ -420,13 +429,13 @@ export function ProjectResources() {
     <section className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-6 py-6">
       <header className="rounded-2xl border border-black/8 bg-white/92 p-5 shadow-[0_10px_28px_rgba(0,0,0,0.06)]">
         <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-(--color-6)">
-          Resource manager
+          {t('resourceManager.header.badge')}
         </p>
         <h1 className="text-2xl font-semibold text-(--color-10)">
-          Project resources
+          {t('resourceManager.header.title')}
         </h1>
         <p className="mt-2 max-w-3xl text-sm text-(--color-7)">
-          All resource pages stay under the same route and switch through tabs.
+          {t('resourceManager.header.description')}
         </p>
       </header>
 
@@ -447,7 +456,7 @@ export function ProjectResources() {
                 }`}
               >
                 <Icon size={14} />
-                {section.label}
+                {t(`resourceManager.tabs.${section.id}`)}
               </button>
             );
           })}
@@ -460,67 +469,73 @@ export function ProjectResources() {
             <div className="grid gap-3 lg:grid-cols-2">
               <ResourceTile
                 icon={FileArchive}
-                title="Public"
-                description="Static assets for export, deploy, and runtime previews."
+                title={t('resourceManager.tabs.public')}
+                description={t(
+                  'resourceManager.overview.cards.public.description'
+                )}
                 metrics={[
                   {
-                    label: 'files',
+                    label: t('resourceManager.overview.metrics.files'),
                     value: String(overviewSnapshot.public.files),
                   },
                   {
-                    label: 'warnings',
+                    label: t('resourceManager.overview.metrics.warnings'),
                     value: String(overviewSnapshot.public.warnings),
                   },
                   {
-                    label: 'updated',
+                    label: t('resourceManager.overview.metrics.updated'),
                     value: formatUpdatedAt(overviewSnapshot.public.updatedAt),
                   },
                 ]}
                 status={
                   overviewSnapshot.public.warnings > 0 ? 'warning' : 'default'
                 }
-                actionLabel="Open"
+                actionLabel={t('resourceManager.overview.actions.open')}
                 onAction={() => setActiveSection('public')}
               />
               <ResourceTile
                 icon={FileCode2}
-                title="Code"
-                description="Scripts, styles, shaders. Versioned as project resources."
+                title={t('resourceManager.tabs.code')}
+                description={t(
+                  'resourceManager.overview.cards.code.description'
+                )}
                 metrics={[
                   {
-                    label: 'files',
+                    label: t('resourceManager.overview.metrics.files'),
                     value: String(overviewSnapshot.code.files),
                   },
                   {
-                    label: 'scripts/styles',
+                    label: t('resourceManager.overview.metrics.scriptsStyles'),
                     value: `${overviewSnapshot.code.scripts}/${overviewSnapshot.code.styles}`,
                   },
                   {
-                    label: 'updated',
+                    label: t('resourceManager.overview.metrics.updated'),
                     value: formatUpdatedAt(overviewSnapshot.code.updatedAt),
                   },
                 ]}
                 status={
                   overviewSnapshot.code.files === 0 ? 'warning' : 'default'
                 }
-                actionLabel="Open"
+                actionLabel={t('resourceManager.overview.actions.open')}
                 onAction={() => setActiveSection('code')}
               />
               <ResourceTile
                 icon={Globe2}
-                title="i18n"
-                description="Matrix editor for locales and translation keys."
+                title={t('resourceManager.tabs.i18n')}
+                description={t(
+                  'resourceManager.overview.cards.i18n.description'
+                )}
                 metrics={[
                   {
-                    label: 'locales',
+                    label: t('resourceManager.overview.metrics.locales'),
                     value: String(overviewSnapshot.i18n.locales),
                   },
                   {
-                    label: 'namespaces',
+                    label: t('resourceManager.overview.metrics.namespaces'),
                     value: String(overviewSnapshot.i18n.namespaces),
                   },
                   {
-                    label: 'missing values',
+                    label: t('resourceManager.overview.metrics.missingValues'),
                     value: String(overviewSnapshot.i18n.missingValues),
                   },
                 ]}
@@ -529,30 +544,32 @@ export function ProjectResources() {
                     ? 'warning'
                     : 'default'
                 }
-                actionLabel="Open"
+                actionLabel={t('resourceManager.overview.actions.open')}
                 onAction={() => setActiveSection('i18n')}
               />
               <ResourceTile
                 icon={Library}
-                title="External libs"
-                description="Runtime component + icon libraries (local presets + custom ids)."
+                title={t('resourceManager.tabs.external')}
+                description={t(
+                  'resourceManager.overview.cards.external.description'
+                )}
                 metrics={[
                   {
-                    label: 'components',
+                    label: t('resourceManager.overview.metrics.components'),
                     value: String(overviewSnapshot.external.componentLibraries),
                   },
                   {
-                    label: 'icons',
+                    label: t('resourceManager.overview.metrics.icons'),
                     value: String(overviewSnapshot.external.iconLibraries),
                   },
                   {
-                    label: 'status',
+                    label: t('resourceManager.overview.metrics.status'),
                     value:
                       overviewSnapshot.external.componentLibraries +
                         overviewSnapshot.external.iconLibraries >
                       0
-                        ? 'configured'
-                        : 'none',
+                        ? t('resourceManager.overview.metrics.configured')
+                        : t('resourceManager.overview.metrics.none'),
                   },
                 ]}
                 status={
@@ -562,7 +579,7 @@ export function ProjectResources() {
                     ? 'warning'
                     : 'default'
                 }
-                actionLabel="Open"
+                actionLabel={t('resourceManager.overview.actions.open')}
                 onAction={() => setActiveSection('external')}
               />
             </div>
@@ -573,19 +590,18 @@ export function ProjectResources() {
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.12em] text-(--color-6)">
-                    Quick actions
+                    {t('resourceManager.overview.quickActions.badgeTitle')}
                   </p>
                   <h2 className="mt-2 text-base font-semibold text-(--color-9)">
-                    Build faster without leaving resources
+                    {t('resourceManager.overview.quickActions.title')}
                   </h2>
                   <p className="mt-2 max-w-2xl text-sm text-(--color-7)">
-                    Create common assets, then jump straight into the dedicated
-                    editor tab.
+                    {t('resourceManager.overview.quickActions.description')}
                   </p>
                 </div>
                 <div className="inline-flex items-center gap-2 rounded-2xl border border-black/8 bg-black/[0.015] px-3 py-2 text-xs text-(--color-7)">
                   <Sparkles size={14} className="text-(--color-7)" />
-                  Overview stays local (no network required).
+                  {t('resourceManager.overview.quickActions.badge')}
                 </div>
               </div>
 
@@ -597,13 +613,13 @@ export function ProjectResources() {
                 >
                   <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-(--color-6)">
                     <Plus size={14} />
-                    New script
+                    {t('resourceManager.overview.quickActions.newScript')}
                   </p>
                   <p className="text-sm font-semibold text-(--color-9)">
-                    `untitled.ts` in scripts
+                    {t('resourceManager.overview.quickActions.scriptPath')}
                   </p>
                   <p className="text-xs text-(--color-7)">
-                    TypeScript is the default workflow for logic.
+                    {t('resourceManager.overview.quickActions.scriptHint')}
                   </p>
                 </button>
 
@@ -614,13 +630,13 @@ export function ProjectResources() {
                 >
                   <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-(--color-6)">
                     <Plus size={14} />
-                    New style
+                    {t('resourceManager.overview.quickActions.newStyle')}
                   </p>
                   <p className="text-sm font-semibold text-(--color-9)">
-                    `untitled.css` in styles
+                    {t('resourceManager.overview.quickActions.stylePath')}
                   </p>
                   <p className="text-xs text-(--color-7)">
-                    Drop in utility or custom component styles.
+                    {t('resourceManager.overview.quickActions.styleHint')}
                   </p>
                 </button>
 
@@ -631,13 +647,13 @@ export function ProjectResources() {
                 >
                   <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-(--color-6)">
                     <Plus size={14} />
-                    New shader
+                    {t('resourceManager.overview.quickActions.newShader')}
                   </p>
                   <p className="text-sm font-semibold text-(--color-9)">
-                    `untitled.glsl` in shaders
+                    {t('resourceManager.overview.quickActions.shaderPath')}
                   </p>
                   <p className="text-xs text-(--color-7)">
-                    Quick-start GLSL for effects and previews.
+                    {t('resourceManager.overview.quickActions.shaderHint')}
                   </p>
                 </button>
               </div>
@@ -645,10 +661,10 @@ export function ProjectResources() {
 
             <article className="rounded-2xl border border-black/8 bg-(--color-0) p-5">
               <p className="text-xs font-semibold uppercase tracking-[0.12em] text-(--color-6)">
-                Health check
+                {t('resourceManager.overview.healthCheck.badge')}
               </p>
               <h2 className="mt-2 text-base font-semibold text-(--color-9)">
-                What needs attention
+                {t('resourceManager.overview.healthCheck.title')}
               </h2>
               <div className="mt-4 grid gap-2 text-sm text-(--color-7)">
                 {overviewSnapshot?.public.warnings ? (
@@ -658,14 +674,17 @@ export function ProjectResources() {
                       className="mt-0.5 text-amber-700"
                     />
                     <div>
-                      Public has{' '}
-                      <strong>{overviewSnapshot.public.warnings}</strong>{' '}
-                      warning hints.
+                      {t(
+                        'resourceManager.overview.healthCheck.publicWarnings',
+                        {
+                          count: overviewSnapshot.public.warnings,
+                        }
+                      )}
                     </div>
                   </div>
                 ) : (
                   <div className="rounded-2xl border border-black/8 bg-black/[0.015] px-3 py-2 text-xs">
-                    Public assets look clean.
+                    {t('resourceManager.overview.healthCheck.publicClean')}
                   </div>
                 )}
 
@@ -676,31 +695,30 @@ export function ProjectResources() {
                       className="mt-0.5 text-amber-700"
                     />
                     <div>
-                      i18n has{' '}
-                      <strong>{overviewSnapshot.i18n.missingValues}</strong>{' '}
-                      empty cells. Base:{' '}
-                      <strong>{overviewSnapshot.i18n.baseLocale}</strong>.
+                      {t('resourceManager.overview.healthCheck.i18nMissing', {
+                        count: overviewSnapshot.i18n.missingValues,
+                        baseLocale: overviewSnapshot.i18n.baseLocale,
+                      })}
                     </div>
                   </div>
                 ) : (
                   <div className="rounded-2xl border border-black/8 bg-black/[0.015] px-3 py-2 text-xs">
-                    i18n coverage looks good.
+                    {t('resourceManager.overview.healthCheck.i18nGood')}
                   </div>
                 )}
 
                 {overviewSnapshot?.external.componentLibraries === 0 ? (
                   <div className="rounded-2xl border border-black/8 bg-black/[0.015] px-3 py-2 text-xs">
-                    No component library configured yet.
+                    {t('resourceManager.overview.healthCheck.noComponentLib')}
                   </div>
                 ) : null}
 
                 {overviewSnapshot?.i18n.worstLocale ? (
                   <div className="rounded-2xl border border-black/8 bg-black/[0.015] px-3 py-2 text-xs">
-                    Worst locale:{' '}
-                    <strong>{overviewSnapshot.i18n.worstLocale.locale}</strong>{' '}
-                    missing{' '}
-                    <strong>{overviewSnapshot.i18n.worstLocale.missing}</strong>{' '}
-                    keys vs base.
+                    {t('resourceManager.overview.healthCheck.worstLocale', {
+                      locale: overviewSnapshot.i18n.worstLocale.locale,
+                      count: overviewSnapshot.i18n.worstLocale.missing,
+                    })}
                   </div>
                 ) : null}
               </div>

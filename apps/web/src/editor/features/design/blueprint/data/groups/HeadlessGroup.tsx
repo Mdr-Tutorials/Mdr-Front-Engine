@@ -1,4 +1,4 @@
-import type { ComponentGroup } from '../../../BlueprintEditor.types';
+import type { ComponentGroup } from '@/editor/features/design/BlueprintEditor.types';
 
 export const HEADLESS_GROUP: ComponentGroup = {
   id: 'radix',

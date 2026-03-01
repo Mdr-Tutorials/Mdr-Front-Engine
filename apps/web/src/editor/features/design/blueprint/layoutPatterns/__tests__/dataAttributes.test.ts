@@ -11,7 +11,7 @@ import {
   isLayoutPatternRootNode,
   mergeLayoutPatternDataAttributes,
   mergeLayoutPatternParams,
-} from '../dataAttributes';
+} from '@/editor/features/design/blueprint/layoutPatterns/dataAttributes';
 
 const createNode = (dataAttributes: unknown): ComponentNode => ({
   id: 'node-1',

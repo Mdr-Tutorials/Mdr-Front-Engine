@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { scanExternalModulePaths } from '../scanner';
+import { scanExternalModulePaths } from '@/editor/features/design/blueprint/external/runtime/scanner';
 
 describe('scanExternalModulePaths', () => {
   it('discovers top-level and nested component exports', () => {

@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ReactNode } from 'react';
-import EditorBar from '../EditorBar';
+import EditorBar from '@/editor/EditorBar/EditorBar';
 import { resetSettingsStore } from '@/test-utils/editorStore';
 
 const navigateMock = vi.fn();

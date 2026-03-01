@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { formatValue, withDisabled } from '../SettingsShared';
+import {
+  formatValue,
+  withDisabled,
+} from '@/editor/features/settings/SettingsShared';
 
 describe('SettingsShared helpers', () => {
   it('formats values for display', () => {

@@ -1,6 +1,6 @@
 import { describe, expect, it, beforeEach } from 'vitest';
-import { getComponentGroups } from '../BlueprintEditor.data';
-import { createNodeFromPaletteItem } from '../BlueprintEditor';
+import { getComponentGroups } from '@/editor/features/design/BlueprintEditor.data';
+import { createNodeFromPaletteItem } from '@/editor/features/design/BlueprintEditor';
 
 /**
  * 基于组件注册机制的拖拽测试

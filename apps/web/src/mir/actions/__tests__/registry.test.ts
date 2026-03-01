@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { resolveNavigateTarget } from '../registry';
+import { resolveNavigateTarget } from '@/mir/actions/registry';
 
 describe('resolveNavigateTarget', () => {
   it('defaults to _blank when target is missing', () => {

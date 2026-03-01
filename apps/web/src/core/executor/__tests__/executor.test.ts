@@ -6,7 +6,7 @@ import {
   GRAPH_EXECUTE_RESULT_EVENT,
   mountGraphExecutionBridge,
   registerGraphExecutionHandler,
-} from '../executor';
+} from '@/core/executor/executor';
 
 describe('executor bridge', () => {
   afterEach(() => {

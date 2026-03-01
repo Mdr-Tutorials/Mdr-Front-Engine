@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { I18nResourcePage } from '../I18nResourcePage';
+import { I18nResourcePage } from '@/editor/features/resources/I18nResourcePage';
 
 describe('I18nResourcePage', () => {
   beforeEach(() => {
@@ -23,18 +23,33 @@ describe('I18nResourcePage', () => {
   it('supports adding locale and translation key', () => {
     renderWithRouter();
 
-    fireEvent.change(screen.getByPlaceholderText('new locale'), {
-      target: { value: 'fr' },
-    });
-    fireEvent.click(screen.getByRole('button', { name: 'Add locale' }));
+    fireEvent.change(
+      screen.getByPlaceholderText('resourceManager.i18n.newLocalePlaceholder'),
+      {
+        target: { value: 'fr' },
+      }
+    );
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'resourceManager.i18n.actions.addLocale',
+      })
+    );
 
-    fireEvent.change(screen.getByPlaceholderText('new.translation.key'), {
-      target: { value: 'common.greeting' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('default value (en)'), {
-      target: { value: 'Hello' },
-    });
-    fireEvent.click(screen.getByRole('button', { name: 'Add' }));
+    fireEvent.change(
+      screen.getByPlaceholderText('resourceManager.i18n.newKeyPlaceholder'),
+      {
+        target: { value: 'common.greeting' },
+      }
+    );
+    fireEvent.change(
+      screen.getByPlaceholderText('resourceManager.i18n.newSourcePlaceholder'),
+      {
+        target: { value: 'Hello' },
+      }
+    );
+    fireEvent.click(
+      screen.getByRole('button', { name: 'resourceManager.i18n.actions.add' })
+    );
 
     const keyCell = screen.getAllByRole('button', {
       name: 'common.greeting',
@@ -54,13 +69,21 @@ describe('I18nResourcePage', () => {
   it('supports deleting key across locales', () => {
     renderWithRouter();
 
-    fireEvent.change(screen.getByPlaceholderText('new.translation.key'), {
-      target: { value: 'common.toDelete' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('default value (en)'), {
-      target: { value: 'Delete me' },
-    });
-    fireEvent.click(screen.getByRole('button', { name: 'Add' }));
+    fireEvent.change(
+      screen.getByPlaceholderText('resourceManager.i18n.newKeyPlaceholder'),
+      {
+        target: { value: 'common.toDelete' },
+      }
+    );
+    fireEvent.change(
+      screen.getByPlaceholderText('resourceManager.i18n.newSourcePlaceholder'),
+      {
+        target: { value: 'Delete me' },
+      }
+    );
+    fireEvent.click(
+      screen.getByRole('button', { name: 'resourceManager.i18n.actions.add' })
+    );
 
     const keyButton = screen.getAllByRole('button', {
       name: 'common.toDelete',
@@ -68,7 +91,8 @@ describe('I18nResourcePage', () => {
     const row = keyButton.closest('tr');
     if (!row) throw new Error('missing delete row');
     const deleteButton = Array.from(row.querySelectorAll('button')).find(
-      (button) => button.textContent?.trim() === 'Delete'
+      (button) =>
+        button.textContent?.trim() === 'resourceManager.i18n.actions.delete'
     );
     if (!deleteButton) throw new Error('missing delete button');
     fireEvent.click(deleteButton);

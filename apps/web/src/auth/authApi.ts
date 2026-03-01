@@ -21,49 +21,87 @@ const request = async <T>(
   options: RequestInit = {}
 ): Promise<T> => apiRequest<T>(path, options);
 
+const mergeHeaders = (...sources: Array<HeadersInit | undefined>): Headers => {
+  const headers = new Headers();
+  sources.forEach((source) => {
+    if (!source) return;
+    new Headers(source).forEach((value, key) => {
+      headers.set(key, value);
+    });
+  });
+  return headers;
+};
+
 export const authApi = {
-  register: async (data: {
-    email: string;
-    password: string;
-    name: string;
-    description?: string;
-  }) =>
+  register: async (
+    data: {
+      email: string;
+      password: string;
+      name: string;
+      description?: string;
+    },
+    options: RequestInit = {}
+  ) =>
     request<AuthResponse>('/auth/register', {
+      ...options,
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: mergeHeaders(
+        { 'Content-Type': 'application/json' },
+        options.headers
+      ),
       body: JSON.stringify(data),
     }),
-  login: async (data: { email: string; password: string }) =>
+  login: async (
+    data: { email: string; password: string },
+    options: RequestInit = {}
+  ) =>
     request<AuthResponse>('/auth/login', {
+      ...options,
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: mergeHeaders(
+        { 'Content-Type': 'application/json' },
+        options.headers
+      ),
       body: JSON.stringify(data),
     }),
-  me: async (token: string) =>
+  me: async (token: string, options: RequestInit = {}) =>
     request<{ user: PublicUser }>('/auth/me', {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
+      ...options,
+      headers: mergeHeaders(
+        {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        options.headers
+      ),
     }),
-  logout: async (token: string) =>
+  logout: async (token: string, options: RequestInit = {}) =>
     request<void>('/auth/logout', {
+      ...options,
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
+      headers: mergeHeaders(
+        {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        options.headers
+      ),
     }),
   updateProfile: async (
     token: string,
-    data: { name?: string; description?: string }
+    data: { name?: string; description?: string },
+    options: RequestInit = {}
   ) =>
     request<{ user: PublicUser }>('/users/me', {
+      ...options,
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
+      headers: mergeHeaders(
+        {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        options.headers
+      ),
       body: JSON.stringify(data),
     }),
 };

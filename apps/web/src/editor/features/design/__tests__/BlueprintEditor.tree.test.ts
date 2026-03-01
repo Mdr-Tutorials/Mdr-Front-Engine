@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { insertIntoMirDoc } from '../BlueprintEditor.tree';
+import { insertIntoMirDoc } from '@/editor/features/design/BlueprintEditor.tree';
 import type { MIRDocument } from '@/core/types/engine.types';
 
 const createDoc = (): MIRDocument => ({

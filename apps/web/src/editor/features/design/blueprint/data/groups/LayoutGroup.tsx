@@ -1,7 +1,11 @@
 ﻿import { MdrCard, MdrDiv, MdrPanel, MdrSection, MdrText } from '@mdr/ui';
-import type { ComponentGroup } from '../../../BlueprintEditor.types';
-import { buildVariants } from '../helpers';
-import { CARD_VARIANTS, PANEL_VARIANTS, SIZE_OPTIONS } from '../options';
+import type { ComponentGroup } from '@/editor/features/design/BlueprintEditor.types';
+import { buildVariants } from '@/editor/features/design/blueprint/data/helpers';
+import {
+  CARD_VARIANTS,
+  PANEL_VARIANTS,
+  SIZE_OPTIONS,
+} from '@/editor/features/design/blueprint/data/options';
 
 export const LAYOUT_GROUP: ComponentGroup = {
   id: 'layout',

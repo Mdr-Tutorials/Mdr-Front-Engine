@@ -166,8 +166,10 @@ export const getConfiguredExternalLibraries = () =>
   }));
 
 export const ensureExternalLibraryById = async (
-  libraryId: string
+  libraryId: string,
+  options: { signal?: AbortSignal } = {}
 ): Promise<ExternalLibraryDiagnostic[]> => {
+  if (options.signal?.aborted) return [];
   ensureBootstrap();
   setExternalLibraryState(libraryId, 'loading', []);
   const profile = getExternalLibraryProfile(libraryId);
@@ -177,7 +179,7 @@ export const ensureExternalLibraryById = async (
     setLatestDiagnostics(diagnostics);
     return diagnostics;
   }
-  const diagnostics = await ensureExternalLibrary(profile);
+  const diagnostics = await ensureExternalLibrary(profile, options);
   setExternalLibraryState(
     libraryId,
     diagnostics.some((item) => item.level === 'error') ? 'error' : 'success',
@@ -188,8 +190,10 @@ export const ensureExternalLibraryById = async (
 };
 
 export const ensureConfiguredExternalLibraries = async (
-  libraryIds: string[] = getConfiguredExternalLibraryIds()
+  libraryIds: string[] = getConfiguredExternalLibraryIds(),
+  options: { signal?: AbortSignal } = {}
 ): Promise<ExternalLibraryDiagnostic[]> => {
+  if (options.signal?.aborted) return [];
   ensureBootstrap();
   clearRegisteredExternalLibraries();
   if (libraryIds.length === 0) {
@@ -212,7 +216,9 @@ export const ensureConfiguredExternalLibraries = async (
     });
     emitExternalLibraryStates();
     const results = await Promise.all(
-      uniqueIds.map((libraryId) => ensureExternalLibraryById(libraryId))
+      uniqueIds.map((libraryId) =>
+        ensureExternalLibraryById(libraryId, options)
+      )
     );
     const diagnostics = results.flat();
     setLatestDiagnostics(diagnostics);
@@ -266,8 +272,10 @@ export const getExternalLibraryState = (
 };
 export const getExternalLibraryStates = () =>
   Array.from(externalLibraryStateById.values());
-export const retryExternalLibraryById = (libraryId: string) =>
-  ensureExternalLibraryById(libraryId);
+export const retryExternalLibraryById = (
+  libraryId: string,
+  options: { signal?: AbortSignal } = {}
+) => ensureExternalLibraryById(libraryId, options);
 
 export const subscribeExternalLibraryDiagnostics = (
   listener: (diagnostics: ExternalLibraryDiagnostic[]) => void

@@ -2,9 +2,9 @@ import { fireEvent, render } from '@testing-library/react';
 import { type ReactNode, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import type { ComponentNode, MIRDocument } from '@/core/types/engine.types';
-import { MIRRenderer } from '../MIRRenderer';
-import { createComponentRegistry, mdrAdapter } from '../registry';
-import { registerNodeCapability } from '../capabilities';
+import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
+import { createComponentRegistry, mdrAdapter } from '@/mir/renderer/registry';
+import { registerNodeCapability } from '@/mir/renderer/capabilities';
 
 type BareBoxProps = {
   children?: ReactNode;

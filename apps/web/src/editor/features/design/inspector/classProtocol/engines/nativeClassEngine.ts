@@ -1,6 +1,9 @@
 import { twMerge } from 'tailwind-merge';
-import type { ClassProtocolEngine, ClassSuggestion } from '../types';
-import { parseClassProtocolTokens } from '../tokenizer';
+import type {
+  ClassProtocolEngine,
+  ClassSuggestion,
+} from '@/editor/features/design/inspector/classProtocol/types';
+import { parseClassProtocolTokens } from '@/editor/features/design/inspector/classProtocol/tokenizer';
 
 const NATIVE_HINTS = [
   'container',

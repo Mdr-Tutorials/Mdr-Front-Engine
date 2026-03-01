@@ -2,6 +2,7 @@ import type {
   CanonicalExternalComponent,
   ExternalLibraryDescriptor,
 } from './types';
+import { isAbortError } from '@/infra/api';
 
 const PROP_KEYS = ['category', 'type', 'variant', 'color', 'severity', 'size'];
 const fetchCache = new Map<string, Promise<string | null>>();
@@ -42,7 +43,10 @@ const writeDtsCache = (url: string, content: string) => {
   }
 };
 
-const fetchText = async (url: string): Promise<string | null> => {
+const fetchText = async (
+  url: string,
+  signal?: AbortSignal
+): Promise<string | null> => {
   if (fetchCache.has(url)) return fetchCache.get(url)!;
   const cached = readDtsCache(url);
   if (cached) {
@@ -52,12 +56,15 @@ const fetchText = async (url: string): Promise<string | null> => {
   }
   const promise = (async () => {
     try {
-      const response = await fetch(url, { credentials: 'omit' });
+      const response = await fetch(url, { credentials: 'omit', signal });
       if (!response.ok) return null;
       const content = await response.text();
       if (content) writeDtsCache(url, content);
       return content;
-    } catch {
+    } catch (error) {
+      if (isAbortError(error)) {
+        fetchCache.delete(url);
+      }
       return null;
     }
   })();
@@ -126,13 +133,14 @@ const resolveDtsUrls = (
 
 const inferPropOptionsFromDts = async (
   descriptor: ExternalLibraryDescriptor,
-  component: CanonicalExternalComponent
+  component: CanonicalExternalComponent,
+  signal?: AbortSignal
 ) => {
   const urls = resolveDtsUrls(descriptor, component.path);
   if (urls.length === 0) return {};
   let dts: string | null = null;
   for (const url of urls) {
-    dts = await fetchText(url);
+    dts = await fetchText(url, signal);
     if (dts) break;
   }
   if (!dts) return {};
@@ -148,17 +156,22 @@ const inferPropOptionsFromDts = async (
 
 export const enrichCanonicalPropOptionsFromDts = async (
   descriptor: ExternalLibraryDescriptor,
-  components: CanonicalExternalComponent[]
+  components: CanonicalExternalComponent[],
+  options: { signal?: AbortSignal } = {}
 ) => {
   const enriched = await Promise.all(
     components.map(async (component) => {
-      const options = await inferPropOptionsFromDts(descriptor, component);
-      if (Object.keys(options).length === 0) return component;
+      const propOptions = await inferPropOptionsFromDts(
+        descriptor,
+        component,
+        options.signal
+      );
+      if (Object.keys(propOptions).length === 0) return component;
       return {
         ...component,
         propOptions: {
           ...(component.propOptions ?? {}),
-          ...options,
+          ...propOptions,
         },
       } satisfies CanonicalExternalComponent;
     })

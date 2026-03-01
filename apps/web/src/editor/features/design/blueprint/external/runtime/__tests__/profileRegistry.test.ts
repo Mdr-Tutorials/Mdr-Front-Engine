@@ -5,8 +5,8 @@ import {
   registerExternalLibraryProfile,
   resetExternalLibraryProfiles,
   unregisterExternalLibraryProfile,
-} from '../profileRegistry';
-import type { ExternalLibraryProfile } from '../types';
+} from '@/editor/features/design/blueprint/external/runtime/profileRegistry';
+import type { ExternalLibraryProfile } from '@/editor/features/design/blueprint/external/runtime/types';
 
 const createProfile = (libraryId: string): ExternalLibraryProfile => ({
   descriptor: () => ({

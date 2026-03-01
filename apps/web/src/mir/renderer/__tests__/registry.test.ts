@@ -13,7 +13,7 @@ vi.mock('@mdr/ui', () => ({
 
 describe('mir renderer registry', () => {
   it('auto-registers @mdr/ui Mdr* exports and skips non-components', async () => {
-    const { createMdrRegistry } = await import('../registry');
+    const { createMdrRegistry } = await import('@/mir/renderer/registry');
     const registry = createMdrRegistry();
 
     expect(registry.get('MdrDiv')).toBeTruthy();
@@ -24,7 +24,7 @@ describe('mir renderer registry', () => {
 
   it('keeps adapter overrides (e.g. MdrButton is non-children)', async () => {
     const { createMdrRegistry, mdrIconAdapter, mdrLinkAdapter } = await import(
-      '../registry'
+      '@/mir/renderer/registry'
     );
     const registry = createMdrRegistry();
     const resolved = registry.resolve('MdrButton');
@@ -62,7 +62,9 @@ describe('mir renderer registry', () => {
   });
 
   it('registers Radix headless node types in ordered registry resolution', async () => {
-    const { createOrderedComponentRegistry } = await import('../registry');
+    const { createOrderedComponentRegistry } = await import(
+      '@/mir/renderer/registry'
+    );
     const registry = createOrderedComponentRegistry();
     const resolved = registry.resolve('RadixLabel');
 

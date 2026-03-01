@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { ResourceFileTree } from '../ResourceFileTree';
-import type { PublicResourceNode } from '../publicTree';
+import { ResourceFileTree } from '@/editor/features/resources/ResourceFileTree';
+import type { PublicResourceNode } from '@/editor/features/resources/publicTree';
 
 const buildTree = (): PublicResourceNode => ({
   id: 'public-root',
@@ -108,11 +108,23 @@ describe('ResourceFileTree', () => {
     fireEvent.contextMenu(folderButton);
 
     expect(onSelect).not.toHaveBeenCalled();
-    expect(screen.getByText('Import files')).toBeTruthy();
-    expect(screen.getByText('Import image')).toBeTruthy();
-    expect(screen.getByText('Import font')).toBeTruthy();
-    expect(screen.getByText('New file (JSON)')).toBeTruthy();
-    expect(screen.getByText('New file (SVG)')).toBeTruthy();
-    expect(screen.queryByText('Import other')).toBeNull();
+    expect(
+      screen.getByText('resourceManager.tree.menu.importFiles')
+    ).toBeTruthy();
+    expect(
+      screen.getByText('resourceManager.tree.menu.importImage')
+    ).toBeTruthy();
+    expect(
+      screen.getByText('resourceManager.tree.menu.importFont')
+    ).toBeTruthy();
+    expect(
+      screen.getByText('resourceManager.tree.menu.newFileJson')
+    ).toBeTruthy();
+    expect(
+      screen.getByText('resourceManager.tree.menu.newFileSvg')
+    ).toBeTruthy();
+    expect(
+      screen.queryByText('resourceManager.tree.menu.importOther')
+    ).toBeNull();
   });
 });

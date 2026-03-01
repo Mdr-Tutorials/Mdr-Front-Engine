@@ -4,13 +4,13 @@ import {
   getDefaultStatusIndex,
   getPreviewScale,
   isWideComponent,
-} from '../BlueprintEditor.data';
+} from '@/editor/features/design/BlueprintEditor.data';
 import type {
   ComponentGroup,
   ComponentPreviewItem,
   ComponentPreviewOption,
   ComponentPreviewStatus,
-} from '../BlueprintEditor.types';
+} from '@/editor/features/design/BlueprintEditor.types';
 
 describe('BlueprintEditor.data helpers', () => {
   it('selects the default size option', () => {

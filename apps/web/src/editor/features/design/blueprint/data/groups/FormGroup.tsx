@@ -17,9 +17,9 @@
   MdrTimePicker,
   MdrVerificationCode,
 } from '@mdr/ui';
-import type { ComponentGroup } from '../../../BlueprintEditor.types';
-import { SIZE_OPTIONS } from '../options';
-import { REGION_OPTIONS } from '../sampleData';
+import type { ComponentGroup } from '@/editor/features/design/BlueprintEditor.types';
+import { SIZE_OPTIONS } from '@/editor/features/design/blueprint/data/options';
+import { REGION_OPTIONS } from '@/editor/features/design/blueprint/data/sampleData';
 
 export const FORM_GROUP: ComponentGroup = {
   id: 'form',

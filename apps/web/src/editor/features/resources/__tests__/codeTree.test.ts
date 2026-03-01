@@ -3,7 +3,7 @@ import {
   createCodeFile,
   renameCodeNode,
   type CodeResourceNode,
-} from '../codeTree';
+} from '@/editor/features/resources/codeTree';
 
 describe('codeTree', () => {
   it('updates mime when file extension changes on rename', () => {

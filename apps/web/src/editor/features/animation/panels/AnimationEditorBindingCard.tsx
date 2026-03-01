@@ -3,6 +3,7 @@ import type {
   AnimationTrack,
   SvgFilterDefinition,
 } from '@/core/types/engine.types';
+import { useTranslation } from 'react-i18next';
 import { AnimationEditorTrackCard } from './AnimationEditorTrackCard';
 
 type NodeTargetOption = { id: string; label: string };
@@ -106,6 +107,7 @@ export const AnimationEditorBindingCard = ({
   onUpdateKeyframeEasing,
   onUpdateKeyframeHold,
 }: AnimationEditorBindingCardProps) => {
+  const { t } = useTranslation('editor');
   const hasTarget = nodeTargetOptions.some(
     (item) => item.id === binding.targetNodeId
   );
@@ -119,6 +121,8 @@ export const AnimationEditorBindingCard = ({
             onUpdateBindingTarget(binding.id, event.target.value)
           }
           className="min-w-[220px] flex-1 rounded border border-black/15 px-2 py-1.5 text-sm"
+          aria-label={t('animationEditor.binding.targetNode')}
+          title={t('animationEditor.binding.targetNode')}
         >
           {!hasTarget ? (
             <option value={binding.targetNodeId}>{binding.targetNodeId}</option>
@@ -133,8 +137,10 @@ export const AnimationEditorBindingCard = ({
           type="button"
           onClick={() => onDeleteBinding(binding.id)}
           className="rounded border border-black/15 px-2 py-1 text-xs"
+          aria-label={t('animationEditor.binding.delete')}
+          title={t('animationEditor.binding.delete')}
         >
-          Delete binding
+          {t('animationEditor.binding.delete')}
         </button>
       </div>
 
@@ -144,21 +150,21 @@ export const AnimationEditorBindingCard = ({
           onClick={() => onAddTrack(binding.id, 'style')}
           className="rounded border border-black/15 px-2 py-1 text-xs"
         >
-          + Style
+          {t('animationEditor.binding.addStyle')}
         </button>
         <button
           type="button"
           onClick={() => onAddTrack(binding.id, 'css-filter')}
           className="rounded border border-black/15 px-2 py-1 text-xs"
         >
-          + CSS filter
+          {t('animationEditor.binding.addCssFilter')}
         </button>
         <button
           type="button"
           onClick={() => onAddTrack(binding.id, 'svg-filter-attr')}
           className="rounded border border-black/15 px-2 py-1 text-xs"
         >
-          + SVG filter
+          {t('animationEditor.binding.addSvgFilter')}
         </button>
       </div>
 

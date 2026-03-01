@@ -9,7 +9,10 @@ import {
 } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { createPortal } from 'react-dom';
-import { estimateStickyNoteSize, type GraphNodeData } from '../graphNodeShared';
+import {
+  estimateStickyNoteSize,
+  type GraphNodeData,
+} from '@/editor/features/development/reactflow/graphNodeShared';
 import type { NodeI18n } from './nodeI18n';
 import { tNode } from './nodeI18n';
 import { isPrimaryShortcut, useWindowKeydown } from '@/shortcuts';

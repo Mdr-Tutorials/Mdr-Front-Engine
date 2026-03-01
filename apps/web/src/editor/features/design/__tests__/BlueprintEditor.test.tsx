@@ -9,7 +9,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { KeyboardEvent, ReactNode } from 'react';
 import { useAuthStore } from '@/auth/useAuthStore';
 import { editorApi } from '@/editor/editorApi';
-import BlueprintEditor from '../BlueprintEditor';
+import BlueprintEditor from '@/editor/features/design/BlueprintEditor';
 import {
   DEFAULT_BLUEPRINT_STATE,
   useEditorStore,
@@ -17,7 +17,7 @@ import {
 import {
   getComponentGroups,
   VIEWPORT_ZOOM_RANGE,
-} from '../BlueprintEditor.data';
+} from '@/editor/features/design/BlueprintEditor.data';
 import {
   createMirDoc,
   resetEditorStore,

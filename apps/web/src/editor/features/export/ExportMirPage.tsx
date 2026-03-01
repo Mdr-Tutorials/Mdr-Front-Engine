@@ -13,7 +13,10 @@ import {
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import { generateReactBundle } from '@/mir/generator/mirToReact';
 import { validateMirDocument } from '@/mir/validator/validator';
-import { flattenPublicFiles, readPublicTree } from '../resources/publicTree';
+import {
+  flattenPublicFiles,
+  readPublicTree,
+} from '@/editor/features/resources/publicTree';
 import { CodeViewer } from './CodeViewer';
 import { resolveZipFilePayload } from './exportZip';
 import './ExportMirPage.scss';

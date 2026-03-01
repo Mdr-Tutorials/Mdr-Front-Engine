@@ -5,7 +5,7 @@ import type {
   ComponentPreviewOption,
   ComponentPreviewStatus,
   ComponentPreviewVariant,
-} from '../../BlueprintEditor.types';
+} from '@/editor/features/design/BlueprintEditor.types';
 import { DEFAULT_PREVIEW_SCALE } from './viewport';
 
 const WIDE_PREVIEW_SCALE_BOOST = 1.18;

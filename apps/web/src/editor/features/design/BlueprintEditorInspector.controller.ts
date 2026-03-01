@@ -12,7 +12,7 @@ import {
   createDefaultBinding,
   createDefaultTimeline,
   normalizeAnimationDefinition,
-} from '../animation/animationEditorModel';
+} from '@/editor/features/animation/animationEditorModel';
 import { resolveLinkCapability } from '@/mir/renderer/capabilities';
 import {
   getLayoutPatternId,

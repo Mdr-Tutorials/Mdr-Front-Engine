@@ -1,4 +1,4 @@
-import type { TargetAdapter } from '../core/adapter';
+import type { TargetAdapter } from '@/mir/generator/core/adapter';
 import { reactAdapter } from './adapter';
 
 export interface AntdReactAdapterOptions {

@@ -2,7 +2,8 @@ import type {
   AnimationKeyframe,
   AnimationTrack,
 } from '@/core/types/engine.types';
-import { isHexColor } from '../animationEditorUi';
+import { useTranslation } from 'react-i18next';
+import { isHexColor } from '@/editor/features/animation/animationEditorUi';
 
 type AnimationEditorKeyframesEditorProps = {
   bindingId: string;
@@ -50,18 +51,23 @@ export const AnimationEditorKeyframesEditor = ({
   onUpdateKeyframeEasing,
   onUpdateKeyframeHold,
 }: AnimationEditorKeyframesEditorProps) => {
+  const { t } = useTranslation('editor');
   const isColorTrack = track.kind === 'style' && track.property === 'color';
 
   return (
     <div className="rounded border border-black/8 bg-black/[0.015] p-2">
       <div className="mb-2 flex items-center justify-between">
-        <p className="text-xs font-medium">Keyframes</p>
+        <p className="text-xs font-medium">
+          {t('animationEditor.keyframes.title')}
+        </p>
         <button
           type="button"
           onClick={() => onAddKeyframe(bindingId, track.id)}
           className="inline-flex items-center gap-1 rounded border border-black/15 px-2 py-1 text-[11px]"
+          aria-label={t('animationEditor.keyframes.add')}
+          title={t('animationEditor.keyframes.add')}
         >
-          Add
+          {t('animationEditor.keyframes.add')}
         </button>
       </div>
       <div className="space-y-2">
@@ -84,6 +90,8 @@ export const AnimationEditorKeyframesEditor = ({
                 )
               }
               className="rounded border border-black/15 px-2 py-1 text-xs"
+              aria-label={t('animationEditor.keyframes.atMs')}
+              title={t('animationEditor.keyframes.atMs')}
             />
             {isColorTrack ? (
               <input
@@ -98,6 +106,8 @@ export const AnimationEditorKeyframesEditor = ({
                   )
                 }
                 className="h-8 rounded border border-black/15 p-1"
+                aria-label={t('animationEditor.keyframes.value')}
+                title={t('animationEditor.keyframes.value')}
               />
             ) : (
               <input
@@ -111,6 +121,8 @@ export const AnimationEditorKeyframesEditor = ({
                   )
                 }
                 className="rounded border border-black/15 px-2 py-1 text-xs"
+                aria-label={t('animationEditor.keyframes.value')}
+                title={t('animationEditor.keyframes.value')}
               />
             )}
             <input
@@ -123,8 +135,10 @@ export const AnimationEditorKeyframesEditor = ({
                   event.target.value
                 )
               }
-              placeholder="easing"
+              placeholder={t('animationEditor.keyframes.easing')}
               className="rounded border border-black/15 px-2 py-1 text-xs"
+              aria-label={t('animationEditor.keyframes.easing')}
+              title={t('animationEditor.keyframes.easing')}
             />
             <label className="inline-flex items-center gap-1 text-xs">
               <input
@@ -139,15 +153,17 @@ export const AnimationEditorKeyframesEditor = ({
                   )
                 }
               />
-              Hold
+              {t('animationEditor.keyframes.hold')}
             </label>
             <button
               type="button"
               onClick={() => onDeleteKeyframe(bindingId, track.id, index)}
               disabled={track.keyframes.length <= 1}
               className="rounded border border-black/15 px-2 py-1 text-xs disabled:opacity-50"
+              aria-label={t('animationEditor.common.delete')}
+              title={t('animationEditor.common.delete')}
             >
-              Del
+              {t('animationEditor.common.delShort')}
             </button>
           </div>
         ))}

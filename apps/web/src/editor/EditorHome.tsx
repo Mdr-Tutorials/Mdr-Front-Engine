@@ -19,6 +19,7 @@ import { truncate } from '@/utils/truncate';
 import NewResourceModal from './features/newfile/NewResourceModal';
 import { editorApi, type ProjectSummary } from './editorApi';
 import { useAuthStore } from '@/auth/useAuthStore';
+import { isAbortError } from '@/infra/api';
 import { useEditorStore } from './store/useEditorStore';
 import { hasModifierKey, useWindowKeydown } from '@/shortcuts';
 
@@ -335,11 +336,16 @@ function EditorHome() {
     }
 
     let cancelled = false;
+    const controller =
+      typeof AbortController === 'function' ? new AbortController() : null;
+    const requestOptions: RequestInit = controller
+      ? { signal: controller.signal }
+      : {};
     setIsLoading(true);
     setLoadError(null);
 
     editorApi
-      .listProjects(token)
+      .listProjects(token, requestOptions)
       .then(({ projects: remoteProjects }) => {
         if (cancelled) return;
         setProjects(remoteProjects);
@@ -355,7 +361,7 @@ function EditorHome() {
         );
       })
       .catch((error: unknown) => {
-        if (cancelled) return;
+        if (cancelled || isAbortError(error)) return;
         setLoadError(
           error instanceof Error ? error.message : 'Failed to load projects.'
         );
@@ -366,6 +372,7 @@ function EditorHome() {
 
     return () => {
       cancelled = true;
+      controller?.abort();
     };
   }, [token, setProjectsInStore]);
 
@@ -555,7 +562,7 @@ function EditorHome() {
             ))}
         </div>
 
-        <div className="mt-[48px] flex items-center justify-center pb-[20px]">
+        <div className="mt-auto flex items-center justify-center pb-[20px] pt-[48px]">
           <EditorTipsRandom />
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { ComponentNode, MIRDocument } from '@/core/types/engine.types';
-import { MIRRenderer } from '../MIRRenderer';
+import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
 
 const createDoc = (root: ComponentNode): MIRDocument => ({
   version: '1.0',

@@ -66,3 +66,11 @@ export const apiRequest = async <T>(
 
   return payload as T;
 };
+
+export const isAbortError = (error: unknown): boolean =>
+  Boolean(
+    error &&
+      typeof error === 'object' &&
+      'name' in error &&
+      (error as { name?: string }).name === 'AbortError'
+  );

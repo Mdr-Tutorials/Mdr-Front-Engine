@@ -1,14 +1,14 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { BlueprintEditorInspector } from '../BlueprintEditorInspector';
-import { resetInspectorExpansionPersistence } from '../BlueprintEditorInspector.controller';
-import { buildLayoutPatternNode } from '../blueprint/layoutPatterns/registry';
+import { BlueprintEditorInspector } from '@/editor/features/design/BlueprintEditorInspector';
+import { resetInspectorExpansionPersistence } from '@/editor/features/design/BlueprintEditorInspector.controller';
+import { buildLayoutPatternNode } from '@/editor/features/design/blueprint/layoutPatterns/registry';
 import {
   getLayoutPatternParamKey,
   isLayoutPatternRootNode,
-} from '../blueprint/layoutPatterns/dataAttributes';
-import { resetLayoutPanelExpansionPersistence } from '../inspector/panels/LayoutPanel';
+} from '@/editor/features/design/blueprint/layoutPatterns/dataAttributes';
+import { resetLayoutPanelExpansionPersistence } from '@/editor/features/design/inspector/panels/LayoutPanel';
 import {
   DEFAULT_BLUEPRINT_STATE,
   useEditorStore,

@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { IconPickerModal } from '../inspector/components/IconPickerModal';
+import { IconPickerModal } from '@/editor/features/design/inspector/components/IconPickerModal';
 
 const registryMock = vi.hoisted(() => {
   const iconSpy = vi.fn((props: Record<string, unknown>) => (

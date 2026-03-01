@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   createDtsCacheKey,
   enrichCanonicalPropOptionsFromDts,
-} from '../dtsPropOptions';
-import type { CanonicalExternalComponent } from '../types';
+} from '@/editor/features/design/blueprint/external/runtime/dtsPropOptions';
+import type { CanonicalExternalComponent } from '@/editor/features/design/blueprint/external/runtime/types';
 
 const createComponent = (path: string): CanonicalExternalComponent => ({
   libraryId: 'mui',
