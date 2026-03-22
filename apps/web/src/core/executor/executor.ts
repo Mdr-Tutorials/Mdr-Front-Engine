@@ -83,22 +83,46 @@ const safeDispatchResult = (
   );
 };
 
+const emitGraphDebugLog = (label: string, detail: Record<string, unknown>) => {
+  if (typeof window === 'undefined') return;
+  console.debug(`[node-graph-executor] ${label}`, detail);
+};
+
 /**
  * 执行链路：MIR executeGraph 事件 -> Graph bridge -> NodeGraph handler -> runtime state patch。
  */
 export const executeGraphRequest = async (
   request: GraphExecutionRequest
 ): Promise<GraphExecutionResult> => {
+  emitGraphDebugLog('request', {
+    requestId: request.requestId,
+    nodeId: request.nodeId,
+    trigger: request.trigger,
+    eventKey: request.eventKey,
+    params: request.params ?? null,
+  });
   const handler = pickHandler(request.params);
   if (handler) {
     const resolved = await handler(request);
-    return {
+    const result = {
       statePatch: normalizeStatePatch(resolved),
     };
+    emitGraphDebugLog('result', {
+      requestId: request.requestId,
+      handled: true,
+      statePatchKeys: Object.keys(result.statePatch),
+    });
+    return result;
   }
-  return {
+  const result = {
     statePatch: resolveInlineStatePatch(request.params),
   };
+  emitGraphDebugLog('result', {
+    requestId: request.requestId,
+    handled: false,
+    statePatchKeys: Object.keys(result.statePatch),
+  });
+  return result;
 };
 
 export const mountGraphExecutionBridge = (

@@ -1,4 +1,5 @@
 import type { NodeProps } from '@xyflow/react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { renderAbstractionGraphNode } from './nodes/AbstractionGraphNode';
 import { renderAdvancedFormsGraphNode } from './nodes/AdvancedFormsGraphNode';
@@ -20,7 +21,9 @@ import { renderUiGraphNode } from './nodes/UiGraphNode';
 import { renderSwitchGraphNode } from './nodes/SwitchGraphNode';
 import { renderSystemEnvironmentGraphNode } from './nodes/SystemEnvironmentGraphNode';
 import { renderValueGraphNode } from './nodes/ValueGraphNode';
+import { buildRuntimeNodeData } from './nodeGraphFlowNodes';
 import type { GraphNodeData as GraphNodePayload } from './graphNodeShared';
+import { useNodeGraphRenderStore } from './nodeGraphRenderStore';
 
 export type {
   FetchStatusItem,
@@ -31,7 +34,59 @@ export type {
 
 export const GraphNode = ({ id, data, selected }: NodeProps) => {
   const { t } = useTranslation('editor');
-  const nodeData = data as GraphNodePayload;
+  const runtimeNode = useNodeGraphRenderStore((state) =>
+    state.nodesById.get(id)
+  );
+  const runtimeEdges = useNodeGraphRenderStore((state) => state.edges);
+  const runtimeGroupAutoLayoutById = useNodeGraphRenderStore(
+    (state) => state.groupAutoLayoutById
+  );
+  const runtimeHintText = useNodeGraphRenderStore((state) => state.hintText);
+  const runtimeSetEdges = useNodeGraphRenderStore((state) => state.setEdges);
+  const runtimeSetHint = useNodeGraphRenderStore((state) => state.setHint);
+  const runtimeSetMenu = useNodeGraphRenderStore((state) => state.setMenu);
+  const runtimeSetNodes = useNodeGraphRenderStore((state) => state.setNodes);
+  const runtimeValidationText = useNodeGraphRenderStore(
+    (state) => state.validationText
+  );
+  const fallbackNodeData = data as GraphNodePayload;
+  const nodeData = useMemo(() => {
+    const node = runtimeNode ?? {
+      id,
+      type: 'graphNode',
+      position: { x: 0, y: 0 },
+      data: fallbackNodeData,
+    };
+    return buildRuntimeNodeData({
+      node: {
+        ...node,
+        data: fallbackNodeData,
+      },
+      runtime: {
+        edges: runtimeEdges,
+        groupAutoLayoutById: runtimeGroupAutoLayoutById,
+        hintText: runtimeHintText,
+        nodesById: new Map(runtimeNode ? [[id, runtimeNode]] : []),
+        setEdges: runtimeSetEdges,
+        setHint: runtimeSetHint,
+        setMenu: runtimeSetMenu,
+        setNodes: runtimeSetNodes,
+        validationText: runtimeValidationText,
+      },
+    });
+  }, [
+    fallbackNodeData,
+    id,
+    runtimeEdges,
+    runtimeGroupAutoLayoutById,
+    runtimeHintText,
+    runtimeNode,
+    runtimeSetEdges,
+    runtimeSetHint,
+    runtimeSetMenu,
+    runtimeSetNodes,
+    runtimeValidationText,
+  ]);
 
   if (nodeData.kind === 'switch') {
     return renderSwitchGraphNode({ id, nodeData, selected, t });

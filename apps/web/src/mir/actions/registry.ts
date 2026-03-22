@@ -109,7 +109,18 @@ export const executeBuiltInAction = (
   if (actionName === 'executeGraph') {
     window.dispatchEvent(
       new CustomEvent('mdr:execute-graph', {
-        detail: context.params ?? {},
+        detail: {
+          requestId:
+            typeof crypto !== 'undefined' && 'randomUUID' in crypto
+              ? crypto.randomUUID()
+              : `graph-${Date.now().toString(36)}-${Math.random()
+                  .toString(36)
+                  .slice(2, 8)}`,
+          nodeId: context.nodeId,
+          trigger: context.trigger,
+          eventKey: context.eventKey,
+          params: context.params ?? {},
+        },
       })
     );
     return;

@@ -14,6 +14,9 @@ export function TriggerGraphFields({
   selectedGraphId,
 }: TriggerGraphFieldsProps) {
   const { t, updateTrigger, graphOptions } = useInspectorSectionContext();
+  const selectedGraphOption = graphOptions.find(
+    (option: { id: string; label: string }) => option.id === selectedGraphId
+  );
 
   return (
     <div className="grid gap-1 rounded-md border border-black/8 p-2 dark:border-white/14">
@@ -30,6 +33,7 @@ export function TriggerGraphFields({
               params: {
                 ...(currentEvent.params ?? {}),
                 graphMode: 'new',
+                graphId: '',
               },
             }));
           }}
@@ -50,6 +54,8 @@ export function TriggerGraphFields({
               params: {
                 ...(currentEvent.params ?? {}),
                 graphMode: 'existing',
+                graphId: selectedGraphOption?.id ?? '',
+                graphName: selectedGraphOption?.label ?? '',
               },
             }));
           }}
@@ -87,11 +93,18 @@ export function TriggerGraphFields({
             defaultValue: 'Run one of the existing node graphs.',
           })}
           onChange={(event) => {
+            const nextGraphId = event.target.value;
+            const nextGraphOption = graphOptions.find(
+              (option: { id: string; label: string }) =>
+                option.id === nextGraphId
+            );
             updateTrigger(itemKey, (currentEvent: any) => ({
               ...currentEvent,
               params: {
                 ...(currentEvent.params ?? {}),
-                graphId: event.target.value,
+                graphMode: 'existing',
+                graphId: nextGraphId,
+                graphName: nextGraphOption?.label ?? '',
               },
             }));
           }}

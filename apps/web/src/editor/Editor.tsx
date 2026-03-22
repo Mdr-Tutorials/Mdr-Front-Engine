@@ -4,6 +4,7 @@ import EditorBar from './EditorBar/EditorBar';
 import { SettingsEffects } from './features/settings/SettingsEffects';
 import { useAuthStore } from '@/auth/useAuthStore';
 import { mountGraphExecutionBridge } from '@/core/executor/executor';
+import { mountDefaultNodeGraphExecutor } from '@/core/executor/nodeGraph/mountDefaultNodeGraphExecutor';
 import { editorApi } from './editorApi';
 import { isAbortError } from '@/infra/api';
 import { useEditorStore } from './store/useEditorStore';
@@ -102,7 +103,16 @@ function Editor() {
     setWorkspaceSnapshot,
   ]);
 
-  useEffect(() => mountGraphExecutionBridge(), []);
+  useEffect(() => {
+    const unmountBridge = mountGraphExecutionBridge();
+    const unmountNodeGraphExecutor = mountDefaultNodeGraphExecutor({
+      getMirDoc: () => useEditorStore.getState().mirDoc,
+    });
+    return () => {
+      unmountNodeGraphExecutor();
+      unmountBridge();
+    };
+  }, []);
 
   useWindowKeydown(
     (event) => {

@@ -156,7 +156,7 @@ const buildNavigateInlineHandler = (paramsExpr: string) => {
 };
 
 const buildExecuteGraphInlineHandler = (paramsExpr: string) => {
-  return `{() => window.dispatchEvent(new CustomEvent('mdr:execute-graph', { detail: ${paramsExpr} }))}`;
+  return `{(event) => { const requestId = typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : \`graph-\${Date.now().toString(36)}-\${Math.random().toString(36).slice(2, 8)}\`; window.dispatchEvent(new CustomEvent('mdr:execute-graph', { detail: { requestId, nodeId: '', trigger: event?.type ?? '', eventKey: event?.type ?? '', params: ${paramsExpr} } })); }}`;
 };
 
 const buildBuiltInInlineHandler = (

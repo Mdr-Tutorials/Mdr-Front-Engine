@@ -26,9 +26,9 @@ import {
   ensureProjectGraphSnapshot,
   loadProjectSnapshot,
   NODE_GRAPH_EDITOR_STATE_KEY,
-  nodeTypes,
   normalizeNodeGraphEditorState,
   normalizeGraphDocuments,
+  resolveNodeSize,
   serializeGraphsForMirLogic,
   type ContextMenuState,
   type GraphDocument,
@@ -36,8 +36,8 @@ import {
   type NodeGraphEditorMirState,
   type ProjectGraphSnapshot,
 } from './nodeGraphEditorModel';
+import { nodeTypes } from './nodeGraphNodeTypes';
 
-import { buildFlowNodes } from './nodeGraphFlowNodes';
 import {
   buildContextMenuItems,
   buildMenuColumns,
@@ -52,6 +52,7 @@ import { useNodeGraphGraphActions } from './nodeGraphGraphActions';
 import { useNodeGraphGroupLayout } from './nodeGraphGroupLayout';
 import { useNodeGraphNodeActions } from './nodeGraphNodeActions';
 import { useNodeGraphConnectionActions } from './nodeGraphConnectionActions';
+import { useNodeGraphRenderStore } from './nodeGraphRenderStore';
 
 const resolveActiveGraphFromSnapshot = (snapshot: ProjectGraphSnapshot) =>
   snapshot.graphs.find((graph) => graph.id === snapshot.activeGraphId) ??
@@ -59,6 +60,67 @@ const resolveActiveGraphFromSnapshot = (snapshot: ProjectGraphSnapshot) =>
 
 const serializeProjectSnapshot = (snapshot: ProjectGraphSnapshot) =>
   JSON.stringify(snapshot);
+const debugNodeGraph = (label: string, payload: Record<string, unknown>) => {
+  if (typeof window === 'undefined') return;
+  console.log(`[node-graph-debug] ${label}`, payload);
+};
+const serializeSnapshotForMir = (snapshot: ProjectGraphSnapshot) =>
+  JSON.stringify({
+    graphs: serializeGraphsForMirLogic(snapshot.graphs),
+    editorState: buildNodeGraphEditorState(snapshot),
+  });
+
+const serializeNodes = (nodes: Node<GraphNodeData>[]) => JSON.stringify(nodes);
+const serializeEdges = (edges: Edge[]) => JSON.stringify(edges);
+const toStableGraphNode = (node: Node<GraphNodeData>): Node<GraphNodeData> => {
+  const nodeSize = resolveNodeSize(node);
+  const isAnnotationNode =
+    node.data.kind === 'groupBox' || node.data.kind === 'stickyNote';
+  const isMinimalStickyNote =
+    node.data.kind === 'stickyNote' &&
+    (node.data.color ?? 'minimal') === 'minimal';
+  const className = [
+    node.className,
+    node.data.kind === 'stickyNote' ? 'nodegraph-node-sticky-note' : '',
+    isMinimalStickyNote ? 'nodegraph-node-sticky-note-minimal' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+  const stableNode: Node<GraphNodeData> = {
+    id: node.id,
+    type:
+      typeof node.type === 'string' && node.type.trim()
+        ? node.type
+        : 'graphNode',
+    position: {
+      x: node.position?.x ?? 0,
+      y: node.position?.y ?? 0,
+    },
+    data: { ...node.data },
+    initialWidth: nodeSize.width,
+    initialHeight: nodeSize.height,
+    className: className || undefined,
+    style: isAnnotationNode
+      ? {
+          background: 'transparent',
+          boxShadow: 'none',
+          border: 'none',
+          borderRadius: 0,
+        }
+      : node.style,
+    zIndex: node.data.kind === 'groupBox' ? -10 : 10,
+  };
+  if (typeof node.parentId === 'string' && node.parentId.trim()) {
+    stableNode.parentId = node.parentId;
+  }
+  if (node.extent === 'parent') {
+    stableNode.extent = 'parent';
+  }
+  if (typeof node.zIndex === 'number' && Number.isFinite(node.zIndex)) {
+    stableNode.zIndex = node.zIndex;
+  }
+  return stableNode;
+};
 
 const readNodeGraphEditorStateFromLogic = (
   logic: unknown
@@ -108,7 +170,9 @@ export const NodeGraphEditorContent = () => {
   const [activeGraphId, setActiveGraphId] = useState<string>(
     initialSnapshot.activeGraphId
   );
-  const [nodes, setNodes] = useNodesState(initialActiveGraph.nodes);
+  const [nodes, setNodes] = useNodesState(
+    initialActiveGraph.nodes.map(toStableGraphNode)
+  );
   const [edges, setEdges, onEdgesChange] = useEdgesState(
     initialActiveGraph.edges
   );
@@ -249,8 +313,99 @@ export const NodeGraphEditorContent = () => {
   );
   const createLocalizedNode = useCallback(
     (kind: GraphNodeKind, position: { x: number; y: number }) =>
-      localizeNodeLabel(createNode(kind, position)),
+      toStableGraphNode(localizeNodeLabel(createNode(kind, position))),
     [localizeNodeLabel]
+  );
+  const commitActiveGraphToDocs = useCallback(
+    (
+      nextNodes: Node<GraphNodeData>[] = nodes,
+      nextEdges: Edge[] = edges
+    ): GraphDocument[] => {
+      const stableNodes = nextNodes.map(toStableGraphNode);
+      const currentNodesSignature = serializeNodes(stableNodes);
+      const currentEdgesSignature = serializeEdges(nextEdges);
+      return graphDocs.map((graph) => {
+        if (graph.id !== activeGraphId) return graph;
+        const existingNodesSignature = serializeNodes(graph.nodes);
+        const existingEdgesSignature = serializeEdges(graph.edges);
+        if (
+          existingNodesSignature === currentNodesSignature &&
+          existingEdgesSignature === currentEdgesSignature
+        ) {
+          return graph;
+        }
+        return {
+          ...graph,
+          nodes: stableNodes,
+          edges: nextEdges,
+        };
+      });
+    },
+    [activeGraphId, edges, graphDocs, nodes]
+  );
+  const commitCanvasToGraphDocs = useCallback(
+    (nextNodes: Node<GraphNodeData>[] = nodes, nextEdges: Edge[] = edges) => {
+      const stableNodes = nextNodes.map(toStableGraphNode);
+      const currentNodesSignature = serializeNodes(stableNodes);
+      const currentEdgesSignature = serializeEdges(nextEdges);
+      let changed = false;
+      const nextGraphDocs = graphDocsRef.current.map((graph) => {
+        if (graph.id !== activeGraphIdRef.current) return graph;
+        const existingNodesSignature = serializeNodes(graph.nodes);
+        const existingEdgesSignature = serializeEdges(graph.edges);
+        if (
+          existingNodesSignature === currentNodesSignature &&
+          existingEdgesSignature === currentEdgesSignature
+        ) {
+          return graph;
+        }
+        changed = true;
+        return {
+          ...graph,
+          nodes: stableNodes,
+          edges: nextEdges,
+        };
+      });
+      if (!changed) return;
+      graphDocsRef.current = nextGraphDocs;
+      setGraphDocs(nextGraphDocs);
+      const committedSnapshot = ensureProjectGraphSnapshot({
+        activeGraphId: activeGraphIdRef.current,
+        graphs: nextGraphDocs,
+      });
+      const nextMirGraphs = serializeGraphsForMirLogic(
+        committedSnapshot.graphs
+      );
+      const nextGraphsSignature = JSON.stringify(nextMirGraphs);
+      const nextEditorState = buildNodeGraphEditorState(committedSnapshot);
+      const nextEditorStateSignature =
+        serializeNodeGraphEditorState(nextEditorState);
+      updateMirDoc((doc) => {
+        const existingGraphs = serializeGraphsForMirLogic(
+          normalizeGraphDocuments(doc.logic?.graphs)
+        );
+        const existingEditorState = readNodeGraphEditorStateFromLogic(
+          doc.logic
+        );
+        if (
+          JSON.stringify(existingGraphs) === nextGraphsSignature &&
+          serializeNodeGraphEditorState(existingEditorState) ===
+            nextEditorStateSignature
+        ) {
+          return doc;
+        }
+        const nextLogic = {
+          ...(doc.logic ?? {}),
+          graphs: nextMirGraphs,
+          [NODE_GRAPH_EDITOR_STATE_KEY]: nextEditorState,
+        };
+        return {
+          ...doc,
+          logic: nextLogic,
+        };
+      });
+    },
+    [edges, nodes, updateMirDoc]
   );
 
   const currentSnapshot = useMemo(
@@ -261,22 +416,49 @@ export const NodeGraphEditorContent = () => {
       }),
     [activeGraphId, graphDocs]
   );
-  const currentSnapshotSignature = useMemo(
-    () => serializeProjectSnapshot(currentSnapshot),
+  const currentMirComparableSignature = useMemo(
+    () => serializeSnapshotForMir(currentSnapshot),
     [currentSnapshot]
   );
+  const isDraggingNode = useMemo(
+    () => nodes.some((node) => Boolean(node.dragging)),
+    [nodes]
+  );
   const activeGraphIdRef = useRef(currentSnapshot.activeGraphId);
-  const currentSnapshotSignatureRef = useRef(currentSnapshotSignature);
-  const committedSnapshotSignatureRef = useRef(currentSnapshotSignature);
+  const graphDocsRef = useRef(graphDocs);
+  const currentMirComparableSignatureRef = useRef(
+    currentMirComparableSignature
+  );
+  const edgeDomDebugSignatureRef = useRef('');
 
   const applySnapshot = useCallback(
     (snapshot: ProjectGraphSnapshot) => {
       const activeGraph = resolveActiveGraphFromSnapshot(snapshot);
-      setGraphDocs(snapshot.graphs);
-      setActiveGraphId(snapshot.activeGraphId);
-      setNodes(activeGraph.nodes);
-      setEdges(activeGraph.edges);
-      currentSnapshotSignatureRef.current = serializeProjectSnapshot(snapshot);
+      const nextNodes = activeGraph.nodes.map(toStableGraphNode);
+      graphDocsRef.current = snapshot.graphs;
+      setGraphDocs((current) => {
+        const currentSignature = serializeProjectSnapshot(
+          ensureProjectGraphSnapshot({
+            activeGraphId: snapshot.activeGraphId,
+            graphs: current,
+          })
+        );
+        const nextSignature = serializeProjectSnapshot(snapshot);
+        return currentSignature === nextSignature ? current : snapshot.graphs;
+      });
+      setActiveGraphId((current) =>
+        current === snapshot.activeGraphId ? current : snapshot.activeGraphId
+      );
+      setNodes((current) => {
+        const currentSignature = serializeNodes(current.map(toStableGraphNode));
+        const nextSignature = serializeNodes(nextNodes);
+        return currentSignature === nextSignature ? current : nextNodes;
+      });
+      setEdges((current) => {
+        const currentSignature = serializeEdges(current);
+        const nextSignature = serializeEdges(activeGraph.edges);
+        return currentSignature === nextSignature ? current : activeGraph.edges;
+      });
     },
     [setEdges, setNodes]
   );
@@ -286,10 +468,15 @@ export const NodeGraphEditorContent = () => {
   }, [activeGraphId]);
 
   useEffect(() => {
-    currentSnapshotSignatureRef.current = currentSnapshotSignature;
-  }, [currentSnapshotSignature]);
+    graphDocsRef.current = graphDocs;
+  }, [graphDocs]);
 
   useEffect(() => {
+    currentMirComparableSignatureRef.current = currentMirComparableSignature;
+  }, [currentMirComparableSignature]);
+
+  useEffect(() => {
+    if (isDraggingNode) return;
     const nextSnapshot = mirGraphs.length
       ? ensureProjectGraphSnapshot({
           activeGraphId:
@@ -299,11 +486,10 @@ export const NodeGraphEditorContent = () => {
           graphs: applyNodeGraphEditorStateToGraphs(mirGraphs, mirEditorState),
         })
       : persistedSnapshot;
-    const nextSnapshotSignature = serializeProjectSnapshot(nextSnapshot);
-    if (nextSnapshotSignature !== currentSnapshotSignatureRef.current) {
+    const nextSnapshotSignature = serializeSnapshotForMir(nextSnapshot);
+    if (nextSnapshotSignature !== currentMirComparableSignatureRef.current) {
       applySnapshot(nextSnapshot);
     }
-    committedSnapshotSignatureRef.current = nextSnapshotSignature;
     if (mirGraphs.length) {
       if (mirEditorState) return;
       updateMirDoc((doc) => {
@@ -363,6 +549,7 @@ export const NodeGraphEditorContent = () => {
     });
   }, [
     applySnapshot,
+    isDraggingNode,
     mirEditorState,
     mirGraphs,
     persistedSnapshot,
@@ -370,18 +557,9 @@ export const NodeGraphEditorContent = () => {
   ]);
 
   useEffect(() => {
-    setGraphDocs((current) =>
-      current.map((graph) =>
-        graph.id === activeGraphId
-          ? {
-              ...graph,
-              nodes,
-              edges,
-            }
-          : graph
-      )
-    );
-  }, [activeGraphId, edges, nodes]);
+    if (isDraggingNode) return;
+    commitCanvasToGraphDocs();
+  }, [commitCanvasToGraphDocs, isDraggingNode]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -390,40 +568,6 @@ export const NodeGraphEditorContent = () => {
       JSON.stringify(currentSnapshot)
     );
   }, [currentSnapshot, resolvedProjectId]);
-
-  useEffect(() => {
-    if (currentSnapshotSignature === committedSnapshotSignatureRef.current) {
-      return;
-    }
-    committedSnapshotSignatureRef.current = currentSnapshotSignature;
-    const nextGraphs = serializeGraphsForMirLogic(currentSnapshot.graphs);
-    const nextGraphsSignature = JSON.stringify(nextGraphs);
-    const nextEditorState = buildNodeGraphEditorState(currentSnapshot);
-    const nextEditorStateSignature =
-      serializeNodeGraphEditorState(nextEditorState);
-    updateMirDoc((doc) => {
-      const existingGraphs = serializeGraphsForMirLogic(
-        normalizeGraphDocuments(doc.logic?.graphs)
-      );
-      const existingEditorState = readNodeGraphEditorStateFromLogic(doc.logic);
-      if (
-        JSON.stringify(existingGraphs) === nextGraphsSignature &&
-        serializeNodeGraphEditorState(existingEditorState) ===
-          nextEditorStateSignature
-      ) {
-        return doc;
-      }
-      const nextLogic = {
-        ...(doc.logic ?? {}),
-        graphs: nextGraphs,
-        [NODE_GRAPH_EDITOR_STATE_KEY]: nextEditorState,
-      };
-      return {
-        ...doc,
-        logic: nextLogic,
-      };
-    });
-  }, [currentSnapshot, currentSnapshotSignature, updateMirDoc]);
 
   useEffect(() => {
     if (!hint) return;
@@ -444,7 +588,8 @@ export const NodeGraphEditorContent = () => {
     switchGraph,
   } = useNodeGraphGraphActions({
     activeGraphId,
-    graphDocs,
+    commitActiveGraphToDocs,
+    graphDocs: currentSnapshot.graphs,
     keepAtLeastOneGraphHint: hintText.keepAtLeastOneGraph,
     localizeNodeLabel,
     setActiveGraphId,
@@ -459,32 +604,106 @@ export const NodeGraphEditorContent = () => {
     nodes,
     setNodes,
   });
+  const nodesById = useMemo(
+    () => new Map(nodes.map((node) => [node.id, node] as const)),
+    [nodes]
+  );
+  const setRenderRuntime = useNodeGraphRenderStore((state) => state.setRuntime);
 
-  const flowNodes = useMemo(
-    () =>
-      buildFlowNodes({
-        edges,
-        groupAutoLayoutById,
-        hintText,
-        nodes,
-        setEdges,
-        setHint,
-        setMenu,
-        setNodes,
-        validationText,
-      }),
-    [
+  useEffect(() => {
+    setRenderRuntime({
       edges,
       groupAutoLayoutById,
       hintText,
-      nodes,
+      nodesById,
       setEdges,
       setHint,
       setMenu,
       setNodes,
       validationText,
-    ]
+    });
+  }, [
+    edges,
+    groupAutoLayoutById,
+    hintText,
+    nodesById,
+    setEdges,
+    setHint,
+    setMenu,
+    setNodes,
+    setRenderRuntime,
+    validationText,
+  ]);
+
+  const flowNodes = useMemo(() => nodes, [nodes]);
+  const flowNodeIdsSignature = useMemo(
+    () => nodes.map((node) => node.id).join('|'),
+    [nodes]
   );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const debugSignature = JSON.stringify({
+      activeGraphId,
+      edges: edges.map((edge) => ({
+        id: edge.id,
+        source: edge.source,
+        sourceHandle: edge.sourceHandle ?? null,
+        target: edge.target,
+        targetHandle: edge.targetHandle ?? null,
+      })),
+      flowNodeIds: flowNodes.map((node) => node.id),
+    });
+    if (debugSignature === edgeDomDebugSignatureRef.current) return;
+    edgeDomDebugSignatureRef.current = debugSignature;
+    if (!edges.length) {
+      debugNodeGraph('edge-dom-check:empty', {
+        activeGraphId,
+        flowNodeIds: flowNodes.map((node) => node.id),
+      });
+      return;
+    }
+    const inspectHandle = (nodeId: string, handleId?: string | null) => {
+      if (!handleId) return false;
+      return Boolean(
+        document.querySelector(
+          [
+            `[data-nodeid="${nodeId}"][data-handleid="${handleId}"]`,
+            `[data-id="${nodeId}-${handleId}"]`,
+            `[data-id="${handleId}"]`,
+          ].join(', ')
+        )
+      );
+    };
+    debugNodeGraph('edge-dom-check', {
+      activeGraphId,
+      edgeCount: edges.length,
+      edges: edges.map((edge) => ({
+        id: edge.id,
+        source: edge.source,
+        sourceHandle: edge.sourceHandle ?? null,
+        target: edge.target,
+        targetHandle: edge.targetHandle ?? null,
+        sourceNodeExists: flowNodes.some((node) => node.id === edge.source),
+        targetNodeExists: flowNodes.some((node) => node.id === edge.target),
+        sourceHandleExists: inspectHandle(edge.source, edge.sourceHandle),
+        targetHandleExists: inspectHandle(edge.target, edge.targetHandle),
+      })),
+    });
+  }, [activeGraphId, edges, flowNodes]);
+
+  useEffect(() => {
+    if (!nodes.length) return;
+    const frame = window.requestAnimationFrame(() => {
+      void reactFlow.fitView({
+        duration: 180,
+        maxZoom: 1.15,
+        minZoom: 0.4,
+        padding: 0.18,
+      });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeGraphId, flowNodeIdsSignature, nodes.length, reactFlow]);
 
   const confirmAttachToGroup = useCallback(
     (groupLabel: string) => {
@@ -501,14 +720,45 @@ export const NodeGraphEditorContent = () => {
 
   const onNodesChange = useCallback(
     (changes: Parameters<typeof applyNodeChangesWithGrouping>[0]) => {
-      setNodes((current) =>
-        applyNodeChangesWithGrouping(changes, current, confirmAttachToGroup)
-      );
+      setNodes((current) => {
+        const nextNodes = applyNodeChangesWithGrouping(
+          changes,
+          current,
+          confirmAttachToGroup
+        );
+        const hasDraggingChange = changes.some(
+          (change) => change.type === 'position' && change.dragging
+        );
+        if (!hasDraggingChange) {
+          queueMicrotask(() => {
+            commitCanvasToGraphDocs(nextNodes, edges);
+          });
+        }
+        return nextNodes;
+      });
     },
-    [confirmAttachToGroup, setNodes]
+    [commitCanvasToGraphDocs, confirmAttachToGroup, edges, setNodes]
   );
 
   const closeMenu = useCallback(() => setMenu(null), []);
+
+  const onNodeDragStop = useCallback(() => {
+    window.requestAnimationFrame(() => {
+      commitCanvasToGraphDocs(
+        reactFlow.getNodes() as Node<GraphNodeData>[],
+        reactFlow.getEdges()
+      );
+    });
+  }, [commitCanvasToGraphDocs, reactFlow]);
+  const onEdgesChangeCommitted = useCallback(
+    (changes: Parameters<typeof onEdgesChange>[0]) => {
+      onEdgesChange(changes);
+      queueMicrotask(() => {
+        commitCanvasToGraphDocs(nodes);
+      });
+    },
+    [commitCanvasToGraphDocs, nodes, onEdgesChange]
+  );
 
   const portMenuGroups = useMemo(
     () => resolvePortMenuGroups({ localizedNodeMenuGroups, menu }),
@@ -631,7 +881,8 @@ export const NodeGraphEditorContent = () => {
         edges={edges}
         elevateNodesOnSelect={false}
         onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
+        onNodeDragStop={onNodeDragStop}
+        onEdgesChange={onEdgesChangeCommitted}
         onConnect={onConnect}
         isValidConnection={isValidConnection}
         nodeTypes={nodeTypes}

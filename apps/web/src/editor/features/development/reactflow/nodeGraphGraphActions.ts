@@ -18,6 +18,7 @@ type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
 type UseNodeGraphGraphActionsParams = {
   activeGraphId: string;
   graphDocs: GraphDocument[];
+  commitActiveGraphToDocs: () => GraphDocument[];
   keepAtLeastOneGraphHint: string;
   localizeNodeLabel: (node: Node<GraphNodeData>) => Node<GraphNodeData>;
   setActiveGraphId: Dispatch<SetStateAction<string>>;
@@ -30,6 +31,7 @@ type UseNodeGraphGraphActionsParams = {
 
 export const useNodeGraphGraphActions = ({
   activeGraphId,
+  commitActiveGraphToDocs,
   graphDocs,
   keepAtLeastOneGraphHint,
   localizeNodeLabel,
@@ -47,18 +49,27 @@ export const useNodeGraphGraphActions = ({
 
   const switchGraph = useCallback(
     (nextGraphId: string) => {
-      const nextGraph = graphDocs.find((graph) => graph.id === nextGraphId);
+      const nextGraphs = commitActiveGraphToDocs();
+      const nextGraph = nextGraphs.find((graph) => graph.id === nextGraphId);
       if (!nextGraph) return;
+      setGraphDocs(nextGraphs);
       setActiveGraphId(nextGraph.id);
       setNodes(nextGraph.nodes);
       setEdges(nextGraph.edges);
     },
-    [graphDocs, setActiveGraphId, setEdges, setNodes]
+    [
+      commitActiveGraphToDocs,
+      setActiveGraphId,
+      setEdges,
+      setGraphDocs,
+      setNodes,
+    ]
   );
 
   const createGraph = useCallback(() => {
-    const existingNames = new Set(graphDocs.map((graph) => graph.name));
-    let index = graphDocs.length + 1;
+    const nextGraphs = commitActiveGraphToDocs();
+    const existingNames = new Set(nextGraphs.map((graph) => graph.name));
+    let index = nextGraphs.length + 1;
     let nextName = t('nodeGraph.graph.flowName', {
       index,
       defaultValue: 'Flow {{index}}',
@@ -75,11 +86,12 @@ export const useNodeGraphGraphActions = ({
       ...starterGraph,
       nodes: starterGraph.nodes.map(localizeNodeLabel),
     };
-    setGraphDocs((current) => [...current, nextGraph]);
+    setGraphDocs([...nextGraphs, nextGraph]);
     setActiveGraphId(nextGraph.id);
     setNodes(nextGraph.nodes);
     setEdges(nextGraph.edges);
   }, [
+    commitActiveGraphToDocs,
     graphDocs,
     localizeNodeLabel,
     setActiveGraphId,
@@ -90,7 +102,8 @@ export const useNodeGraphGraphActions = ({
   ]);
 
   const duplicateGraph = useCallback(() => {
-    const source = graphDocs.find((graph) => graph.id === activeGraphId);
+    const nextGraphs = commitActiveGraphToDocs();
+    const source = nextGraphs.find((graph) => graph.id === activeGraphId);
     if (!source) return;
     const nodeIdMap = new Map<string, string>();
     const clonedNodes = source.nodes.map((node) => {
@@ -112,13 +125,13 @@ export const useNodeGraphGraphActions = ({
       nodes: clonedNodes,
       edges: clonedEdges,
     };
-    setGraphDocs((current) => [...current, duplicated]);
+    setGraphDocs([...nextGraphs, duplicated]);
     setActiveGraphId(duplicated.id);
     setNodes(duplicated.nodes);
     setEdges(duplicated.edges);
   }, [
     activeGraphId,
-    graphDocs,
+    commitActiveGraphToDocs,
     setActiveGraphId,
     setEdges,
     setGraphDocs,
@@ -127,24 +140,28 @@ export const useNodeGraphGraphActions = ({
   ]);
 
   const deleteGraph = useCallback(() => {
-    if (graphDocs.length <= 1) {
+    const nextGraphs = commitActiveGraphToDocs();
+    if (nextGraphs.length <= 1) {
       setHint(keepAtLeastOneGraphHint);
       return;
     }
-    const currentIndex = graphDocs.findIndex(
+    const currentIndex = nextGraphs.findIndex(
       (graph) => graph.id === activeGraphId
     );
     if (currentIndex < 0) return;
-    const nextGraphs = graphDocs.filter((graph) => graph.id !== activeGraphId);
+    const remainingGraphs = nextGraphs.filter(
+      (graph) => graph.id !== activeGraphId
+    );
     const nextActive =
-      nextGraphs[currentIndex] ?? nextGraphs[Math.max(0, currentIndex - 1)];
-    setGraphDocs(nextGraphs);
+      remainingGraphs[currentIndex] ??
+      remainingGraphs[Math.max(0, currentIndex - 1)];
+    setGraphDocs(remainingGraphs);
     setActiveGraphId(nextActive.id);
     setNodes(nextActive.nodes);
     setEdges(nextActive.edges);
   }, [
     activeGraphId,
-    graphDocs,
+    commitActiveGraphToDocs,
     keepAtLeastOneGraphHint,
     setActiveGraphId,
     setEdges,

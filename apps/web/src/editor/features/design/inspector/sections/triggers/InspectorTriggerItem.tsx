@@ -55,19 +55,32 @@ export function InspectorTriggerItem({ item }: { item: TriggerItem }) {
     if (graphMode !== 'existing') return;
     const rawGraphId =
       typeof item.params.graphId === 'string' ? item.params.graphId.trim() : '';
-    if (rawGraphId === selectedGraphId) return;
+    const nextGraphOption = graphOptions.find(
+      (option: { id: string; label: string }) => option.id === selectedGraphId
+    );
+    const rawGraphName =
+      typeof item.params.graphName === 'string'
+        ? item.params.graphName.trim()
+        : '';
+    const nextGraphName = nextGraphOption?.label ?? '';
+    if (rawGraphId === selectedGraphId && rawGraphName === nextGraphName) {
+      return;
+    }
     updateTrigger(item.key, (currentEvent: any) => ({
       ...currentEvent,
       params: {
         ...(currentEvent.params ?? {}),
         graphId: selectedGraphId,
+        graphName: nextGraphName,
       },
     }));
   }, [
     actionValue,
     graphMode,
+    graphOptions,
     item.key,
     item.params.graphId,
+    item.params.graphName,
     selectedGraphId,
     updateTrigger,
   ]);

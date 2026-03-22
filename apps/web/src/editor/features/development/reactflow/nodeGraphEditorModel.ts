@@ -1,11 +1,12 @@
 import type { Edge, Node } from '@xyflow/react';
-import { GraphNode, type GraphNodeData, type GraphNodeKind } from './GraphNode';
 import {
   estimateStickyNoteSize,
   normalizeBindingEntries,
   normalizeBranches,
   normalizeCases,
   normalizeStatusCodes,
+  type GraphNodeData,
+  type GraphNodeKind,
   type PortSemantic,
 } from './graphNodeShared';
 import { getNodeCatalogItem, getNodePortHandle } from './nodeCatalog';
@@ -99,10 +100,6 @@ export const NODE_GRAPH_EDITOR_STATE_KEY = 'x-nodeGraphEditor';
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
-
-export const nodeTypes = {
-  graphNode: GraphNode,
-};
 
 export const createStorageKey = (projectId: string) =>
   `${STORAGE_PREFIX}:${projectId}`;
@@ -932,16 +929,6 @@ export const applyNodeGraphEditorStateToGraphs = (
       return {
         ...node,
         position: resolvePositionFromNodeState(node, nodeState, nodeIndex),
-        width:
-          nodeState?.width ??
-          (isFiniteNumber(node.width) && node.width > 0
-            ? node.width
-            : undefined),
-        height:
-          nodeState?.height ??
-          (isFiniteNumber(node.height) && node.height > 0
-            ? node.height
-            : undefined),
         parentId: nodeState?.parentId ?? node.parentId,
         extent: nodeState?.extent ?? node.extent,
         zIndex: nodeState?.zIndex ?? node.zIndex,
@@ -997,12 +984,6 @@ export const buildNodeGraphEditorState = (
         id: node.id,
         x: normalizeCoordinate(node.position?.x),
         y: normalizeCoordinate(node.position?.y),
-        width:
-          isFiniteNumber(node.width) && node.width > 0 ? node.width : undefined,
-        height:
-          isFiniteNumber(node.height) && node.height > 0
-            ? node.height
-            : undefined,
         parentId:
           typeof node.parentId === 'string' && node.parentId.trim()
             ? node.parentId
