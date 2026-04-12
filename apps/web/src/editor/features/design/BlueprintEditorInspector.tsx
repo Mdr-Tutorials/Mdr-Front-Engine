@@ -30,10 +30,10 @@ export function BlueprintEditorInspector({
 
   if (isCollapsed) {
     return (
-      <aside className="BlueprintEditorInspector Collapsed absolute right-0 top-3 z-7 h-0 w-0 overflow-visible border-0 bg-transparent shadow-none">
+      <aside className="BlueprintEditorInspector Collapsed absolute top-3 right-0 z-7 h-0 w-0 overflow-visible border-0 bg-transparent shadow-none">
         <button
           type="button"
-          className="BlueprintEditorCollapse absolute right-0 top-0 inline-flex h-8 w-6 items-center justify-center rounded-r-none rounded-l-full border border-r-0 border-black/8 bg-(--color-0) p-0 pl-0.5 text-(--color-6) shadow-[0_10px_22px_rgba(0,0,0,0.14)] hover:text-(--color-9) dark:border-white/16 dark:shadow-[0_12px_24px_rgba(0,0,0,0.45)]"
+          className="BlueprintEditorCollapse absolute top-0 right-0 inline-flex h-8 w-6 items-center justify-center rounded-l-full rounded-r-none border border-r-0 border-black/8 bg-(--color-0) p-0 pl-0.5 text-(--color-6) shadow-[0_10px_22px_rgba(0,0,0,0.14)] hover:text-(--color-9) dark:border-white/16 dark:shadow-[0_12px_24px_rgba(0,0,0,0.45)]"
           onClick={onToggleCollapse}
           aria-label={t('inspector.toggle')}
         >
@@ -44,7 +44,7 @@ export function BlueprintEditorInspector({
   }
 
   return (
-    <aside className="BlueprintEditorInspector absolute bottom-0 right-0 top-0 z-4 flex w-(--inspector-width) min-h-0 flex-col rounded-[14px] border border-black/6 bg-(--color-0) shadow-[0_12px_26px_rgba(0,0,0,0.08)] dark:border-transparent">
+    <aside className="BlueprintEditorInspector absolute top-0 right-0 bottom-0 z-4 flex min-h-0 w-(--inspector-width) flex-col rounded-[14px] border border-black/6 bg-(--color-0) shadow-[0_12px_26px_rgba(0,0,0,0.08)] dark:border-transparent">
       <div className="InspectorHeader flex items-center justify-between border-b border-black/6 px-3 py-2.5 text-[13px] font-semibold text-(--color-9) dark:border-white/8">
         <span>{t('inspector.title')}</span>
         <button
@@ -58,7 +58,7 @@ export function BlueprintEditorInspector({
       </div>
       {selectedNode ? (
         <InspectorSectionContext.Provider value={sectionContextValue}>
-          <div className="InspectorSection flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden px-3 pb-3 pt-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:h-0 [&::-webkit-scrollbar]:w-0">
+          <div className="InspectorSection flex min-h-0 flex-1 flex-col gap-2 overflow-x-hidden overflow-y-auto px-3 pt-2 pb-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:h-0 [&::-webkit-scrollbar]:w-0">
             <InspectorBasicSection />
             <InspectorStyleSection />
             <InspectorAnimationSection />
@@ -66,7 +66,7 @@ export function BlueprintEditorInspector({
           </div>
         </InspectorSectionContext.Provider>
       ) : (
-        <div className="InspectorPlaceholder px-3 pb-3 pt-2">
+        <div className="InspectorPlaceholder px-3 pt-2 pb-3">
           <p className="m-0 text-xs text-(--color-6)">
             {t('inspector.placeholder')}
           </p>

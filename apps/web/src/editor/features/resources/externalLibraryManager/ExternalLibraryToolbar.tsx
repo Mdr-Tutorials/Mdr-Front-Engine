@@ -85,7 +85,7 @@ export function ExternalLibraryToolbar({
         <p className="text-xs font-bold text-(--color-9)">
           {t('resourceManager.external.builtInLibs')}
         </p>
-        <span aria-hidden="true" className="h-6 w-px ml-4 mr-2 bg-black/15" />
+        <span aria-hidden="true" className="mr-2 ml-4 h-6 w-px bg-black/15" />
         {builtinLibraryCategories.map((category) => (
           <div
             key={category.id}
@@ -110,7 +110,7 @@ export function ExternalLibraryToolbar({
             {openCategoryId === category.id ? (
               <div
                 data-testid={`external-library-category-menu-${category.id}`}
-                className="absolute left-0 top-full z-30 mt-1 min-w-[180px] rounded-lg bg-(--color-0) p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.12)]"
+                className="absolute top-full left-0 z-30 mt-1 min-w-[180px] rounded-lg bg-(--color-0) p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.12)]"
               >
                 <div className="grid gap-0.5">
                   {category.libraryIds.map((libraryId) => (

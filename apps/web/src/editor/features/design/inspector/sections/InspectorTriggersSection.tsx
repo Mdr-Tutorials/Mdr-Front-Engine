@@ -51,7 +51,7 @@ export function InspectorTriggersSection() {
         </button>
       </div>
       {expandedSections.triggers && (
-        <div className="flex flex-col gap-2 pb-1 pt-1">
+        <div className="flex flex-col gap-2 pt-1 pb-1">
           {hasLinkTriggerConflict ? (
             <div
               className="rounded-md border border-[rgba(220,74,74,0.35)] bg-[rgba(220,74,74,0.08)] px-2 py-1.5 text-[10px] text-[rgba(190,60,60,0.95)]"

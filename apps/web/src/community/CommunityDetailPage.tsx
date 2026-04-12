@@ -174,7 +174,7 @@ export function CommunityDetailPage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(155deg,#ffffff_0%,#f5f5f5_50%,#ffffff_100%)] px-6 py-8 text-black md:px-10">
       <div className="pointer-events-none absolute inset-0 opacity-60">
-        <div className="absolute -left-20 top-[-160px] h-[320px] w-[320px] rounded-full bg-[radial-gradient(circle,rgba(0,0,0,0.08),transparent_68%)]" />
+        <div className="absolute top-[-160px] -left-20 h-[320px] w-[320px] rounded-full bg-[radial-gradient(circle,rgba(0,0,0,0.08),transparent_68%)]" />
         <div className="absolute -right-10 bottom-[-180px] h-[360px] w-[360px] rounded-full bg-[radial-gradient(circle,rgba(0,0,0,0.1),transparent_72%)]" />
       </div>
 
@@ -225,7 +225,7 @@ export function CommunityDetailPage() {
         {project && (
           <>
             <header className="rounded-3xl border border-black/10 bg-white/90 p-7 shadow-[0_10px_24px_rgba(0,0,0,0.06)] backdrop-blur">
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-black/15 bg-black/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-black/70">
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-black/15 bg-black/5 px-3 py-1 text-[11px] font-semibold tracking-[0.14em] text-black/70 uppercase">
                 {typeIcon(project.resourceType)}
                 {project.resourceType}
               </div>
@@ -266,8 +266,8 @@ export function CommunityDetailPage() {
             </header>
 
             <section className="grid gap-5 lg:grid-cols-2">
-              <article className="min-w-0 w-full rounded-3xl border border-black/10 bg-white p-4 shadow-[0_10px_20px_rgba(0,0,0,0.04)]">
-                <h2 className="mb-3 text-sm font-bold uppercase tracking-[0.12em] text-black/70">
+              <article className="w-full min-w-0 rounded-3xl border border-black/10 bg-white p-4 shadow-[0_10px_20px_rgba(0,0,0,0.04)]">
+                <h2 className="mb-3 text-sm font-bold tracking-[0.12em] text-black/70 uppercase">
                   {t('detail.preview', 'Read-only Preview')}
                 </h2>
                 <div className="max-w-full overflow-auto rounded-2xl border border-black/10 bg-white p-3">
@@ -279,8 +279,8 @@ export function CommunityDetailPage() {
                 </div>
               </article>
 
-              <article className="min-w-0 w-full rounded-3xl border border-black/10 bg-white p-4 shadow-[0_10px_20px_rgba(0,0,0,0.04)]">
-                <h2 className="mb-3 text-sm font-bold uppercase tracking-[0.12em] text-black/70">
+              <article className="w-full min-w-0 rounded-3xl border border-black/10 bg-white p-4 shadow-[0_10px_20px_rgba(0,0,0,0.04)]">
+                <h2 className="mb-3 text-sm font-bold tracking-[0.12em] text-black/70 uppercase">
                   {t('detail.mir', 'MIR Document')}
                 </h2>
                 <pre className="max-h-[520px] overflow-auto rounded-2xl border border-black/10 bg-[#fafafa] p-4 text-xs leading-5 text-black/75">

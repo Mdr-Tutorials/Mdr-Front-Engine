@@ -44,7 +44,7 @@ export function BlueprintEditorViewportBar({
         <div className="font-semibold text-(--color-8)">
           {t('viewport.label')}
         </div>
-        <div className="inline-flex items-center gap-1.5 [&_.MdrInput]:max-w-[76px] [&_.MdrInput]:w-[76px] max-[980px]:[&_.MdrInput]:max-w-[62px] max-[980px]:[&_.MdrInput]:w-[62px]">
+        <div className="inline-flex items-center gap-1.5 [&_.MdrInput]:w-[76px] [&_.MdrInput]:max-w-[76px] max-[980px]:[&_.MdrInput]:w-[62px] max-[980px]:[&_.MdrInput]:max-w-[62px]">
           <MdrInput
             size="Small"
             value={viewportWidth}
@@ -63,7 +63,7 @@ export function BlueprintEditorViewportBar({
           {t('viewport.zoom')}
         </span>
         <MdrSlider
-          className="inline-flex w-auto items-center gap-1.5 [&.MdrField]:w-auto [&.MdrField]:flex-row [&.MdrField]:gap-1.5 [&_.MdrSliderInput]:w-[120px] max-[980px]:[&_.MdrSliderInput]:w-[92px]"
+          className="inline-flex w-auto items-center gap-1.5 [&_.MdrSliderInput]:w-[120px] max-[980px]:[&_.MdrSliderInput]:w-[92px] [&.MdrField]:w-auto [&.MdrField]:flex-row [&.MdrField]:gap-1.5"
           min={VIEWPORT_ZOOM_RANGE.min}
           max={VIEWPORT_ZOOM_RANGE.max}
           step={zoomStep}
@@ -72,12 +72,12 @@ export function BlueprintEditorViewportBar({
           size="Small"
           onChange={onZoomChange}
         />
-        <span className="min-w-9 text-right tabular-nums text-(--color-7)">
+        <span className="min-w-9 text-right text-(--color-7) tabular-nums">
           {zoom}%
         </span>
         <button
           type="button"
-          className="inline-flex h-6 items-center gap-1 whitespace-nowrap rounded-full border border-black/8 bg-(--color-0) px-2 text-[11px] leading-none text-(--color-7) transition-[border-color,color] duration-150 hover:border-black/20 hover:text-(--color-9) dark:border-white/12 dark:hover:border-white/28"
+          className="inline-flex h-6 items-center gap-1 rounded-full border border-black/8 bg-(--color-0) px-2 text-[11px] leading-none whitespace-nowrap text-(--color-7) transition-[border-color,color] duration-150 hover:border-black/20 hover:text-(--color-9) dark:border-white/12 dark:hover:border-white/28"
           onClick={onResetView}
           aria-label={t('viewport.reset')}
         >
@@ -94,7 +94,7 @@ export function BlueprintEditorViewportBar({
             <button
               type="button"
               key={preset.id}
-              className="h-6 whitespace-nowrap rounded-full border border-black/8 bg-(--color-0) px-2 text-[11px] leading-none text-(--color-7) transition-[border-color,color] duration-150 hover:border-black/20 hover:text-(--color-9) dark:border-white/12 dark:hover:border-white/28"
+              className="h-6 rounded-full border border-black/8 bg-(--color-0) px-2 text-[11px] leading-none whitespace-nowrap text-(--color-7) transition-[border-color,color] duration-150 hover:border-black/20 hover:text-(--color-9) dark:border-white/12 dark:hover:border-white/28"
               onClick={() => {
                 onViewportWidthChange(preset.width);
                 onViewportHeightChange(preset.height);
@@ -107,7 +107,7 @@ export function BlueprintEditorViewportBar({
       </div>
       <div className="hidden min-w-0 flex-1 items-center gap-2 max-[980px]:inline-flex">
         <label
-          className="whitespace-nowrap font-semibold text-(--color-8)"
+          className="font-semibold whitespace-nowrap text-(--color-8)"
           htmlFor="ViewportQuickPresetsSelect"
         >
           {t('viewport.quickPresetMenu')}
@@ -150,7 +150,7 @@ export function BlueprintEditorViewportBar({
           marginBottom: '6px',
         }}
         content={
-          <div className="grid gap-2.5 [grid-template-columns:repeat(auto-fill,minmax(190px,1fr))]">
+          <div className="grid [grid-template-columns:repeat(auto-fill,minmax(190px,1fr))] gap-2.5">
             {VIEWPORT_DEVICE_PRESETS.map((preset) => {
               const Icon = preset.icon;
               const deviceName = t(preset.nameKey, {
@@ -166,7 +166,7 @@ export function BlueprintEditorViewportBar({
               return (
                 <button
                   key={preset.id}
-                  className="flex min-w-[190px] items-center gap-2.5 rounded-[14px] border border-black/8 bg-(--color-0) px-2.5 py-1.5 text-left text-xs text-(--color-7) transition-[border-color,color,background] duration-150 hover:border-black/20 hover:bg-(--color-1) hover:text-(--color-9) focus-visible:outline-2 focus-visible:outline-black/20 focus-visible:outline-offset-2 dark:border-white/12 dark:hover:border-white/28"
+                  className="flex min-w-[190px] items-center gap-2.5 rounded-[14px] border border-black/8 bg-(--color-0) px-2.5 py-1.5 text-left text-xs text-(--color-7) transition-[border-color,color,background] duration-150 hover:border-black/20 hover:bg-(--color-1) hover:text-(--color-9) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black/20 dark:border-white/12 dark:hover:border-white/28"
                   onClick={() => {
                     onViewportWidthChange(preset.width);
                     onViewportHeightChange(preset.height);
@@ -186,7 +186,7 @@ export function BlueprintEditorViewportBar({
                       {deviceKind}
                     </span>
                   </span>
-                  <span className="ml-auto text-[11px] tabular-nums text-(--color-6)">
+                  <span className="ml-auto text-[11px] text-(--color-6) tabular-nums">
                     {sizeLabel}
                   </span>
                 </button>
@@ -197,7 +197,7 @@ export function BlueprintEditorViewportBar({
       >
         <button
           type="button"
-          className="ViewportMoreButton inline-flex h-6 items-center gap-1 whitespace-nowrap rounded-full border border-black/8 bg-(--color-0) px-2 text-[11px] leading-none text-(--color-7) transition-[border-color,color] duration-150 hover:border-black/20 hover:text-(--color-9) dark:border-white/12 dark:hover:border-white/28"
+          className="ViewportMoreButton inline-flex h-6 items-center gap-1 rounded-full border border-black/8 bg-(--color-0) px-2 text-[11px] leading-none whitespace-nowrap text-(--color-7) transition-[border-color,color] duration-150 hover:border-black/20 hover:text-(--color-9) dark:border-white/12 dark:hover:border-white/28"
         >
           {t('viewport.moreDevices')}
           <ChevronDown size={12} />

@@ -27,7 +27,7 @@ export function InspectorBasicSection() {
         />
       </button>
       {expandedSections.basic && (
-        <div className="flex flex-col gap-2 pb-1 pt-1">
+        <div className="flex flex-col gap-2 pt-1 pb-1">
           <InspectorNodeIdentityFields />
           <InspectorNodeCapabilitiesFields />
           <InspectorDataScopeFields />

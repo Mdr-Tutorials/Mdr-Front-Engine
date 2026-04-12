@@ -140,7 +140,7 @@ function Home() {
         </div>
       </div>
 
-      <footer className="mt-auto w-full px-2 pb-5 pt-14">
+      <footer className="mt-auto w-full px-2 pt-14 pb-5">
         <div className="flex items-center justify-center px-6 py-4 text-sm text-(--color-7) sm:px-7">
           <div className="flex items-center gap-2">
             <IconMdr size={16} color={logoColor} />

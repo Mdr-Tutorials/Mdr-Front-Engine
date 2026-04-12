@@ -388,7 +388,7 @@ function SpacingControl({
             >
               <SpacingSidePreviewIcon side={side} spacingKey={keyName} />
               <div className="flex min-w-0 flex-1 flex-col gap-1">
-                <span className="text-[10px] font-semibold leading-none">
+                <span className="text-[10px] leading-none font-semibold">
                   {t(`inspector.panels.layout.fields.sides.${side}`, {
                     defaultValue: side.charAt(0).toUpperCase() + side.slice(1),
                   })}

@@ -199,7 +199,7 @@ export const AnimationEditorInspectorPanel = ({
             <h2 className="text-xs font-semibold tracking-[0.08em] text-(--color-8)">
               {t('animationEditor.inspector.timeline.title')}
             </h2>
-            <div className="text-[11px] tabular-nums text-(--color-6)">
+            <div className="text-[11px] text-(--color-6) tabular-nums">
               {cursorMs}ms
             </div>
           </div>
@@ -342,7 +342,7 @@ export const AnimationEditorInspectorPanel = ({
             <h2 className="text-xs font-semibold tracking-[0.08em] text-(--color-8)">
               {t('animationEditor.inspector.binding.title')}
             </h2>
-            <span className="text-[11px] tabular-nums text-(--color-6)">
+            <span className="text-[11px] text-(--color-6) tabular-nums">
               {bindings.length}
             </span>
           </div>
@@ -369,7 +369,7 @@ export const AnimationEditorInspectorPanel = ({
 
           {binding ? (
             <div className="space-y-1.5 rounded-xl bg-black/[0.03] p-3">
-              <div className="text-[10px] uppercase tracking-[0.08em] text-(--color-6)">
+              <div className="text-[10px] tracking-[0.08em] text-(--color-6) uppercase">
                 {t('animationEditor.inspector.binding.targetNode')}
               </div>
               <div className="rounded-lg border border-black/10 bg-white px-2 py-1.5 text-xs text-(--color-9)">

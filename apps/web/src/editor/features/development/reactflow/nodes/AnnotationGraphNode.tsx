@@ -320,7 +320,7 @@ const renderMarkdownBlocks = (
       blocks.push(
         <p
           key={`${keyPrefix}-heading-${keyIndex}`}
-          className={`font-semibold leading-6 ${headingClass}`}
+          className={`leading-6 font-semibold ${headingClass}`}
         >
           {renderInlineMarkdown(
             headingMatch[2],
@@ -532,7 +532,7 @@ const StickyNoteEditor = ({ id, nodeData, selected, t }: Props) => {
         </button>
       </div>
       <div
-        className="pointer-events-none fixed -left-[9999px] -top-[9999px] opacity-0"
+        className="pointer-events-none fixed -top-[9999px] -left-[9999px] opacity-0"
         aria-hidden
       >
         <div
@@ -579,7 +579,7 @@ const StickyNoteEditor = ({ id, nodeData, selected, t }: Props) => {
                 </div>
                 <div className="grid grid-cols-1 gap-3 p-3 lg:grid-cols-2">
                   <section className="min-w-0">
-                    <div className="mb-1 text-[11px] font-medium uppercase tracking-[0.08em] text-slate-500">
+                    <div className="mb-1 text-[11px] font-medium tracking-[0.08em] text-slate-500 uppercase">
                       {tNode(
                         t,
                         'annotation.stickyNote.editorLabel',
@@ -606,7 +606,7 @@ const StickyNoteEditor = ({ id, nodeData, selected, t }: Props) => {
                     </div>
                   </section>
                   <section className="min-w-0">
-                    <div className="mb-1 text-[11px] font-medium uppercase tracking-[0.08em] text-slate-500">
+                    <div className="mb-1 text-[11px] font-medium tracking-[0.08em] text-slate-500 uppercase">
                       {tNode(
                         t,
                         'annotation.stickyNote.previewLabel',

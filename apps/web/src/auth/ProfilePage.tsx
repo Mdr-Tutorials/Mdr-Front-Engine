@@ -241,7 +241,7 @@ export const ProfilePage = () => {
           <div className="grid min-w-0 gap-2.5">
             <MdrHeading
               level={1}
-              className="m-0 text-[56px] md:text-[96px] lg:text-[108px] [font-family:'JetBrains_Mono','SFMono-Regular','Menlo',monospace]"
+              className="m-0 [font-family:'JetBrains_Mono','SFMono-Regular','Menlo',monospace] text-[56px] md:text-[96px] lg:text-[108px]"
             >
               {displayName}
             </MdrHeading>
@@ -250,7 +250,7 @@ export const ProfilePage = () => {
             </MdrParagraph>
             <button
               type="button"
-              className="-translate-x-2.5 inline-flex max-w-full cursor-pointer items-center gap-3 rounded-2xl border-0 bg-(--color-0) px-3 py-2.5 transition-colors duration-150 hover:bg-(--color-1)"
+              className="inline-flex max-w-full -translate-x-2.5 cursor-pointer items-center gap-3 rounded-2xl border-0 bg-(--color-0) px-3 py-2.5 transition-colors duration-150 hover:bg-(--color-1)"
               onClick={() => copyText(user?.id, t('messages.copiedId'))}
               aria-label={t('actions.copyId')}
               title={t('actions.copyId')}

@@ -43,7 +43,7 @@ export const NodeHeader = ({
 }: NodeHeaderProps) => (
   <div className="relative flex min-h-9 items-center justify-between px-3.5 py-1.5">
     {leftSlot}
-    <div className="truncate pl-1 pr-2 font-[Poppins,sans-serif] text-[13px] font-semibold tracking-[0.01em] text-slate-900">
+    <div className="truncate pr-2 pl-1 font-[Poppins,sans-serif] text-[13px] font-semibold tracking-[0.01em] text-slate-900">
       {title}
     </div>
     <div className="nodrag nopan ml-auto flex items-center gap-1">

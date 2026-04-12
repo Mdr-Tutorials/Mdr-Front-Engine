@@ -358,10 +358,10 @@ export function UnitInput({
               key={group.label}
               className="InspectorUnitInputUnitGroup flex flex-col gap-1.5 [&+&]:mt-2.5"
             >
-              <div className="InspectorUnitInputUnitGroupLabel text-[10px] uppercase tracking-[0.06em] text-(--color-6)">
+              <div className="InspectorUnitInputUnitGroupLabel text-[10px] tracking-[0.06em] text-(--color-6) uppercase">
                 {group.label}
               </div>
-              <div className="InspectorUnitInputUnitGroupItems grid gap-1.5 [grid-template-columns:repeat(auto-fit,minmax(44px,1fr))]">
+              <div className="InspectorUnitInputUnitGroupItems grid [grid-template-columns:repeat(auto-fit,minmax(44px,1fr))] gap-1.5">
                 {group.units.map((unitOption) => (
                   <button
                     key={unitOption.unit}

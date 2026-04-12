@@ -71,7 +71,7 @@ export function InspectorNodeIdentityFields() {
                 }}
               />
               {isDirty && (
-                <div className="InspectorFieldActions inline-flex items-center gap-1 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100">
+                <div className="InspectorFieldActions inline-flex items-center gap-1 opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100">
                   <button
                     type="button"
                     className="InspectorFieldAction inline-flex items-center justify-center rounded-full border-0 bg-transparent px-1 py-0.5 text-(--color-6) hover:text-(--color-9) disabled:cursor-not-allowed disabled:opacity-45"
@@ -193,7 +193,7 @@ export function InspectorNodeIdentityFields() {
                     }}
                   />
                   {primaryTextField.key === 'text' ? (
-                    <div className="absolute right-1 top-1/2 inline-flex -translate-y-1/2 items-center gap-1">
+                    <div className="absolute top-1/2 right-1 inline-flex -translate-y-1/2 items-center gap-1">
                       <button
                         type="button"
                         className={INSPECTOR_ACTION_ICON_BUTTON_CLASS}

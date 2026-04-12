@@ -352,7 +352,7 @@ export function ResourceFileTree({
   return (
     <div className="rounded-xl border border-black/10 bg-white/90 p-2">
       <div className="mb-2 flex items-center justify-between px-1">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-(--color-6)">
+        <p className="text-[11px] font-semibold tracking-[0.08em] text-(--color-6) uppercase">
           {mode === 'editable'
             ? t('resourceManager.tree.publicEditable')
             : t('resourceManager.tree.fileReadonly')}

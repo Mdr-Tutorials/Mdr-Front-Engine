@@ -289,10 +289,10 @@ export function IconPickerModal({
             <div className="relative">
               <Search
                 size={13}
-                className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-(--color-5)"
+                className="pointer-events-none absolute top-1/2 left-2 -translate-y-1/2 text-(--color-5)"
               />
               <input
-                className="h-8 w-full rounded-md border border-black/10 bg-transparent pl-7 pr-2 text-[12px] text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+                className="h-8 w-full rounded-md border border-black/10 bg-transparent pr-2 pl-7 text-[12px] text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder={t('inspector.iconPicker.searchPlaceholder', {
@@ -461,7 +461,7 @@ export function IconPickerModal({
               </div>
             </div>
           </div>
-          <aside className="hidden w-52 border-l border-black/8 px-3 py-3 dark:border-white/12 md:flex md:flex-col">
+          <aside className="hidden w-52 border-l border-black/8 px-3 py-3 md:flex md:flex-col dark:border-white/12">
             <span className="text-[11px] font-semibold text-(--color-7)">
               {t('inspector.iconPicker.preview', {
                 defaultValue: 'Preview',

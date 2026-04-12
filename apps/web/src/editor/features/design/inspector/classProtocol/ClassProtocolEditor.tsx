@@ -252,7 +252,7 @@ export function ClassProtocolEditor({
           return (
             <span
               key={`${token}-${index}`}
-              className={`inline-flex min-h-6 items-center gap-1 rounded-md border border-black/10 bg-black/[0.03] py-[2px] pl-1.5 pr-1 text-[11px] leading-[1.25] text-(--color-8) dark:border-white/16 dark:bg-white/6 ${
+              className={`inline-flex min-h-6 items-center gap-1 rounded-md border border-black/10 bg-black/[0.03] py-[2px] pr-1 pl-1.5 text-[11px] leading-[1.25] text-(--color-8) dark:border-white/16 dark:bg-white/6 ${
                 isOverridden ? 'opacity-60' : ''
               }`}
               onDoubleClick={(event) => {
@@ -307,7 +307,7 @@ export function ClassProtocolEditor({
                   {token}
                   {isOverridden ? (
                     <span
-                      className="pointer-events-none absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-current/50"
+                      className="pointer-events-none absolute top-1/2 right-0 left-0 h-px -translate-y-1/2 bg-current/50"
                       aria-hidden="true"
                     />
                   ) : null}
@@ -424,7 +424,7 @@ export function ClassProtocolEditor({
         />
         <button
           type="button"
-          className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
+          className="absolute top-1.5 right-1.5 inline-flex h-5 w-5 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
           onClick={() => setMode(nextMode)}
           data-testid="inspector-classname-mode-toggle"
           aria-label={t('inspector.fields.className.actions.switchMode', {
@@ -441,7 +441,7 @@ export function ClassProtocolEditor({
       </div>
       {draft.trim() && suggestions.length ? (
         <div
-          className="absolute left-0 right-0 top-[calc(100%+2px)] z-10 grid gap-0.5 rounded-md border border-black/10 bg-(--color-0) p-1 shadow-[0_10px_20px_rgba(0,0,0,0.12)] dark:border-white/16"
+          className="absolute top-[calc(100%+2px)] right-0 left-0 z-10 grid gap-0.5 rounded-md border border-black/10 bg-(--color-0) p-1 shadow-[0_10px_20px_rgba(0,0,0,0.12)] dark:border-white/16"
           role="listbox"
           data-testid="inspector-classname-suggestions"
         >
@@ -502,7 +502,7 @@ export function ClassProtocolEditor({
           />
           <button
             type="button"
-            className="absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
+            className="absolute top-1 right-1 inline-flex h-5 w-5 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
             onClick={() => setMode(nextMode)}
             data-testid="inspector-classname-mode-toggle"
             aria-label={t('inspector.fields.className.actions.switchMode', {

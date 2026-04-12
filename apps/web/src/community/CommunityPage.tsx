@@ -108,7 +108,7 @@ export function CommunityPage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(155deg,#ffffff_0%,#f4f4f4_48%,#ffffff_100%)] px-6 py-8 text-black md:px-10">
       <div className="pointer-events-none absolute inset-0 opacity-60">
-        <div className="absolute -left-20 top-[-180px] h-[360px] w-[360px] rounded-full bg-[radial-gradient(circle,rgba(0,0,0,0.08),transparent_70%)]" />
+        <div className="absolute top-[-180px] -left-20 h-[360px] w-[360px] rounded-full bg-[radial-gradient(circle,rgba(0,0,0,0.08),transparent_70%)]" />
         <div className="absolute -right-16 bottom-[-220px] h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(0,0,0,0.1),transparent_72%)]" />
       </div>
 
@@ -122,11 +122,11 @@ export function CommunityPage() {
         </a>
 
         <header className="rounded-3xl border border-black/10 bg-white/85 p-7 shadow-[0_10px_30px_rgba(0,0,0,0.05)] backdrop-blur">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-black/15 bg-black px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-white">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-black/15 bg-black px-3 py-1 text-xs font-semibold tracking-[0.16em] text-white uppercase">
             <Sparkles size={13} />
             {t('badge', 'Community')}
           </div>
-          <h1 className="text-balance text-3xl font-black leading-tight tracking-tight md:text-4xl">
+          <h1 className="text-3xl leading-tight font-black tracking-tight text-balance md:text-4xl">
             {t('title', 'Public MIR Showcase')}
           </h1>
           <p className="mt-3 max-w-[760px] text-sm leading-6 text-black/65 md:text-base">
@@ -140,7 +140,7 @@ export function CommunityPage() {
         <section className="grid gap-3 rounded-3xl border border-black/10 bg-white/85 p-4 shadow-[0_12px_24px_rgba(0,0,0,0.04)] backdrop-blur md:grid-cols-[1.5fr_0.8fr_0.7fr_auto] md:p-5">
           <label className="group relative">
             <Search
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-black/40"
+              className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-black/40"
               size={16}
             />
             <input
@@ -150,7 +150,7 @@ export function CommunityPage() {
                 'search.placeholder',
                 'Search by title, author, description...'
               )}
-              className="h-11 w-full rounded-xl border border-black/20 bg-white pl-9 pr-3 text-sm outline-none ring-0 transition-all placeholder:text-black/45 focus:border-black/45"
+              className="h-11 w-full rounded-xl border border-black/20 bg-white pr-3 pl-9 text-sm ring-0 transition-all outline-none placeholder:text-black/45 focus:border-black/45"
             />
           </label>
 
@@ -159,7 +159,7 @@ export function CommunityPage() {
             onChange={(event) =>
               setResourceType(event.target.value as ResourceFilter)
             }
-            className="h-11 rounded-xl border border-black/20 bg-white px-3 text-sm outline-none transition-all focus:border-black/45"
+            className="h-11 rounded-xl border border-black/20 bg-white px-3 text-sm transition-all outline-none focus:border-black/45"
           >
             <option value="all">{t('filter.all', 'All types')}</option>
             <option value="project">{t('filter.project', 'Projects')}</option>
@@ -174,24 +174,24 @@ export function CommunityPage() {
           <select
             value={sort}
             onChange={(event) => setSort(event.target.value as SortType)}
-            className="h-11 rounded-xl border border-black/20 bg-white px-3 text-sm outline-none transition-all focus:border-black/45"
+            className="h-11 rounded-xl border border-black/20 bg-white px-3 text-sm transition-all outline-none focus:border-black/45"
           >
             <option value="latest">{t('sort.latest', 'Latest')}</option>
             <option value="popular">{t('sort.popular', 'Popular')}</option>
           </select>
 
-          <div className="inline-flex h-11 items-center justify-center rounded-xl border border-black/20 bg-black px-4 text-xs font-semibold uppercase tracking-[0.14em] text-white">
+          <div className="inline-flex h-11 items-center justify-center rounded-xl border border-black/20 bg-black px-4 text-xs font-semibold tracking-[0.14em] text-white uppercase">
             {projects.length > 0 ? (
-              <span className="inline-flex items-end gap-1 normal-case tracking-normal">
-                <span className="text-base font-black leading-none md:text-lg">
+              <span className="inline-flex items-end gap-1 tracking-normal normal-case">
+                <span className="text-base leading-none font-black md:text-lg">
                   {projects.length}
                 </span>
-                <span className="text-[10px] font-medium uppercase text-white/80 md:text-[11px]">
+                <span className="text-[10px] font-medium text-white/80 uppercase md:text-[11px]">
                   {t('count', 'results')}
                 </span>
               </span>
             ) : (
-              <span className="normal-case tracking-normal">
+              <span className="tracking-normal normal-case">
                 {t('countNone', 'No results')}
               </span>
             )}
@@ -212,12 +212,12 @@ export function CommunityPage() {
                 href={`/community/${project.id}`}
                 className="group relative flex min-h-[240px] flex-col justify-between rounded-2xl border border-black/15 bg-white p-5 no-underline transition-all duration-300 hover:-translate-y-1 hover:border-black/40 hover:shadow-[0_18px_35px_rgba(0,0,0,0.08)]"
               >
-                <div className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full border border-black/15 bg-white px-2 py-1 text-[11px] text-black/60">
+                <div className="absolute top-4 right-4 inline-flex items-center gap-1 rounded-full border border-black/15 bg-white px-2 py-1 text-[11px] text-black/60">
                   <Flame size={12} />
                   {project.starsCount}
                 </div>
                 <div>
-                  <div className="mb-3 inline-flex items-center gap-1 rounded-full border border-black/15 bg-black/5 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-black/75">
+                  <div className="mb-3 inline-flex items-center gap-1 rounded-full border border-black/15 bg-black/5 px-2 py-1 text-[11px] font-semibold tracking-[0.12em] text-black/75 uppercase">
                     {typeToIcon(project.resourceType)}
                     {project.resourceType}
                   </div>

@@ -92,7 +92,7 @@ export const ProjectSettingsPage = () => {
           />
         </div>
       </header>
-      <main className="flex flex-col gap-4.5 px-6 pb-8 pt-4 max-[1100px]:px-4.5 max-[1100px]:pb-6 max-[1100px]:pt-3.5">
+      <main className="flex flex-col gap-4.5 px-6 pt-4 pb-8 max-[1100px]:px-4.5 max-[1100px]:pt-3.5 max-[1100px]:pb-6">
         <MdrTabs items={tabs} />
       </main>
     </div>

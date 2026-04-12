@@ -33,7 +33,7 @@ export const SettingsRow = ({
           </MdrParagraph>
         )}
       </div>
-      <div className="flex flex-wrap items-center gap-2 [&_.MdrInput]:max-w-[320px] [&_.MdrTextarea]:max-w-[320px] [&_.MdrSelect]:max-w-[320px]">
+      <div className="flex flex-wrap items-center gap-2 [&_.MdrInput]:max-w-[320px] [&_.MdrSelect]:max-w-[320px] [&_.MdrTextarea]:max-w-[320px]">
         {control}
       </div>
       {meta && (

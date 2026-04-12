@@ -121,7 +121,7 @@ export function BlueprintEditorAddressBar({
           ? createPortal(
               <div
                 ref={routeTreePanelRef}
-                className="fixed z-[80] flex max-h-52 min-w-[320px] max-w-[420px] flex-col gap-1 overflow-y-auto rounded-lg border border-black/10 bg-(--color-0) p-1 shadow-[0_16px_32px_rgba(0,0,0,0.16)] dark:border-white/16"
+                className="fixed z-[80] flex max-h-52 max-w-[420px] min-w-[320px] flex-col gap-1 overflow-y-auto rounded-lg border border-black/10 bg-(--color-0) p-1 shadow-[0_16px_32px_rgba(0,0,0,0.16)] dark:border-white/16"
                 style={{
                   top: `${routeTreeRect.top}px`,
                   left: `${Math.max(12, routeTreeRect.left)}px`,

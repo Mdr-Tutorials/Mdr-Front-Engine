@@ -28,10 +28,12 @@ flowchart TD
         GLSL[GLSL, WGSL<br>快捷编写]
         ComplexLogic[复杂逻辑可用]
         ComplexAnim[复杂动画可用]
+        AttachedCSS[挂载 CSS]
 
         CodeEditor --> GLSL
         CodeEditor --> ComplexLogic --> NodeGraph
         CodeEditor --> ComplexAnim --> AnimEditor
+        CodeEditor --> AttachedCSS --> Blueprint
 
         %% 测试与编辑器的连接
         VisualTest -.-> Blueprint

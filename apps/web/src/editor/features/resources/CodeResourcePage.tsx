@@ -298,7 +298,7 @@ export function CodeResourcePage({ embedded = false }: CodeResourcePageProps) {
         <article className="grid gap-3 rounded-xl border border-black/10 bg-(--color-0) p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <p className="text-[11px] uppercase tracking-[0.08em] text-(--color-6)">
+              <p className="text-[11px] tracking-[0.08em] text-(--color-6) uppercase">
                 {t('resourceManager.code.labels.selected')}
               </p>
               <h3 className="text-sm font-semibold text-(--color-9)">

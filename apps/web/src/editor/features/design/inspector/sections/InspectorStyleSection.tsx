@@ -74,7 +74,7 @@ export function InspectorStyleSection() {
         </button>
       </div>
       {expandedSections.style && (
-        <div className="flex flex-col gap-2 pb-1 pt-1">
+        <div className="flex flex-col gap-2 pt-1 pb-1">
           {matchedPanels.length ? (
             matchedPanels.map((panel) => {
               const isExpanded = expandedPanels[panel.key] ?? true;

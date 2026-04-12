@@ -111,7 +111,7 @@ export function ExternalLibraryDetailsPanel({
     : '';
 
   return (
-    <aside className="self-start grid gap-3 rounded-xl border border-black/8 bg-black/[0.015] p-3">
+    <aside className="grid gap-3 self-start rounded-xl border border-black/8 bg-black/[0.015] p-3">
       <header>
         <h3 className="text-sm font-semibold text-(--color-9)">
           {t('resourceManager.external.details.title')}

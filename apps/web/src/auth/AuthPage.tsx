@@ -211,7 +211,7 @@ export const AuthPage = () => {
                   }))
                 }
               />
-              <em className="text-[11px] not-italic text-(--color-6)">
+              <em className="text-[11px] text-(--color-6) not-italic">
                 {t('hints.password')}
               </em>
             </label>

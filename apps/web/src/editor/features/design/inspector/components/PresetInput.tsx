@@ -58,7 +58,7 @@ export function PresetInput({
         <ChevronDown size={14} />
       </button>
       {open ? (
-        <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-20 max-h-44 overflow-auto rounded-md border border-black/10 bg-(--color-0) p-1 shadow-[0_8px_18px_rgba(0,0,0,0.12)] dark:border-white/14">
+        <div className="absolute top-[calc(100%+4px)] right-0 left-0 z-20 max-h-44 overflow-auto rounded-md border border-black/10 bg-(--color-0) p-1 shadow-[0_8px_18px_rgba(0,0,0,0.12)] dark:border-white/14">
           {options.map((option) => (
             <button
               key={option.value}

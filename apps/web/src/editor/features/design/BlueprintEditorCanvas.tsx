@@ -573,10 +573,10 @@ export function BlueprintEditorCanvas({
 
   return (
     <section
-      className={`BlueprintEditorCanvas relative z-1 flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-[18px] border border-black/6 bg-(--color-1) dark:border-white/8 max-[1100px]:min-h-80 ${showSelectionDiagnostics ? '' : 'HideSelectionDiagnostics [&_.BlueprintEditorCanvasArtboard_[data-mir-selected=true]]:outline-none'}`}
+      className={`BlueprintEditorCanvas relative z-1 flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-[18px] border border-black/6 bg-(--color-1) max-[1100px]:min-h-80 dark:border-white/8 ${showSelectionDiagnostics ? '' : 'HideSelectionDiagnostics [&_.BlueprintEditorCanvasArtboard_[data-mir-selected=true]]:outline-none'}`}
     >
       <div
-        className={`BlueprintEditorCanvasSurface relative min-h-0 flex-1 touch-none overflow-hidden ${isPanning ? 'IsPanning cursor-grabbing select-none' : 'cursor-grab'} ${isCanvasOver ? 'IsOver outline-2 outline-dashed outline-[rgba(0,0,0,0.18)] -outline-offset-2 dark:outline-[rgba(255,255,255,0.22)]' : ''}`}
+        className={`BlueprintEditorCanvasSurface relative min-h-0 flex-1 touch-none overflow-hidden ${isPanning ? 'IsPanning cursor-grabbing select-none' : 'cursor-grab'} ${isCanvasOver ? 'IsOver outline-2 -outline-offset-2 outline-[rgba(0,0,0,0.18)] outline-dashed dark:outline-[rgba(255,255,255,0.22)]' : ''}`}
         ref={setSurfaceNodeRef}
         tabIndex={0}
         onPointerDown={handlePointerDown}
@@ -587,7 +587,7 @@ export function BlueprintEditorCanvas({
         onKeyDown={handleKeyDown}
       >
         {showGrid && (
-          <div className="BlueprintEditorCanvasGrid pointer-events-none absolute inset-0 opacity-30 bg-[radial-gradient(rgba(0,0,0,0.12)_1px,transparent_1px)] bg-size-[20px_20px] dark:bg-[radial-gradient(rgba(255,255,255,0.18)_1px,transparent_1px)]" />
+          <div className="BlueprintEditorCanvasGrid pointer-events-none absolute inset-0 bg-[radial-gradient(rgba(0,0,0,0.12)_1px,transparent_1px)] bg-size-[20px_20px] opacity-30 dark:bg-[radial-gradient(rgba(255,255,255,0.18)_1px,transparent_1px)]" />
         )}
         <div
           className="BlueprintEditorCanvasPanLayer absolute inset-0 origin-top-left"
@@ -598,7 +598,7 @@ export function BlueprintEditorCanvas({
             style={{ transform: `scale(${scale})` }}
           >
             <div
-              className="BlueprintEditorCanvasArtboard relative overflow-auto overscroll-contain [scrollbar-gutter:stable_both-edges] border border-black/8 bg-(--color-0) shadow-[0_22px_45px_rgba(0,0,0,0.12)] dark:border-white/10 dark:shadow-[0_24px_46px_rgba(0,0,0,0.45)] **:data-[mir-selected=true]:outline-2 **:data-[mir-selected=true]:outline-offset-2 **:data-[mir-selected=true]:outline-(--color-primary,var(--color-9)) **:data-[mir-missing=true]:outline **:data-[mir-missing=true]:outline-dashed **:data-[mir-missing=true]:outline-[rgba(240,82,82,0.9)] **:data-[mir-missing=true]:outline-offset-2"
+              className="BlueprintEditorCanvasArtboard relative overflow-auto overscroll-contain border border-black/8 bg-(--color-0) shadow-[0_22px_45px_rgba(0,0,0,0.12)] [scrollbar-gutter:stable_both-edges] **:data-[mir-missing=true]:outline **:data-[mir-missing=true]:outline-offset-2 **:data-[mir-missing=true]:outline-[rgba(240,82,82,0.9)] **:data-[mir-missing=true]:outline-dashed **:data-[mir-selected=true]:outline-2 **:data-[mir-selected=true]:outline-offset-2 **:data-[mir-selected=true]:outline-(--color-primary,var(--color-9)) dark:border-white/10 dark:shadow-[0_24px_46px_rgba(0,0,0,0.45)]"
               style={{ width: canvasWidth, height: canvasHeight }}
             >
               {animationPreview.cssText ? (
@@ -664,7 +664,7 @@ export function BlueprintEditorCanvas({
                 </div>
               )}
               {routeDiagnostics.length > 0 ? (
-                <div className="pointer-events-none absolute right-3 top-3 z-10 flex max-w-96 flex-col gap-1 rounded-md border border-amber-400/60 bg-amber-100/90 p-2 text-[11px] text-amber-900 shadow-sm dark:border-amber-300/30 dark:bg-amber-950/70 dark:text-amber-100">
+                <div className="pointer-events-none absolute top-3 right-3 z-10 flex max-w-96 flex-col gap-1 rounded-md border border-amber-400/60 bg-amber-100/90 p-2 text-[11px] text-amber-900 shadow-sm dark:border-amber-300/30 dark:bg-amber-950/70 dark:text-amber-100">
                   {routeDiagnostics.map((item) => (
                     <p key={item.code} className="m-0 leading-4">
                       {item.message}

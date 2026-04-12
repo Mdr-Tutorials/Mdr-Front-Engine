@@ -92,7 +92,7 @@ export const AnimationEditorTimelinePanel = ({
   return (
     <section className="flex h-[var(--anim-timeline-height)] shrink-0 flex-col border-t border-black/8 bg-[rgb(var(--color-0-rgb)_/_0.92)] backdrop-blur-sm">
       <div className="grid h-8 grid-cols-[260px_1fr] items-center border-b border-black/8">
-        <div className="px-3 text-[11px] font-medium uppercase tracking-[0.14em] text-(--color-6)">
+        <div className="px-3 text-[11px] font-medium tracking-[0.14em] text-(--color-6) uppercase">
           {t('animationEditor.timelinePanel.lanes')}
         </div>
         <div className="relative h-full">

@@ -46,7 +46,7 @@ export function EditorBarExitModal({
       onClick={onClose}
     >
       <div
-        className="w-[min(420px,90vw)] rounded-[16px] border border-[rgba(0,0,0,0.08)] bg-[var(--color-0)] px-[20px] pb-[20px] pt-[18px] text-[var(--color-10)] shadow-[0_16px_40px_rgba(0,0,0,0.16)] dark:border-[rgba(255,255,255,0.08)]"
+        className="w-[min(420px,90vw)] rounded-[16px] border border-[rgba(0,0,0,0.08)] bg-[var(--color-0)] px-[20px] pt-[18px] pb-[20px] text-[var(--color-10)] shadow-[0_16px_40px_rgba(0,0,0,0.16)] dark:border-[rgba(255,255,255,0.08)]"
         onClick={(event) => event.stopPropagation()}
       >
         <div>

@@ -50,7 +50,7 @@ export function InspectorAnimationSection() {
         </button>
       </div>
       {expandedSections.animation ? (
-        <div className="flex flex-col gap-1.5 pb-1 pt-1">
+        <div className="flex flex-col gap-1.5 pt-1 pb-1">
           <div className="px-0 py-0.5 text-[10px] text-(--color-6)">
             {selectedNode?.id ? (
               <>

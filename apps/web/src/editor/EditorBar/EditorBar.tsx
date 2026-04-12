@@ -51,7 +51,7 @@ function EditorBar() {
   return (
     <>
       <nav
-        className="flex min-h-screen max-h-screen w-[72px] flex-col items-center justify-between bg-[var(--color-2)] px-[14px] py-[20px]"
+        className="flex max-h-screen min-h-screen w-[72px] flex-col items-center justify-between bg-[var(--color-2)] px-[14px] py-[20px]"
         data-theme="dark"
       >
         <section className="flex flex-col items-center gap-[12px] [&_.MdrIconLink]:!text-[var(--color-9)] [&_.MdrIconLink:hover]:!text-[var(--color-10)]">

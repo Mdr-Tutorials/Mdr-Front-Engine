@@ -133,7 +133,7 @@ function ProjectHome() {
         <div className="inline-flex items-center gap-[6px]">
           <button
             type="button"
-            className="inline-flex items-center justify-center rounded-[10px] border-0 bg-transparent p-[4px] text-[var(--color-6)] disabled:cursor-not-allowed disabled:opacity-[0.45] hover:text-[var(--color-9)]"
+            className="inline-flex items-center justify-center rounded-[10px] border-0 bg-transparent p-[4px] text-[var(--color-6)] hover:text-[var(--color-9)] disabled:cursor-not-allowed disabled:opacity-[0.45]"
             aria-label={t('projectHome.actions.settings.label')}
             title={t('projectHome.actions.settings.label')}
             onClick={() =>
@@ -145,7 +145,7 @@ function ProjectHome() {
           </button>
           <button
             type="button"
-            className="inline-flex items-center justify-center rounded-[10px] border-0 bg-transparent p-[4px] text-[var(--color-6)] disabled:cursor-not-allowed disabled:opacity-[0.45] hover:text-[var(--color-9)]"
+            className="inline-flex items-center justify-center rounded-[10px] border-0 bg-transparent p-[4px] text-[var(--color-6)] hover:text-[var(--color-9)] disabled:cursor-not-allowed disabled:opacity-[0.45]"
             aria-label={t('projectHome.actions.projectInfo')}
             title={t('projectHome.actions.projectInfo')}
             onClick={() =>
@@ -163,7 +163,7 @@ function ProjectHome() {
           <span className="text-[var(--color-6)]">
             {t('projectHome.fields.id')}
           </span>
-          <span className="font-semibold font-mono text-[var(--color-9)]">
+          <span className="font-mono font-semibold text-[var(--color-9)]">
             {resolvedProjectId}
           </span>
         </div>
@@ -171,7 +171,7 @@ function ProjectHome() {
           <span className="text-[var(--color-6)]">
             {t('projectHome.fields.name')}
           </span>
-          <span className="font-semibold font-mono text-[var(--color-9)]">
+          <span className="font-mono font-semibold text-[var(--color-9)]">
             {projectName}
           </span>
         </div>
@@ -220,7 +220,7 @@ function ProjectHome() {
           <button
             key={action.key}
             type="button"
-            className="group flex cursor-pointer items-center gap-[10px] rounded-[12px] border-0 bg-transparent p-[10px] text-left text-[var(--color-9)] transition-colors duration-[150ms] ease-[ease] disabled:cursor-not-allowed disabled:opacity-[0.45] hover:text-[var(--color-10)]"
+            className="group flex cursor-pointer items-center gap-[10px] rounded-[12px] border-0 bg-transparent p-[10px] text-left text-[var(--color-9)] transition-colors duration-[150ms] ease-[ease] hover:text-[var(--color-10)] disabled:cursor-not-allowed disabled:opacity-[0.45]"
             onClick={() => navigate(action.path)}
             disabled={!isValidProject}
           >

@@ -86,7 +86,7 @@ const PreviewWrapper = ({
   children,
 }: PreviewWrapperProps) => (
   <div
-    className={`ComponentPreviewSurface relative flex h-[60px] min-w-20 items-center justify-center overflow-hidden rounded-md border border-black/6 bg-black/[0.02] dark:border-white/12 dark:bg-white/4 [&_.MdrModalOverlay]:absolute [&_.MdrModalOverlay]:inset-1 [&_.MdrModalOverlay]:z-0 [&_.MdrModalOverlay]:rounded-md [&_.MdrDrawerOverlay]:absolute [&_.MdrDrawerOverlay]:inset-1 [&_.MdrDrawerOverlay]:z-0 [&_.MdrDrawerOverlay]:rounded-md [&_.MdrModal]:max-w-full [&_.MdrModal]:w-[140px] [&_.MdrDrawer]:max-h-full [&_.MdrDrawer]:max-w-full [&_.ant-modal-root]:relative [&_.ant-modal-root]:inset-auto [&_.ant-modal-root]:z-[1] [&_.ant-modal-wrap]:relative [&_.ant-modal-wrap]:inset-auto [&_.ant-modal-wrap]:overflow-hidden [&_.ant-modal]:my-1 [&_.ant-modal]:max-w-[150px] [&_.MuiDialog-root]:absolute [&_.MuiDialog-root]:inset-0 [&_.MuiPaper-root]:m-0 [&_.MuiPaper-root]:max-h-full [&_.MuiPaper-root]:max-w-[150px] ${wide ? 'Wide w-full' : ''} ${className}`.trim()}
+    className={`ComponentPreviewSurface relative flex h-[60px] min-w-20 items-center justify-center overflow-hidden rounded-md border border-black/6 bg-black/[0.02] dark:border-white/12 dark:bg-white/4 [&_.MdrDrawer]:max-h-full [&_.MdrDrawer]:max-w-full [&_.MdrDrawerOverlay]:absolute [&_.MdrDrawerOverlay]:inset-1 [&_.MdrDrawerOverlay]:z-0 [&_.MdrDrawerOverlay]:rounded-md [&_.MdrModal]:w-[140px] [&_.MdrModal]:max-w-full [&_.MdrModalOverlay]:absolute [&_.MdrModalOverlay]:inset-1 [&_.MdrModalOverlay]:z-0 [&_.MdrModalOverlay]:rounded-md [&_.MuiDialog-root]:absolute [&_.MuiDialog-root]:inset-0 [&_.MuiPaper-root]:m-0 [&_.MuiPaper-root]:max-h-full [&_.MuiPaper-root]:max-w-[150px] [&_.ant-modal]:my-1 [&_.ant-modal]:max-w-[150px] [&_.ant-modal-root]:relative [&_.ant-modal-root]:inset-auto [&_.ant-modal-root]:z-[1] [&_.ant-modal-wrap]:relative [&_.ant-modal-wrap]:inset-auto [&_.ant-modal-wrap]:overflow-hidden ${wide ? 'Wide w-full' : ''} ${className}`.trim()}
   >
     <div
       className="ComponentPreviewInner pointer-events-none inline-flex origin-center items-center justify-center"
@@ -342,7 +342,7 @@ export function BlueprintEditorSidebar({
 
   return (
     <aside
-      className={`BlueprintEditorSidebar absolute flex min-h-0 w-[var(--sidebar-width)] flex-col rounded-[14px] border border-black/6 bg-(--color-0) shadow-[0_12px_26px_rgba(0,0,0,0.08)] dark:border-transparent ${isCollapsed ? 'Collapsed left-0 top-3 z-[7] h-0 w-0 overflow-visible border-none bg-transparent p-0 shadow-none' : `left-0 top-0 z-[4] ${!isTreeCollapsed ? '[bottom:var(--component-tree-height)] rounded-b-none border-b-0' : 'bottom-0'}`}`}
+      className={`BlueprintEditorSidebar absolute flex min-h-0 w-[var(--sidebar-width)] flex-col rounded-[14px] border border-black/6 bg-(--color-0) shadow-[0_12px_26px_rgba(0,0,0,0.08)] dark:border-transparent ${isCollapsed ? 'Collapsed top-3 left-0 z-[7] h-0 w-0 overflow-visible border-none bg-transparent p-0 shadow-none' : `top-0 left-0 z-[4] ${!isTreeCollapsed ? '[bottom:var(--component-tree-height)] rounded-b-none border-b-0' : 'bottom-0'}`}`}
     >
       <div
         className={`BlueprintEditorSidebarHeader flex items-center justify-between gap-2.5 border-b border-black/6 px-3 py-2.5 text-[13px] font-semibold dark:border-white/8 ${isCollapsed ? 'w-full items-center justify-center border-b-0 p-0' : ''}`}
@@ -377,7 +377,7 @@ export function BlueprintEditorSidebar({
               </button>
               <input
                 ref={searchInputRef}
-                className={`BlueprintEditorSidebarSearchInput min-w-0 flex-1 border-0 bg-transparent text-xs text-(--color-9) outline-none placeholder:text-(--color-6) transition-opacity ${effectiveSearchOpen ? 'pointer-events-auto w-auto opacity-100' : 'pointer-events-none w-0 opacity-0'}`}
+                className={`BlueprintEditorSidebarSearchInput min-w-0 flex-1 border-0 bg-transparent text-xs text-(--color-9) transition-opacity outline-none placeholder:text-(--color-6) ${effectiveSearchOpen ? 'pointer-events-auto w-auto opacity-100' : 'pointer-events-none w-0 opacity-0'}`}
                 value={query}
                 placeholder={t('sidebar.searchPlaceholder')}
                 onChange={handleQueryChange}
@@ -402,7 +402,7 @@ export function BlueprintEditorSidebar({
             </div>
           )}
           <button
-            className={`BlueprintEditorCollapse inline-flex items-center justify-center gap-1.5 rounded-full border-0 bg-transparent px-1.5 py-0.5 text-(--color-6) hover:text-(--color-9) ${isCollapsed ? 'absolute left-0 top-0 h-8 w-6 rounded-l-none rounded-r-full border border-l-0 border-black/8 bg-(--color-0) p-0 pr-0.5 shadow-[0_10px_22px_rgba(0,0,0,0.14)] dark:border-white/16 dark:shadow-[0_12px_24px_rgba(0,0,0,0.45)]' : ''}`}
+            className={`BlueprintEditorCollapse inline-flex items-center justify-center gap-1.5 rounded-full border-0 bg-transparent px-1.5 py-0.5 text-(--color-6) hover:text-(--color-9) ${isCollapsed ? 'absolute top-0 left-0 h-8 w-6 rounded-l-none rounded-r-full border border-l-0 border-black/8 bg-(--color-0) p-0 pr-0.5 shadow-[0_10px_22px_rgba(0,0,0,0.14)] dark:border-white/16 dark:shadow-[0_12px_24px_rgba(0,0,0,0.45)]' : ''}`}
             onClick={onToggleCollapse}
             aria-label={t('sidebar.toggleLibrary')}
           >
@@ -514,7 +514,7 @@ export function BlueprintEditorSidebar({
           </div>
         )}
       {!isCollapsed && (
-        <div className="BlueprintEditorComponentList grid gap-4 overflow-auto px-3 pb-3 pt-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:h-0 [&::-webkit-scrollbar]:w-0">
+        <div className="BlueprintEditorComponentList grid gap-4 overflow-auto px-3 pt-2 pb-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:h-0 [&::-webkit-scrollbar]:w-0">
           {groups.map((group, groupIndex) => {
             const isGroupCollapsed =
               collapsedGroups[group.id] ?? groupIndex > 0;
@@ -527,7 +527,7 @@ export function BlueprintEditorSidebar({
                   className="ComponentGroupHeader sticky top-0 z-[2] flex w-full cursor-pointer items-center justify-between border-0 bg-white/52 py-1 backdrop-blur-[6px] in-data-[theme='dark']:bg-[rgba(12,12,12,0.72)]"
                   onClick={() => onToggleGroup(group.id)}
                 >
-                  <span className="ComponentGroupTitle text-[11px] uppercase tracking-[0.06em] text-(--color-6)">
+                  <span className="ComponentGroupTitle text-[11px] tracking-[0.06em] text-(--color-6) uppercase">
                     {groupTitle} ({group.items.length})
                   </span>
                   <ChevronDown
@@ -536,7 +536,7 @@ export function BlueprintEditorSidebar({
                   />
                 </button>
                 {!isGroupCollapsed && (
-                  <div className="ComponentGroupItems grid grid-cols-2 gap-3 [grid-auto-flow:dense]">
+                  <div className="ComponentGroupItems grid [grid-auto-flow:dense] grid-cols-2 gap-3">
                     {group.items.map((item) => {
                       const variants = item.variants ?? [];
                       const hasVariants = variants.length > 0;
@@ -582,7 +582,7 @@ export function BlueprintEditorSidebar({
                           <DraggablePreviewCard
                             itemId={item.id}
                             selectedSize={selectedSizeValue}
-                            className={`ComponentPreviewCard relative grid min-h-[94px] cursor-grab select-none gap-1.5 rounded-lg border border-transparent bg-transparent px-1.5 pb-[18px] pt-1.5 transition-[border-color,background,opacity] ${hasVariants ? 'HasVariants hover:border-black/8 hover:bg-(--color-1) dark:hover:border-white/12 dark:hover:bg-white/4' : ''}`}
+                            className={`ComponentPreviewCard relative grid min-h-[94px] cursor-grab gap-1.5 rounded-lg border border-transparent bg-transparent px-1.5 pt-1.5 pb-[18px] transition-[border-color,background,opacity] select-none ${hasVariants ? 'HasVariants hover:border-black/8 hover:bg-(--color-1) dark:hover:border-white/12 dark:hover:bg-white/4' : ''}`}
                             role={hasVariants ? 'button' : undefined}
                             tabIndex={hasVariants ? 0 : -1}
                             ariaExpanded={hasVariants ? isExpanded : undefined}
@@ -609,7 +609,7 @@ export function BlueprintEditorSidebar({
                             {hasVariants && (
                               <button
                                 type="button"
-                                className={`ComponentPreviewExpand absolute bottom-0 right-2 z-[2] inline-flex items-center gap-1 rounded-full border border-black/8 bg-black/6 px-1.5 py-[1px] text-[9px] tracking-[0.02em] text-(--color-7) dark:border-white/16 dark:bg-white/8 ${isExpanded ? 'Open' : ''}`}
+                                className={`ComponentPreviewExpand absolute right-2 bottom-0 z-[2] inline-flex items-center gap-1 rounded-full border border-black/8 bg-black/6 px-1.5 py-[1px] text-[9px] tracking-[0.02em] text-(--color-7) dark:border-white/16 dark:bg-white/8 ${isExpanded ? 'Open' : ''}`}
                                 onClick={(event) => {
                                   event.stopPropagation();
                                   onTogglePreview(item.id);
@@ -681,7 +681,7 @@ export function BlueprintEditorSidebar({
                           </DraggablePreviewCard>
                           {hasVariants && isExpanded && (
                             <div
-                              className={`ComponentPreviewVariants grid gap-2 rounded-lg border border-black/6 bg-(--color-1) p-2 [grid-template-columns:repeat(auto-fit,minmax(80px,1fr))] dark:border-white/12 dark:bg-white/4 ${isWide ? 'Wide [grid-template-columns:1fr]' : ''}`}
+                              className={`ComponentPreviewVariants grid [grid-template-columns:repeat(auto-fit,minmax(80px,1fr))] gap-2 rounded-lg border border-black/6 bg-(--color-1) p-2 dark:border-white/12 dark:bg-white/4 ${isWide ? 'Wide [grid-template-columns:1fr]' : ''}`}
                             >
                               {variants.map((variant) => {
                                 const variantScale = getPreviewScale(

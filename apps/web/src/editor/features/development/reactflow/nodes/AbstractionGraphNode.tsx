@@ -123,7 +123,7 @@ export const renderAbstractionGraphNode = ({
             outHandle: 'out.data.result',
             outSemantic: 'data',
           })}
-          <div className="px-4 pb-1 pt-1 text-[10px] uppercase tracking-[0.08em] text-slate-400">
+          <div className="px-4 pt-1 pb-1 text-[10px] tracking-[0.08em] text-slate-400 uppercase">
             {tNode(
               t,
               'abstraction.subFlowCall.inputBindings',
@@ -153,7 +153,7 @@ export const renderAbstractionGraphNode = ({
               'binding'
             )}
           />
-          <div className="px-4 pb-1 pt-1 text-[10px] uppercase tracking-[0.08em] text-slate-400">
+          <div className="px-4 pt-1 pb-1 text-[10px] tracking-[0.08em] text-slate-400 uppercase">
             {tNode(
               t,
               'abstraction.subFlowCall.outputBindings',

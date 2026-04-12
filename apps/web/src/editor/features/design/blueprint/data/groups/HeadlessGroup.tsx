@@ -109,7 +109,7 @@ export const HEADLESS_GROUP: ComponentGroup = {
       name: 'Switch',
       preview: (
         <div className="relative h-4 w-8 rounded-full bg-black/14 dark:bg-white/18">
-          <div className="absolute right-0.5 top-0.5 h-3 w-3 rounded-full bg-(--color-0) shadow-[0_1px_2px_rgba(0,0,0,0.22)]" />
+          <div className="absolute top-0.5 right-0.5 h-3 w-3 rounded-full bg-(--color-0) shadow-[0_1px_2px_rgba(0,0,0,0.22)]" />
         </div>
       ),
     },

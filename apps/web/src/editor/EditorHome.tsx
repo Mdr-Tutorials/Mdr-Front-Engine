@@ -60,7 +60,7 @@ function EditorTipsRandom() {
 
   return (
     <div
-      className="mt-auto cursor-pointer select-none p-[12px] text-center text-[14px] text-[#999] hover:text-[var(--color-9)]"
+      className="mt-auto cursor-pointer p-[12px] text-center text-[14px] text-[#999] select-none hover:text-[var(--color-9)]"
       onClick={clickNext}
     >
       <p>
@@ -151,13 +151,13 @@ function ProjectCard({
         type="button"
         onClick={() => setActionsOpen((prev) => !prev)}
         aria-label={t('home.card.moreActions', 'More actions')}
-        className="absolute right-[14px] top-[14px] z-10 inline-flex h-[30px] w-[30px] items-center justify-center rounded-[9px] border border-[var(--color-2)] bg-[var(--color-0)] text-[var(--color-7)] transition-colors hover:border-[var(--color-4)] hover:text-[var(--color-9)]"
+        className="absolute top-[14px] right-[14px] z-10 inline-flex h-[30px] w-[30px] items-center justify-center rounded-[9px] border border-[var(--color-2)] bg-[var(--color-0)] text-[var(--color-7)] transition-colors hover:border-[var(--color-4)] hover:text-[var(--color-9)]"
       >
         <MoreHorizontal size={16} />
       </button>
 
       {isActionsOpen && (
-        <div className="absolute right-[14px] top-[48px] z-20 flex min-w-[170px] flex-col gap-[6px] rounded-[12px] border border-[var(--color-2)] bg-[var(--color-0)] p-[8px] shadow-[var(--shadow-lg)]">
+        <div className="absolute top-[48px] right-[14px] z-20 flex min-w-[170px] flex-col gap-[6px] rounded-[12px] border border-[var(--color-2)] bg-[var(--color-0)] p-[8px] shadow-[var(--shadow-lg)]">
           {!project.isPublic ? (
             <button
               type="button"
@@ -215,7 +215,7 @@ function ProjectCard({
             event.stopPropagation();
             void applyRename();
           }}
-          className="absolute right-[14px] top-[70px] z-10 inline-flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[6px] border border-[var(--color-3)] text-[var(--color-8)] transition hover:border-[var(--color-5)] hover:text-[var(--color-10)] disabled:opacity-[0.5]"
+          className="absolute top-[70px] right-[14px] z-10 inline-flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[6px] border border-[var(--color-3)] text-[var(--color-8)] transition hover:border-[var(--color-5)] hover:text-[var(--color-10)] disabled:opacity-[0.5]"
         >
           <Check size={14} />
         </button>
@@ -224,7 +224,7 @@ function ProjectCard({
           type="button"
           onClick={startRename}
           aria-label={t('home.card.rename', 'Rename project')}
-          className="absolute right-[14px] top-[70px] z-10 inline-flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[6px] border border-transparent text-[var(--color-6)] opacity-0 transition hover:border-[var(--color-3)] hover:text-[var(--color-10)] group-hover/card:opacity-100 focus:opacity-100"
+          className="absolute top-[70px] right-[14px] z-10 inline-flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[6px] border border-transparent text-[var(--color-6)] opacity-0 transition group-hover/card:opacity-100 hover:border-[var(--color-3)] hover:text-[var(--color-10)] focus:opacity-100"
         >
           <Pencil size={14} />
         </button>
@@ -514,7 +514,7 @@ function EditorHome() {
     <div className="flex h-full w-full flex-1 bg-[var(--color-0)] text-[var(--color-10)]">
       <div className="flex flex-1 flex-col gap-[32px] overflow-y-auto p-[40px]">
         <header className="flex w-full flex-col gap-[8px]">
-          <h1 className="m-0 text-[24px] font-semibold leading-[1.25] text-[var(--color-10)]">
+          <h1 className="m-0 text-[24px] leading-[1.25] font-semibold text-[var(--color-10)]">
             {t('home.welcomeTitle')}
           </h1>
         </header>
@@ -525,7 +525,7 @@ function EditorHome() {
           </p>
         )}
 
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] auto-rows-[minmax(280px,auto)] gap-[20px] max-[1200px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1">
+        <div className="grid auto-rows-[minmax(280px,auto)] grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-[20px] max-[1200px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1">
           <button
             className="flex h-full min-h-[280px] w-full cursor-pointer flex-col items-center justify-center rounded-[16px] border-2 border-dashed border-[var(--color-3)] bg-[var(--color-1)] text-[18px] text-[var(--color-10)] transition-all duration-[300ms] ease-[ease] hover:border-[var(--color-6)] hover:bg-[var(--color-2)]"
             onClick={() => setResourceModalOpen(true)}
@@ -562,7 +562,7 @@ function EditorHome() {
             ))}
         </div>
 
-        <div className="mt-auto flex items-center justify-center pb-[20px] pt-[48px]">
+        <div className="mt-auto flex items-center justify-center pt-[48px] pb-[20px]">
           <EditorTipsRandom />
         </div>
       </div>

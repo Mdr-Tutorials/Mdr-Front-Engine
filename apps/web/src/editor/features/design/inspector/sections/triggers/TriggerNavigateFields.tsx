@@ -84,7 +84,7 @@ export function TriggerNavigateFields({
           })}
         </label>
         <select
-          className="h-7 min-w-0 w-24 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none dark:border-white/16"
+          className="h-7 w-24 min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none dark:border-white/16"
           value={targetValue}
           title={t('inspector.groups.triggers.targetHelp', {
             defaultValue: 'Browser tab target used by navigation actions.',

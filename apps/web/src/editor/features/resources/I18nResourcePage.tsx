@@ -480,7 +480,7 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
           </div>
 
           <div className="grid gap-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-(--color-6)">
+            <p className="text-[11px] font-semibold tracking-[0.08em] text-(--color-6) uppercase">
               {t('resourceManager.i18n.modules')}
             </p>
             <div className="grid gap-1">
@@ -515,7 +515,7 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
           </div>
 
           <div className="grid gap-2 rounded-lg border border-black/8 bg-black/[0.02] p-2">
-            <p className="text-[11px] uppercase tracking-[0.08em] text-(--color-6)">
+            <p className="text-[11px] tracking-[0.08em] text-(--color-6) uppercase">
               {t('resourceManager.i18n.progress')}
             </p>
             <p className="text-xs text-(--color-8)">
@@ -811,7 +811,7 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
 
         <aside className="grid gap-3 rounded-xl border border-black/10 bg-(--color-0) p-3">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-(--color-6)">
+            <p className="text-[11px] font-semibold tracking-[0.08em] text-(--color-6) uppercase">
               {t('resourceManager.i18n.livePreview')}
             </p>
             <h4 className="mt-1 text-sm font-semibold text-(--color-9)">
@@ -820,12 +820,12 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
           </div>
 
           <article className="grid gap-2 rounded-lg border border-black/10 bg-black/[0.02] p-3">
-            <p className="text-[11px] uppercase tracking-[0.08em] text-(--color-6)">
+            <p className="text-[11px] tracking-[0.08em] text-(--color-6) uppercase">
               {t('resourceManager.i18n.componentPreview')}
             </p>
             <button
               type="button"
-              className="inline-flex h-9 w-full items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md border border-black/14 bg-white px-3 text-sm text-(--color-9)"
+              className="inline-flex h-9 w-full items-center justify-center overflow-hidden rounded-md border border-black/14 bg-white px-3 text-sm text-ellipsis whitespace-nowrap text-(--color-9)"
             >
               {selectedRow.target || selectedRow.source || '...'}
             </button>
