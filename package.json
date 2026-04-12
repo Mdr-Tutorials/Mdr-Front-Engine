@@ -38,7 +38,9 @@
     "format:go": "cd apps/backend && go fmt ./...",
     "clean": "turbo run clean && rm -rf node_modules",
     "cli": "node apps/cli/bin/mdr.js",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "tw:migrate": "npx @tailwindcss/upgrade ./apps/web ./packages/ui ./packages/themes",
+    "tw:migrate:check": "git diff --stat"
   },
   "devDependencies": {
     "husky": "^9.1.7",
