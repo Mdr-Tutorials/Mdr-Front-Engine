@@ -1,12 +1,15 @@
+import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { IconPickerModal } from './inspector/components/IconPickerModal';
 import { MountedCssEditorModal } from './inspector/classProtocol/MountedCssEditorModal';
 import { InspectorSectionContext } from './inspector/sections/InspectorSectionContext';
-import { InspectorBasicSection } from './inspector/sections/InspectorBasicSection';
-import { InspectorStyleSection } from './inspector/sections/InspectorStyleSection';
-import { InspectorAnimationSection } from './inspector/sections/InspectorAnimationSection';
-import { InspectorTriggersSection } from './inspector/sections/InspectorTriggersSection';
+import { InspectorTabBar } from './inspector/components/InspectorTabBar';
+import { InspectorBasicTab } from './inspector/tabs/InspectorBasicTab';
+import { InspectorStyleTab } from './inspector/tabs/InspectorStyleTab';
+import { InspectorDataTab } from './inspector/tabs/InspectorDataTab';
+import { InspectorCodeTab } from './inspector/tabs/InspectorCodeTab';
 import { useBlueprintEditorInspectorController } from './BlueprintEditorInspector.controller';
+import type { InspectorTab } from './inspector/sections/InspectorSectionContext.types';
 
 type BlueprintEditorInspectorProps = {
   isCollapsed: boolean;
@@ -27,6 +30,8 @@ export function BlueprintEditorInspector({
     sectionContextValue,
     mountedCssEditor,
   } = useBlueprintEditorInspectorController();
+
+  const [activeTab, setActiveTab] = useState<InspectorTab>('basic');
 
   if (isCollapsed) {
     return (
@@ -58,11 +63,12 @@ export function BlueprintEditorInspector({
       </div>
       {selectedNode ? (
         <InspectorSectionContext.Provider value={sectionContextValue}>
-          <div className="InspectorSection flex min-h-0 flex-1 flex-col gap-2 overflow-x-hidden overflow-y-auto px-3 pt-2 pb-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:h-0 [&::-webkit-scrollbar]:w-0">
-            <InspectorBasicSection />
-            <InspectorStyleSection />
-            <InspectorAnimationSection />
-            <InspectorTriggersSection />
+          <InspectorTabBar activeTab={activeTab} onTabChange={setActiveTab} />
+          <div className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-hidden">
+            {activeTab === 'basic' && <InspectorBasicTab />}
+            {activeTab === 'style' && <InspectorStyleTab />}
+            {activeTab === 'data' && <InspectorDataTab />}
+            {activeTab === 'code' && <InspectorCodeTab />}
           </div>
         </InspectorSectionContext.Provider>
       ) : (

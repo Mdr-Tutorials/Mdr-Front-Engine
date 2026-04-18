@@ -1,17 +1,10 @@
-import { Code } from 'lucide-react';
 import { InspectorRow } from '@/editor/features/design/inspector/components/InspectorRow';
 import { LinkBasicsFields } from '@/editor/features/design/inspector/components/LinkBasicsFields';
-import { ClassProtocolEditor } from '@/editor/features/design/inspector/classProtocol/ClassProtocolEditor';
 import { useInspectorSectionContext } from '@/editor/features/design/inspector/sections/InspectorSectionContext';
 
 export function InspectorNodeCapabilitiesFields() {
   const {
     t,
-    projectId,
-    supportsClassProtocol,
-    classNameValue,
-    mountedCssEntries,
-    openMountedCssEditor,
     updateSelectedNode,
     isIconNode,
     SelectedIconComponent,
@@ -51,38 +44,6 @@ export function InspectorNodeCapabilitiesFields() {
 
   return (
     <>
-      {supportsClassProtocol ? (
-        <div className="InspectorField flex flex-col gap-1.5">
-          <InspectorRow
-            label={t('inspector.fields.className.label', {
-              defaultValue: 'Class Name',
-            })}
-            control={
-              <ClassProtocolEditor
-                projectId={projectId}
-                value={classNameValue}
-                placeholder={t('inspector.fields.className.placeholder', {
-                  defaultValue: 'e.g. p-4 flex items-center',
-                })}
-                inputTestId="inspector-classname-input"
-                mountedCssEntries={mountedCssEntries}
-                onOpenMountedCss={(target) => {
-                  openMountedCssEditor(target);
-                }}
-                onChange={(value) => {
-                  updateSelectedNode((current: any) => ({
-                    ...current,
-                    props: {
-                      ...(current.props ?? {}),
-                      className: value,
-                    },
-                  }));
-                }}
-              />
-            }
-          />
-        </div>
-      ) : null}
       {isIconNode && (
         <div className="InspectorField flex flex-col gap-1.5">
           <InspectorRow

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import type { ComponentNode } from '@/core/types/engine.types';
 import type { IconRef } from '@/mir/renderer/iconRegistry';
+import type { TriggerEntry } from '@/editor/features/design/inspector/sections/InspectorSectionContext.types';
 import { createDefaultActionParams } from '@/mir/actions/registry';
 import { isIconRef, resolveIconRef } from '@/mir/renderer/iconRegistry';
 import { useEditorStore } from '@/editor/store/useEditorStore';
@@ -470,27 +471,32 @@ export const useBlueprintEditorInspectorController = () => {
     return normalizeGraphOptionsFromMir(mirDoc.logic?.graphs);
   }, [mirDoc.logic?.graphs]);
 
-  const updateTrigger = (
+  const updateTrigger: (
     triggerKey: string,
-    updater: (event: {
-      trigger: string;
-      action?: string;
-      params?: Record<string, unknown>;
-    }) => {
-      trigger: string;
-      action?: string;
-      params?: Record<string, unknown>;
-    }
-  ) => {
+    updater: (event: TriggerEntry) => TriggerEntry
+  ) => void = (triggerKey, updater) => {
     updateSelectedNode((current) => {
-      const currentEvent = current.events?.[triggerKey];
-      if (!currentEvent) return current;
+      const rawEvent = current.events?.[triggerKey];
+      if (!rawEvent) return current;
+      const currentEvent: TriggerEntry = {
+        key: triggerKey,
+        trigger: rawEvent.trigger ?? 'onClick',
+        action: rawEvent.action ?? 'navigate',
+        params:
+          typeof rawEvent.params === 'object' && rawEvent.params
+            ? rawEvent.params
+            : {},
+      };
       const nextEvent = updater(currentEvent);
       return {
         ...current,
         events: {
           ...(current.events ?? {}),
-          [triggerKey]: nextEvent,
+          [triggerKey]: {
+            trigger: nextEvent.trigger,
+            action: nextEvent.action,
+            params: nextEvent.params,
+          },
         },
       };
     });

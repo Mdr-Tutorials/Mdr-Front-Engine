@@ -8,18 +8,12 @@ import {
   normalizeBuiltInAction,
   type BuiltInActionName,
 } from '@/mir/actions/registry';
+import type { TriggerEntry } from '@/editor/features/design/inspector/sections/InspectorSectionContext.types';
 import { useInspectorSectionContext } from '@/editor/features/design/inspector/sections/InspectorSectionContext';
 import { TriggerNavigateFields } from './TriggerNavigateFields';
 import { TriggerGraphFields } from './TriggerGraphFields';
 
-type TriggerItem = {
-  key: string;
-  trigger: string;
-  action?: string;
-  params: Record<string, unknown>;
-};
-
-export function InspectorTriggerItem({ item }: { item: TriggerItem }) {
+export function InspectorTriggerItem({ item }: { item: TriggerEntry }) {
   const { t, graphOptions, updateTrigger, removeTrigger } =
     useInspectorSectionContext();
   const toValue = typeof item.params.to === 'string' ? item.params.to : '';
