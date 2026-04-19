@@ -13,9 +13,9 @@ import {
   estimateStickyNoteSize,
   type GraphNodeData,
 } from '@/editor/features/development/reactflow/graphNodeShared';
+import { useEditorShortcut } from '@/editor/shortcuts';
 import type { NodeI18n } from './nodeI18n';
 import { tNode } from './nodeI18n';
-import { isPrimaryShortcut, useWindowKeydown } from '@/shortcuts';
 
 type Props = {
   id: string;
@@ -490,20 +490,18 @@ const StickyNoteEditor = ({ id, nodeData, selected, t }: Props) => {
     setIsModalOpen(false);
   }, [content, draftContent, id, nodeData]);
 
-  useWindowKeydown(
-    (event) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        closeEditor();
-        return;
-      }
-      if (isPrimaryShortcut(event) && event.key === 'Enter') {
-        event.preventDefault();
-        saveEditor();
-      }
-    },
-    { enabled: isModalOpen }
-  );
+  useEditorShortcut('Escape', closeEditor, {
+    enabled: isModalOpen,
+    scope: 'modal',
+    priority: 100,
+    allowInEditable: true,
+  });
+  useEditorShortcut('Mod+Enter', saveEditor, {
+    enabled: isModalOpen,
+    scope: 'modal',
+    priority: 100,
+    allowInEditable: true,
+  });
 
   const noteContainerClass = isMinimalTheme
     ? `relative overflow-visible ${theme.text}`

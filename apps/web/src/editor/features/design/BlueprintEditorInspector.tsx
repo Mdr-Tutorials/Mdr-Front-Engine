@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { IconPickerModal } from './inspector/components/IconPickerModal';
-import { MountedCssEditorModal } from './inspector/classProtocol/MountedCssEditorModal';
-import { InspectorSectionContext } from './inspector/sections/InspectorSectionContext';
+import { MountedCssEditorModal } from './inspector/components/classProtocol/MountedCssEditorModal';
+import { InspectorContext } from './inspector/InspectorContext';
 import { InspectorTabBar } from './inspector/components/InspectorTabBar';
 import { InspectorBasicTab } from './inspector/tabs/InspectorBasicTab';
 import { InspectorStyleTab } from './inspector/tabs/InspectorStyleTab';
 import { InspectorDataTab } from './inspector/tabs/InspectorDataTab';
 import { InspectorCodeTab } from './inspector/tabs/InspectorCodeTab';
 import { useBlueprintEditorInspectorController } from './BlueprintEditorInspector.controller';
-import type { InspectorTab } from './inspector/sections/InspectorSectionContext.types';
+import type { InspectorTab } from './inspector/InspectorContext.types';
 
 type BlueprintEditorInspectorProps = {
   isCollapsed: boolean;
@@ -62,7 +62,7 @@ export function BlueprintEditorInspector({
         </button>
       </div>
       {selectedNode ? (
-        <InspectorSectionContext.Provider value={sectionContextValue}>
+        <InspectorContext.Provider value={sectionContextValue}>
           <InspectorTabBar activeTab={activeTab} onTabChange={setActiveTab} />
           <div className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-hidden">
             {activeTab === 'basic' && <InspectorBasicTab />}
@@ -70,7 +70,7 @@ export function BlueprintEditorInspector({
             {activeTab === 'data' && <InspectorDataTab />}
             {activeTab === 'code' && <InspectorCodeTab />}
           </div>
-        </InspectorSectionContext.Provider>
+        </InspectorContext.Provider>
       ) : (
         <div className="InspectorPlaceholder px-3 pt-2 pb-3">
           <p className="m-0 text-xs text-(--color-6)">

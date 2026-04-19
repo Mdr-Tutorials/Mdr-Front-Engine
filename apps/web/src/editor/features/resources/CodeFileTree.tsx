@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { CodeResourceNode } from './codeTree';
-import { useWindowKeydown } from '@/shortcuts';
+import { useEditorShortcut } from '@/editor/shortcuts';
 
 export type CodeFileKind =
   | 'ts'
@@ -58,8 +58,8 @@ const findNodeById = (
   return undefined;
 };
 
-const RENAME_RECLICK_MIN_MS = 250;
-const RENAME_RECLICK_MAX_MS = 1200;
+const RENAME_RECLICK_MIN_MS = 20;
+const RENAME_RECLICK_MAX_MS = 200;
 const CODE_KINDS: CodeFileKind[] = [
   'ts',
   'tsx',
@@ -149,13 +149,15 @@ export function CodeFileTree({
     };
   }, [contextMenu]);
 
-  useWindowKeydown(
-    (event) => {
-      if (event.key === 'Escape') {
-        setContextMenu(null);
-      }
+  useEditorShortcut(
+    'Escape',
+    () => {
+      setContextMenu(null);
     },
-    { enabled: Boolean(contextMenu) }
+    {
+      enabled: Boolean(contextMenu),
+      priority: 20,
+    }
   );
 
   const renderNode = (node: CodeResourceNode, depth = 0): ReactElement => {

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import type { ComponentNode } from '@/core/types/engine.types';
 import type { IconRef } from '@/mir/renderer/iconRegistry';
-import type { TriggerEntry } from '@/editor/features/design/inspector/sections/InspectorSectionContext.types';
+import type { TriggerEntry } from '@/editor/features/design/inspector/InspectorContext.types';
 import { createDefaultActionParams } from '@/mir/actions/registry';
 import { isIconRef, resolveIconRef } from '@/mir/renderer/iconRegistry';
 import { useEditorStore } from '@/editor/store/useEditorStore';
@@ -20,9 +20,9 @@ import {
   isLayoutPatternRootNode,
 } from './blueprint/layoutPatterns/dataAttributes';
 import { getExternalRuntimeMetaByType } from './blueprint/external/runtime/metaStore';
-import { INSPECTOR_PANELS } from './inspector/panels/registry';
-import { resolveMountedCssEntries } from './inspector/classProtocol/mountedCss';
-import { useMountedCssEditorState } from './inspector/classProtocol/useMountedCssEditorState';
+import { resolveInspectorPanels } from './inspector/panels/registry';
+import { resolveMountedCssEntries } from './inspector/components/classProtocol/mountedCss';
+import { useMountedCssEditorState } from './inspector/components/classProtocol/useMountedCssEditorState';
 import { getPrimaryTextField } from './blueprintText';
 import {
   collectIds,
@@ -31,27 +31,18 @@ import {
   updateNodeById,
 } from './BlueprintEditorInspector.utils';
 
-let persistedExpandedSections = {
-  basic: true,
-  style: true,
-  animation: true,
-  triggers: true,
-};
-
 let persistedExpandedPanels: Record<string, boolean> = {};
 
 export const resetInspectorExpansionPersistence = () => {
-  persistedExpandedSections = {
-    basic: true,
-    style: true,
-    animation: true,
-    triggers: true,
-  };
   persistedExpandedPanels = {};
 };
 
 export const useBlueprintEditorInspectorController = () => {
   const { t } = useTranslation('blueprint');
+  const translate = useCallback(
+    (key: string, options?: Record<string, unknown>) => t(key, options),
+    [t]
+  );
   const navigate = useNavigate();
   const { projectId } = useParams();
   const blueprintKey = projectId ?? 'global';
@@ -90,10 +81,7 @@ export const useBlueprintEditorInspectorController = () => {
     return findBinding(routeManifest.root);
   }, [routeManifest.root, selectedNode]);
   const matchedPanels = useMemo(
-    () =>
-      selectedNode
-        ? INSPECTOR_PANELS.filter((panel) => panel.match(selectedNode))
-        : [],
+    () => (selectedNode ? resolveInspectorPanels(selectedNode, 'style') : []),
     [selectedNode]
   );
   const primaryTextField = useMemo(
@@ -105,9 +93,6 @@ export const useBlueprintEditorInspectorController = () => {
     return getExternalRuntimeMetaByType(selectedNode.type) ?? null;
   }, [selectedNode?.type]);
   const [draftId, setDraftId] = useState('');
-  const [expandedSections, setExpandedSections] = useState(() => ({
-    ...persistedExpandedSections,
-  }));
   const [expandedPanels, setExpandedPanels] = useState<Record<string, boolean>>(
     () => ({ ...persistedExpandedPanels })
   );
@@ -173,12 +158,6 @@ export const useBlueprintEditorInspectorController = () => {
 
   useEffect(() => {
     if (!selectedNode || !isLayoutPatternRootNode(selectedNode)) return;
-    setExpandedSections((current) => {
-      if (current.style) return current;
-      const next = { ...current, style: true };
-      persistedExpandedSections = { ...next };
-      return next;
-    });
     setExpandedPanels((current) => {
       if (current['layout-pattern'] === true) return current;
       const next = {
@@ -400,17 +379,6 @@ export const useBlueprintEditorInspectorController = () => {
     navigate(`/editor/project/${resolvedProjectId}/animation`);
   }, [navigate, projectId]);
 
-  const toggleSection = (key: keyof typeof expandedSections) => {
-    setExpandedSections((current) => {
-      const next = {
-        ...current,
-        [key]: !current[key],
-      };
-      persistedExpandedSections = { ...next };
-      return next;
-    });
-  };
-
   const togglePanel = (key: string) => {
     setExpandedPanels((current) => {
       const next = {
@@ -535,10 +503,8 @@ export const useBlueprintEditorInspectorController = () => {
 
   const sectionContextValue = useMemo(
     () => ({
-      t,
+      t: translate,
       projectId,
-      expandedSections,
-      toggleSection,
       hasAnimationDefinition,
       isAnimationMounted,
       mountedAnimationBindingCount,
@@ -590,9 +556,8 @@ export const useBlueprintEditorInspectorController = () => {
       dataModelFieldPaths,
     }),
     [
-      t,
+      translate,
       projectId,
-      expandedSections,
       hasAnimationDefinition,
       isAnimationMounted,
       mountedAnimationBindingCount,
@@ -638,7 +603,7 @@ export const useBlueprintEditorInspectorController = () => {
   );
 
   return {
-    t,
+    t: translate,
     selectedNode,
     isIconPickerOpen,
     setIconPickerOpen,

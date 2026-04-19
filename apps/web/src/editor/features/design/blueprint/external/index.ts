@@ -89,6 +89,21 @@ const unknownLibraryDiagnostic = (
   libraryId,
 });
 
+const offlineLibraryDiagnostic = (
+  libraryId: string
+): ExternalLibraryDiagnostic => ({
+  code: 'ELIB-1002',
+  level: 'error',
+  stage: 'load',
+  message: `Skipped loading external library "${libraryId}" while offline.`,
+  hint: 'Reconnect to the network and retry external library loading.',
+  retryable: true,
+  libraryId,
+});
+
+const isExternalLibraryRuntimeOffline = () =>
+  typeof navigator !== 'undefined' && navigator.onLine === false;
+
 const setLatestDiagnostics = (diagnostics: ExternalLibraryDiagnostic[]) => {
   latestDiagnostics = diagnostics;
   diagnosticListeners.forEach((listener) => listener(latestDiagnostics));
@@ -171,6 +186,12 @@ export const ensureExternalLibraryById = async (
 ): Promise<ExternalLibraryDiagnostic[]> => {
   if (options.signal?.aborted) return [];
   ensureBootstrap();
+  if (isExternalLibraryRuntimeOffline()) {
+    const diagnostics = [offlineLibraryDiagnostic(libraryId)];
+    setExternalLibraryState(libraryId, 'error', diagnostics);
+    setLatestDiagnostics(diagnostics);
+    return diagnostics;
+  }
   setExternalLibraryState(libraryId, 'loading', []);
   const profile = getExternalLibraryProfile(libraryId);
   if (!profile) {
@@ -195,8 +216,8 @@ export const ensureConfiguredExternalLibraries = async (
 ): Promise<ExternalLibraryDiagnostic[]> => {
   if (options.signal?.aborted) return [];
   ensureBootstrap();
-  clearRegisteredExternalLibraries();
   if (libraryIds.length === 0) {
+    clearRegisteredExternalLibraries();
     setLatestDiagnostics([]);
     Array.from(externalLibraryStateById.keys()).forEach((libraryId) => {
       if (!libraryIds.includes(libraryId)) {
@@ -206,6 +227,26 @@ export const ensureConfiguredExternalLibraries = async (
     emitExternalLibraryStates();
     return [];
   }
+  if (isExternalLibraryRuntimeOffline()) {
+    const uniqueIds = [...new Set(libraryIds)];
+    const diagnostics = uniqueIds.map((libraryId) =>
+      offlineLibraryDiagnostic(libraryId)
+    );
+    Array.from(externalLibraryStateById.keys()).forEach((libraryId) => {
+      if (!uniqueIds.includes(libraryId)) {
+        externalLibraryStateById.delete(libraryId);
+      }
+    });
+    diagnostics.forEach((diagnostic) => {
+      if (!diagnostic.libraryId) return;
+      setExternalLibraryState(diagnostic.libraryId, 'error', [diagnostic]);
+    });
+    setLoadingState(false);
+    setLatestDiagnostics(diagnostics);
+    emitExternalLibraryStates();
+    return diagnostics;
+  }
+  clearRegisteredExternalLibraries();
   setLoadingState(true);
   try {
     const uniqueIds = [...new Set(libraryIds)];

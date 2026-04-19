@@ -1,6 +1,5 @@
-import { useInspectorSectionContext } from '@/editor/features/design/inspector/sections/InspectorSectionContext';
-import { InspectorDataScopeFields } from '@/editor/features/design/inspector/sections/basic/InspectorDataScopeFields';
-import { InspectorListTemplateFields } from '@/editor/features/design/inspector/sections/basic/InspectorListTemplateFields';
+import { InspectorDataScopeFields } from '@/editor/features/design/inspector/fields/InspectorDataScopeFields';
+import { InspectorListTemplateFields } from '@/editor/features/design/inspector/fields/InspectorListTemplateFields';
 
 export function InspectorDataTab() {
   return (

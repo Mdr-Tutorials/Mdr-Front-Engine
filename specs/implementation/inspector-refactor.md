@@ -18,12 +18,12 @@ Inspector 当前是蓝图编辑器右侧的一个垂直长条面板，四个 sec
 
 将 Inspector 改为**多 tab 切换布局**，用图标而非文字作为 tab 标识（文字写在 `title` 属性中），分为四个 tab：
 
-| Tab          | 图标         | 内容                                                                  |
-| ------------ | ------------ | --------------------------------------------------------------------- |
-| **基础信息** | `Info`       | ID、文本、Icon、Link、Route/Outlet、External Props                   |
+| Tab          | 图标         | 内容                                                                             |
+| ------------ | ------------ | -------------------------------------------------------------------------------- |
+| **基础信息** | `Info`       | ID、文本、Icon、Link、Route/Outlet、External Props                               |
 | **样式**     | `Paintbrush` | className、LayoutPanel、LayoutPatternPanel、Mounted CSS、Animation Mount/Unmount |
-| **数据**     | `Database`   | Data Model、List Template                                             |
-| **代码**     | `Code2`      | 触发器 (Triggers)                                                     |
+| **数据**     | `Database`   | Data Model、List Template                                                        |
+| **代码**     | `Code2`      | 触发器 (Triggers)                                                                |
 
 > className 是样式属性，放在样式 tab。
 > Animation 是视觉效果，归样式 tab。
@@ -249,6 +249,7 @@ export const useInspectorSectionContext = (): InspectorSectionContextValue => { 
 ### 3.2 更新组件消费
 
 每个 tab/field 组件只消费对应的 Context + CoreContext：
+
 - `InspectorBasicTab` → Core + Identity + Capabilities
 - `InspectorStyleTab` → Core + Style
 - `InspectorDataTab` → Core + Data
@@ -304,6 +305,7 @@ export const useInspectorSectionContext = (): InspectorSectionContextValue => { 
 **新建**: `inspector/store/inspectorExpansionStore.ts`
 
 统一管理：
+
 - `expandedPanels`
 - `expandedSpacing` (margin/padding)
 - `expandedGroups` (spacing/size/appearance/flex/grid)
@@ -322,17 +324,21 @@ export const useInspectorSectionContext = (): InspectorSectionContextValue => { 
 ## Phase 6: UI 交互细节打磨
 
 ### 6.1 Sticky group headers
+
 各 section/panel header 添加 `sticky top-0 z-1 bg-(--color-0)`。
 
 ### 6.2 样式统一
+
 section header: `text-[11px] font-semibold text-(--color-7)`
 panel group header: `text-[10px] font-medium text-(--color-6)`
 hover: `hover:bg-black/3 rounded-md`
 
 ### 6.3 LayoutPanel 视觉层级
+
 Display selector 常驻顶部，detail groups 紧凑 accordion (`gap-1`)。
 
 ### 6.4 Tab hover/active 微调
+
 图标 tab 风格与 monochrome-ui 一致。
 
 ---
@@ -382,6 +388,7 @@ Phase 6 (UI 打磨)
 ## 验证方式
 
 每个步骤完成后：
+
 1. `tsc --noEmit` — 类型检查
 2. `pnpm run test:web` — Inspector 测试
 3. `pnpm run format` — 格式化

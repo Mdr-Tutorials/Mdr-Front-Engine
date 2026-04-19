@@ -1,6 +1,6 @@
 import { CornerDownLeft, Delete } from 'lucide-react';
 import { MdrButton } from '@mdr/ui';
-import { hasModifierKey, useWindowKeydown } from '@/shortcuts';
+import { useEditorShortcut } from '@/editor/shortcuts';
 
 type EditorBarExitModalProps = {
   isOpen: boolean;
@@ -21,22 +21,23 @@ export function EditorBarExitModal({
   onClose,
   onConfirm,
 }: EditorBarExitModalProps) {
-  useWindowKeydown(
-    (event) => {
-      if (event.defaultPrevented) return;
-      if (hasModifierKey(event)) return;
-      if (event.key === 'Backspace' || event.key === 'Escape') {
-        event.preventDefault();
-        onClose();
-        return;
-      }
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        onConfirm();
-      }
-    },
-    { enabled: isOpen }
-  );
+  useEditorShortcut('Escape', onClose, {
+    enabled: isOpen,
+    scope: 'modal',
+    priority: 100,
+    allowInEditable: true,
+  });
+  useEditorShortcut('Backspace', onClose, {
+    enabled: isOpen,
+    scope: 'modal',
+    priority: 100,
+    allowInEditable: true,
+  });
+  useEditorShortcut('Enter', onConfirm, {
+    enabled: isOpen,
+    scope: 'modal',
+    priority: 100,
+  });
 
   if (!isOpen) return null;
 

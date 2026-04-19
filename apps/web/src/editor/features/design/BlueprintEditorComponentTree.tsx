@@ -124,7 +124,7 @@ type TreeNodeProps = {
   onMove: (nodeId: string, direction: 'up' | 'down') => void;
 };
 
-const INDENT_PX = 14;
+const INDENT_PX = 12;
 const NODE_SELECT_DELAY_MS = 220;
 
 function BlueprintTreeNode({
@@ -196,7 +196,7 @@ function BlueprintTreeNode({
   }, []);
 
   return (
-    <div className="BlueprintEditorTreeNode flex flex-col gap-0.5">
+    <div className="BlueprintEditorTreeNode flex flex-col gap-px">
       <div
         className="BlueprintEditorTreeRow flex items-center [&:focus-within_.BlueprintEditorTreeDragHandle]:opacity-100 [&:hover_.BlueprintEditorTreeDragHandle]:opacity-100"
         style={{ paddingLeft: depth * INDENT_PX }}
@@ -204,38 +204,38 @@ function BlueprintTreeNode({
         {hasChildren ? (
           <button
             type="button"
-            className={`BlueprintEditorTreeToggle inline-flex h-[18px] w-[18px] flex-none items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9) ${isExpanded ? 'Expanded' : ''}`}
+            className={`BlueprintEditorTreeToggle inline-flex h-4 w-4 flex-none items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9) ${isExpanded ? 'Expanded' : ''}`}
             onClick={() => onToggle(node.id)}
             aria-label={isExpanded ? 'Collapse' : 'Expand'}
           >
             {isExpanded ? (
-              <ChevronDown size={14} />
+              <ChevronDown size={12} />
             ) : (
-              <ChevronRight size={14} />
+              <ChevronRight size={12} />
             )}
           </button>
         ) : (
           <span
-            className="BlueprintEditorTreeSpacer h-[18px] w-[18px] flex-none"
+            className="BlueprintEditorTreeSpacer h-4 w-4 flex-none"
             aria-hidden="true"
           />
         )}
         <button
           type="button"
-          className="BlueprintEditorTreeDragHandle inline-flex h-[18px] w-[18px] flex-none cursor-grab items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) opacity-0 transition-[opacity,color] duration-150 active:cursor-grabbing disabled:cursor-default disabled:opacity-0"
+          className="BlueprintEditorTreeDragHandle inline-flex h-4 w-4 flex-none cursor-grab items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) opacity-0 transition-[opacity,color] duration-150 active:cursor-grabbing disabled:cursor-default disabled:opacity-0"
           disabled={isRoot}
           aria-label="Drag to reorder"
           title="Drag to reorder"
           {...attributes}
           {...listeners}
         >
-          <GripVertical size={14} />
+          <GripVertical size={12} />
         </button>
         <div
           ref={setNodeRef}
           role="button"
           tabIndex={0}
-          className={`BlueprintEditorTreeItem relative flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-[10px] border-0 bg-transparent px-0 py-0.5 text-left text-(--color-8) transition-[color,opacity] duration-150 hover:text-(--color-9) [&.IsOver]:text-(--color-9) [&.Selected]:text-(--color-9) [&.Selected_.BlueprintEditorTreeCount]:text-(--color-8) [&.Selected_.BlueprintEditorTreeIcon]:text-(--color-9) [&.Selected_.BlueprintEditorTreeId]:text-(--color-7) [&:focus-within_.BlueprintEditorTreeActions]:opacity-100 [&:hover_.BlueprintEditorTreeActions]:opacity-100 [&:hover_.BlueprintEditorTreeIcon]:text-(--color-9) [&:hover_.BlueprintEditorTreeId]:text-(--color-7) ${selectedId === node.id ? 'Selected' : ''} ${isOver ? 'IsOver' : ''} ${dropPlacement === 'before' ? 'DropBefore' : ''} ${dropPlacement === 'after' ? 'DropAfter' : ''} ${dropPlacement === 'child' ? 'DropChild bg-[rgba(0,0,0,0.03)] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.18)]' : ''}`.trim()}
+          className={`BlueprintEditorTreeItem relative flex min-w-0 flex-1 cursor-pointer items-center gap-1.5 rounded-[8px] border-0 bg-transparent px-0 py-px text-left text-(--color-8) transition-[color,opacity] duration-150 hover:text-(--color-9) [&.IsOver]:text-(--color-9) [&.Selected]:text-(--color-9) [&.Selected_.BlueprintEditorTreeCount]:text-(--color-8) [&.Selected_.BlueprintEditorTreeIcon]:text-(--color-9) [&:focus-within_.BlueprintEditorTreeActions]:opacity-100 [&:hover_.BlueprintEditorTreeActions]:opacity-100 [&:hover_.BlueprintEditorTreeIcon]:text-(--color-9) ${selectedId === node.id ? 'Selected' : ''} ${isOver ? 'IsOver' : ''} ${dropPlacement === 'before' ? 'DropBefore' : ''} ${dropPlacement === 'after' ? 'DropAfter' : ''} ${dropPlacement === 'child' ? 'DropChild bg-[rgba(0,0,0,0.03)] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.18)]' : ''}`.trim()}
           style={style}
           onClick={(event) => {
             // For collapsed parent nodes, defer selection briefly so double-click can expand only.
@@ -270,8 +270,8 @@ function BlueprintTreeNode({
               onSelect(node.id);
             }
           }}
-          title={`${nodeTypeLabel} (${node.id})`}
-          aria-label={`${nodeTypeLabel} (${node.id})`}
+          title={nodeTypeLabel}
+          aria-label={nodeTypeLabel}
         >
           {dropPlacement === 'before' && (
             <span
@@ -286,38 +286,35 @@ function BlueprintTreeNode({
             />
           )}
           <span
-            className="BlueprintEditorTreeIcon inline-flex h-[22px] w-[22px] flex-none items-center justify-center rounded-lg bg-transparent text-(--color-7)"
+            className="BlueprintEditorTreeIcon inline-flex h-[18px] w-[18px] flex-none items-center justify-center rounded-md bg-transparent text-(--color-7)"
             aria-hidden="true"
           >
-            <Icon size={14} />
+            <Icon size={12} />
           </span>
-          <span className="BlueprintEditorTreeMeta flex min-w-0 flex-col gap-px">
+          <span className="BlueprintEditorTreeMeta flex min-w-0 items-center gap-1.5">
             <span className="BlueprintEditorTreeTypeRow inline-flex min-w-0 items-center gap-1.5">
-              <span className="BlueprintEditorTreeType truncate text-[11px] font-bold tracking-[0.01em]">
+              <span className="BlueprintEditorTreeType truncate text-[10px] font-semibold tracking-[0.01em]">
                 {nodeTypeLabel}
               </span>
               {nodeTypeSecondaryLabel ? (
-                <span className="inline-flex items-center rounded-full border border-black/8 px-1.5 py-0 text-[9px] text-(--color-6) dark:border-white/14">
+                <span className="inline-flex items-center rounded-full border border-black/8 px-1 py-0 text-[8px] text-(--color-6) dark:border-white/14">
                   {nodeTypeSecondaryLabel}
                 </span>
               ) : null}
               {hasChildren && (
                 <span
-                  className="BlueprintEditorTreeCount inline-flex h-[15px] min-w-[15px] flex-none items-center justify-center rounded-full border border-[rgba(0,0,0,0.08)] bg-[rgba(0,0,0,0.04)] text-[10px] text-(--color-7) tabular-nums dark:border-white/16 dark:bg-white/8"
+                  className="BlueprintEditorTreeCount inline-flex h-3.5 min-w-3.5 flex-none items-center justify-center rounded-full border border-[rgba(0,0,0,0.08)] bg-[rgba(0,0,0,0.04)] px-1 text-[9px] text-(--color-7) tabular-nums dark:border-white/16 dark:bg-white/8"
                   aria-label={`${children.length} children`}
                 >
                   {children.length}
                 </span>
               )}
             </span>
-            <span className="BlueprintEditorTreeId truncate font-mono text-[10px] font-extralight text-(--color-6)">
-              {node.id}
-            </span>
           </span>
           <span className="BlueprintEditorTreeActions ml-auto inline-flex items-center opacity-0 transition-opacity duration-150">
             <button
               type="button"
-              className="BlueprintEditorTreeNodeAction Danger inline-flex items-center gap-1.5 rounded-full border-0 bg-transparent px-1 py-0.5 text-[10px] text-[rgba(220,74,74,0.85)] hover:text-[rgba(220,74,74,1)] disabled:cursor-not-allowed disabled:opacity-45"
+              className="BlueprintEditorTreeNodeAction Danger inline-flex items-center gap-1 rounded-full border-0 bg-transparent px-0.5 py-0 text-[10px] text-[rgba(220,74,74,0.85)] hover:text-[rgba(220,74,74,1)] disabled:cursor-not-allowed disabled:opacity-45"
               onClick={(event) => {
                 event.stopPropagation();
                 onDelete(node.id);
@@ -326,14 +323,14 @@ function BlueprintTreeNode({
               aria-label="Delete"
               title="Delete"
             >
-              <Trash2 size={14} />
+              <Trash2 size={12} />
             </button>
             <span
               className={`BlueprintEditorTreeMenu relative inline-flex items-center [&.IsOpen_.BlueprintEditorTreeMenuList]:pointer-events-auto [&.IsOpen_.BlueprintEditorTreeMenuList]:visible [&.IsOpen_.BlueprintEditorTreeMenuList]:opacity-100 [&.IsOpen_.BlueprintEditorTreeMenuList]:delay-0 [&:focus-within_.BlueprintEditorTreeMenuList]:pointer-events-auto [&:focus-within_.BlueprintEditorTreeMenuList]:visible [&:focus-within_.BlueprintEditorTreeMenuList]:opacity-100 [&:focus-within_.BlueprintEditorTreeMenuList]:delay-0 [&:hover_.BlueprintEditorTreeMenuList]:pointer-events-auto [&:hover_.BlueprintEditorTreeMenuList]:visible [&:hover_.BlueprintEditorTreeMenuList]:opacity-100 [&:hover_.BlueprintEditorTreeMenuList]:delay-0 ${openMenuId === node.id ? 'IsOpen' : ''}`}
             >
               <button
                 type="button"
-                className="BlueprintEditorTreeNodeAction inline-flex items-center gap-1.5 rounded-full border-0 bg-transparent px-1 py-0.5 text-[10px] text-(--color-6) hover:text-(--color-9) disabled:cursor-not-allowed disabled:opacity-45"
+                className="BlueprintEditorTreeNodeAction inline-flex items-center gap-1 rounded-full border-0 bg-transparent px-0.5 py-0 text-[10px] text-(--color-6) hover:text-(--color-9) disabled:cursor-not-allowed disabled:opacity-45"
                 onClick={(event) => {
                   event.stopPropagation();
                   onMenuAction?.(node.id);
@@ -341,7 +338,7 @@ function BlueprintTreeNode({
                 aria-label="More actions"
                 title="More actions"
               >
-                <MoreHorizontal size={14} />
+                <MoreHorizontal size={12} />
               </button>
               <span
                 className="BlueprintEditorTreeMenuList pointer-events-none invisible absolute top-1/2 left-0 z-[5] inline-flex -translate-x-full -translate-y-1/2 gap-1 rounded-[10px] bg-(--color-0) p-1.5 opacity-0 shadow-[0_10px_20px_rgba(0,0,0,0.12)] transition-[opacity,visibility] delay-[500ms] duration-150 dark:shadow-[0_12px_22px_rgba(0,0,0,0.45)]"
@@ -571,11 +568,11 @@ export function BlueprintEditorComponentTree({
         </div>
       </div>
       <div
-        className={`BlueprintEditorTreeBody min-h-0 flex-1 overflow-auto px-2 pt-1.5 pb-2 ${isOverRoot ? 'IsOver' : ''}`}
+        className={`BlueprintEditorTreeBody min-h-0 flex-1 overflow-auto px-2 pt-1 pb-1.5 ${isOverRoot ? 'IsOver' : ''}`}
         ref={setRootDropRef}
       >
         {rootNode ? (
-          <div className="BlueprintEditorTreeList flex flex-col gap-0.5 p-0">
+          <div className="BlueprintEditorTreeList flex flex-col gap-px p-0">
             <BlueprintTreeNode
               node={rootNode}
               depth={0}

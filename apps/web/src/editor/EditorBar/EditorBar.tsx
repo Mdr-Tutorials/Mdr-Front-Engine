@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdrIcon, MdrIconLink } from '@mdr/ui';
 import { useLocation, useNavigate, useParams } from 'react-router';
+import { useEditorShortcut } from '@/editor/shortcuts';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
 import {
   LogIn,
@@ -17,7 +18,6 @@ import {
   Home,
 } from 'lucide-react';
 import { EditorBarExitModal } from './EditorBarExitModal';
-import { hasModifierKey, useWindowKeydown } from '@/shortcuts';
 
 function EditorBar() {
   const { t } = useTranslation(['editor', 'routes']);
@@ -38,11 +38,9 @@ function EditorBar() {
     'flex flex-col items-center gap-[14px] [&_.MdrIconLink]:!text-[var(--color-9)] [&_.MdrIconLink:hover]:!text-[var(--color-10)]';
   const isBlueprintRoute = location.pathname.includes('/blueprint');
 
-  useWindowKeydown(
-    (event) => {
-      if (event.defaultPrevented) return;
-      if (event.key !== 'Escape') return;
-      if (hasModifierKey(event)) return;
+  useEditorShortcut(
+    'Escape',
+    () => {
       setExitOpen(true);
     },
     { enabled: isBlueprintRoute }

@@ -28,7 +28,10 @@ export const useExternalLibraryRuntime = () => {
   const configUpdateControllerRef = useRef<AbortController | null>(null);
   const createAbortController = () =>
     typeof AbortController === 'function' ? new AbortController() : null;
+  const isOffline = () =>
+    typeof navigator !== 'undefined' && navigator.onLine === false;
   const reloadExternalLibraries = async () => {
+    if (isOffline()) return;
     const ensureWithModule = async (mod: ExternalModule) => {
       setExternalLibraryOptions(mod.getConfiguredExternalLibraries());
       reloadControllerRef.current?.abort();
@@ -94,6 +97,9 @@ export const useExternalLibraryRuntime = () => {
         setExternalDiagnostics(mod.getExternalLibraryDiagnostics());
         setExternalLibraryLoading(mod.getExternalLibraryLoadingState());
         setExternalLibraryStates(mod.getExternalLibraryStates());
+        if (isOffline()) {
+          return;
+        }
         void mod
           .ensureConfiguredExternalLibraries(
             undefined,
@@ -133,6 +139,9 @@ export const useExternalLibraryRuntime = () => {
         setExternalLibraryOptions(
           externalModuleRef.current.getConfiguredExternalLibraries()
         );
+        if (isOffline()) {
+          return;
+        }
         configUpdateControllerRef.current?.abort();
         const controller = createAbortController();
         configUpdateControllerRef.current = controller;

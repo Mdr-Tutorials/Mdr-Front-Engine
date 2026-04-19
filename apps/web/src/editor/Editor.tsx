@@ -6,10 +6,113 @@ import { useAuthStore } from '@/auth/useAuthStore';
 import { mountGraphExecutionBridge } from '@/core/executor/executor';
 import { mountDefaultNodeGraphExecutor } from '@/core/executor/nodeGraph/mountDefaultNodeGraphExecutor';
 import { editorApi } from './editorApi';
+import { EditorShortcutProvider, useEditorShortcut } from './shortcuts';
 import { isAbortError } from '@/infra/api';
 import { useEditorStore } from './store/useEditorStore';
 import { useSettingsStore } from './store/useSettingsStore';
-import { isEditableTarget, useWindowKeydown } from '@/shortcuts';
+
+function EditorGlobalShortcuts({
+  projectId,
+  pathname,
+}: {
+  projectId?: string;
+  pathname: string;
+}) {
+  const navigate = useNavigate();
+
+  useEditorShortcut(
+    'Alt+1',
+    () => {
+      if (!projectId) return;
+      const nextPath = `/editor/project/${projectId}`;
+      if (pathname === nextPath) return;
+      navigate(nextPath);
+    },
+    { enabled: Boolean(projectId) }
+  );
+  useEditorShortcut(
+    'Alt+2',
+    () => {
+      if (!projectId) return;
+      const nextPath = `/editor/project/${projectId}/blueprint`;
+      if (pathname === nextPath) return;
+      navigate(nextPath);
+    },
+    { enabled: Boolean(projectId) }
+  );
+  useEditorShortcut(
+    'Alt+3',
+    () => {
+      if (!projectId) return;
+      const nextPath = `/editor/project/${projectId}/nodegraph`;
+      if (pathname === nextPath) return;
+      navigate(nextPath);
+    },
+    { enabled: Boolean(projectId) }
+  );
+  useEditorShortcut(
+    'Alt+4',
+    () => {
+      if (!projectId) return;
+      const nextPath = `/editor/project/${projectId}/animation`;
+      if (pathname === nextPath) return;
+      navigate(nextPath);
+    },
+    { enabled: Boolean(projectId) }
+  );
+  useEditorShortcut(
+    'Alt+5',
+    () => {
+      if (!projectId) return;
+      const nextPath = `/editor/project/${projectId}/component`;
+      if (pathname === nextPath) return;
+      navigate(nextPath);
+    },
+    { enabled: Boolean(projectId) }
+  );
+  useEditorShortcut(
+    'Alt+6',
+    () => {
+      if (!projectId) return;
+      const nextPath = `/editor/project/${projectId}/resources`;
+      if (pathname === nextPath) return;
+      navigate(nextPath);
+    },
+    { enabled: Boolean(projectId) }
+  );
+  useEditorShortcut(
+    'Alt+7',
+    () => {
+      if (!projectId) return;
+      const nextPath = `/editor/project/${projectId}/test`;
+      if (pathname === nextPath) return;
+      navigate(nextPath);
+    },
+    { enabled: Boolean(projectId) }
+  );
+  useEditorShortcut(
+    'Alt+8',
+    () => {
+      if (!projectId) return;
+      const nextPath = `/editor/project/${projectId}/export`;
+      if (pathname === nextPath) return;
+      navigate(nextPath);
+    },
+    { enabled: Boolean(projectId) }
+  );
+  useEditorShortcut(
+    'Alt+9',
+    () => {
+      if (!projectId) return;
+      const nextPath = `/editor/project/${projectId}/deployment`;
+      if (pathname === nextPath) return;
+      navigate(nextPath);
+    },
+    { enabled: Boolean(projectId) }
+  );
+
+  return null;
+}
 
 function Editor() {
   const { projectId } = useParams();
@@ -114,42 +217,20 @@ function Editor() {
     };
   }, []);
 
-  useWindowKeydown(
-    (event) => {
-      if (!projectId) return;
-      if (event.defaultPrevented) return;
-      if (isEditableTarget(event.target)) return;
-      if (!event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
-        return;
-      }
-      const routeByDigit: Record<string, string> = {
-        '1': `/editor/project/${projectId}`,
-        '2': `/editor/project/${projectId}/blueprint`,
-        '3': `/editor/project/${projectId}/nodegraph`,
-        '4': `/editor/project/${projectId}/animation`,
-        '5': `/editor/project/${projectId}/component`,
-        '6': `/editor/project/${projectId}/resources`,
-        '7': `/editor/project/${projectId}/test`,
-        '8': `/editor/project/${projectId}/export`,
-        '9': `/editor/project/${projectId}/deployment`,
-      };
-      const nextPath = routeByDigit[event.key];
-      if (!nextPath) return;
-      if (location.pathname === nextPath) return;
-      event.preventDefault();
-      navigate(nextPath);
-    },
-    { enabled: Boolean(projectId) }
-  );
-
   return (
-    <div className="flex max-h-screen min-h-screen flex-row bg-[linear-gradient(120deg,var(--color-0)_20%,var(--color-1)_100%)]">
-      <SettingsEffects />
-      <EditorBar />
-      <div className="min-h-screen flex-1 overflow-auto">
-        <Outlet />
+    <EditorShortcutProvider>
+      <EditorGlobalShortcuts
+        projectId={projectId}
+        pathname={location.pathname}
+      />
+      <div className="flex max-h-screen min-h-screen flex-row bg-[linear-gradient(120deg,var(--color-0)_20%,var(--color-1)_100%)]">
+        <SettingsEffects />
+        <EditorBar />
+        <div className="min-h-screen flex-1 overflow-auto">
+          <Outlet />
+        </div>
       </div>
-    </div>
+    </EditorShortcutProvider>
   );
 }
 

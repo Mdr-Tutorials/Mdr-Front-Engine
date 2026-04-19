@@ -1,0 +1,66 @@
+import type { ParsedShortcut } from './shortcutTypes';
+
+const MODIFIER_ALIASES: Record<string, keyof Omit<ParsedShortcut, 'key'>> = {
+  ctrl: 'ctrl',
+  control: 'ctrl',
+  alt: 'alt',
+  option: 'alt',
+  shift: 'shift',
+  meta: 'meta',
+  cmd: 'meta',
+  command: 'meta',
+};
+
+const KEY_ALIASES: Record<string, string> = {
+  esc: 'escape',
+  return: 'enter',
+  spacebar: 'space',
+  ' ': 'space',
+};
+
+const normalizeKeyToken = (token: string) => {
+  const normalized = token.trim().toLowerCase();
+  if (!normalized) return '';
+  return KEY_ALIASES[normalized] ?? normalized;
+};
+
+export const parseShortcut = (combo: string): ParsedShortcut => {
+  const initial: ParsedShortcut = {
+    key: '',
+    ctrl: false,
+    alt: false,
+    shift: false,
+    meta: false,
+  };
+
+  return combo.split('+').reduce((current, token) => {
+    const normalized = normalizeKeyToken(token);
+    if (!normalized) return current;
+    const modifierKey = MODIFIER_ALIASES[normalized];
+    if (modifierKey) {
+      current[modifierKey] = true;
+      return current;
+    }
+    current.key = normalized;
+    return current;
+  }, initial);
+};
+
+const normalizeEventKey = (event: KeyboardEvent) => {
+  const normalized = event.key.trim().toLowerCase();
+  if (!normalized) return '';
+  return KEY_ALIASES[normalized] ?? normalized;
+};
+
+export const matchShortcut = (
+  shortcut: ParsedShortcut,
+  event: KeyboardEvent
+) => {
+  if (normalizeEventKey(event) !== shortcut.key) return false;
+  return (
+    event.ctrlKey === shortcut.ctrl &&
+    event.altKey === shortcut.alt &&
+    event.shiftKey === shortcut.shift &&
+    event.metaKey === shortcut.meta
+  );
+};

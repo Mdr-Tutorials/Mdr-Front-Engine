@@ -17,7 +17,7 @@ import {
   resolveIconRef,
   subscribeIconRegistry,
 } from '@/mir/renderer/iconRegistry';
-import { useWindowKeydown } from '@/shortcuts';
+import { useEditorShortcut } from '@/editor/shortcuts';
 
 type IconPickerModalProps = {
   open: boolean;
@@ -141,15 +141,12 @@ export function IconPickerModal({
     setHeroiconsVariant(fallback.variant);
   }, [providerOptions, providerSelectValue]);
 
-  useWindowKeydown(
-    (event) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        onClose();
-      }
-    },
-    { enabled: open }
-  );
+  useEditorShortcut('Escape', onClose, {
+    enabled: open,
+    scope: 'modal',
+    priority: 100,
+    allowInEditable: true,
+  });
 
   const providerState = useMemo(
     () => getIconProviderState(providerId),

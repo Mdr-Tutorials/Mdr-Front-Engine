@@ -8,7 +8,7 @@ import { BlueprintEditorSaveIndicator } from './BlueprintEditorSaveIndicator';
 import { BlueprintEditorSidebar } from './BlueprintEditorSidebar';
 import { useExternalLibraryRuntime } from './useExternalLibraryRuntime';
 import { BlueprintEditorViewportBar } from './BlueprintEditorViewportBar';
-import { useWindowKeydown } from '@/shortcuts';
+import { useEditorShortcut } from '@/editor/shortcuts';
 
 export { createNodeFromPaletteItem } from './BlueprintEditor.palette';
 export { getTreeDropPlacement } from './BlueprintEditor.tree';
@@ -33,25 +33,27 @@ function BlueprintEditor() {
     viewportBar,
   } = useBlueprintEditorController();
 
-  useWindowKeydown((event) => {
-    if (event.defaultPrevented) return;
-    if (!event.ctrlKey || !event.altKey || event.metaKey) return;
-    const key = event.key.toLowerCase();
-    if (key === 'j') {
-      event.preventDefault();
+  useEditorShortcut(
+    'Ctrl+Alt+J',
+    () => {
       sidebar.onToggleCollapse();
-      return;
-    }
-    if (key === 'k') {
-      event.preventDefault();
+    },
+    { scope: 'blueprint', priority: 20 }
+  );
+  useEditorShortcut(
+    'Ctrl+Alt+K',
+    () => {
       componentTree.onToggleCollapse();
-      return;
-    }
-    if (key === 'l') {
-      event.preventDefault();
+    },
+    { scope: 'blueprint', priority: 20 }
+  );
+  useEditorShortcut(
+    'Ctrl+Alt+L',
+    () => {
       inspector.onToggleCollapse();
-    }
-  });
+    },
+    { scope: 'blueprint', priority: 20 }
+  );
 
   return (
     <div className="relative flex h-full min-h-screen flex-col text-(--color-10)">

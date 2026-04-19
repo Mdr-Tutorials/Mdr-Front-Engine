@@ -38,15 +38,15 @@ const createAntdEsmUrlCandidates = (cacheBust: string) => [
   `https://esm.sh/v135/antd@5.28.0/es2022/antd.mjs?external=react,react-dom&v=${cacheBust}`,
   `https://esm.sh/antd@5.28.0?target=es2022&external=react,react-dom&deps=@ant-design/colors@7.2.1&v=${cacheBust}`,
 ];
+const ANTD_SESSION_CACHE_BUST = `session-${Date.now().toString(36)}`;
 
 const createAntdLibraryDescriptor = (): ExternalLibraryDescriptor => {
-  const cacheBust = Date.now().toString(36);
   return {
     libraryId: 'antd',
     packageName: 'antd',
     version: '5.28.0',
     source: 'esm.sh',
-    entryCandidates: createAntdEsmUrlCandidates(cacheBust),
+    entryCandidates: createAntdEsmUrlCandidates(ANTD_SESSION_CACHE_BUST),
   };
 };
 

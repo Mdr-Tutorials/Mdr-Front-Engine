@@ -380,6 +380,98 @@
       },
       "layout-pattern": {
         "title": "范式"
+      },
+      "class-name": {
+        "title": "类名"
+      },
+      "typography": {
+        "title": "字体",
+        "fields": {
+          "color": "文字颜色",
+          "fontFamily": "字体族",
+          "fontSize": "字号",
+          "fontWeight": "字重",
+          "lineHeight": "行高",
+          "letterSpacing": "字间距",
+          "textAlign": "对齐"
+        },
+        "options": {
+          "textAlign": {
+            "left": "左对齐",
+            "center": "居中",
+            "right": "右对齐",
+            "justify": "两端对齐"
+          }
+        },
+        "placeholders": {
+          "fontFamily": "'IBM Plex Sans', sans-serif",
+          "fontSize": "16",
+          "fontWeight": "400",
+          "lineHeight": "1.5",
+          "letterSpacing": "0"
+        }
+      },
+      "background": {
+        "title": "背景",
+        "fields": {
+          "backgroundColor": "背景色",
+          "backgroundImage": "背景图",
+          "backgroundSize": "背景尺寸",
+          "backgroundPosition": "背景位置"
+        },
+        "placeholders": {
+          "backgroundImage": "url(/image.png)",
+          "backgroundSize": "cover",
+          "backgroundPosition": "center center"
+        }
+      },
+      "border": {
+        "title": "边框",
+        "fields": {
+          "border": "边框",
+          "borderColor": "边框颜色",
+          "borderWidth": "边框宽度",
+          "borderRadius": "圆角"
+        },
+        "placeholders": {
+          "border": "1px solid var(--color-3)",
+          "borderWidth": "1",
+          "borderRadius": "0"
+        }
+      },
+      "external-code": {
+        "title": "外部代码",
+        "description": "为 Canvas、WebGL 或其他运行时驱动组件挂载项目脚本或着色器资源。",
+        "status": {
+          "mounted": "已挂载到外部运行时",
+          "unmounted": "未挂载",
+          "missing": "缺失",
+          "resourceMissing": "所选资源路径已经不在项目资源中。",
+          "resourceReady": "项目资源已可用于挂载。"
+        },
+        "actions": {
+          "mount": "挂载",
+          "unmount": "取消挂载",
+          "manageResources": "管理"
+        },
+        "fields": {
+          "language": "语言",
+          "projectResource": "项目资源",
+          "projectResourceHelp": "从符合当前语言的 code/scripts 或 code/shaders 资源中选择。",
+          "resourcePath": "资源路径",
+          "resourcePathHelp": "项目内 scripts 或 shaders 下的相对资源路径。",
+          "entry": "入口",
+          "entryHelp": "运行时宿主调用的导出名或函数名。"
+        },
+        "placeholders": {
+          "projectResource": "选择项目资源",
+          "resourcePath": "code/scripts/render.ts",
+          "entry": "main"
+        },
+        "empty": "当前还没有匹配的脚本或着色器资源。"
+      },
+      "animation-mount": {
+        "title": "动画挂载"
       }
     },
     "actions": {

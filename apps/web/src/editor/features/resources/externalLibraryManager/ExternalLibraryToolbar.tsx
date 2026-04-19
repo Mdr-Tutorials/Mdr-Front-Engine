@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { LibraryCatalog, LibraryMode } from './types';
+import { useEditorShortcut } from '@/editor/shortcuts';
 
 export type BuiltinLibraryCategory = {
   id: string;
@@ -41,17 +42,22 @@ export function ExternalLibraryToolbar({
       if (categoriesRef.current?.contains(target)) return;
       setOpenCategoryId(null);
     };
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return;
-      setOpenCategoryId(null);
-    };
     window.addEventListener('mousedown', handlePointerDown);
-    window.addEventListener('keydown', handleEscape);
     return () => {
       window.removeEventListener('mousedown', handlePointerDown);
-      window.removeEventListener('keydown', handleEscape);
     };
   }, []);
+
+  useEditorShortcut(
+    'Escape',
+    () => {
+      setOpenCategoryId(null);
+    },
+    {
+      enabled: Boolean(openCategoryId),
+      priority: 20,
+    }
+  );
 
   return (
     <>

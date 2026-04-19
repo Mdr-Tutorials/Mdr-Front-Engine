@@ -27,15 +27,15 @@ const createMuiEsmUrlCandidates = (cacheBust: string) => [
   `https://esm.sh/@mui/material@7.3.2?target=es2022&external=react,react-dom&deps=@emotion/react,@emotion/styled&v=${cacheBust}`,
   `https://esm.sh/v135/@mui/material@7.3.2/es2022/material.mjs?external=react,react-dom&deps=@emotion/react,@emotion/styled&v=${cacheBust}`,
 ];
+const MUI_SESSION_CACHE_BUST = `session-${Date.now().toString(36)}`;
 
 const createMuiLibraryDescriptor = (): ExternalLibraryDescriptor => {
-  const cacheBust = Date.now().toString(36);
   return {
     libraryId: 'mui',
     packageName: '@mui/material',
     version: '7.3.2',
     source: 'esm.sh',
-    entryCandidates: createMuiEsmUrlCandidates(cacheBust),
+    entryCandidates: createMuiEsmUrlCandidates(MUI_SESSION_CACHE_BUST),
   };
 };
 

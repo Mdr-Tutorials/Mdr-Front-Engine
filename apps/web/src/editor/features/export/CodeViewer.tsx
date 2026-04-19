@@ -1,7 +1,7 @@
 // src/editor/features/export/CodeViewer.tsx
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 // 引入 VS Code 暗色风格主题
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface CodeViewerProps {
   code: string; // 要显示的代码字符串
@@ -19,17 +19,16 @@ export const CodeViewer: React.FC<CodeViewerProps> = ({
         overflow: 'auto',
         borderRadius: '8px',
         fontSize: '14px',
-        lineHeight: '1.5',
+        lineHeight: '1',
       }}
     >
       <SyntaxHighlighter
         language={lang}
-        style={vscDarkPlus}
+        style={oneLight}
         customStyle={{
           margin: 0,
           padding: '20px',
           height: '100%',
-          backgroundColor: '#1e1e1e', // 匹配 VS Code 底色
         }}
       >
         {code}

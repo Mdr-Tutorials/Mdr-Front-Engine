@@ -20,8 +20,8 @@ import NewResourceModal from './features/newfile/NewResourceModal';
 import { editorApi, type ProjectSummary } from './editorApi';
 import { useAuthStore } from '@/auth/useAuthStore';
 import { isAbortError } from '@/infra/api';
+import { useEditorShortcut } from './shortcuts';
 import { useEditorStore } from './store/useEditorStore';
-import { hasModifierKey, useWindowKeydown } from '@/shortcuts';
 
 function EditorTipsRandom() {
   const { t } = useTranslation('editor');
@@ -317,15 +317,14 @@ function EditorHome() {
   const setProjectInStore = useEditorStore((state) => state.setProject);
   const removeProjectInStore = useEditorStore((state) => state.removeProject);
 
-  useWindowKeydown(
-    (event) => {
-      if (event.defaultPrevented) return;
-      if (event.key !== 'Escape') return;
-      if (hasModifierKey(event)) return;
-      event.preventDefault();
+  useEditorShortcut(
+    'Escape',
+    () => {
       setExitModalOpen(true);
     },
-    { enabled: !isResourceModalOpen && !isExitModalOpen }
+    {
+      enabled: !isResourceModalOpen && !isExitModalOpen,
+    }
   );
 
   useEffect(() => {

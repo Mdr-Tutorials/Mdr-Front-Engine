@@ -6,7 +6,7 @@ import { useParams } from 'react-router';
 import { Save } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { CodeFileTree, type CodeFileKind } from './CodeFileTree';
-import { isPrimaryShortcut, useWindowKeydown } from '@/shortcuts';
+import { useEditorShortcut } from '@/editor/shortcuts';
 import {
   createCodeFile,
   createCodeFolder,
@@ -249,13 +249,15 @@ export function CodeResourcePage({ embedded = false }: CodeResourcePageProps) {
     persistTree(nextTree);
   };
 
-  useWindowKeydown((event) => {
-    if (!isPrimaryShortcut(event)) return;
-    if (event.shiftKey || event.altKey) return;
-    if (event.key.toLowerCase() !== 's') return;
-    event.preventDefault();
-    handleSave();
-  });
+  useEditorShortcut(
+    'Mod+S',
+    () => {
+      handleSave();
+    },
+    {
+      allowInEditable: true,
+    }
+  );
 
   const shellClassName = embedded
     ? 'grid gap-4'

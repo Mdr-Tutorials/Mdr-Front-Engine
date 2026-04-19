@@ -381,6 +381,98 @@
       "layout-pattern": {
         "title": "Pattern",
         "description": "Layout pattern parameters"
+      },
+      "class-name": {
+        "title": "Class Name"
+      },
+      "typography": {
+        "title": "Typography",
+        "fields": {
+          "color": "Color",
+          "fontFamily": "Font Family",
+          "fontSize": "Font Size",
+          "fontWeight": "Font Weight",
+          "lineHeight": "Line Height",
+          "letterSpacing": "Letter Spacing",
+          "textAlign": "Text Align"
+        },
+        "options": {
+          "textAlign": {
+            "left": "Left",
+            "center": "Center",
+            "right": "Right",
+            "justify": "Justify"
+          }
+        },
+        "placeholders": {
+          "fontFamily": "'IBM Plex Sans', sans-serif",
+          "fontSize": "16",
+          "fontWeight": "400",
+          "lineHeight": "1.5",
+          "letterSpacing": "0"
+        }
+      },
+      "background": {
+        "title": "Background",
+        "fields": {
+          "backgroundColor": "Background",
+          "backgroundImage": "Background Image",
+          "backgroundSize": "Background Size",
+          "backgroundPosition": "Background Position"
+        },
+        "placeholders": {
+          "backgroundImage": "url(/image.png)",
+          "backgroundSize": "cover",
+          "backgroundPosition": "center center"
+        }
+      },
+      "border": {
+        "title": "Border",
+        "fields": {
+          "border": "Border",
+          "borderColor": "Border Color",
+          "borderWidth": "Border Width",
+          "borderRadius": "Radius"
+        },
+        "placeholders": {
+          "border": "1px solid var(--color-3)",
+          "borderWidth": "1",
+          "borderRadius": "0"
+        }
+      },
+      "external-code": {
+        "title": "External Code",
+        "description": "Mount project script or shader resources for Canvas, WebGL, or other runtime-driven components.",
+        "status": {
+          "mounted": "Mounted to external runtime",
+          "unmounted": "Not mounted",
+          "missing": "missing",
+          "resourceMissing": "The selected resource path is no longer present in project resources.",
+          "resourceReady": "Project resource is ready to mount."
+        },
+        "actions": {
+          "mount": "Mount",
+          "unmount": "Unmount",
+          "manageResources": "Manage"
+        },
+        "fields": {
+          "language": "Language",
+          "projectResource": "Project Resource",
+          "projectResourceHelp": "Choose from code/scripts or code/shaders resources that match the selected language.",
+          "resourcePath": "Resource Path",
+          "resourcePathHelp": "Relative project resource path under scripts or shaders.",
+          "entry": "Entry",
+          "entryHelp": "Export or function name used by the runtime host."
+        },
+        "placeholders": {
+          "projectResource": "Select a project resource",
+          "resourcePath": "code/scripts/render.ts",
+          "entry": "main"
+        },
+        "empty": "No matching script or shader resources are available yet."
+      },
+      "animation-mount": {
+        "title": "Animation Mount"
       }
     },
     "actions": {

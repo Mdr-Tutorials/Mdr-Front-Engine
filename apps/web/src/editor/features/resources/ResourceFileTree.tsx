@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { PublicFileCategory, PublicResourceNode } from './publicTree';
-import { useWindowKeydown } from '@/shortcuts';
+import { useEditorShortcut } from '@/editor/shortcuts';
 
 type ResourceFileTreeMode = 'readonly' | 'editable';
 
@@ -176,13 +176,15 @@ export function ResourceFileTree({
     };
   }, [contextMenu]);
 
-  useWindowKeydown(
-    (event) => {
-      if (event.key === 'Escape') {
-        setContextMenu(null);
-      }
+  useEditorShortcut(
+    'Escape',
+    () => {
+      setContextMenu(null);
     },
-    { enabled: Boolean(contextMenu) }
+    {
+      enabled: Boolean(contextMenu),
+      priority: 20,
+    }
   );
 
   const renderNode = (node: PublicResourceNode, depth = 0): ReactElement => {

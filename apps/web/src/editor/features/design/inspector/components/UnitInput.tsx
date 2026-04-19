@@ -7,7 +7,7 @@ import {
   CSS_FONT_RELATIVE_LENGTH_UNITS,
   CSS_PERCENTAGE_UNIT,
   CSS_VIEWPORT_LENGTH_UNITS,
-} from '@/editor/features/design/inspector/units/cssUnits';
+} from '@/editor/features/design/inspector/components/units/cssUnits';
 
 type UnitGroup = {
   label: string;
