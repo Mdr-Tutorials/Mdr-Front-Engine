@@ -29,7 +29,7 @@ func NewServer(cfg backendconfig.Config) (*Server, error) {
 		cfg:     cfg,
 		db:      db,
 		router:  router,
-		modules: backendapp.NewRuntimeModules(db, cfg.TokenTTL),
+		modules: backendapp.NewRuntimeModules(db, cfg.TokenTTL, cfg),
 	}
 	router.Use(backendmiddleware.CORS(cfg.AllowedOrigins))
 	server.registerRoutes()

@@ -40,6 +40,14 @@
 
 - `specs/decisions/20.node-graph-port-semantics.md`
 
+11. **LLM 集成架构**
+
+- `specs/decisions/22.llm-integration-architecture.md`
+
+12. **GitHub App 与 Git 集成**
+
+- `specs/decisions/23.github-app-integration.md`
+
 ## 实施主计划
 
 - `specs/implementation/workspace-refactor-plan.md`

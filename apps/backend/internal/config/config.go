@@ -9,16 +9,28 @@ import (
 
 type Config struct {
 	Address        string
+	Environment    string
 	TokenTTL       time.Duration
 	AllowedOrigins []string
 	DatabaseURL    string
 	DBMaxOpenConns int
 	DBMaxIdleConns int
 	DBMaxLifetime  time.Duration
+	GitHub         GitHubAppConfig
+}
+
+type GitHubAppConfig struct {
+	AppID         string
+	ClientID      string
+	ClientSecret  string
+	PrivateKey    string
+	WebhookSecret string
+	SetupURL      string
 }
 
 func LoadConfig() Config {
 	address := getEnv("BACKEND_ADDR", ":8080")
+	environment := strings.ToLower(getEnv("APP_ENV", "development"))
 	tokenTTL := getEnvDuration("BACKEND_TOKEN_TTL", 24*time.Hour)
 	allowed := parseCSV(getEnv("BACKEND_ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:5174"))
 	databaseURL := getEnv("BACKEND_DB_URL", "postgres://postgres:postgres@localhost:5432/mdr_front_engine?sslmode=disable")
@@ -27,12 +39,21 @@ func LoadConfig() Config {
 	dbMaxLifetime := getEnvDuration("BACKEND_DB_MAX_LIFETIME", 30*time.Minute)
 	return Config{
 		Address:        address,
+		Environment:    environment,
 		TokenTTL:       tokenTTL,
 		AllowedOrigins: allowed,
 		DatabaseURL:    databaseURL,
 		DBMaxOpenConns: dbMaxOpenConns,
 		DBMaxIdleConns: dbMaxIdleConns,
 		DBMaxLifetime:  dbMaxLifetime,
+		GitHub: GitHubAppConfig{
+			AppID:         getEnv("GITHUB_APP_ID", ""),
+			ClientID:      getEnv("GITHUB_APP_CLIENT_ID", ""),
+			ClientSecret:  getEnv("GITHUB_APP_CLIENT_SECRET", ""),
+			PrivateKey:    getEnv("GITHUB_APP_PRIVATE_KEY", ""),
+			WebhookSecret: getEnv("GITHUB_APP_WEBHOOK_SECRET", ""),
+			SetupURL:      getEnv("GITHUB_APP_SETUP_URL", ""),
+		},
 	}
 }
 
