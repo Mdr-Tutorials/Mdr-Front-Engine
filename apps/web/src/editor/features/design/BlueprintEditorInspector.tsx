@@ -49,8 +49,8 @@ export function BlueprintEditorInspector({
   }
 
   return (
-    <aside className="BlueprintEditorInspector absolute top-0 right-0 bottom-0 z-4 flex min-h-0 w-(--inspector-width) flex-col rounded-[14px] border border-black/6 bg-(--color-0) shadow-[0_12px_26px_rgba(0,0,0,0.08)] dark:border-transparent">
-      <div className="InspectorHeader flex items-center justify-between border-b border-black/6 px-3 py-2.5 text-[13px] font-semibold text-(--color-9) dark:border-white/8">
+    <aside className="BlueprintEditorInspector absolute top-0 right-0 bottom-0 z-4 flex min-h-0 w-(--inspector-width) flex-col rounded-[14px] bg-(--color-0) shadow-[0_12px_26px_rgba(0,0,0,0.08)] ring-1 ring-black/6 dark:ring-transparent">
+      <div className="InspectorHeader flex items-center justify-between border-b border-black/6 px-4 py-2.5 text-[13px] font-semibold text-(--color-9) dark:border-white/8">
         <span>{t('inspector.title')}</span>
         <button
           type="button"
@@ -72,7 +72,7 @@ export function BlueprintEditorInspector({
           </div>
         </InspectorContext.Provider>
       ) : (
-        <div className="InspectorPlaceholder px-3 pt-2 pb-3">
+        <div className="InspectorPlaceholder px-4 pt-2 pb-3">
           <p className="m-0 text-xs text-(--color-6)">
             {t('inspector.placeholder')}
           </p>

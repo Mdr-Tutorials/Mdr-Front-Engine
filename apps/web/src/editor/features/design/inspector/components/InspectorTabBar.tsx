@@ -47,22 +47,26 @@ export function InspectorTabBar({
 
   return (
     <nav className="InspectorTabBar flex border-b border-black/6 dark:border-white/8">
-      {TAB_CONFIG.map(({ key, icon: Icon, labelKey, defaultLabel }) => (
-        <button
-          key={key}
-          type="button"
-          className={`inline-flex flex-1 items-center justify-center border-0 bg-transparent py-2 transition-colors ${
-            activeTab === key
-              ? 'text-(--color-9)'
-              : 'text-(--color-5) hover:text-(--color-8)'
-          }`}
-          onClick={() => onTabChange(key)}
-          data-testid={`inspector-tab-${key}`}
-          title={t(labelKey, { defaultValue: defaultLabel })}
-        >
-          <Icon size={16} />
-        </button>
-      ))}
+      {TAB_CONFIG.map(({ key, icon: Icon, labelKey, defaultLabel }) => {
+        const label = t(labelKey, { defaultValue: defaultLabel });
+        return (
+          <button
+            key={key}
+            type="button"
+            className={`inline-flex flex-1 items-center justify-center border-0 bg-transparent py-2 transition-colors ${
+              activeTab === key
+                ? 'text-(--color-9)'
+                : 'text-(--color-5) hover:text-(--color-8)'
+            }`}
+            onClick={() => onTabChange(key)}
+            data-testid={`inspector-tab-${key}`}
+            title={label}
+            aria-label={label}
+          >
+            <Icon size={16} />
+          </button>
+        );
+      })}
     </nav>
   );
 }

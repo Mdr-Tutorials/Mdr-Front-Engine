@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown } from 'lucide-react';
-import { MdrSelect } from '@mdr/ui';
 import {
   isPlainObject,
   isLayoutComponent,
@@ -18,8 +17,20 @@ import type {
   InspectorPanelDefinition,
   InspectorPanelRenderProps,
 } from './types';
-import { InspectorRow } from '@/editor/features/design/inspector/components/InspectorRow';
+import {
+  InspectorIconFieldRow,
+  InspectorRow,
+} from '@/editor/features/design/inspector/components/InspectorRow';
+import { IconButtonGroup } from '@/editor/features/design/inspector/components/IconButtonGroup';
 import { UnitInput } from '@/editor/features/design/inspector/components/UnitInput';
+import {
+  DisplayBlockIcon,
+  DisplayFieldIcon,
+  DisplayFlexIcon,
+  DisplayGridIcon,
+  DisplayInlineBlockIcon,
+  DisplayInlineIcon,
+} from '@/assets/icons';
 import { resolveLayoutGroups } from './layoutGroup/layoutGroupRegistry';
 import {
   getLayoutGroupExpansionState,
@@ -70,23 +81,26 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
 
   return (
     <LayoutGroupContext.Provider value={contextValue}>
-      <div className="InspectorSection flex flex-col gap-2">
+      <div className="InspectorSection grid w-[288px] max-w-full grid-cols-[repeat(9,32px)] gap-y-2 [&>*]:col-span-9">
         {isPatternStructureControlled ? (
-          <div className="rounded-md border border-black/8 px-2 py-1 text-[10px] text-(--color-6) dark:border-white/14">
+          <div className="col-span-9 rounded-md border border-black/8 px-2 py-1 text-[10px] text-(--color-6) dark:border-white/14">
             {t('inspector.panels.layout.patternControlled', {
               defaultValue: 'Layout structure is controlled by pattern params.',
             })}
           </div>
         ) : (
           <>
-            <InspectorRow
+            <InspectorIconFieldRow
               label={t('inspector.panels.layout.fields.display', {
                 defaultValue: 'Display',
               })}
+              icon={<DisplayFieldIcon />}
               control={
-                <MdrSelect
-                  size="Small"
+                <IconButtonGroup
                   value={display ?? 'Block'}
+                  density="dense"
+                  layout="horizontal"
+                  columns={5}
                   options={[
                     {
                       label: t(
@@ -94,18 +108,21 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
                         { defaultValue: 'Block' }
                       ),
                       value: 'Block',
+                      icon: <DisplayBlockIcon />,
                     },
                     {
                       label: t('inspector.panels.layout.options.display.flex', {
                         defaultValue: 'Flex',
                       }),
                       value: 'Flex',
+                      icon: <DisplayFlexIcon />,
                     },
                     {
                       label: t('inspector.panels.layout.options.display.grid', {
                         defaultValue: 'Grid',
                       }),
                       value: 'Grid',
+                      icon: <DisplayGridIcon />,
                     },
                     {
                       label: t(
@@ -113,6 +130,7 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
                         { defaultValue: 'Inline' }
                       ),
                       value: 'Inline',
+                      icon: <DisplayInlineIcon />,
                     },
                     {
                       label: t(
@@ -120,6 +138,7 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
                         { defaultValue: 'InlineBlock' }
                       ),
                       value: 'InlineBlock',
+                      icon: <DisplayInlineBlockIcon />,
                     },
                   ]}
                   onChange={(value) =>
@@ -164,7 +183,10 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
             defaultValue: group.title,
           });
           return (
-            <div key={group.key} className="InspectorField flex flex-col gap-1">
+            <div
+              key={group.key}
+              className="InspectorField col-span-9 flex flex-col gap-1"
+            >
               <button
                 type="button"
                 className="flex min-h-5.5 w-full cursor-pointer items-center justify-between border-0 bg-transparent p-0 text-left"
@@ -179,7 +201,7 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
                 />
               </button>
               {isExpanded ? (
-                <div className="mt-1 flex flex-col gap-1.5">
+                <div className="mt-1 grid w-[288px] max-w-full grid-cols-[repeat(9,32px)] gap-y-2 [&>*]:col-span-9">
                   {group.render(contextValue as LayoutGroupRenderProps)}
                 </div>
               ) : null}

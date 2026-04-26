@@ -20,6 +20,7 @@ Inspector 后续还需要做布局层面的优化。除了 Panel 标题之外，
 3. 让 Style Tab 尤其是 Layout / Flex / Grid 控件呈现明显的网格对齐效果。
 4. 建立可复用的 inspector layout token，避免在业务组件中继续散落临时尺寸。
 5. 保持 monochrome-ui 风格，避免过度装饰。
+6. 将 Panel body 和字段行建立在 9 列 grid 基底上。
 
 ## Non Goals
 
@@ -36,7 +37,11 @@ Inspector 应建立自己的局部 token。建议先用常量或 CSS custom prop
 ```css
 :root {
   --inspector-unit: 4px;
-  --inspector-column-unit: 8px;
+  --inspector-col: 32px;
+  --inspector-cols: 9;
+  --inspector-body-width: 288px;
+  --inspector-panel-padding-x: 16px;
+  --inspector-panel-width: 320px;
   --inspector-row-height: 32px;
   --inspector-control-height: 28px;
   --inspector-icon-cell: 24px;
@@ -53,10 +58,57 @@ Inspector 应建立自己的局部 token。建议先用常量或 CSS custom prop
 规则：
 
 - 基础单位为 `4px`。
-- 宽度优先按 `8px` 的整数倍分配。
+- 横向主栅格为 `32px`，每个标准 Inspector body 为 9 列。
+- Inspector body 内容宽度为 `288px`，即 `32px * 9`。
+- 标准 Inspector panel 建议宽度为 `320px`，即 `16px padding + 288px body + 16px padding`。
+- 字段、控件、按钮的宽度优先落在 `32px` 列或半列 `16px` 上。
 - 行高优先为 `32px`，复杂字段可以占用多个 `32px` 行单元。
 - 普通控件高度为 `28px`，在 `32px` 行内容器中垂直居中。
-- 图标按钮点击区域为 `24px`，图标 glyph 为 `16px`。
+- 图标按钮外部列宽优先为 `32px`，内部 icon cell 为 `24px`，图标 glyph 为 `16px`。
+
+## Grid Foundation
+
+Inspector 的布局基底应是 grid，但不要求每个控件内部都使用 grid。
+
+```text
+Panel body / Field rows: grid system
+Concrete controls: flex or grid as needed
+```
+
+推荐：
+
+```css
+.inspector-panel-body {
+  display: grid;
+  grid-template-columns: repeat(9, var(--inspector-col));
+  column-gap: 0;
+  row-gap: 8px;
+  width: var(--inspector-body-width);
+}
+
+.inspector-row {
+  display: grid;
+  grid-template-columns: repeat(9, var(--inspector-col));
+  grid-column: 1 / -1;
+  min-height: var(--inspector-row-height);
+  align-items: center;
+}
+
+.inspector-label {
+  grid-column: span 3;
+}
+
+.inspector-control {
+  grid-column: span 6;
+}
+```
+
+说明：
+
+- 如果后续 browser target 明确支持 `subgrid`，`InspectorRow` 可以继承 Panel body 的 grid。
+- 首阶段不依赖 `subgrid`，每个 `InspectorRow` 自己声明 9 列更稳。
+- `UnitInput`、`ColorInput`、ClassProtocolEditor、RichTextEditor 等控件内部可以继续用 flex / block / local grid。
+- 复杂控件必须从外层占据明确列宽，例如 `grid-column: span 9`，而不是用自身内容撑开布局。
 
 ## Row Rules
 
@@ -66,9 +118,8 @@ Inspector 应建立自己的局部 token。建议先用常量或 CSS custom prop
 
 ```text
 row height: 32px
-label width: 96px
-gap: 8px
-control area: remaining width
+label width: 3 cols = 96px
+control area: 6 cols = 192px
 control height: 28px
 ```
 
@@ -109,21 +160,26 @@ Panel 标题不纳入字段行高系统。
 
 ## Width Rules
 
-所有核心子元素宽度必须是 `8px` 的整数倍。
+所有核心子元素宽度必须优先落在 `32px` 列网格上；确需更细粒度时使用半列 `16px` 或基础单位 `4px`。
 
-| Element             | Width                                    |
-| ------------------- | ---------------------------------------- |
-| label column        | `96px`                                   |
-| row gap             | `8px`                                    |
-| icon button cell    | `24px`                                   |
-| icon glyph          | `16px`                                   |
-| small numeric input | `64px`                                   |
-| unit input          | `96px`                                   |
-| compact select      | `96px` or `128px`                        |
-| normal input        | `160px`                                  |
-| long input          | `192px`                                  |
-| color swatch        | `24px`                                   |
-| 2-column field cell | `(available - 8px) / 2`, rounded to grid |
+| Element             | Width                          |
+| ------------------- | ------------------------------ |
+| label column        | `96px`                         |
+| label column span   | `3 cols`                       |
+| control column      | `192px`                        |
+| control column span | `6 cols`                       |
+| full row control    | `288px`                        |
+| full row span       | `9 cols`                       |
+| icon button column  | `32px`                         |
+| icon button cell    | `24px`                         |
+| icon glyph          | `16px`                         |
+| small numeric input | `64px` = `2 cols`              |
+| unit input          | `96px` = `3 cols`              |
+| compact select      | `96px` or `128px` = `3-4 cols` |
+| normal input        | `160px` = `5 cols`             |
+| long input          | `192px` = `6 cols`             |
+| color swatch        | `24px`                         |
+| 2-column field cell | `4 cols + 1 col gap + 4 cols`  |
 
 Avoid:
 
@@ -131,6 +187,7 @@ Avoid:
 - `min-w-15`
 - `max-w-[100px]`
 - arbitrary values that are not aligned to 4px / 8px grid
+- arbitrary values that are not aligned to 32px / 16px / 4px grid
 
 Exception:
 
@@ -158,8 +215,11 @@ type InspectorRowProps = {
 Behavior:
 
 - `horizontal` rows use `min-height: var(--inspector-row-height)`.
+- `horizontal` rows use a 9-column grid.
+- `horizontal` label uses `span 3`; control uses `span 6`.
 - `horizontal` rows align label and control to the same baseline grid.
 - `vertical` rows use `gap: 8px` and consume full width.
+- `vertical` rows should normally span all 9 columns.
 - `description` pushes the row into multi-line mode instead of disturbing single-line row height.
 - Control width should be chosen from token values, not arbitrary Tailwind widths.
 
@@ -209,7 +269,7 @@ Target:
 
 ```text
 button height: 28px
-button min width: 32px or 40px
+button width: 32px for dense icon-only controls
 icon cell: 24px
 gap: 4px / 8px
 ```
@@ -233,7 +293,7 @@ Block | Flex | Grid | None
 
 Each segment:
 
-- fixed width: `40px` or `48px`
+- fixed width: `32px` or `64px`
 - height: `28px`
 - icon centered
 - label in `title`
@@ -254,7 +314,9 @@ Rules:
 Width / Height should use a two-column grid:
 
 ```text
-column gap: 8px
+width cell: 4 cols
+gap: 1 col
+height cell: 4 cols
 each column control height: 28px
 ```
 
@@ -265,8 +327,8 @@ Column widths should be equal and derive from available width.
 Flex controls should use icon-only buttons when possible:
 
 - direction: 2x2 grid
-- justify: 6 equal cells
-- align: 5 equal cells
+- justify: 6 equal cells, each `32px`
+- align: 5 equal cells, each `32px`
 
 When `flex-direction` changes from row-like to column-like, icons should change orientation but button dimensions must not change.
 
@@ -277,26 +339,30 @@ Grid controls should be more explicit than Flex:
 - `auto-flow`: 2x2 grid
 - `justify-items` / `align-items`: item-in-cell icons
 - `justify-content` / `align-content`: whole-grid-in-container icons
+- 7-option groups can occupy the full 9-column row; visible options still use fixed `32px` cells.
 
 All grid option buttons in one group must share width and height.
 
 ## Implementation Plan
 
 1. Add local inspector sizing tokens.
-2. Refactor `InspectorRow` to enforce row height, label width, and control width modes.
-3. Refactor `IconButtonGroup` to support icon-only dense mode and fixed cell sizes.
-4. Normalize `UnitInput` to `96px x 28px`.
-5. Normalize `ColorInput` to `192px x 28px` with `24px` swatch.
-6. Apply the row/grid system to LayoutPanel groups.
-7. Replace GridGroup text placeholders with icons from `@/assets/icons`.
-8. Audit arbitrary width classes in Inspector and replace them with token-based sizes.
+2. Refactor Panel body to use a 9-column grid with `32px` columns.
+3. Refactor `InspectorRow` to enforce row height, label width, 9-column placement, and control width modes.
+4. Refactor `IconButtonGroup` to support icon-only dense mode and fixed `32px` option cells.
+5. Normalize `UnitInput` to `96px x 28px`.
+6. Normalize `ColorInput` to `192px x 28px` with `24px` swatch.
+7. Apply the row/grid system to LayoutPanel groups.
+8. Replace GridGroup text placeholders with icons from `@/assets/icons`.
+9. Audit arbitrary width classes in Inspector and replace them with token-based sizes.
 
 ## Acceptance Criteria
 
 - All standard Inspector field rows have a consistent `32px` visual row rhythm.
+- Inspector Panel body uses a 9-column grid with `32px` columns.
 - Common controls inside rows have a consistent `28px` height.
-- Label column width is consistent across horizontal rows.
-- Icon buttons use consistent `24px` cells and `16px` glyphs.
+- Label column width is consistently `3 cols / 96px` across horizontal rows.
+- Control column width is consistently `6 cols / 192px` for standard rows.
+- Icon buttons use consistent `32px` columns, `24px` cells, and `16px` glyphs.
 - UnitInput, ColorInput, IconButtonGroup widths are token-based.
 - Grid/Flex option buttons do not resize when selected or when values change.
 - GridGroup no longer uses letters as visual icons.

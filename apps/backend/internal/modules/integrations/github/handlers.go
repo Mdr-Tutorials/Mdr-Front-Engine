@@ -122,7 +122,7 @@ func (handler *Handler) HandleUpsertBinding(c *gin.Context) {
 		respondError(c, http.StatusUnauthorized, "unauthorized", "Authentication required.")
 		return
 	}
-	projectID := strings.TrimSpace(c.Param("projectId"))
+	projectID := strings.TrimSpace(c.Param("id"))
 	if err := handler.ensureProjectOwner(c.Request.Context(), user.ID, projectID); err != nil {
 		if errors.Is(err, backendproject.ErrProjectNotFound) {
 			respondError(c, http.StatusNotFound, "not_found", "Project not found.")
@@ -268,7 +268,7 @@ func (handler *Handler) loadProjectBinding(c *gin.Context) (*RepositoryBindingRe
 		respondError(c, http.StatusUnauthorized, "unauthorized", "Authentication required.")
 		return nil, false
 	}
-	projectID := strings.TrimSpace(c.Param("projectId"))
+	projectID := strings.TrimSpace(c.Param("id"))
 	if err := handler.ensureProjectOwner(c.Request.Context(), user.ID, projectID); err != nil {
 		if errors.Is(err, backendproject.ErrProjectNotFound) {
 			respondError(c, http.StatusNotFound, "not_found", "Project not found.")

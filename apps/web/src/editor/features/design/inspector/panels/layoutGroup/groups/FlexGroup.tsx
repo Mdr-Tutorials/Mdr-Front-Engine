@@ -1,58 +1,66 @@
 import type { LayoutGroupDefinition, LayoutGroupRenderProps } from '../types';
 import { readString, withProps } from '../layoutPanelHelpers';
-import { InspectorRow } from '@/editor/features/design/inspector/components/InspectorRow';
-import { IconButtonGroup } from '@/editor/features/design/inspector/components/IconButtonGroup';
 import {
-  FlexRowIcon,
+  AlignBaselineColumnIcon,
+  AlignBaselineIcon,
+  AlignCenterColumnIcon,
+  AlignCenterIcon,
+  AlignEndColumnIcon,
+  AlignEndIcon,
+  AlignStartColumnIcon,
+  AlignStartIcon,
+  AlignStretchColumnIcon,
+  AlignStretchIcon,
   FlexColumnIcon,
-  FlexRowReverseIcon,
   FlexColumnReverseIcon,
-} from '@/components/icons/FlexDirectionIcons';
-import {
-  JustifyStartIcon,
+  FlexAlignFieldIcon,
+  FlexDirectionFieldIcon,
+  FlexJustifyFieldIcon,
+  FlexRowIcon,
+  FlexRowReverseIcon,
   JustifyCenterIcon,
+  JustifyCenterColumnIcon,
   JustifyEndIcon,
-  JustifySpaceBetweenIcon,
+  JustifyEndColumnIcon,
+  JustifySpaceAroundColumnIcon,
   JustifySpaceAroundIcon,
+  JustifySpaceBetweenColumnIcon,
+  JustifySpaceBetweenIcon,
+  JustifySpaceEvenlyColumnIcon,
   JustifySpaceEvenlyIcon,
   JustifyStartColumnIcon,
-  JustifyCenterColumnIcon,
-  JustifyEndColumnIcon,
-  JustifySpaceBetweenColumnIcon,
-  JustifySpaceAroundColumnIcon,
-  JustifySpaceEvenlyColumnIcon,
-} from '@/components/icons/JustifyContentIcons';
-import {
-  AlignStartIcon,
-  AlignCenterIcon,
-  AlignEndIcon,
-  AlignStretchIcon,
-  AlignBaselineIcon,
-  AlignStartColumnIcon,
-  AlignCenterColumnIcon,
-  AlignEndColumnIcon,
-  AlignStretchColumnIcon,
-  AlignBaselineColumnIcon,
-} from '@/components/icons/AlignItemsIcons';
+  JustifyStartIcon,
+} from '@/assets/icons';
+import { InspectorIconFieldRow } from '@/editor/features/design/inspector/components/InspectorRow';
+import { IconButtonGroup } from '@/editor/features/design/inspector/components/IconButtonGroup';
 
 const FlexGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
   const flexDirection = readString(node.props?.flexDirection) ?? 'Row';
   const justifyContent = readString(node.props?.justifyContent) ?? 'Start';
   const alignItems = readString(node.props?.alignItems) ?? 'Start';
   const isRowLike = flexDirection === 'Row' || flexDirection === 'RowReverse';
+  const directionLabel = t('inspector.panels.layout.fields.flexDirection', {
+    defaultValue: 'Direction',
+  });
+  const justifyLabel = t('inspector.panels.layout.fields.justifyContent', {
+    defaultValue: 'Justify',
+  });
+  const alignLabel = t('inspector.panels.layout.fields.alignItems', {
+    defaultValue: 'Align',
+  });
 
   return (
     <>
       <div className="InspectorField flex flex-col gap-1.5">
-        <InspectorRow
-          layout="vertical"
-          label={t('inspector.panels.layout.fields.flexDirection', {
-            defaultValue: 'Direction',
-          })}
+        <InspectorIconFieldRow
+          label={directionLabel}
+          icon={<FlexDirectionFieldIcon />}
           control={
             <IconButtonGroup
               value={flexDirection}
-              layout="grid-2x2"
+              layout="horizontal"
+              density="dense"
+              columns={4}
               options={[
                 {
                   value: 'Row',
@@ -96,15 +104,15 @@ const FlexGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
       </div>
 
       <div className="InspectorField flex flex-col gap-1.5">
-        <InspectorRow
-          layout="vertical"
-          label={t('inspector.panels.layout.fields.justifyContent', {
-            defaultValue: 'Justify',
-          })}
+        <InspectorIconFieldRow
+          label={justifyLabel}
+          icon={<FlexJustifyFieldIcon />}
           control={
             <IconButtonGroup
               value={justifyContent}
-              layout={isRowLike ? 'horizontal' : 'grid'}
+              layout="horizontal"
+              density="dense"
+              columns={6}
               options={
                 isRowLike
                   ? [
@@ -219,15 +227,15 @@ const FlexGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
       </div>
 
       <div className="InspectorField flex flex-col gap-1.5">
-        <InspectorRow
-          layout="vertical"
-          label={t('inspector.panels.layout.fields.alignItems', {
-            defaultValue: 'Align',
-          })}
+        <InspectorIconFieldRow
+          label={alignLabel}
+          icon={<FlexAlignFieldIcon />}
           control={
             <IconButtonGroup
               value={alignItems}
-              layout={isRowLike ? 'horizontal' : 'grid'}
+              layout="horizontal"
+              density="dense"
+              columns={5}
               options={
                 isRowLike
                   ? [

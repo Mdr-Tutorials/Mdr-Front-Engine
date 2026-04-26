@@ -18,7 +18,7 @@ func RegisterRoutes(api *gin.RouterGroup, handlers RouteHandlers) {
 	api.POST("/integrations/github/dev/events", handlers.RequireAuth, handlers.HandleDevEvent)
 	api.GET("/integrations/github/installations", handlers.RequireAuth, handlers.ListInstallations)
 	api.GET("/integrations/github/repositories", handlers.RequireAuth, handlers.ListRepositories)
-	api.GET("/projects/:projectId/integrations/github/binding", handlers.RequireAuth, handlers.GetProjectBinding)
-	api.POST("/projects/:projectId/integrations/github/binding", handlers.RequireAuth, handlers.UpsertBinding)
-	api.GET("/projects/:projectId/integrations/github/sync-state", handlers.RequireAuth, handlers.GetProjectSyncState)
+	api.GET("/projects/:id/integrations/github/binding", handlers.RequireAuth, handlers.GetProjectBinding)
+	api.POST("/projects/:id/integrations/github/binding", handlers.RequireAuth, handlers.UpsertBinding)
+	api.GET("/projects/:id/integrations/github/sync-state", handlers.RequireAuth, handlers.GetProjectSyncState)
 }

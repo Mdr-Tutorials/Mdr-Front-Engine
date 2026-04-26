@@ -1,5 +1,8 @@
+# Dependencies
+node_modules/
+
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,112 +10,71 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# =========================
-# 通用忽略规则
-# =========================
-
-# 依赖目录
-node_modules/
-
-# 日志文件
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# 环境变量文件 (通常不提交，除非是模板)
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Environment files
+.env
+.env.*
+!.env.example
+!*.env.example
 deploy/.env
 deploy/.env.local
+apps/web/.env
+apps/backend/.env
 
-# 编辑器和IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-.DS_Store
-*.sublime-project
-*.sublime-workspace
-
-# =========================
-# 构建和输出目录
-# =========================
-
-# 通用构建输出
+# Build outputs and caches
 dist/
+dist-ssr/
 out/
 build/
 .cache/
 .next/
 .nuxt/
-.cache/
+.turbo/
+*.tsbuildinfo
+*.local
 *.exe
 
-# =========================
-# Turborepo 特定
-# =========================
+# Test outputs
+coverage/
+.nyc_output/
 
-# Turborepo 的远程缓存目录 (本地缓存通常不提交)
-.turbo/
-
-# =========================
-# 应用特定 (apps/)
-# =========================
-
-# Web 应用 (React, Vue, etc.)
-apps/web/.env
+# App-specific outputs
 apps/web/public/build/
 apps/web/.next/
 apps/web/dist/
 apps/web/build/
-
-# 后端应用 (Node.js)
-apps/backend/.env
+apps/web/packages/
 apps/backend/dist/
 apps/backend/build/
-
-# 文档站点 (Docusaurus, VitePress, etc.)
 apps/docs/.vitepress/cache/
+apps/docs/.vitepress/dist/
 apps/docs/.docusaurus/
 apps/docs/dist/
 apps/docs/build/
 
-# =========================
-# 包特定 (packages/)
-# =========================
-
-# 所有包的构建输出
+# Package outputs
 packages/*/dist/
 packages/*/build/
 packages/*/lib/
 packages/*/esm/
 packages/*/cjs/
 
-# 测试覆盖率
-coverage/
-.nyc_output/
-
-# 其他
-.tmp*
-.claude/
+# Local tool output
 .playwright-mcp/
-*.tsbuildinfo
+.claude/
+.tmp*
+
+# Editor and OS files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.husky/_/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace

@@ -27,7 +27,7 @@ export function ColorInput({
   const swatchValue = useMemo(() => normalizeHex(value ?? ''), [value]);
 
   return (
-    <div className="flex w-full max-w-65 items-center justify-end gap-2">
+    <div className="flex w-48 items-center justify-end gap-2">
       <div className="min-w-0 flex-1">
         <MdrInput
           size="Small"
@@ -47,7 +47,7 @@ export function ColorInput({
         value={swatchValue ?? '#000000'}
         disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
-        className="h-8 w-9 cursor-pointer rounded-[10px] border border-[rgba(0,0,0,0.12)] bg-transparent p-0 in-data-[theme='dark']:border-[rgba(255,255,255,0.16)]"
+        className="h-7 w-6 cursor-pointer rounded-md border border-[rgba(0,0,0,0.12)] bg-transparent p-0 in-data-[theme='dark']:border-[rgba(255,255,255,0.16)]"
         aria-label={t('inspector.fields.colorInput.pickerAria', {
           defaultValue: 'Color picker',
         })}

@@ -11,6 +11,10 @@ type IconButtonGroupProps<T extends string = string> = {
   options: IconButtonOption<T>[];
   onChange: (value: T) => void;
   layout?: 'horizontal' | 'grid' | 'grid-2x2';
+  density?: 'default' | 'dense';
+  columns?: 2 | 4 | 5 | 6 | 7;
+  fullGridWidth?: boolean;
+  showLabels?: boolean;
 };
 
 export function IconButtonGroup<T extends string = string>({
@@ -18,11 +22,58 @@ export function IconButtonGroup<T extends string = string>({
   options,
   onChange,
   layout = 'horizontal',
+  density = 'default',
+  columns,
+  fullGridWidth = false,
+  showLabels,
 }: IconButtonGroupProps<T>) {
+  const resolvedShowLabels = showLabels ?? density === 'default';
+  const denseColumns =
+    columns ?? (layout === 'grid-2x2' ? 2 : Math.min(options.length, 7));
+  const denseWidthClass = fullGridWidth
+    ? 'w-64'
+    : {
+        2: 'w-16',
+        4: 'w-32',
+        5: 'w-40',
+        6: 'w-48',
+        7: 'w-56',
+      }[denseColumns];
+  const denseGridClass =
+    layout === 'grid-2x2'
+      ? 'inline-grid grid-cols-[repeat(2,32px)] grid-rows-[repeat(2,32px)] overflow-hidden rounded-sm bg-transparent ring-1 ring-black/10 ring-inset dark:ring-white/14'
+      : `inline-grid overflow-hidden rounded-sm bg-transparent ring-1 ring-black/10 ring-inset dark:ring-white/14 ${denseWidthClass} ${
+          {
+            2: 'grid-cols-[repeat(2,32px)]',
+            4: 'grid-cols-[repeat(4,32px)]',
+            5: 'grid-cols-[repeat(5,32px)]',
+            6: 'grid-cols-[repeat(6,32px)]',
+            7: 'grid-cols-[repeat(7,32px)]',
+          }[denseColumns]
+        }`;
   const containerClass =
+    density === 'dense'
+      ? denseGridClass
+      : layout === 'horizontal'
+        ? 'flex flex-col gap-0.5'
+        : 'grid grid-cols-2 gap-0.5';
+
+  const buttonClass =
+    density === 'dense'
+      ? 'flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center border-0 bg-transparent text-(--color-6) shadow-none transition-colors hover:shadow-none'
+      : 'flex w-full min-w-16 flex-row items-center justify-between gap-1 rounded px-2 py-1.5 text-(--color-6) transition-all';
+  const iconClass =
+    'flex h-6 w-6 items-center justify-center [&>svg]:h-6 [&>svg]:w-6';
+  const denseIconClass =
+    'flex h-7 w-7 items-center justify-center rounded-sm shadow-none transition-colors hover:shadow-none [&>svg]:h-6 [&>svg]:w-6';
+  const activeClass =
+    density === 'dense'
+      ? 'text-(--color-9)'
+      : 'bg-(--color-2) font-medium text-(--color-9) hover:bg-(--color-3)';
+  const inactiveClass =
     layout === 'horizontal'
-      ? 'flex flex-col gap-0.5'
-      : 'grid grid-cols-2 gap-0.5';
+      ? 'bg-transparent hover:bg-(--color-1) hover:text-(--color-8)'
+      : 'bg-transparent hover:bg-(--color-1) hover:text-(--color-8)';
 
   return (
     <div className={containerClass}>
@@ -30,21 +81,29 @@ export function IconButtonGroup<T extends string = string>({
         <button
           key={option.value}
           type="button"
-          className={`flex w-full min-w-15 flex-row items-center justify-between gap-1 rounded px-2 py-1.5 text-(--color-6) transition-all ${
-            value === option.value
-              ? 'bg-(--color-2) font-medium text-(--color-9) hover:bg-(--color-3)'
-              : 'bg-transparent hover:bg-(--color-1) hover:text-(--color-8)'
+          className={`${buttonClass} ${
+            value === option.value ? activeClass : inactiveClass
           }`}
           onClick={() => onChange(option.value)}
           title={option.label}
           aria-label={option.label}
         >
-          <span className="flex items-center justify-center text-[20px]">
+          <span
+            className={
+              density === 'dense'
+                ? `${denseIconClass} ${
+                    value === option.value ? 'bg-(--color-2)' : ''
+                  }`
+                : iconClass
+            }
+          >
             {option.icon}
           </span>
-          <span className="text-center text-[11px] leading-[1.2] whitespace-nowrap">
-            {option.label}
-          </span>
+          {resolvedShowLabels ? (
+            <span className="text-center text-[11px] leading-[1.2] whitespace-nowrap">
+              {option.label}
+            </span>
+          ) : null}
         </button>
       ))}
     </div>

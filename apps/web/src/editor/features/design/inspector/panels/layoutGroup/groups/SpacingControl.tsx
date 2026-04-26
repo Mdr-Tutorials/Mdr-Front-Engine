@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import type { TFunction } from 'i18next';
 import { ChevronDown } from 'lucide-react';
-import { SpacingSidePreviewIcon } from '@/components/icons/SpacingSidePreviewIcon';
+import { SpacingSidePreviewIcon } from '@/assets/icons';
 import { InspectorRow } from '@/editor/features/design/inspector/components/InspectorRow';
 import { UnitInput } from '@/editor/features/design/inspector/components/UnitInput';
 import {
@@ -101,7 +101,11 @@ function SpacingControlInternal({
               key={side}
               className="flex items-start gap-2.5 py-1 text-(--color-7)"
             >
-              <SpacingSidePreviewIcon side={side} spacingKey={keyName} />
+              <SpacingSidePreviewIcon
+                side={side}
+                spacingKey={keyName}
+                className="h-14 w-16 shrink-0 text-(--color-6)"
+              />
               <div className="flex min-w-0 flex-1 flex-col gap-1">
                 <span className="text-[10px] leading-none font-semibold">
                   {t(`inspector.panels.layout.fields.sides.${side}`, {

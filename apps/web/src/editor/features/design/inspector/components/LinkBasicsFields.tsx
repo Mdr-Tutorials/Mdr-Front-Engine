@@ -1,4 +1,10 @@
-import { InspectorRow } from './InspectorRow';
+import {
+  LinkTargetBlankIcon,
+  LinkTargetFieldIcon,
+  LinkTargetSelfIcon,
+} from '@/assets/icons';
+import { IconButtonGroup } from './IconButtonGroup';
+import { InspectorIconFieldRow, InspectorRow } from './InspectorRow';
 
 type LinkBasicsFieldsProps = {
   destination: string;
@@ -43,21 +49,31 @@ export function LinkBasicsFields({
         />
       </div>
       <div className="InspectorField flex flex-col gap-1.5">
-        <InspectorRow
+        <InspectorIconFieldRow
           label={t('inspector.fields.link.target', {
             defaultValue: 'Target',
           })}
+          icon={<LinkTargetFieldIcon />}
           control={
-            <select
-              className="h-7 min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none dark:border-white/16"
+            <IconButtonGroup<'_self' | '_blank'>
               value={target}
-              onChange={(event) =>
-                onChangeTarget(event.target.value as '_self' | '_blank')
-              }
-            >
-              <option value="_self">_self</option>
-              <option value="_blank">_blank</option>
-            </select>
+              density="dense"
+              layout="horizontal"
+              columns={2}
+              options={[
+                {
+                  value: '_self',
+                  label: '_self',
+                  icon: <LinkTargetSelfIcon />,
+                },
+                {
+                  value: '_blank',
+                  label: '_blank',
+                  icon: <LinkTargetBlankIcon />,
+                },
+              ]}
+              onChange={onChangeTarget}
+            />
           }
         />
       </div>

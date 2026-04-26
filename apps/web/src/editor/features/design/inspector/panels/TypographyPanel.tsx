@@ -1,5 +1,9 @@
-import { MdrInput, MdrSelect } from '@mdr/ui';
-import { InspectorRow } from '@/editor/features/design/inspector/components/InspectorRow';
+import { MdrInput } from '@mdr/ui';
+import {
+  InspectorIconFieldRow,
+  InspectorRow,
+} from '@/editor/features/design/inspector/components/InspectorRow';
+import { IconButtonGroup } from '@/editor/features/design/inspector/components/IconButtonGroup';
 import { ColorInput } from '@/editor/features/design/inspector/components/ColorInput';
 import { UnitInput } from '@/editor/features/design/inspector/components/UnitInput';
 import { getPrimaryTextField } from '@/editor/features/design/blueprintText';
@@ -12,6 +16,13 @@ import {
   readCssValue,
   updateStyleValue,
 } from './layoutGroup/layoutPanelHelpers';
+import {
+  TextAlignCenterIcon,
+  TextAlignFieldIcon,
+  TextAlignJustifyIcon,
+  TextAlignLeftIcon,
+  TextAlignRightIcon,
+} from '@/assets/icons';
 
 const hasTypographyCapability = (node: InspectorPanelRenderProps['node']) =>
   getPrimaryTextField(node) !== null;
@@ -165,20 +176,24 @@ function TypographyPanelView({ node, updateNode }: InspectorPanelRenderProps) {
           />
         }
       />
-      <InspectorRow
+      <InspectorIconFieldRow
         label={t('inspector.panels.typography.fields.textAlign', {
           defaultValue: 'Text Align',
         })}
+        icon={<TextAlignFieldIcon />}
         control={
-          <MdrSelect
-            size="Small"
+          <IconButtonGroup
             value={textAlignValue}
+            density="dense"
+            layout="horizontal"
+            columns={4}
             options={[
               {
                 label: t('inspector.panels.typography.options.textAlign.left', {
                   defaultValue: 'Left',
                 }),
                 value: 'left',
+                icon: <TextAlignLeftIcon />,
               },
               {
                 label: t(
@@ -188,6 +203,7 @@ function TypographyPanelView({ node, updateNode }: InspectorPanelRenderProps) {
                   }
                 ),
                 value: 'center',
+                icon: <TextAlignCenterIcon />,
               },
               {
                 label: t(
@@ -197,6 +213,7 @@ function TypographyPanelView({ node, updateNode }: InspectorPanelRenderProps) {
                   }
                 ),
                 value: 'right',
+                icon: <TextAlignRightIcon />,
               },
               {
                 label: t(
@@ -206,6 +223,7 @@ function TypographyPanelView({ node, updateNode }: InspectorPanelRenderProps) {
                   }
                 ),
                 value: 'justify',
+                icon: <TextAlignJustifyIcon />,
               },
             ]}
             onChange={(value) =>

@@ -7,7 +7,44 @@ import {
   updateStyleValue,
 } from '../layoutPanelHelpers';
 import { MdrInput } from '@mdr/ui';
-import { InspectorRow } from '@/editor/features/design/inspector/components/InspectorRow';
+import {
+  GridAlignContentAroundIcon,
+  GridAlignContentBetweenIcon,
+  GridAlignContentCenterIcon,
+  GridAlignContentEndIcon,
+  GridAlignContentEvenlyIcon,
+  GridAlignContentFieldIcon,
+  GridAlignContentStartIcon,
+  GridAlignContentStretchIcon,
+  GridAlignItemsBaselineIcon,
+  GridAlignItemsCenterIcon,
+  GridAlignItemsEndIcon,
+  GridAlignItemsFieldIcon,
+  GridAlignItemsStartIcon,
+  GridAlignItemsStretchIcon,
+  GridAutoFlowFieldIcon,
+  GridFlowColumnDenseIcon,
+  GridFlowColumnIcon,
+  GridFlowRowDenseIcon,
+  GridFlowRowIcon,
+  GridJustifyContentAroundIcon,
+  GridJustifyContentBetweenIcon,
+  GridJustifyContentCenterIcon,
+  GridJustifyContentEndIcon,
+  GridJustifyContentEvenlyIcon,
+  GridJustifyContentFieldIcon,
+  GridJustifyContentStartIcon,
+  GridJustifyContentStretchIcon,
+  GridJustifyItemsCenterIcon,
+  GridJustifyItemsEndIcon,
+  GridJustifyItemsFieldIcon,
+  GridJustifyItemsStartIcon,
+  GridJustifyItemsStretchIcon,
+} from '@/assets/icons';
+import {
+  InspectorIconFieldRow,
+  InspectorRow,
+} from '@/editor/features/design/inspector/components/InspectorRow';
 import { IconButtonGroup } from '@/editor/features/design/inspector/components/IconButtonGroup';
 
 const GridGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
@@ -20,6 +57,24 @@ const GridGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
   const gridAlignContent = readString(node.style?.alignContent) ?? 'start';
   const gridColumnCount = readGridColumnCount(gridTemplateColumns);
   const gridColumnsDraft = gridColumnCount ? String(gridColumnCount) : '';
+  const autoFlowLabel = t('inspector.panels.layout.fields.gridAutoFlow', {
+    defaultValue: 'Auto Flow',
+  });
+  const justifyItemsLabel = t('inspector.panels.layout.fields.justifyItems', {
+    defaultValue: 'Justify Items',
+  });
+  const alignItemsLabel = t('inspector.panels.layout.fields.alignItems', {
+    defaultValue: 'Align Items',
+  });
+  const justifyContentLabel = t(
+    'inspector.panels.layout.fields.justifyContent',
+    {
+      defaultValue: 'Justify Content',
+    }
+  );
+  const alignContentLabel = t('inspector.panels.layout.fields.alignContent', {
+    defaultValue: 'Align Content',
+  });
 
   return (
     <>
@@ -81,21 +136,21 @@ const GridGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
         />
       </div>
       <div className="InspectorField flex flex-col gap-1.5">
-        <InspectorRow
-          layout="vertical"
-          label={t('inspector.panels.layout.fields.gridAutoFlow', {
-            defaultValue: 'Auto Flow',
-          })}
+        <InspectorIconFieldRow
+          label={autoFlowLabel}
+          icon={<GridAutoFlowFieldIcon />}
           control={
             <IconButtonGroup
               value={gridAutoFlow}
+              density="dense"
+              columns={2}
               options={[
                 {
                   label: t('inspector.panels.layout.options.gridAutoFlow.row', {
                     defaultValue: 'Row',
                   }),
                   value: 'row',
-                  icon: <span className="text-[10px]">R</span>,
+                  icon: <GridFlowRowIcon />,
                 },
                 {
                   label: t(
@@ -103,7 +158,7 @@ const GridGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
                     { defaultValue: 'Column' }
                   ),
                   value: 'column',
-                  icon: <span className="text-[10px]">C</span>,
+                  icon: <GridFlowColumnIcon />,
                 },
                 {
                   label: t(
@@ -111,7 +166,7 @@ const GridGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
                     { defaultValue: 'Row Dense' }
                   ),
                   value: 'row dense',
-                  icon: <span className="text-[10px]">RD</span>,
+                  icon: <GridFlowRowDenseIcon />,
                 },
                 {
                   label: t(
@@ -119,10 +174,10 @@ const GridGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
                     { defaultValue: 'Col Dense' }
                   ),
                   value: 'column dense',
-                  icon: <span className="text-[10px]">CD</span>,
+                  icon: <GridFlowColumnDenseIcon />,
                 },
               ]}
-              layout="grid"
+              layout="grid-2x2"
               onChange={(value) =>
                 updateNode((current) =>
                   updateStyleValue(current, 'gridAutoFlow', value)
@@ -133,42 +188,42 @@ const GridGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
         />
       </div>
       <div className="InspectorField flex flex-col gap-1.5">
-        <InspectorRow
-          layout="vertical"
-          label={t('inspector.panels.layout.fields.justifyItems', {
-            defaultValue: 'Justify Items',
-          })}
+        <InspectorIconFieldRow
+          label={justifyItemsLabel}
+          icon={<GridJustifyItemsFieldIcon />}
           control={
             <IconButtonGroup
               value={gridJustifyItems}
+              density="dense"
+              columns={4}
               options={[
                 {
                   label: t('inspector.panels.layout.options.align.start', {
                     defaultValue: 'Start',
                   }),
                   value: 'start',
-                  icon: <span className="text-[10px]">S</span>,
+                  icon: <GridJustifyItemsStartIcon />,
                 },
                 {
                   label: t('inspector.panels.layout.options.align.center', {
                     defaultValue: 'Center',
                   }),
                   value: 'center',
-                  icon: <span className="text-[10px]">C</span>,
+                  icon: <GridJustifyItemsCenterIcon />,
                 },
                 {
                   label: t('inspector.panels.layout.options.align.end', {
                     defaultValue: 'End',
                   }),
                   value: 'end',
-                  icon: <span className="text-[10px]">E</span>,
+                  icon: <GridJustifyItemsEndIcon />,
                 },
                 {
                   label: t('inspector.panels.layout.options.align.stretch', {
                     defaultValue: 'Stretch',
                   }),
                   value: 'stretch',
-                  icon: <span className="text-[10px]">ST</span>,
+                  icon: <GridJustifyItemsStretchIcon />,
                 },
               ]}
               layout="grid"
@@ -182,49 +237,49 @@ const GridGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
         />
       </div>
       <div className="InspectorField flex flex-col gap-1.5">
-        <InspectorRow
-          layout="vertical"
-          label={t('inspector.panels.layout.fields.alignItems', {
-            defaultValue: 'Align Items',
-          })}
+        <InspectorIconFieldRow
+          label={alignItemsLabel}
+          icon={<GridAlignItemsFieldIcon />}
           control={
             <IconButtonGroup
               value={gridAlignItems}
+              density="dense"
+              columns={5}
               options={[
                 {
                   label: t('inspector.panels.layout.options.align.start', {
                     defaultValue: 'Start',
                   }),
                   value: 'start',
-                  icon: <span className="text-[10px]">S</span>,
+                  icon: <GridAlignItemsStartIcon />,
                 },
                 {
                   label: t('inspector.panels.layout.options.align.center', {
                     defaultValue: 'Center',
                   }),
                   value: 'center',
-                  icon: <span className="text-[10px]">C</span>,
+                  icon: <GridAlignItemsCenterIcon />,
                 },
                 {
                   label: t('inspector.panels.layout.options.align.end', {
                     defaultValue: 'End',
                   }),
                   value: 'end',
-                  icon: <span className="text-[10px]">E</span>,
+                  icon: <GridAlignItemsEndIcon />,
                 },
                 {
                   label: t('inspector.panels.layout.options.align.stretch', {
                     defaultValue: 'Stretch',
                   }),
                   value: 'stretch',
-                  icon: <span className="text-[10px]">ST</span>,
+                  icon: <GridAlignItemsStretchIcon />,
                 },
                 {
                   label: t('inspector.panels.layout.options.align.baseline', {
                     defaultValue: 'Baseline',
                   }),
                   value: 'baseline',
-                  icon: <span className="text-[10px]">B</span>,
+                  icon: <GridAlignItemsBaselineIcon />,
                 },
               ]}
               layout="grid"
@@ -238,35 +293,35 @@ const GridGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
         />
       </div>
       <div className="InspectorField flex flex-col gap-1.5">
-        <InspectorRow
-          layout="vertical"
-          label={t('inspector.panels.layout.fields.justifyContent', {
-            defaultValue: 'Justify Content',
-          })}
+        <InspectorIconFieldRow
+          label={justifyContentLabel}
+          icon={<GridJustifyContentFieldIcon />}
           control={
             <IconButtonGroup
               value={gridJustifyContent}
+              density="dense"
+              columns={7}
               options={[
                 {
                   label: t('inspector.panels.layout.options.justify.start', {
                     defaultValue: 'Start',
                   }),
                   value: 'start',
-                  icon: <span className="text-[10px]">S</span>,
+                  icon: <GridJustifyContentStartIcon />,
                 },
                 {
                   label: t('inspector.panels.layout.options.justify.center', {
                     defaultValue: 'Center',
                   }),
                   value: 'center',
-                  icon: <span className="text-[10px]">C</span>,
+                  icon: <GridJustifyContentCenterIcon />,
                 },
                 {
                   label: t('inspector.panels.layout.options.justify.end', {
                     defaultValue: 'End',
                   }),
                   value: 'end',
-                  icon: <span className="text-[10px]">E</span>,
+                  icon: <GridJustifyContentEndIcon />,
                 },
                 {
                   label: t(
@@ -274,7 +329,7 @@ const GridGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
                     { defaultValue: 'Between' }
                   ),
                   value: 'space-between',
-                  icon: <span className="text-[10px]">SB</span>,
+                  icon: <GridJustifyContentBetweenIcon />,
                 },
                 {
                   label: t(
@@ -282,7 +337,7 @@ const GridGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
                     { defaultValue: 'Around' }
                   ),
                   value: 'space-around',
-                  icon: <span className="text-[10px]">SA</span>,
+                  icon: <GridJustifyContentAroundIcon />,
                 },
                 {
                   label: t(
@@ -290,14 +345,14 @@ const GridGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
                     { defaultValue: 'Evenly' }
                   ),
                   value: 'space-evenly',
-                  icon: <span className="text-[10px]">SE</span>,
+                  icon: <GridJustifyContentEvenlyIcon />,
                 },
                 {
                   label: t('inspector.panels.layout.options.align.stretch', {
                     defaultValue: 'Stretch',
                   }),
                   value: 'stretch',
-                  icon: <span className="text-[10px]">ST</span>,
+                  icon: <GridJustifyContentStretchIcon />,
                 },
               ]}
               layout="grid"
@@ -311,35 +366,35 @@ const GridGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
         />
       </div>
       <div className="InspectorField flex flex-col gap-1.5">
-        <InspectorRow
-          layout="vertical"
-          label={t('inspector.panels.layout.fields.alignContent', {
-            defaultValue: 'Align Content',
-          })}
+        <InspectorIconFieldRow
+          label={alignContentLabel}
+          icon={<GridAlignContentFieldIcon />}
           control={
             <IconButtonGroup
               value={gridAlignContent}
+              density="dense"
+              columns={7}
               options={[
                 {
                   label: t('inspector.panels.layout.options.justify.start', {
                     defaultValue: 'Start',
                   }),
                   value: 'start',
-                  icon: <span className="text-[10px]">S</span>,
+                  icon: <GridAlignContentStartIcon />,
                 },
                 {
                   label: t('inspector.panels.layout.options.justify.center', {
                     defaultValue: 'Center',
                   }),
                   value: 'center',
-                  icon: <span className="text-[10px]">C</span>,
+                  icon: <GridAlignContentCenterIcon />,
                 },
                 {
                   label: t('inspector.panels.layout.options.justify.end', {
                     defaultValue: 'End',
                   }),
                   value: 'end',
-                  icon: <span className="text-[10px]">E</span>,
+                  icon: <GridAlignContentEndIcon />,
                 },
                 {
                   label: t(
@@ -347,7 +402,7 @@ const GridGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
                     { defaultValue: 'Between' }
                   ),
                   value: 'space-between',
-                  icon: <span className="text-[10px]">SB</span>,
+                  icon: <GridAlignContentBetweenIcon />,
                 },
                 {
                   label: t(
@@ -355,7 +410,7 @@ const GridGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
                     { defaultValue: 'Around' }
                   ),
                   value: 'space-around',
-                  icon: <span className="text-[10px]">SA</span>,
+                  icon: <GridAlignContentAroundIcon />,
                 },
                 {
                   label: t(
@@ -363,14 +418,14 @@ const GridGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
                     { defaultValue: 'Evenly' }
                   ),
                   value: 'space-evenly',
-                  icon: <span className="text-[10px]">SE</span>,
+                  icon: <GridAlignContentEvenlyIcon />,
                 },
                 {
                   label: t('inspector.panels.layout.options.align.stretch', {
                     defaultValue: 'Stretch',
                   }),
                   value: 'stretch',
-                  icon: <span className="text-[10px]">ST</span>,
+                  icon: <GridAlignContentStretchIcon />,
                 },
               ]}
               layout="grid"

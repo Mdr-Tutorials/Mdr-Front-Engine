@@ -278,13 +278,13 @@ export function UnitInput({
   return (
     <div
       ref={containerRef}
-      className={`InspectorUnitInput relative w-full max-w-[100px] ${disabled ? 'Disabled opacity-60' : ''}`.trim()}
+      className={`InspectorUnitInput relative w-24 ${disabled ? 'Disabled opacity-60' : ''}`.trim()}
       onKeyDown={(event) => {
         if (event.key === 'Escape') setIsOpen(false);
       }}
     >
-      <div className="InspectorUnitInputFrame inline-flex h-8 w-full items-center justify-between overflow-hidden rounded-[10px] border border-black/12 bg-(--color-0)">
-        <div className="InspectorUnitInputAmount w-10 flex-none [&_.InspectorTextInput]:px-1.5 [&_.InspectorTextInput]:text-right [&_.InspectorTextInput]:tabular-nums">
+      <div className="InspectorUnitInputFrame inline-flex h-7 w-full items-center justify-between overflow-hidden rounded-md border border-black/12 bg-(--color-0)">
+        <div className="InspectorUnitInputAmount w-12 flex-none [&_.InspectorTextInput]:h-7 [&_.InspectorTextInput]:px-1.5 [&_.InspectorTextInput]:text-right [&_.InspectorTextInput]:tabular-nums">
           <InspectorTextInput
             value={draftAmount}
             onChange={(nextAmount) => {
@@ -314,7 +314,7 @@ export function UnitInput({
           <button
             ref={buttonRef}
             type="button"
-            className="InspectorUnitInputUnitButton inline-flex h-full w-12 items-center justify-between gap-1.5 border-0 bg-transparent px-2 text-xs text-(--color-9) outline-none disabled:cursor-not-allowed"
+            className="InspectorUnitInputUnitButton inline-flex h-full w-[47px] items-center justify-between gap-1 border-0 bg-transparent px-2 text-xs text-(--color-9) outline-none disabled:cursor-not-allowed"
             disabled={disabled}
             aria-label={draftUnit}
             aria-expanded={isOpen}
