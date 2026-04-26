@@ -1,38 +1,40 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
+import {
+  applyThemePreference,
+  getStoredThemePreference,
+  normalizeThemePreference,
+  watchSystemThemePreference,
+} from '@/theme/themeRuntime';
 
 export function ThemeSync() {
   const theme = useSettingsStore((state) => state.global.theme);
   const setGlobalValue = useSettingsStore((state) => state.setGlobalValue);
+  const hasLoadedStoredThemeRef = useRef(false);
 
   useEffect(() => {
-    // Priority: LocalStorage > System > Default (Light)
-    let resolvedTheme: 'light' | 'dark' = 'light';
-    const storedTheme =
-      typeof localStorage !== 'undefined'
-        ? localStorage.getItem('theme')
-        : null;
+    let preference = normalizeThemePreference(theme) ?? 'home';
 
-    if (storedTheme === 'light' || storedTheme === 'dark') {
-      resolvedTheme = storedTheme;
-    } else if (
-      window.matchMedia &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches
-    ) {
-      resolvedTheme = 'dark';
+    if (!hasLoadedStoredThemeRef.current) {
+      hasLoadedStoredThemeRef.current = true;
+      const storedTheme = getStoredThemePreference();
+
+      if (storedTheme && storedTheme !== preference) {
+        setGlobalValue('theme', storedTheme);
+        return;
+      }
+
+      preference = storedTheme ?? preference;
     }
 
-    if (theme === 'home' || theme !== resolvedTheme) {
-      setGlobalValue('theme', resolvedTheme);
-    }
-  }, []);
+    applyThemePreference(preference);
 
-  useEffect(() => {
-    if (theme === 'light' || theme === 'dark') {
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
+    if (preference !== 'home') {
+      return;
     }
-  }, [theme]);
+
+    return watchSystemThemePreference(() => applyThemePreference(preference));
+  }, [setGlobalValue, theme]);
 
   return null;
 }

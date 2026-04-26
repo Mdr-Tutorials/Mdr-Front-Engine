@@ -1,7 +1,7 @@
 .MdrAnchorNavigation {
   display: flex;
   gap: var(--spacing-sm);
-  color: var(--color-6);
+  color: var(--text-muted);
 }
 
 .MdrAnchorNavigation.Vertical {
@@ -16,7 +16,7 @@
   border-radius: var(--radius-sm);
 
   &.Active {
-    background-color: var(--color-2);
-    color: var(--color-9);
+    background-color: var(--bg-raised);
+    color: var(--text-primary);
   }
 }

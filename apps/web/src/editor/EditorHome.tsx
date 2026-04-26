@@ -60,7 +60,7 @@ function EditorTipsRandom() {
 
   return (
     <div
-      className="mt-auto cursor-pointer p-[12px] text-center text-[14px] text-[#999] select-none hover:text-[var(--color-9)]"
+      className="mt-auto cursor-pointer p-[12px] text-center text-(length:--font-size-md) text-(--text-muted) select-none hover:text-(--text-primary)"
       onClick={clickNext}
     >
       <p>
@@ -146,18 +146,18 @@ function ProjectCard({
   };
 
   return (
-    <div className="group/card relative flex h-full min-h-[280px] w-full flex-col rounded-[16px] border border-[var(--color-2)] bg-[var(--color-1)] p-[24px] text-left transition-all duration-[300ms] ease-[ease] hover:-translate-y-1 hover:border-[var(--color-4)] hover:bg-[var(--color-0)] hover:shadow-[var(--shadow-lg)]">
+    <div className="group/card relative flex h-full min-h-[280px] w-full flex-col rounded-[16px] border border-(--border-subtle) bg-(--bg-panel) p-[24px] text-left transition-all duration-[300ms] ease-[ease] hover:-translate-y-1 hover:border-(--border-default) hover:bg-(--bg-canvas) hover:shadow-(--shadow-lg)">
       <button
         type="button"
         onClick={() => setActionsOpen((prev) => !prev)}
         aria-label={t('home.card.moreActions', 'More actions')}
-        className="absolute top-[14px] right-[14px] z-10 inline-flex h-[30px] w-[30px] items-center justify-center rounded-[9px] border border-[var(--color-2)] bg-[var(--color-0)] text-[var(--color-7)] transition-colors hover:border-[var(--color-4)] hover:text-[var(--color-9)]"
+        className="absolute top-[14px] right-[14px] z-10 inline-flex h-[30px] w-[30px] items-center justify-center rounded-[9px] border border-(--border-subtle) bg-(--bg-canvas) text-(--text-secondary) transition-colors hover:border-(--border-default) hover:text-(--text-primary)"
       >
         <MoreHorizontal size={16} />
       </button>
 
       {isActionsOpen && (
-        <div className="absolute top-[48px] right-[14px] z-20 flex min-w-[170px] flex-col gap-[6px] rounded-[12px] border border-[var(--color-2)] bg-[var(--color-0)] p-[8px] shadow-[var(--shadow-lg)]">
+        <div className="absolute top-[48px] right-[14px] z-20 flex min-w-[170px] flex-col gap-[6px] rounded-[12px] border border-(--border-subtle) bg-(--bg-canvas) p-[8px] shadow-(--shadow-lg)">
           {!project.isPublic ? (
             <button
               type="button"
@@ -171,7 +171,7 @@ function ProjectCard({
                     )
                   : undefined
               }
-              className="inline-flex items-center gap-[6px] rounded-[8px] border border-[var(--color-2)] bg-[var(--color-0)] px-[10px] py-[7px] text-[12px] text-[var(--color-8)] transition-colors hover:border-[var(--color-4)] disabled:cursor-not-allowed disabled:opacity-[0.45]"
+              className="inline-flex items-center gap-[6px] rounded-[8px] border border-(--border-subtle) bg-(--bg-canvas) px-[10px] py-[7px] text-(length:--font-size-xs) text-(--text-primary) transition-colors hover:border-(--border-default) disabled:cursor-not-allowed disabled:opacity-[0.45]"
             >
               <Globe size={14} />
               {isClonedProject
@@ -185,7 +185,7 @@ function ProjectCard({
               href={`/community/${project.id}`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-[6px] rounded-[8px] border border-[var(--color-2)] bg-[var(--color-0)] px-[10px] py-[7px] text-[12px] text-[var(--color-8)] no-underline transition-colors hover:border-[var(--color-4)]"
+              className="inline-flex items-center gap-[6px] rounded-[8px] border border-(--border-subtle) bg-(--bg-canvas) px-[10px] py-[7px] text-(length:--font-size-xs) text-(--text-primary) no-underline transition-colors hover:border-(--border-default)"
             >
               <Globe size={14} />
               {t('home.card.openCommunity', 'Open Community')}
@@ -195,7 +195,7 @@ function ProjectCard({
             type="button"
             onClick={() => onDelete(project)}
             disabled={isPublishing || isDeleting}
-            className="inline-flex items-center gap-[6px] rounded-[8px] border border-[rgba(220,38,38,0.35)] bg-[var(--color-0)] px-[10px] py-[7px] text-[12px] text-[rgba(185,28,28,0.92)] transition-colors hover:border-[rgba(220,38,38,0.6)] disabled:cursor-not-allowed disabled:opacity-[0.45]"
+            className="inline-flex items-center gap-[6px] rounded-[8px] border border-(--danger-subtle) bg-(--bg-canvas) px-[10px] py-[7px] text-(length:--font-size-xs) text-(--danger-color) transition-colors hover:border-(--danger-hover) disabled:cursor-not-allowed disabled:opacity-[0.45]"
           >
             <Trash2 size={14} />
             {isDeleting
@@ -215,7 +215,7 @@ function ProjectCard({
             event.stopPropagation();
             void applyRename();
           }}
-          className="absolute top-[70px] right-[14px] z-10 inline-flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[6px] border border-[var(--color-3)] text-[var(--color-8)] transition hover:border-[var(--color-5)] hover:text-[var(--color-10)] disabled:opacity-[0.5]"
+          className="absolute top-[70px] right-[14px] z-10 inline-flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[6px] border border-(--border-default) text-(--text-primary) transition hover:border-(--border-strong) hover:text-(--text-primary) disabled:opacity-[0.5]"
         >
           <Check size={14} />
         </button>
@@ -224,7 +224,7 @@ function ProjectCard({
           type="button"
           onClick={startRename}
           aria-label={t('home.card.rename', 'Rename project')}
-          className="absolute top-[70px] right-[14px] z-10 inline-flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[6px] border border-transparent text-[var(--color-6)] opacity-0 transition group-hover/card:opacity-100 hover:border-[var(--color-3)] hover:text-[var(--color-10)] focus:opacity-100"
+          className="absolute top-[70px] right-[14px] z-10 inline-flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[6px] border border-transparent text-(--text-muted) opacity-0 transition group-hover/card:opacity-100 hover:border-(--border-default) hover:text-(--text-primary) focus:opacity-100"
         >
           <Pencil size={14} />
         </button>
@@ -250,9 +250,7 @@ function ProjectCard({
         className="flex flex-1 cursor-pointer flex-col justify-between border-0 bg-transparent p-0 text-left"
       >
         <div className="flex flex-col gap-[12px]">
-          <div className="mb-[8px] text-[var(--color-primary)]">
-            {getIcon()}
-          </div>
+          <div className="mb-[8px] text-(--accent-color)">{getIcon()}</div>
           <div className="pr-[36px]">
             {isEditingName ? (
               <input
@@ -277,24 +275,26 @@ function ProjectCard({
                     void applyRename();
                   }
                 }}
-                className="h-[30px] w-full rounded-[8px] border border-[var(--color-4)] bg-[var(--color-0)] px-[8px] text-[16px] font-semibold text-[var(--color-10)] outline-none"
+                className="h-[30px] w-full rounded-[8px] border border-(--border-default) bg-(--bg-canvas) px-[8px] text-(length:--font-size-lg) font-semibold text-(--text-primary) outline-none"
               />
             ) : (
-              <h3 className="m-0 min-w-0 flex-1 text-[18px] font-semibold text-[var(--color-10)]">
+              <h3 className="m-0 min-w-0 flex-1 text-(length:--font-size-xl) font-semibold text-(--text-primary)">
                 <span className="block truncate">
                   {project.name || t('home.card.untitled', 'Untitled')}
                 </span>
               </h3>
             )}
           </div>
-          <p className="flex items-center justify-between border-t border-[var(--color-2)] pt-[16px] text-[12px] leading-[1.5] text-[var(--color-5)]">
+          <p className="flex items-center justify-between border-t border-(--border-subtle) pt-[16px] text-(length:--font-size-xs) leading-(--line-height-normal) text-(--text-muted)">
             {truncate(project.description || '', 160) ||
               t('home.card.noDescription', 'No description')}
           </p>
         </div>
-        <div className="flex items-center gap-[6px] text-[var(--color-6)]">
+        <div className="flex items-center gap-[6px] text-(--text-muted)">
           <Clock size={14} />
-          <span className="text-[12px]">{formatTime(project.updatedAt)}</span>
+          <span className="text-(length:--font-size-xs)">
+            {formatTime(project.updatedAt)}
+          </span>
         </div>
       </div>
     </div>
@@ -510,37 +510,39 @@ function EditorHome() {
   };
 
   return (
-    <div className="flex h-full w-full flex-1 bg-[var(--color-0)] text-[var(--color-10)]">
+    <div className="flex h-full w-full flex-1 bg-(--bg-canvas) text-(--text-primary)">
       <div className="flex flex-1 flex-col gap-[32px] overflow-y-auto p-[40px]">
         <header className="flex w-full flex-col gap-[8px]">
-          <h1 className="m-0 text-[24px] leading-[1.25] font-semibold text-[var(--color-10)]">
+          <h1 className="m-0 text-(length:--font-size-3xl) leading-[1.25] font-semibold text-(--text-primary)">
             {t('home.welcomeTitle')}
           </h1>
         </header>
 
         {loadError && (
-          <p className="m-0 rounded-[12px] border border-[var(--color-3)] bg-[var(--color-1)] p-[12px] text-[13px] text-[var(--color-7)]">
+          <p className="m-0 rounded-[12px] border border-(--border-default) bg-(--bg-panel) p-[12px] text-(length:--font-size-sm) text-(--text-secondary)">
             {loadError}
           </p>
         )}
 
         <div className="grid auto-rows-[minmax(280px,auto)] grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-[20px] max-[1200px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1">
           <button
-            className="flex h-full min-h-[280px] w-full cursor-pointer flex-col items-center justify-center rounded-[16px] border-2 border-dashed border-[var(--color-3)] bg-[var(--color-1)] text-[18px] text-[var(--color-10)] transition-all duration-[300ms] ease-[ease] hover:border-[var(--color-6)] hover:bg-[var(--color-2)]"
+            className="flex h-full min-h-[280px] w-full cursor-pointer flex-col items-center justify-center rounded-[16px] border-2 border-dashed border-(--border-default) bg-(--bg-panel) text-(length:--font-size-xl) text-(--text-primary) transition-all duration-[300ms] ease-[ease] hover:border-(--border-strong) hover:bg-(--bg-raised)"
             onClick={() => setResourceModalOpen(true)}
           >
             <Plus size={48} />
-            <span className="text-[16px]">{t('home.actions.newProject')}</span>
+            <span className="text-(length:--font-size-lg)">
+              {t('home.actions.newProject')}
+            </span>
           </button>
 
           {!token && (
-            <div className="flex min-h-[280px] items-center justify-center rounded-[16px] border border-[var(--color-2)] bg-[var(--color-1)] p-[24px] text-[13px] text-[var(--color-6)]">
+            <div className="flex min-h-[280px] items-center justify-center rounded-[16px] border border-(--border-subtle) bg-(--bg-panel) p-[24px] text-(length:--font-size-sm) text-(--text-muted)">
               {t('auth.required', 'Please sign in to load your projects.')}
             </div>
           )}
 
           {isLoading && (
-            <div className="flex min-h-[280px] items-center justify-center rounded-[16px] border border-[var(--color-2)] bg-[var(--color-1)] p-[24px] text-[13px] text-[var(--color-6)]">
+            <div className="flex min-h-[280px] items-center justify-center rounded-[16px] border border-(--border-subtle) bg-(--bg-panel) p-[24px] text-(length:--font-size-sm) text-(--text-muted)">
               {t('common.loading', 'Loading...')}
             </div>
           )}

@@ -47,12 +47,12 @@ export function EditorBarExitModal({
       onClick={onClose}
     >
       <div
-        className="w-[min(420px,90vw)] rounded-[16px] border border-[rgba(0,0,0,0.08)] bg-[var(--color-0)] px-[20px] pt-[18px] pb-[20px] text-[var(--color-10)] shadow-[0_16px_40px_rgba(0,0,0,0.16)] dark:border-[rgba(255,255,255,0.08)]"
+        className="w-[min(420px,90vw)] rounded-[16px] border border-(--border-subtle) bg-(--bg-canvas) px-[20px] pt-[18px] pb-[20px] text-(--text-primary) shadow-[0_16px_40px_rgba(0,0,0,0.16)]"
         onClick={(event) => event.stopPropagation()}
       >
         <div>
           <h3 className="m-0 text-[18px] font-bold">{title}</h3>
-          <p className="mt-[6px] text-[12px] text-[var(--color-6)]">
+          <p className="mt-[6px] text-(length:--font-size-xs) text-(--text-muted)">
             {exitLabel}
           </p>
         </div>

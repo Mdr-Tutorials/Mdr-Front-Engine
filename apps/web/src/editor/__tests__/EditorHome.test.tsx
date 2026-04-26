@@ -1,6 +1,7 @@
 ﻿import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import EditorHome from '@/editor/EditorHome';
+import { EditorShortcutProvider } from '@/editor/shortcuts';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 
 vi.mock('../features/newfile/NewResourceModal', () => ({
@@ -31,6 +32,13 @@ vi.mock('@/auth/useAuthStore', () => ({
     selector({ token: 'token-1' }),
 }));
 
+const renderEditorHome = () =>
+  render(
+    <EditorShortcutProvider>
+      <EditorHome />
+    </EditorShortcutProvider>
+  );
+
 describe('EditorHome', () => {
   beforeEach(() => {
     listProjectsMock.mockReset();
@@ -46,7 +54,7 @@ describe('EditorHome', () => {
     listProjectsMock.mockImplementation(
       () => new Promise<{ projects: [] }>(() => undefined)
     );
-    render(<EditorHome />);
+    renderEditorHome();
 
     fireEvent.click(
       screen.getByRole('button', { name: 'home.actions.newProject' })
@@ -75,7 +83,7 @@ describe('EditorHome', () => {
       ],
     });
 
-    render(<EditorHome />);
+    renderEditorHome();
 
     await waitFor(() => {
       const titles = screen
@@ -119,7 +127,7 @@ describe('EditorHome', () => {
     });
     deleteProjectMock.mockResolvedValue(undefined);
 
-    render(<EditorHome />);
+    renderEditorHome();
 
     await screen.findByText('Project One');
     fireEvent.click(
@@ -146,7 +154,7 @@ describe('EditorHome', () => {
 
   it('opens exit modal on Escape and returns home on confirm', async () => {
     listProjectsMock.mockResolvedValue({ projects: [] });
-    render(<EditorHome />);
+    renderEditorHome();
 
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(screen.getByText('bar.exitTitle')).toBeTruthy();
@@ -190,7 +198,7 @@ describe('EditorHome', () => {
       },
     });
 
-    render(<EditorHome />);
+    renderEditorHome();
 
     await screen.findByText('Project One');
     fireEvent.click(screen.getByRole('button', { name: 'home.card.rename' }));

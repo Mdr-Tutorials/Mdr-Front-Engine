@@ -223,7 +223,7 @@ function Editor() {
         projectId={projectId}
         pathname={location.pathname}
       />
-      <div className="flex max-h-screen min-h-screen flex-row bg-[linear-gradient(120deg,var(--color-0)_20%,var(--color-1)_100%)]">
+      <div className="flex max-h-screen min-h-screen flex-row bg-[linear-gradient(120deg,var(--bg-canvas)_20%,var(--bg-panel)_100%)]">
         <SettingsEffects />
         <EditorBar />
         <div className="min-h-screen flex-1 overflow-auto">

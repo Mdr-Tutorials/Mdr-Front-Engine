@@ -154,9 +154,12 @@ export const useSettingsStore = create<SettingsStore>()((set) => ({
       global: { ...state.global, ...partial },
     })),
   setGlobalValue: (key, value) =>
-    set((state) => ({
-      global: { ...state.global, [key]: value },
-    })),
+    set((state) => {
+      if (state.global[key] === value) return state;
+      return {
+        global: { ...state.global, [key]: value },
+      };
+    }),
   ensureProjectGlobal: (projectId) =>
     set((state) => {
       if (!projectId || state.projectGlobalById[projectId]) return state;

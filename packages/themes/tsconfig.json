@@ -6,8 +6,19 @@
     "declarationMap": true,
     "emitDeclarationOnly": true,
     "outDir": "./dist",
-    "noEmit": false
+    "noEmit": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
-  "include": ["index.ts", "presets/**/*.ts", "utils/**/*.ts"],
+  "include": [
+    "index.ts",
+    "presets/**/*.ts",
+    "utils/**/*.ts",
+    "src/**/*.ts",
+    "src/**/*.json",
+    "manifests/**/*.json"
+  ],
   "exclude": ["node_modules", "dist"]
 }

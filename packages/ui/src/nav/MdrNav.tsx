@@ -3,7 +3,7 @@ import type { MdrComponent } from '@mdr/shared';
 import './MdrNav.scss';
 
 interface MdrNavSpecificProps {
-  columns?: 2 | 3; // 2: 左右 3: 左中右
+  columns?: 2 | 3;
   canHide?: boolean;
   isFloat?: boolean;
   backgroundStyle?: 'Transparent' | 'Solid' | 'Blurred';

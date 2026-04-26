@@ -1,8 +1,13 @@
 {
   "name": "@mdr/themes",
   "version": "0.0.1",
-  "main": "./src/index.scss",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
   "exports": {
-    ".": "./src/variables.scss"
+    ".": "./src/index.ts",
+    "./legacy.scss": "./src/variables.scss",
+    "./schema": "./src/schema/themeManifest.schema.json",
+    "./manifests/official/monochrome-light.json": "./manifests/official/monochrome-light.json",
+    "./manifests/official/monochrome-dark.json": "./manifests/official/monochrome-dark.json"
   }
 }

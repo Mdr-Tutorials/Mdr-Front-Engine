@@ -35,7 +35,9 @@ function EditorBar() {
     ? t('projectHome.actions.settings.label')
     : t('editorSettings', { ns: 'routes' });
   const barIconGroupClassName =
-    'flex flex-col items-center gap-[14px] [&_.MdrIconLink]:!text-[var(--color-9)] [&_.MdrIconLink:hover]:!text-[var(--color-10)]';
+    'flex flex-col items-center gap-[14px] [--icon-link-color:var(--editor-bar-icon)] [--icon-link-hover-color:var(--editor-bar-icon-hover)]';
+  const barEdgeGroupClassName =
+    'flex flex-col items-center gap-[12px] [--icon-link-color:var(--editor-bar-icon)] [--icon-link-hover-color:var(--editor-bar-icon-hover)]';
   const isBlueprintRoute = location.pathname.includes('/blueprint');
 
   useEditorShortcut(
@@ -48,13 +50,10 @@ function EditorBar() {
 
   return (
     <>
-      <nav
-        className="flex max-h-screen min-h-screen w-[72px] flex-col items-center justify-between bg-[var(--color-2)] px-[14px] py-[20px]"
-        data-theme="dark"
-      >
-        <section className="flex flex-col items-center gap-[12px] [&_.MdrIconLink]:!text-[var(--color-9)] [&_.MdrIconLink:hover]:!text-[var(--color-10)]">
+      <nav className="flex max-h-screen min-h-screen w-[72px] flex-col items-center justify-between bg-(--editor-bar-bg) px-[14px] py-[20px]">
+        <section className={barEdgeGroupClassName}>
           <button
-            className="inline-flex cursor-pointer items-center justify-center rounded-[10px] border-0 bg-transparent p-[6px] text-[var(--color-9)] transition-[color,background-color] duration-[150ms] ease-[ease] hover:bg-[rgba(255,255,255,0.08)] hover:text-[var(--color-10)]"
+            className="inline-flex cursor-pointer items-center justify-center rounded-[10px] border-0 bg-transparent p-[6px] text-(--editor-bar-icon) transition-[color,background-color] duration-[150ms] ease-[ease] hover:bg-(--editor-bar-icon-hover-bg) hover:text-(--editor-bar-icon-hover)"
             aria-label={t('bar.exitAria')}
             title={t('bar.exitAria')}
             onClick={() => {
@@ -130,7 +129,7 @@ function EditorBar() {
             </>
           )}
         </section>
-        <section className="flex flex-col items-center gap-[12px] [&_.MdrIconLink]:!text-[var(--color-9)] [&_.MdrIconLink:hover]:!text-[var(--color-10)]">
+        <section className={barEdgeGroupClassName}>
           <MdrIconLink
             icon={<Settings size={22} />}
             size={22}

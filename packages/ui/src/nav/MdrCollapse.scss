@@ -1,13 +1,13 @@
 .MdrCollapse {
   width: 100%;
-  border: 1px solid var(--color-3);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   overflow: hidden;
-  background-color: var(--color-0);
+  background-color: var(--bg-canvas);
 }
 
 .MdrCollapseItem + .MdrCollapseItem {
-  border-top: 1px solid var(--color-3);
+  border-top: 1px solid var(--border-default);
 }
 
 .MdrCollapseHeader {
@@ -19,14 +19,14 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  font-weight: 600;
-  color: var(--color-8);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
 }
 
 .MdrCollapseContent {
   padding: var(--spacing-md);
-  color: var(--color-7);
-  border-top: 1px solid var(--color-3);
+  color: var(--text-muted);
+  border-top: 1px solid var(--border-default);
 }
 
 .MdrCollapseItem.Disabled .MdrCollapseHeader {

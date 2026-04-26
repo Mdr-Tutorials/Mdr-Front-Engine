@@ -4,7 +4,6 @@ import { createRoot } from 'react-dom/client';
 import { I18nextProvider } from 'react-i18next';
 import { RouterProvider, createBrowserRouter } from 'react-router';
 import './index.css';
-import '@mdr/themes';
 import { createRoutes } from './App';
 import { initI18n } from './i18n';
 import { ThemeSync } from './components/ThemeSync';

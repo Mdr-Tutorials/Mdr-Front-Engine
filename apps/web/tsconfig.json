@@ -8,6 +8,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@mdr/shared": ["../../packages/shared/src"],
+      "@mdr/themes": ["../../packages/themes/src"],
       "@mdr/ui": ["../../packages/ui/src"]
     }
   },
@@ -24,6 +25,9 @@
     },
     {
       "path": "../../packages/ui"
+    },
+    {
+      "path": "../../packages/themes"
     }
   ]
 }

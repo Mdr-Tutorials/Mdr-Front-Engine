@@ -89,15 +89,15 @@ function NewResourceModal({
       onClick={onClose}
     >
       <div
-        className="flex w-[min(720px,92vw)] flex-col overflow-hidden rounded-[18px] border border-[rgba(0,0,0,0.08)] bg-[var(--color-0)] text-[var(--color-10)] shadow-[0_18px_44px_rgba(0,0,0,0.16)]"
+        className="flex w-[min(720px,92vw)] flex-col overflow-hidden rounded-[18px] border border-(--border-subtle) bg-(--bg-canvas) text-(--text-primary) shadow-[0_18px_44px_rgba(0,0,0,0.16)]"
         onClick={(event) => event.stopPropagation()}
       >
-        <header className="flex items-center justify-between border-b border-b-[rgba(0,0,0,0.06)] bg-[linear-gradient(120deg,var(--color-1),var(--color-0))] px-[22px] py-[18px]">
+        <header className="flex items-center justify-between border-b border-b-(--border-subtle) bg-[linear-gradient(120deg,var(--bg-panel),var(--bg-canvas))] px-[22px] py-[18px]">
           <div>
             <h2 className="m-0 text-[18px] font-bold">
               {t('modals.newResource.title', 'Create New')}
             </h2>
-            <p className="mt-[6px] text-[12px] text-[var(--color-6)]">
+            <p className="mt-[6px] text-(length:--font-size-xs) text-(--text-muted)">
               {t(
                 'modals.newResource.subtitle',
                 'Select a type and start building'
@@ -105,7 +105,7 @@ function NewResourceModal({
             </p>
           </div>
           <button
-            className="flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-[20px] text-[var(--color-6)] transition-all duration-[300ms] ease-[ease] hover:bg-[rgba(0,0,0,0.07)] hover:text-[var(--color-10)]"
+            className="flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-(length:--font-size-2xl) text-(--text-muted) transition-all duration-[300ms] ease-[ease] hover:bg-(--bg-raised) hover:text-(--text-primary)"
             onClick={onClose}
             aria-label={t('modals.close')}
           >
@@ -115,12 +115,12 @@ function NewResourceModal({
 
         <div className="flex flex-col gap-[22px] p-[28px]">
           {error && (
-            <p className="m-0 rounded-[10px] border border-[var(--color-3)] bg-[var(--color-1)] p-[10px] text-[12px] text-[var(--color-7)]">
+            <p className="m-0 rounded-[10px] border border-(--border-default) bg-(--bg-panel) p-[10px] text-(length:--font-size-xs) text-(--text-secondary)">
               {error}
             </p>
           )}
           <div className="flex flex-col gap-[10px]">
-            <label className="flex items-center gap-[4px] text-[13px] font-semibold text-[var(--color-8)]">
+            <label className="flex items-center gap-[4px] text-(length:--font-size-sm) font-semibold text-(--text-primary)">
               {t('modals.newResource.typeLabel', 'Type')}
             </label>
             <div className="mb-[8px] grid grid-cols-3 gap-[16px]">
@@ -128,13 +128,13 @@ function NewResourceModal({
                 type="button"
                 className={`flex cursor-pointer flex-col items-center justify-center gap-[8px] rounded-[var(--radius-lg)] border p-[16px] transition-all duration-[150ms] ease-[ease] ${
                   type === 'project'
-                    ? 'border-[var(--color-10)] bg-[var(--color-0)] text-[var(--color-10)]'
-                    : 'border-[var(--color-3)] bg-[var(--color-1)] text-[var(--color-6)] hover:bg-[var(--color-2)] hover:text-[var(--color-10)]'
+                    ? 'border-(--accent-color) bg-(--bg-canvas) text-(--text-primary)'
+                    : 'border-(--border-default) bg-(--bg-panel) text-(--text-muted) hover:bg-(--bg-raised) hover:text-(--text-primary)'
                 }`}
                 onClick={() => setType('project')}
               >
                 <Box size={24} />
-                <span className="text-[12px] font-medium">
+                <span className="text-(length:--font-size-xs) font-medium">
                   {t('modals.newProject.title', 'Project')
                     .replace('Create ', '')
                     .replace('新建', '')}
@@ -144,13 +144,13 @@ function NewResourceModal({
                 type="button"
                 className={`flex cursor-pointer flex-col items-center justify-center gap-[8px] rounded-[var(--radius-lg)] border p-[16px] transition-all duration-[150ms] ease-[ease] ${
                   type === 'component'
-                    ? 'border-[var(--color-10)] bg-[var(--color-0)] text-[var(--color-10)]'
-                    : 'border-[var(--color-3)] bg-[var(--color-1)] text-[var(--color-6)] hover:bg-[var(--color-2)] hover:text-[var(--color-10)]'
+                    ? 'border-(--accent-color) bg-(--bg-canvas) text-(--text-primary)'
+                    : 'border-(--border-default) bg-(--bg-panel) text-(--text-muted) hover:bg-(--bg-raised) hover:text-(--text-primary)'
                 }`}
                 onClick={() => setType('component')}
               >
                 <Layers size={24} />
-                <span className="text-[12px] font-medium">
+                <span className="text-(length:--font-size-xs) font-medium">
                   {t('modals.newComponent.title', 'Component')
                     .replace('Create ', '')
                     .replace('新建', '')}
@@ -160,13 +160,13 @@ function NewResourceModal({
                 type="button"
                 className={`flex cursor-pointer flex-col items-center justify-center gap-[8px] rounded-[var(--radius-lg)] border p-[16px] transition-all duration-[150ms] ease-[ease] ${
                   type === 'nodegraph'
-                    ? 'border-[var(--color-10)] bg-[var(--color-0)] text-[var(--color-10)]'
-                    : 'border-[var(--color-3)] bg-[var(--color-1)] text-[var(--color-6)] hover:bg-[var(--color-2)] hover:text-[var(--color-10)]'
+                    ? 'border-(--accent-color) bg-(--bg-canvas) text-(--text-primary)'
+                    : 'border-(--border-default) bg-(--bg-panel) text-(--text-muted) hover:bg-(--bg-raised) hover:text-(--text-primary)'
                 }`}
                 onClick={() => setType('nodegraph')}
               >
                 <Workflow size={24} />
-                <span className="text-[12px] font-medium">
+                <span className="text-(length:--font-size-xs) font-medium">
                   {t('modals.newNodeGraph.title', 'Node Graph')
                     .replace('Create ', '')
                     .replace('新建', '')}
@@ -177,7 +177,7 @@ function NewResourceModal({
 
           <div className="flex flex-col gap-[10px]">
             <label
-              className="flex items-center gap-[4px] text-[13px] font-semibold text-[var(--color-8)]"
+              className="flex items-center gap-[4px] text-(length:--font-size-sm) font-semibold text-(--text-primary)"
               htmlFor="new-resource-name"
             >
               <span>{t('modals.newResource.nameLabel', 'Name')}</span>
@@ -191,7 +191,7 @@ function NewResourceModal({
           </div>
 
           <div className="flex flex-col gap-[10px]">
-            <label className="flex items-center gap-[4px] text-[13px] font-semibold text-[var(--color-8)]">
+            <label className="flex items-center gap-[4px] text-(length:--font-size-sm) font-semibold text-(--text-primary)">
               {t('modals.newProject.descriptionLabel', 'Description')}
             </label>
             <MdrTextarea
@@ -204,8 +204,8 @@ function NewResourceModal({
             />
           </div>
 
-          <label className="inline-flex cursor-pointer items-center justify-between rounded-[12px] border border-[var(--color-3)] bg-[var(--color-1)] px-[12px] py-[10px]">
-            <span className="text-[13px] font-semibold text-[var(--color-8)]">
+          <label className="inline-flex cursor-pointer items-center justify-between rounded-[12px] border border-(--border-default) bg-(--bg-panel) px-[12px] py-[10px]">
+            <span className="text-(length:--font-size-sm) font-semibold text-(--text-primary)">
               {t(
                 'modals.newResource.publicLabel',
                 'Publish to community after creation'
@@ -215,12 +215,12 @@ function NewResourceModal({
               type="checkbox"
               checked={isPublic}
               onChange={(event) => setIsPublic(event.target.checked)}
-              className="h-[16px] w-[16px] cursor-pointer accent-black"
+              className="h-[16px] w-[16px] cursor-pointer accent-(--accent-color)"
             />
           </label>
         </div>
 
-        <footer className="flex items-center justify-end gap-[12px] border-t border-t-[rgba(0,0,0,0.06)] bg-[var(--color-1)] px-[22px] py-[18px]">
+        <footer className="flex items-center justify-end gap-[12px] border-t border-t-(--border-subtle) bg-(--bg-panel) px-[22px] py-[18px]">
           <MdrButton
             text={t('modals.actions.cancel')}
             category="Ghost"

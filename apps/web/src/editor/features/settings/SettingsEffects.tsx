@@ -5,6 +5,11 @@ import { useAuthStore } from '@/auth/useAuthStore';
 import { editorApi } from '@/editor/editorApi';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
+import {
+  applyThemePreference,
+  normalizeThemePreference,
+  watchSystemThemePreference,
+} from '@/theme/themeRuntime';
 
 const SETTINGS_INTENT_CAPABILITY = 'core.settings.global.update@1.0';
 
@@ -171,49 +176,17 @@ export const SettingsEffects = () => {
   }, [language, i18n]);
 
   useEffect(() => {
-    if (typeof document === 'undefined') return;
+    const preference = normalizeThemePreference(theme) ?? 'home';
 
-    const root = document.documentElement;
+    applyThemePreference(preference, { persist: false });
 
-    const applyTheme = (value: 'light' | 'dark') => {
-      if (root.getAttribute('data-theme') === value) return;
-      root.setAttribute('data-theme', value);
-    };
-
-    if (theme === 'light' || theme === 'dark') {
-      applyTheme(theme);
+    if (preference !== 'home') {
       return;
     }
 
-    if (theme !== 'home') return;
-
-    const resolveHomeTheme = () => {
-      const storedTheme = root.getAttribute('data-theme');
-      if (storedTheme === 'light' || storedTheme === 'dark') return storedTheme;
-      if (typeof window !== 'undefined' && window.matchMedia) {
-        return window.matchMedia('(prefers-color-scheme: dark)').matches
-          ? 'dark'
-          : 'light';
-      }
-      return 'light';
-    };
-
-    applyTheme(resolveHomeTheme());
-
-    const observer = new MutationObserver((mutations) => {
-      if (
-        !mutations.some((mutation) => mutation.attributeName === 'data-theme')
-      )
-        return;
-      const nextTheme = resolveHomeTheme();
-      applyTheme(nextTheme);
-    });
-
-    observer.observe(root, {
-      attributes: true,
-      attributeFilter: ['data-theme'],
-    });
-    return () => observer.disconnect();
+    return watchSystemThemePreference(() =>
+      applyThemePreference(preference, { persist: false })
+    );
   }, [theme]);
 
   useEffect(() => {

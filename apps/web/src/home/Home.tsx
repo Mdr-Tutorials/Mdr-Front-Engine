@@ -22,13 +22,19 @@ function Home() {
     const nextTheme = themeMode === 'dark' ? 'light' : 'dark';
     setGlobalValue('theme', nextTheme); // ThemeSync will handle DOM update
   };
-  const logoColor = themeMode === 'dark' ? 'white' : 'black';
+  const heroTextStyle = {
+    fontSize: 'var(--font-size-hero)',
+    fontWeight: 'var(--font-weight-medium)',
+  };
+  const heroHighlightStyle = {
+    fontWeight: 'var(--font-weight-extrabold)',
+  };
   const secondaryHeadingClassName =
-    'mt-[15px] text-[20px] font-normal text-[var(--color-6)]';
+    'mt-[15px] text-(length:--font-size-2xl) font-normal text-(--home-subtitle)';
   const navIconClassName =
-    'inline-flex h-[36px] w-[36px] cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-[var(--color-7)] no-underline transition-colors duration-200 ease-[ease] hover:bg-[var(--color-1)] hover:text-[var(--color-10)]';
+    'inline-flex h-[36px] w-[36px] cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-(--home-nav-icon) no-underline transition-colors duration-200 ease-[ease] hover:bg-(--home-nav-icon-hover-bg) hover:text-(--home-nav-icon-hover-text)';
   const profileLinkClassName =
-    'inline-flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[var(--color-1)] no-underline transition-[box-shadow,transform] duration-200 ease-[ease] hover:-translate-y-px hover:shadow-[0_10px_18px_rgba(0,0,0,0.12)]';
+    'inline-flex h-[36px] w-[36px] items-center justify-center rounded-full bg-(--home-profile-bg) no-underline transition-[box-shadow,transform] duration-200 ease-[ease] hover:-translate-y-px hover:shadow-(--home-profile-hover-shadow)';
 
   const initials =
     user?.name
@@ -44,7 +50,7 @@ function Home() {
     <div className="mx-auto flex min-h-screen w-[calc(100vw-80px)] flex-col items-center justify-start">
       <MdrNav>
         <MdrNav.Left>
-          <IconMdr size={30} color={logoColor} />
+          <IconMdr size={30} className="text-(--home-logo)" />
           <MdrNav.Heading heading={t('brand.name')} />
         </MdrNav.Left>
         <MdrNav.Right>
@@ -104,21 +110,30 @@ function Home() {
         </MdrNav.Right>
       </MdrNav>
       <div className="w-[85vw] flex-1">
-        <div className="mt-25 flex flex-col text-(--color-9)">
-          <h1 className="text-[64px] font-medium">
-            <span className="font-extrabold text-(--color-10) underline decoration-wavy decoration-4 underline-offset-[7px]">
+        <div className="mt-25 flex flex-col text-(--home-hero-text)">
+          <h1 style={heroTextStyle}>
+            <span
+              className="text-(--home-hero-highlight) underline decoration-wavy decoration-4 underline-offset-[7px]"
+              style={heroHighlightStyle}
+            >
               {t('hero.line1.highlight')}
             </span>
           </h1>
-          <h1 className="text-[64px] font-medium">
+          <h1 style={heroTextStyle}>
             {t('hero.line2.before')}{' '}
-            <span className="font-extrabold text-(--color-10) underline decoration-wavy decoration-4 underline-offset-[7px]">
+            <span
+              className="text-(--home-hero-highlight) underline decoration-wavy decoration-4 underline-offset-[7px]"
+              style={heroHighlightStyle}
+            >
               {t('hero.line2.highlight')}
             </span>
           </h1>
-          <h1 className="text-[64px] font-medium">
+          <h1 style={heroTextStyle}>
             {t('hero.line3.before')}{' '}
-            <span className="font-extrabold text-(--color-10) underline decoration-wavy decoration-4 underline-offset-[7px]">
+            <span
+              className="text-(--home-hero-highlight) underline decoration-wavy decoration-4 underline-offset-[7px]"
+              style={heroHighlightStyle}
+            >
               {t('hero.line3.highlight')}
             </span>
           </h1>
@@ -141,9 +156,9 @@ function Home() {
       </div>
 
       <footer className="mt-auto w-full px-2 pt-14 pb-5">
-        <div className="flex items-center justify-center px-6 py-4 text-sm text-(--color-7) sm:px-7">
+        <div className="flex items-center justify-center px-6 py-4 text-(length:--font-size-sm) text-(--home-footer-text) sm:px-7">
           <div className="flex items-center gap-2">
-            <IconMdr size={16} color={logoColor} />
+            <IconMdr size={16} className="text-(--home-footer-text)" />
             <span>{t('footer.copy')}</span>
           </div>
         </div>

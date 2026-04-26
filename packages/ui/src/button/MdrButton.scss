@@ -11,14 +11,13 @@
 }
 
 .MdrButton {
-  font-weight: 400;
+  font-weight: var(--font-weight-regular);
   border-radius: 6px;
   cursor: pointer;
   transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease;
-  display: inline-block;
+    background-color var(--motion-duration-normal) var(--motion-easing-standard),
+    color var(--motion-duration-normal) var(--motion-easing-standard),
+    border-color var(--motion-duration-normal) var(--motion-easing-standard);
   text-align: center;
   text-decoration: none;
   user-select: none;
@@ -26,7 +25,6 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
   gap: 0.3em;
 
   &:active {
@@ -39,50 +37,54 @@
 
     &:hover,
     &:active {
-      opacity: 0.5; // 禁用时无变化
+      opacity: 0.5;
     }
   }
 
   &.Big {
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     padding: 16px 32px;
-    font-size: 20px;
+    font-size: var(--font-size-2xl);
     border-radius: 8px;
   }
 
   &.Medium {
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     padding: 12px 24px;
-    font-size: 16px;
+    font-size: var(--font-size-lg);
   }
 
   &.Small {
     padding: 8px 16px;
-    font-size: 14px;
+    font-size: var(--font-size-md);
   }
 
   &.Tiny {
     padding: 5px 10px;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
   }
 
   &.Primary {
-    background-color: var(--color-9);
-    color: var(--color-1);
-    border-color: var(--color-9);
+    background-color: var(--accent-color);
+    color: var(--text-inverse);
+    border-color: var(--accent-color);
 
     &:not(.Disabled):hover {
-      @include button-hover(var(--color-7), var(--color-0), var(--color-6));
+      @include button-hover(
+        var(--accent-hover),
+        var(--text-inverse),
+        var(--accent-hover)
+      );
     }
   }
 
   &.Secondary {
-    background-color: var(--color-0);
-    color: var(--color-8);
-    border-color: var(--color-4);
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    border-color: var(--border-default);
 
     &:not(.Disabled):hover {
-      @include button-hover(var(--color-2), var(--color-10));
+      @include button-hover(var(--bg-raised), var(--text-primary));
     }
 
     &:not(.Disabled):active {
@@ -91,69 +93,65 @@
   }
 
   &.Danger {
-    background-color: var(--color-danger);
-    color: var(--color-0);
-    border-color: var(--color-danger);
+    background-color: var(--danger-color);
+    color: var(--text-inverse);
+    border-color: var(--danger-color);
 
     &:not(.Disabled):hover {
-      @include button-hover(
-        var(--color-danger-hover),
-        null,
-        var(--color-danger-hover)
-      );
+      @include button-hover(var(--danger-hover), null, var(--danger-hover));
     }
   }
 
   &.Warning {
-    background-color: var(--color-warning);
-    color: var(--color-10);
-    border-color: var(--color-warning);
+    background-color: var(--warning-color);
+    color: var(--text-primary);
+    border-color: var(--warning-color);
 
     &:not(.Disabled):hover {
-      @include button-hover(
-        var(--color-warning-hover),
-        null,
-        var(--color-warning-hover)
-      );
+      @include button-hover(var(--warning-hover), null, var(--warning-hover));
     }
   }
 
   &.Ghost {
     background-color: transparent;
-    color: var(--color-8);
-    border-color: var(--color-8);
+    color: var(--text-primary);
+    border-color: var(--border-strong);
 
     &:not(.Disabled):hover {
-      background-color: rgba(var(--color-10-rgb), 0.1);
-      color: var(--color-7);
-      border-color: var(--color-7);
+      background-color: color-mix(
+        in srgb,
+        var(--text-primary) 10%,
+        transparent
+      );
+      color: var(--text-secondary);
+      border-color: var(--text-secondary);
     }
   }
 
   &.SubtleDanger {
     background-color: transparent;
-    color: var(--color-danger-subtle);
-    border-color: var(--color-danger-subtle);
+    color: var(--danger-color);
+    border-color: var(--danger-subtle);
 
     &:not(.Disabled):hover {
       @include button-hover(
-        var(--color-danger-subtle-hover),
-        var(--color-danger),
-        var(--color-danger-hover)
+        var(--danger-subtle-hover),
+        var(--danger-color),
+        var(--danger-hover)
       );
     }
   }
 
   &.SubtleWarning {
     background-color: transparent;
-    color: var(--color-subwarning);
-    border-color: var(--color-subwarning);
+    color: var(--warning-color);
+    border-color: var(--warning-subtle);
 
     &:not(.Disabled):hover {
       @include button-hover(
-        var(--color-subwarning-hover),
-        var(--color-warning),
-        var(--color-warning-hover)
+        var(--warning-subtle-hover),
+        var(--warning-color),
+        var(--warning-hover)
       );
     }
   }

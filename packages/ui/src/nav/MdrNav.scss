@@ -6,14 +6,14 @@
   gap: 16px;
   padding: 12px 20px;
   box-sizing: border-box;
-  background-color: var(--color-0);
-  color: var(--color-10);
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
 
   &.Float {
     position: sticky;
     top: 0;
     z-index: 10;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-md);
   }
 
   &.CanHide {
@@ -34,11 +34,11 @@
   }
 
   &.Solid {
-    background-color: var(--color-0);
+    background-color: var(--bg-canvas);
   }
 
   &.Blurred {
-    background-color: rgba(var(--color-0-rgb), 0.8);
+    background-color: color-mix(in srgb, var(--bg-canvas) 80%, transparent);
     backdrop-filter: blur(12px);
   }
 
@@ -88,26 +88,27 @@
 
   p {
     font-size: 18px;
-    color: var(--color-7);
+    color: var(--text-muted);
     cursor: pointer;
     transition:
-      color 0.3s ease,
-      background-color 0.3s ease;
-    font-weight: 500;
+      color var(--motion-duration-normal) var(--motion-easing-standard),
+      background-color var(--motion-duration-normal)
+        var(--motion-easing-standard);
+    font-weight: var(--font-weight-medium);
     padding: 4px 15px;
     border-radius: 18px;
 
     &:hover {
-      color: var(--color-10);
-      background-color: var(--color-1);
+      color: var(--text-primary);
+      background-color: var(--bg-panel);
     }
   }
 }
 
 .MdrNavHeading {
-  font-family: 'Lexend', sans-serif;
+  font-family: var(--font-family-ui);
   font-size: 24px;
-  font-weight: 900;
-  color: var(--color-9);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--text-primary);
   margin: 0 1rem;
 }

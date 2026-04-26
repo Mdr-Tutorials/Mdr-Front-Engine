@@ -1,0 +1,248 @@
+{
+  "schemaVersion": "1.0",
+  "id": "official.monochrome.dark",
+  "name": "Monochrome Dark",
+  "author": "MdrFrontEngine",
+  "source": "official",
+  "mode": "dark",
+  "palette": {
+    "gray": {
+      "0": "#ffffff",
+      "1": "#fcfcfc",
+      "2": "#f7f7f7",
+      "3": "#f0f0f0",
+      "4": "#e5e5e5",
+      "5": "#d4d4d4",
+      "6": "#b8b8b8",
+      "7": "#999999",
+      "8": "#737373",
+      "9": "#525252",
+      "10": "#404040",
+      "11": "#262626",
+      "12": "#171717",
+      "13": "#000000"
+    },
+    "red": {
+      "0": "#fffafa",
+      "1": "#fff1f1",
+      "2": "#ffe4e5",
+      "3": "#ffcdd0",
+      "4": "#ffa4aa",
+      "5": "#ff7a83",
+      "6": "#f25560",
+      "7": "#e33d49",
+      "8": "#cf2431",
+      "9": "#b91c28",
+      "10": "#991722",
+      "11": "#7f121b",
+      "12": "#650d14",
+      "13": "#4c0609"
+    },
+    "green": {
+      "0": "#fbfffc",
+      "1": "#f0fdf4",
+      "2": "#dcfce7",
+      "3": "#bbf7d0",
+      "4": "#86efac",
+      "5": "#4ade80",
+      "6": "#22c55e",
+      "7": "#16a34a",
+      "8": "#15803d",
+      "9": "#166534",
+      "10": "#14532d",
+      "11": "#0f3f24",
+      "12": "#0a2e1a",
+      "13": "#051f10"
+    },
+    "yellow": {
+      "0": "#fffdf5",
+      "1": "#fffbeb",
+      "2": "#fef3c7",
+      "3": "#fde68a",
+      "4": "#fcd34d",
+      "5": "#fbbf24",
+      "6": "#f59e0b",
+      "7": "#d97706",
+      "8": "#b45309",
+      "9": "#92400e",
+      "10": "#78350f",
+      "11": "#5f2a0c",
+      "12": "#472007",
+      "13": "#301504"
+    },
+    "blue": {
+      "0": "#f8fbff",
+      "1": "#eff6ff",
+      "2": "#dbeafe",
+      "3": "#bfdbfe",
+      "4": "#93c5fd",
+      "5": "#60a5fa",
+      "6": "#3b82f6",
+      "7": "#2563eb",
+      "8": "#1d4ed8",
+      "9": "#1e40af",
+      "10": "#1e3a8a",
+      "11": "#172f70",
+      "12": "#102456",
+      "13": "#0a183d"
+    }
+  },
+  "semantic": {
+    "surface": {
+      "canvas": "{palette.gray.12}",
+      "panel": "{palette.gray.11}",
+      "raised": "{palette.gray.10}"
+    },
+    "text": {
+      "primary": "{palette.gray.0}",
+      "secondary": "{palette.gray.4}",
+      "muted": "{palette.gray.7}",
+      "inverse": "{palette.gray.13}"
+    },
+    "border": {
+      "subtle": "{palette.gray.10}",
+      "default": "{palette.gray.9}",
+      "strong": "{palette.gray.7}"
+    },
+    "accent": {
+      "default": "{palette.gray.0}",
+      "hover": "{palette.gray.2}"
+    },
+    "success": {
+      "default": "{palette.green.5}",
+      "hover": "{palette.green.4}",
+      "subtle": "{palette.green.11}",
+      "subtleHover": "{palette.green.10}"
+    },
+    "danger": {
+      "default": "{palette.red.5}",
+      "hover": "{palette.red.4}",
+      "subtle": "{palette.red.11}",
+      "subtleHover": "{palette.red.10}"
+    },
+    "warning": {
+      "default": "{palette.yellow.5}",
+      "hover": "{palette.yellow.4}",
+      "subtle": "{palette.yellow.11}",
+      "subtleHover": "{palette.yellow.10}"
+    },
+    "info": {
+      "default": "{palette.blue.5}",
+      "hover": "{palette.blue.4}",
+      "subtle": "{palette.blue.11}",
+      "subtleHover": "{palette.blue.10}"
+    }
+  },
+  "product": {
+    "editor": {
+      "canvasBackground": "{semantic.surface.canvas}",
+      "selectionOutline": "{semantic.accent.default}",
+      "dropIndicator": "{semantic.accent.default}"
+    },
+    "editorBar": {
+      "background": "{palette.gray.13}",
+      "icon": "{palette.gray.3}",
+      "iconHover": "{palette.gray.0}",
+      "iconHoverBackground": "rgb(255 255 255 / 0.08)"
+    },
+    "inspector": {
+      "rowHover": "{palette.gray.10}",
+      "fieldLabel": "{semantic.text.secondary}",
+      "fieldControl": "{semantic.text.primary}"
+    },
+    "nodeGraph": {
+      "nodeBackground": "{semantic.surface.panel}",
+      "nodeBorder": "{semantic.border.default}",
+      "portColor": "{semantic.text.secondary}"
+    },
+    "home": {
+      "logo": "{palette.gray.0}",
+      "heroText": "{palette.gray.1}",
+      "heroHighlight": "{palette.gray.0}",
+      "subtitle": "{palette.gray.6}",
+      "navIcon": "{palette.gray.4}",
+      "navIconHoverBg": "{palette.gray.11}",
+      "navIconHoverText": "{palette.gray.0}",
+      "profileBg": "{palette.gray.11}",
+      "profileHoverShadow": "0 10px 18px rgb(0 0 0 / 0.32)",
+      "footerText": "{palette.gray.4}"
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "ui": "Inter, 'HarmonyOS Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      "mono": "JetBrains Mono, Consolas, monospace",
+      "canvas": "{typography.fontFamily.ui}"
+    },
+    "fontSize": {
+      "micro": "10px",
+      "caption": "11px",
+      "2xs": "10px",
+      "xs": "12px",
+      "sm": "13px",
+      "md": "14px",
+      "lg": "16px",
+      "xl": "18px",
+      "2xl": "20px",
+      "3xl": "24px",
+      "4xl": "30px",
+      "5xl": "36px",
+      "hero": "64px"
+    },
+    "fontWeight": {
+      "regular": "400",
+      "medium": "500",
+      "semibold": "600",
+      "bold": "700",
+      "extrabold": "800"
+    },
+    "lineHeight": {
+      "tight": "1",
+      "compact": "1.3",
+      "editor": "1.45",
+      "normal": "1.5"
+    }
+  },
+  "radius": {
+    "none": "0",
+    "sm": "4px",
+    "md": "8px",
+    "lg": "12px",
+    "full": "9999px"
+  },
+  "shadow": {
+    "sm": "0 1px 2px 0 rgb(0 0 0 / 0.28)",
+    "md": "0 4px 6px -1px rgb(0 0 0 / 0.32)",
+    "lg": "0 10px 15px -3px rgb(0 0 0 / 0.36)"
+  },
+  "density": {
+    "spacing": {
+      "none": "0",
+      "xs": "4px",
+      "sm": "8px",
+      "md": "16px",
+      "lg": "24px",
+      "xl": "32px",
+      "2xl": "48px"
+    },
+    "controlHeight": {
+      "sm": "24px",
+      "md": "28px",
+      "lg": "32px"
+    }
+  },
+  "motion": {
+    "duration": {
+      "fast": "150ms",
+      "normal": "300ms"
+    },
+    "easing": {
+      "standard": "ease"
+    }
+  },
+  "metadata": {
+    "description": "Default monochrome dark theme with stable multi-color 0-13 palette scales.",
+    "tags": ["official", "monochrome", "dark"],
+    "license": "MIT"
+  }
+}

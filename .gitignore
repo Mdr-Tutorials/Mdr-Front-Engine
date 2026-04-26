@@ -114,3 +114,5 @@ coverage/
 # 其他
 .tmp*
 .claude/
+.playwright-mcp/
+*.tsbuildinfo
