@@ -47,7 +47,7 @@ jobs:
         run: pnpm turbo run test --filter=!@mdr/web
 
       - name: Test web
-        run: pnpm --filter @mdr/web test -- --maxWorkers=1
+        run: pnpm --filter @mdr/web test:ci
 
       - name: Type check web
         run: pnpm --filter @mdr/web exec tsc -p tsconfig.json --noEmit
