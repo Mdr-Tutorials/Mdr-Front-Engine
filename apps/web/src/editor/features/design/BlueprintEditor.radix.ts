@@ -39,7 +39,7 @@ const RADIX_CATALOG: RadixCatalogEntry[] = [
     nodeType: 'RadixSeparator',
     primitive: 'separator',
     defaultStyle: {
-      borderTop: '1px solid var(--color-4)',
+      borderTop: '1px solid var(--border-default)',
       minHeight: '1px',
     },
   },

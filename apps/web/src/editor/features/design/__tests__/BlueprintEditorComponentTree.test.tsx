@@ -211,6 +211,133 @@ describe('BlueprintEditorComponentTree', () => {
     expect(screen.queryByTitle('MdrText (child-2a)')).toBeNull();
   });
 
+  it('opens a structural context menu only for nodes with children', () => {
+    resetEditorStore({
+      mirDoc: createMirDoc([
+        {
+          id: 'parent-1',
+          type: 'MdrDiv',
+          children: [{ id: 'child-1', type: 'MdrText', text: 'Nested' }],
+        },
+      ]),
+    });
+
+    render(
+      <BlueprintEditorComponentTree
+        isCollapsed={false}
+        selectedId={undefined}
+        onToggleCollapse={() => {}}
+        onSelectNode={() => {}}
+        onDeleteSelected={() => {}}
+        onDeleteNode={() => {}}
+        onCopyNode={() => {}}
+        onMoveNode={() => {}}
+      />
+    );
+
+    fireEvent.contextMenu(screen.getByTitle('MdrText (child-1)'));
+    expect(
+      screen.queryByRole('menu', { name: 'Component tree context menu' })
+    ).toBeNull();
+
+    fireEvent.contextMenu(screen.getByTitle('MdrDiv (parent-1)'));
+    expect(screen.queryByRole('menuitem', { name: 'Expand' })).toBeNull();
+    expect(
+      screen.queryByRole('menuitem', { name: 'Expand recursively' })
+    ).toBeNull();
+    expect(screen.getByRole('menuitem', { name: 'Collapse' })).toBeTruthy();
+    expect(
+      screen.getByRole('menuitem', { name: 'Collapse recursively' })
+    ).toBeTruthy();
+  });
+
+  it('hides context menu options that match the current tree state', () => {
+    resetEditorStore({
+      mirDoc: createMirDoc([
+        {
+          id: 'parent-1',
+          type: 'MdrDiv',
+          children: [
+            {
+              id: 'nested-1',
+              type: 'MdrDiv',
+              children: [{ id: 'leaf-1', type: 'MdrText', text: 'Leaf' }],
+            },
+          ],
+        },
+      ]),
+    });
+
+    render(
+      <BlueprintEditorComponentTree
+        isCollapsed={false}
+        selectedId={undefined}
+        onToggleCollapse={() => {}}
+        onSelectNode={() => {}}
+        onDeleteSelected={() => {}}
+        onDeleteNode={() => {}}
+        onCopyNode={() => {}}
+        onMoveNode={() => {}}
+      />
+    );
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Collapse' })[1]);
+    fireEvent.contextMenu(screen.getByTitle('MdrDiv (parent-1)'));
+
+    expect(screen.getByRole('menuitem', { name: 'Expand' })).toBeTruthy();
+    expect(
+      screen.getByRole('menuitem', { name: 'Expand recursively' })
+    ).toBeTruthy();
+    expect(screen.queryByRole('menuitem', { name: 'Collapse' })).toBeNull();
+    expect(
+      screen.getByRole('menuitem', { name: 'Collapse recursively' })
+    ).toBeTruthy();
+  });
+
+  it('uses the context menu to expand and collapse a branch recursively', () => {
+    resetEditorStore({
+      mirDoc: createMirDoc([
+        {
+          id: 'parent-1',
+          type: 'MdrDiv',
+          children: [
+            {
+              id: 'nested-1',
+              type: 'MdrDiv',
+              children: [{ id: 'leaf-1', type: 'MdrText', text: 'Leaf' }],
+            },
+          ],
+        },
+      ]),
+    });
+
+    render(
+      <BlueprintEditorComponentTree
+        isCollapsed={false}
+        selectedId={undefined}
+        onToggleCollapse={() => {}}
+        onSelectNode={() => {}}
+        onDeleteSelected={() => {}}
+        onDeleteNode={() => {}}
+        onCopyNode={() => {}}
+        onMoveNode={() => {}}
+      />
+    );
+
+    fireEvent.contextMenu(screen.getByTitle('MdrDiv (parent-1)'));
+    fireEvent.click(
+      screen.getByRole('menuitem', { name: 'Collapse recursively' })
+    );
+    expect(screen.queryByTitle('MdrDiv (nested-1)')).toBeNull();
+
+    fireEvent.contextMenu(screen.getByTitle('MdrDiv (parent-1)'));
+    fireEvent.click(
+      screen.getByRole('menuitem', { name: 'Expand recursively' })
+    );
+    expect(screen.getByTitle('MdrDiv (nested-1)')).toBeTruthy();
+    expect(screen.getByTitle('MdrText (leaf-1)')).toBeTruthy();
+  });
+
   it('renders layout pattern root with distinguishable type label', () => {
     resetEditorStore({
       mirDoc: createMirDoc([

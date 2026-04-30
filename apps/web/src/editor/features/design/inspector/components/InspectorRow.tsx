@@ -32,11 +32,11 @@ export function InspectorRow({
     return (
       <div className="col-span-9 grid w-[288px] max-w-full grid-cols-[repeat(9,32px)] gap-y-2">
         <div className="col-span-9 min-w-0">
-          <div className="InspectorLabel text-[11px] font-semibold text-(--color-8)">
+          <div className="InspectorLabel text-[11px] font-semibold text-(--text-secondary)">
             {label}
           </div>
           {description ? (
-            <div className="InspectorDescription text-[10px] text-(--color-6)">
+            <div className="InspectorDescription text-[10px] text-(--text-muted)">
               {description}
             </div>
           ) : null}
@@ -53,11 +53,11 @@ export function InspectorRow({
       className={`col-span-9 grid min-h-8 w-[288px] max-w-full grid-cols-[repeat(9,32px)] ${alignClass}`}
     >
       <div className="col-span-3 min-w-0 pr-2">
-        <div className="InspectorLabel text-[11px] font-semibold text-(--color-8)">
+        <div className="InspectorLabel text-[11px] font-semibold text-(--text-secondary)">
           {label}
         </div>
         {description ? (
-          <div className="InspectorDescription text-[10px] text-(--color-6)">
+          <div className="InspectorDescription text-[10px] text-(--text-muted)">
             {description}
           </div>
         ) : null}
@@ -81,7 +81,7 @@ export function InspectorIconFieldRow({
   return (
     <div className="col-span-9 grid min-h-8 w-[288px] max-w-full grid-cols-[repeat(9,32px)] items-start">
       <div
-        className="col-span-1 flex h-8 w-8 items-center justify-center text-(--color-8) [&>svg]:h-6 [&>svg]:w-6"
+        className="col-span-1 flex h-8 w-8 items-center justify-center text-(--text-secondary) [&>svg]:h-6 [&>svg]:w-6"
         title={label}
         aria-label={label}
       >

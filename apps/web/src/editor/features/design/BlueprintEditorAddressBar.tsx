@@ -65,9 +65,9 @@ export function BlueprintEditorAddressBar({
   }, [isRouteTreeOpen]);
 
   return (
-    <section className="flex flex-nowrap items-center gap-3 overflow-x-auto border-b border-black/6 bg-(--color-0) px-3 py-1.5 dark:border-white/8">
+    <section className="flex flex-nowrap items-center gap-3 overflow-x-auto border-b border-(--border-subtle) bg-(--bg-canvas) px-3 py-1.5">
       <div className="inline-flex items-center gap-2 whitespace-nowrap">
-        <span className="inline-flex items-center gap-1.5 text-[11px] text-(--color-7)">
+        <span className="inline-flex items-center gap-1.5 text-[11px] text-(--text-muted)">
           <Link2 size={14} />
           {t('address.current')}
         </span>
@@ -82,7 +82,7 @@ export function BlueprintEditorAddressBar({
         </div>
       </div>
       <div className="inline-flex items-center gap-2 whitespace-nowrap">
-        <span className="inline-flex items-center gap-1.5 text-[11px] text-(--color-7)">
+        <span className="inline-flex items-center gap-1.5 text-[11px] text-(--text-muted)">
           <Plus size={14} />
           {t('address.new')}
         </span>
@@ -103,7 +103,7 @@ export function BlueprintEditorAddressBar({
         />
       </div>
       <div className="ml-auto flex min-w-[260px] items-center gap-2">
-        <span className="shrink-0 text-[11px] text-(--color-7)">
+        <span className="shrink-0 text-[11px] text-(--text-muted)">
           {t('address.list', { defaultValue: 'Routes' })}
         </span>
         <div className="relative min-w-0 flex-1" ref={routeTreeRootRef}>
@@ -111,7 +111,7 @@ export function BlueprintEditorAddressBar({
             ref={routeTreeTriggerRef}
             type="button"
             data-testid="address-route-menu-trigger"
-            className="h-7 w-full truncate rounded-full border border-black/8 px-3 text-left text-[11px] text-(--color-8) hover:bg-black/4 dark:border-white/12 dark:hover:bg-white/8"
+            className="h-7 w-full truncate rounded-full border border-(--border-default) bg-transparent px-3 text-left text-[11px] text-(--text-secondary) hover:bg-(--bg-raised) hover:text-(--text-primary)"
             onClick={() => setRouteTreeOpen((prev) => !prev)}
           >
             {currentPath}
@@ -121,7 +121,7 @@ export function BlueprintEditorAddressBar({
           ? createPortal(
               <div
                 ref={routeTreePanelRef}
-                className="fixed z-[80] flex max-h-52 max-w-[420px] min-w-[320px] flex-col gap-1 overflow-y-auto rounded-lg border border-black/10 bg-(--color-0) p-1 shadow-[0_16px_32px_rgba(0,0,0,0.16)] dark:border-white/16"
+                className="fixed z-[80] flex max-h-52 max-w-[420px] min-w-[320px] flex-col gap-1 overflow-y-auto rounded-lg border border-(--border-default) bg-(--bg-canvas) p-1 shadow-(--shadow-lg)"
                 style={{
                   top: `${routeTreeRect.top}px`,
                   left: `${Math.max(12, routeTreeRect.left)}px`,
@@ -139,8 +139,8 @@ export function BlueprintEditorAddressBar({
                       data-testid={`address-route-item-${route.id}`}
                       className={`flex min-w-0 items-center gap-1 rounded-md px-2 py-1 text-left text-[11px] ${
                         isActive
-                          ? 'bg-black/8 text-(--color-10) dark:bg-white/18'
-                          : 'text-(--color-8) hover:bg-black/4 dark:hover:bg-white/8'
+                          ? 'bg-(--bg-raised) text-(--text-primary)'
+                          : 'text-(--text-secondary) hover:bg-(--bg-raised) hover:text-(--text-primary)'
                       }`}
                       style={{ paddingLeft: `${8 + depth * 12}px` }}
                       onClick={() => {
@@ -149,7 +149,7 @@ export function BlueprintEditorAddressBar({
                       }}
                     >
                       <span className="truncate">{label}</span>
-                      <span className="truncate text-(--color-6)">
+                      <span className="truncate text-(--text-muted)">
                         {route.path}
                       </span>
                     </button>

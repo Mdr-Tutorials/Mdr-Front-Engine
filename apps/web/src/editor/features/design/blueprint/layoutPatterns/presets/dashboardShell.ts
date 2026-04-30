@@ -50,7 +50,7 @@ export const DASHBOARD_SHELL_LAYOUT_PATTERN: LayoutPatternDefinition<{
             justifyContent: 'SpaceBetween',
             alignItems: 'Center',
             padding: '12px 16px',
-            backgroundColor: 'var(--color-1)',
+            backgroundColor: 'var(--bg-panel)',
             borderRadius: '8px',
           },
         }),
@@ -69,8 +69,8 @@ export const DASHBOARD_SHELL_LAYOUT_PATTERN: LayoutPatternDefinition<{
           role: 'content',
           props: {
             padding: '16px',
-            backgroundColor: 'var(--color-0)',
-            border: '1px solid var(--color-3)',
+            backgroundColor: 'var(--bg-canvas)',
+            border: '1px solid var(--border-subtle)',
             borderRadius: '8px',
           },
         }),
@@ -100,7 +100,7 @@ export const DASHBOARD_SHELL_LAYOUT_PATTERN: LayoutPatternDefinition<{
                 props: {
                   height: '96px',
                   borderRadius: '8px',
-                  backgroundColor: 'var(--color-1)',
+                  backgroundColor: 'var(--bg-panel)',
                 },
               }),
               createPatternRoleNode({
@@ -110,7 +110,7 @@ export const DASHBOARD_SHELL_LAYOUT_PATTERN: LayoutPatternDefinition<{
                 props: {
                   height: '96px',
                   borderRadius: '8px',
-                  backgroundColor: 'var(--color-1)',
+                  backgroundColor: 'var(--bg-panel)',
                 },
               }),
               createPatternRoleNode({
@@ -120,7 +120,7 @@ export const DASHBOARD_SHELL_LAYOUT_PATTERN: LayoutPatternDefinition<{
                 props: {
                   height: '96px',
                   borderRadius: '8px',
-                  backgroundColor: 'var(--color-1)',
+                  backgroundColor: 'var(--bg-panel)',
                 },
               }),
             ],

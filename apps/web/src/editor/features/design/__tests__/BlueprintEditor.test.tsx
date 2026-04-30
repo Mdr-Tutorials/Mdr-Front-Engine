@@ -10,6 +10,7 @@ import type { KeyboardEvent, ReactNode } from 'react';
 import { useAuthStore } from '@/auth/useAuthStore';
 import { editorApi } from '@/editor/editorApi';
 import BlueprintEditor from '@/editor/features/design/BlueprintEditor';
+import { EditorShortcutProvider } from '@/editor/shortcuts';
 import {
   DEFAULT_BLUEPRINT_STATE,
   useEditorStore,
@@ -417,11 +418,18 @@ const getPaletteItemIds = () => {
   return Array.from(ids);
 };
 
+const renderBlueprintEditor = () =>
+  render(
+    <EditorShortcutProvider>
+      <BlueprintEditor />
+    </EditorShortcutProvider>
+  );
+
 describe('BlueprintEditor', () => {
   it('initializes blueprint state from global viewport defaults', async () => {
     resetSettingsStore({ viewportWidth: '1600', viewportHeight: '900' });
 
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     await waitFor(() => {
       expect(getBlueprintState()).toBeTruthy();
@@ -433,7 +441,7 @@ describe('BlueprintEditor', () => {
   });
 
   it('adds a route and updates the current path', async () => {
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     const addressBar = screen.getByTestId('address-bar');
     const initialRoutes = Number(addressBar.getAttribute('data-routes') ?? 0);
@@ -483,7 +491,7 @@ describe('BlueprintEditor', () => {
       activeRouteNodeId: 'route-home',
     });
 
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     fireEvent.click(screen.getByTestId('set-new-path'));
     fireEvent.click(screen.getByTestId('add-route'));
@@ -503,7 +511,7 @@ describe('BlueprintEditor', () => {
   it('falls back to timestamp-based route ids when crypto is unavailable', async () => {
     vi.stubGlobal('crypto', undefined);
 
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     const addressBar = screen.getByTestId('address-bar');
     const initialRoutes = Number(addressBar.getAttribute('data-routes') ?? 0);
@@ -523,7 +531,7 @@ describe('BlueprintEditor', () => {
   it('honors focus layout by collapsing the sidebar and inspector', async () => {
     resetSettingsStore({ panelLayout: 'focus' });
 
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     await waitFor(() => {
       expect(screen.getByTestId('sidebar').getAttribute('data-collapsed')).toBe(
@@ -537,7 +545,7 @@ describe('BlueprintEditor', () => {
 
   it('opens inspector when selecting a component while collapsed', async () => {
     resetSettingsStore({ panelLayout: 'focus' });
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     await waitFor(() => {
       expect(
@@ -555,7 +563,7 @@ describe('BlueprintEditor', () => {
   });
 
   it('toggles sidebar, tree, and inspector with Ctrl+Alt+J/K/L', () => {
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     const sidebar = screen.getByTestId('sidebar');
     const tree = screen.getByTestId('component-tree');
@@ -575,7 +583,7 @@ describe('BlueprintEditor', () => {
   });
 
   it('toggles preview and group state from the sidebar', () => {
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     const sidebar = screen.getByTestId('sidebar');
     expect(sidebar.getAttribute('data-group-collapsed')).toBe('false');
@@ -591,7 +599,7 @@ describe('BlueprintEditor', () => {
   });
 
   it('updates size and status selections from the sidebar', () => {
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     const sidebar = screen.getByTestId('sidebar');
     fireEvent.click(screen.getByTestId('select-size'));
@@ -603,7 +611,7 @@ describe('BlueprintEditor', () => {
 
   it('cycles status selections when requested', () => {
     vi.useFakeTimers();
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     const sidebar = screen.getByTestId('sidebar');
     fireEvent.click(screen.getByTestId('start-status'));
@@ -618,7 +626,7 @@ describe('BlueprintEditor', () => {
   });
 
   it('clamps zoom values to the allowed range', async () => {
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     await waitFor(() => {
       expect(getBlueprintState()).toBeTruthy();
@@ -648,7 +656,7 @@ describe('BlueprintEditor', () => {
       },
     });
 
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     fireEvent.click(screen.getByTestId('reset-view'));
 
@@ -659,7 +667,7 @@ describe('BlueprintEditor', () => {
   });
 
   it('updates viewport dimensions from the viewport bar', async () => {
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     await waitFor(() => {
       expect(getBlueprintState()).toBeTruthy();
@@ -675,7 +683,7 @@ describe('BlueprintEditor', () => {
   });
 
   it('inserts palette items on canvas drop and selects the new node', async () => {
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     const dndProps = (
       globalThis as {
@@ -707,7 +715,7 @@ describe('BlueprintEditor', () => {
   });
 
   it('shows the drag overlay while dragging a palette item', () => {
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     const dndProps = (
       globalThis as {
@@ -729,7 +737,7 @@ describe('BlueprintEditor', () => {
   });
 
   it('clears the drag overlay on cancel', () => {
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     const dndProps = (
       globalThis as {
@@ -766,7 +774,7 @@ describe('BlueprintEditor', () => {
       ]),
     });
 
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     const dndProps = (
       globalThis as {
@@ -813,7 +821,7 @@ describe('BlueprintEditor', () => {
       activeRouteNodeId: 'route-search',
     });
 
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     const dndProps = (
       globalThis as {
@@ -851,7 +859,7 @@ describe('BlueprintEditor', () => {
       ]),
     });
 
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     const dndProps = (
       globalThis as {
@@ -893,7 +901,7 @@ describe('BlueprintEditor', () => {
       ]),
     });
 
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     const dndProps = (
       globalThis as {
@@ -941,7 +949,7 @@ describe('BlueprintEditor', () => {
       ]),
     });
 
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     const dndProps = (
       globalThis as {
@@ -984,7 +992,7 @@ describe('BlueprintEditor', () => {
       ]),
     });
 
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     const dndProps = (
       globalThis as {
@@ -1029,7 +1037,7 @@ describe('BlueprintEditor', () => {
       },
     });
 
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     fireEvent.click(screen.getByTestId('delete-selected'));
 
@@ -1055,7 +1063,7 @@ describe('BlueprintEditor', () => {
       },
     });
 
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     fireEvent.click(screen.getByTestId('delete-node'));
 
@@ -1078,7 +1086,7 @@ describe('BlueprintEditor', () => {
       },
     });
 
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     fireEvent.click(screen.getByTestId('copy-node'));
 
@@ -1098,7 +1106,7 @@ describe('BlueprintEditor', () => {
       ]),
     });
 
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     fireEvent.click(screen.getByTestId('move-up-2'));
 
@@ -1107,7 +1115,7 @@ describe('BlueprintEditor', () => {
   });
 
   it('drops every palette item on the canvas without crashing', async () => {
-    render(<BlueprintEditor />);
+    renderBlueprintEditor();
 
     await waitFor(() => {
       expect(getBlueprintState()).toBeTruthy();

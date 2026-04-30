@@ -18,7 +18,7 @@ import {
 import { useInspectorContext } from '@/editor/features/design/inspector/InspectorContext';
 
 const INSPECTOR_ACTION_ICON_BUTTON_CLASS =
-  'inline-flex h-5 w-4.5 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)';
+  'inline-flex h-5 w-4.5 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-(--text-muted) hover:text-(--text-primary)';
 
 /**
  * 调用链路 / Call chain:
@@ -74,7 +74,7 @@ export function InspectorNodeIdentityFields() {
                 <div className="InspectorFieldActions inline-flex items-center gap-1 opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100">
                   <button
                     type="button"
-                    className="InspectorFieldAction inline-flex items-center justify-center rounded-full border-0 bg-transparent px-1 py-0.5 text-(--color-6) hover:text-(--color-9) disabled:cursor-not-allowed disabled:opacity-45"
+                    className="InspectorFieldAction inline-flex items-center justify-center rounded-full border-0 bg-transparent px-1 py-0.5 text-(--text-muted) hover:text-(--text-primary) disabled:cursor-not-allowed disabled:opacity-45"
                     onClick={applyRename}
                     disabled={!canApply}
                     aria-label={t('inspector.actions.apply', {
@@ -93,7 +93,7 @@ export function InspectorNodeIdentityFields() {
         />
         {isDuplicate && (
           <div
-            className="InspectorWarning inline-flex items-center gap-1 text-[10px] text-[rgba(220,74,74,0.9)]"
+            className="InspectorWarning inline-flex items-center gap-1 text-[10px] text-(--danger-color)"
             role="alert"
           >
             <AlertTriangle size={12} />

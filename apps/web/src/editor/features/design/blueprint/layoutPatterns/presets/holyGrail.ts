@@ -41,7 +41,7 @@ export const HOLY_GRAIL_LAYOUT_PATTERN: LayoutPatternDefinition<{
           role: 'header',
           props: {
             padding: '12px 16px',
-            backgroundColor: 'var(--color-1)',
+            backgroundColor: 'var(--bg-panel)',
             borderRadius: '8px',
           },
         }),
@@ -61,7 +61,7 @@ export const HOLY_GRAIL_LAYOUT_PATTERN: LayoutPatternDefinition<{
               props: {
                 width: resolvedParams.sidebarWidth,
                 padding: '12px',
-                backgroundColor: 'var(--color-1)',
+                backgroundColor: 'var(--bg-panel)',
                 borderRadius: '8px',
               },
             }),
@@ -72,8 +72,8 @@ export const HOLY_GRAIL_LAYOUT_PATTERN: LayoutPatternDefinition<{
               props: {
                 display: 'Block',
                 padding: '12px',
-                backgroundColor: 'var(--color-0)',
-                border: '1px solid var(--color-3)',
+                backgroundColor: 'var(--bg-canvas)',
+                border: '1px solid var(--border-subtle)',
                 borderRadius: '8px',
                 width: '100%',
               },
@@ -86,7 +86,7 @@ export const HOLY_GRAIL_LAYOUT_PATTERN: LayoutPatternDefinition<{
           role: 'footer',
           props: {
             padding: '12px 16px',
-            backgroundColor: 'var(--color-1)',
+            backgroundColor: 'var(--bg-panel)',
             borderRadius: '8px',
           },
         }),

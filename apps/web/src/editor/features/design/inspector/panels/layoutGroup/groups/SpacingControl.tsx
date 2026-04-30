@@ -31,7 +31,7 @@ const DEFAULT_EXPANDED_SPACING_STATE: ExpandedSpacingState = {
   padding: false,
 };
 
-let persistedExpandedSpacingState: ExpandedSpacingState = {
+const persistedExpandedSpacingState: ExpandedSpacingState = {
   ...DEFAULT_EXPANDED_SPACING_STATE,
 };
 
@@ -53,15 +53,17 @@ function SpacingControlInternal({
         control={
           <div className="flex items-center gap-1.5">
             <input
-              className="h-7 w-full min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none dark:border-white/14"
+              className="h-7 w-full min-w-0 rounded-md border border-(--border-default) bg-transparent px-2 text-xs text-(--text-primary) outline-none"
               value={value}
               placeholder="0"
+              data-testid={`inspector-${keyName}-shorthand`}
               onChange={(event) => onChange(event.target.value)}
             />
             <button
               type="button"
-              className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-black/10 text-(--color-7) dark:border-white/14"
+              className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-(--border-default) text-(--text-muted)"
               onClick={onToggleExpand}
+              data-testid={`inspector-${keyName}-toggle`}
               aria-label={t(
                 expanded
                   ? 'inspector.panels.layout.fields.collapse'
@@ -99,12 +101,12 @@ function SpacingControlInternal({
           ).map(([side, sideValue]) => (
             <label
               key={side}
-              className="flex items-start gap-2.5 py-1 text-(--color-7)"
+              className="flex items-start gap-2.5 py-1 text-(--text-muted)"
             >
               <SpacingSidePreviewIcon
                 side={side}
                 spacingKey={keyName}
-                className="h-14 w-16 shrink-0 text-(--color-6)"
+                className="h-14 w-16 shrink-0 text-(--text-muted)"
               />
               <div className="flex min-w-0 flex-1 flex-col gap-1">
                 <span className="text-[10px] leading-none font-semibold">

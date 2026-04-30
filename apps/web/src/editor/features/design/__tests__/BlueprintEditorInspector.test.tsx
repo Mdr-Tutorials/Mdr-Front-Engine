@@ -92,6 +92,18 @@ beforeEach(() => {
 const getSelectedId = () =>
   useEditorStore.getState().blueprintStateByProject[PROJECT_ID]?.selectedId;
 
+const openDataTab = () => {
+  fireEvent.click(screen.getByTestId('inspector-tab-data'));
+};
+
+const openStyleTab = () => {
+  fireEvent.click(screen.getByTestId('inspector-tab-style'));
+};
+
+const openCodeTab = () => {
+  fireEvent.click(screen.getByTestId('inspector-tab-code'));
+};
+
 describe('BlueprintEditorInspector', () => {
   it('renders placeholder when nothing is selected', () => {
     render(
@@ -212,6 +224,7 @@ describe('BlueprintEditorInspector', () => {
       />
     );
 
+    openCodeTab();
     const addButton = screen.getByTestId('inspector-add-trigger');
     fireEvent.click(addButton);
 
@@ -246,6 +259,7 @@ describe('BlueprintEditorInspector', () => {
       />
     );
 
+    openCodeTab();
     fireEvent.click(screen.getByTestId('inspector-add-trigger'));
 
     const node = useEditorStore
@@ -275,6 +289,7 @@ describe('BlueprintEditorInspector', () => {
       />
     );
 
+    openCodeTab();
     fireEvent.click(screen.getByTestId('inspector-add-trigger'));
     const triggerCard = screen.getByTestId('inspector-trigger-trigger-1');
     const selects = triggerCard.querySelectorAll('select');
@@ -310,6 +325,7 @@ describe('BlueprintEditorInspector', () => {
       />
     );
 
+    openDataTab();
     fireEvent.click(screen.getByTestId('inspector-data-model-enable'));
     fireEvent.change(screen.getByTestId('inspector-data-model-schema'), {
       target: {
@@ -427,6 +443,7 @@ describe('BlueprintEditorInspector', () => {
       />
     );
 
+    openStyleTab();
     const input = screen.getByTestId(
       'inspector-classname-input'
     ) as HTMLInputElement;
@@ -473,6 +490,7 @@ describe('BlueprintEditorInspector', () => {
       />
     );
 
+    openStyleTab();
     fireEvent.click(screen.getByTestId('inspector-style-open-mounted-css'));
     expect(screen.getByTestId('mounted-css-modal')).toBeTruthy();
   });
@@ -501,6 +519,7 @@ describe('BlueprintEditorInspector', () => {
       />
     );
 
+    openStyleTab();
     fireEvent.click(screen.getByTestId('inspector-style-open-mounted-css'));
     expect(screen.getByTestId('mounted-css-modal')).toBeTruthy();
   });
@@ -529,6 +548,7 @@ describe('BlueprintEditorInspector', () => {
       />
     );
 
+    openStyleTab();
     fireEvent.click(screen.getByTestId('inspector-style-open-mounted-css'));
     fireEvent.change(screen.getByTestId('mounted-css-codemirror'), {
       target: { value: '.card { color: red; }' },
@@ -757,6 +777,7 @@ describe('BlueprintEditorInspector', () => {
       />
     );
 
+    openDataTab();
     fireEvent.click(screen.getByTestId('inspector-data-model-enable'));
     const textarea = screen.getByTestId(
       'inspector-data-model-schema'
@@ -793,6 +814,7 @@ describe('BlueprintEditorInspector', () => {
       />
     );
 
+    openDataTab();
     fireEvent.click(screen.getByTestId('inspector-data-model-enable'));
     const textarea = screen.getByTestId(
       'inspector-data-model-mock'

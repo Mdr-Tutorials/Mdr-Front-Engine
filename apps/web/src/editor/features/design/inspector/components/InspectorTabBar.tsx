@@ -46,7 +46,7 @@ export function InspectorTabBar({
   const { t } = useTranslation('blueprint');
 
   return (
-    <nav className="InspectorTabBar flex border-b border-black/6 dark:border-white/8">
+    <nav className="InspectorTabBar flex border-b border-(--border-subtle)">
       {TAB_CONFIG.map(({ key, icon: Icon, labelKey, defaultLabel }) => {
         const label = t(labelKey, { defaultValue: defaultLabel });
         return (
@@ -55,8 +55,8 @@ export function InspectorTabBar({
             type="button"
             className={`inline-flex flex-1 items-center justify-center border-0 bg-transparent py-2 transition-colors ${
               activeTab === key
-                ? 'text-(--color-9)'
-                : 'text-(--color-5) hover:text-(--color-8)'
+                ? 'text-(--text-primary)'
+                : 'text-(--text-muted) hover:text-(--text-secondary)'
             }`}
             onClick={() => onTabChange(key)}
             data-testid={`inspector-tab-${key}`}

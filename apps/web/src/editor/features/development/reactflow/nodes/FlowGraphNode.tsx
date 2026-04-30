@@ -1,4 +1,4 @@
-import {
+﻿import {
   renderSource,
   renderTarget,
   resolveMultiplicity,
@@ -37,14 +37,14 @@ export const renderFlowGraphNode = ({ id, nodeData, selected, t }: Props) => {
 
   return (
     <div className={buildNodeContainerClass(selected, 'min-w-[200px]')}>
-      <div className="px-4 pt-2.5 pb-2 font-[Poppins,sans-serif] text-[13px] font-semibold tracking-[0.01em] text-slate-900">
+      <div className="px-4 pt-2.5 pb-2 font-[Poppins,sans-serif] text-[13px] font-semibold tracking-[0.01em] text-(--nodegraph-strong-text)">
         {nodeData.label}
       </div>
       <div className="pb-2">
         {rows.map((row) => (
           <div
             key={`${nodeData.kind}-${row.semantic}`}
-            className="relative flex min-h-7 items-center px-4 font-[Inter,sans-serif] text-[11px] font-normal text-slate-700"
+            className="relative flex min-h-7 items-center px-4 font-[Inter,sans-serif] text-[11px] font-normal text-(--nodegraph-text)"
           >
             {row.inHandle
               ? renderTarget(

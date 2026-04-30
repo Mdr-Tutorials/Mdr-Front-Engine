@@ -24,6 +24,11 @@ const normalizeKeyToken = (token: string) => {
   return KEY_ALIASES[normalized] ?? normalized;
 };
 
+const isApplePlatform = () => {
+  if (typeof navigator === 'undefined') return false;
+  return /mac|iphone|ipad|ipod/i.test(navigator.platform);
+};
+
 export const parseShortcut = (combo: string): ParsedShortcut => {
   const initial: ParsedShortcut = {
     key: '',
@@ -36,6 +41,14 @@ export const parseShortcut = (combo: string): ParsedShortcut => {
   return combo.split('+').reduce((current, token) => {
     const normalized = normalizeKeyToken(token);
     if (!normalized) return current;
+    if (normalized === 'mod') {
+      if (isApplePlatform()) {
+        current.meta = true;
+      } else {
+        current.ctrl = true;
+      }
+      return current;
+    }
     const modifierKey = MODIFIER_ALIASES[normalized];
     if (modifierKey) {
       current[modifierKey] = true;

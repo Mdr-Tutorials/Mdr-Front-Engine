@@ -38,7 +38,7 @@ export function LinkBasicsFields({
           })}
           control={
             <input
-              className="h-7 w-full min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+              className="h-7 w-full min-w-0 rounded-md border border-(--border-default) bg-transparent px-2 text-xs text-(--text-primary) outline-none placeholder:text-(--text-muted)"
               value={destination}
               onChange={(event) => onChangeDestination(event.target.value)}
               placeholder={t('inspector.fields.link.destinationPlaceholder', {
@@ -84,7 +84,7 @@ export function LinkBasicsFields({
           })}
           control={
             <input
-              className="h-7 w-full min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+              className="h-7 w-full min-w-0 rounded-md border border-(--border-default) bg-transparent px-2 text-xs text-(--text-primary) outline-none placeholder:text-(--text-muted)"
               value={rel}
               onChange={(event) => onChangeRel(event.target.value)}
               placeholder={t('inspector.fields.link.relPlaceholder', {
@@ -101,7 +101,7 @@ export function LinkBasicsFields({
           })}
           control={
             <input
-              className="h-7 w-full min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+              className="h-7 w-full min-w-0 rounded-md border border-(--border-default) bg-transparent px-2 text-xs text-(--text-primary) outline-none placeholder:text-(--text-muted)"
               value={title}
               onChange={(event) => onChangeTitle(event.target.value)}
               placeholder={t('inspector.fields.link.titlePlaceholder', {

@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import {
   normalizeStatusCodes,
   renderSource,
@@ -8,6 +8,8 @@ import {
 } from '@/editor/features/development/reactflow/graphNodeShared';
 import {
   buildNodeContainerClass,
+  NODE_ICON_BUTTON_CLASS,
+  NODE_REMOVE_BUTTON_CLASS,
   NODE_TEXT_INPUT_CLASS,
   NodeHeader,
   SelectField,
@@ -22,7 +24,7 @@ type Props = {
   t: NodeI18n;
 };
 const STATUS_INPUT_CLASS =
-  'nodrag nopan h-6 w-16 rounded border border-slate-200 bg-slate-50 px-2 text-[11px] font-normal text-slate-700 outline-none focus:border-slate-300 focus:bg-white';
+  'nodrag nopan h-6 w-16 rounded border border-(--nodegraph-node-border) bg-(--nodegraph-node-soft-bg) px-2 text-[11px] font-normal text-(--nodegraph-text) outline-none focus:border-(--nodegraph-node-border-strong) focus:bg-(--nodegraph-node-bg)';
 
 export const renderFetchGraphNode = ({ id, nodeData, selected, t }: Props) => {
   const statusCodes = normalizeStatusCodes(nodeData.statusCodes);
@@ -53,7 +55,7 @@ export const renderFetchGraphNode = ({ id, nodeData, selected, t }: Props) => {
         actions={
           <button
             type="button"
-            className="nodrag nopan inline-flex h-6 w-6 items-center justify-center rounded text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+            className={NODE_ICON_BUTTON_CLASS}
             onClick={(event) => {
               event.stopPropagation();
               nodeData.onAddStatusCode?.(id);
@@ -66,7 +68,7 @@ export const renderFetchGraphNode = ({ id, nodeData, selected, t }: Props) => {
       />
       {isCollapsed ? (
         <>
-          <div className="relative flex min-h-7 items-center px-4 pb-2 text-[11px] font-normal text-slate-500">
+          <div className="relative flex min-h-7 items-center px-4 pb-2 text-[11px] font-normal text-(--nodegraph-muted-text)">
             {renderTarget(
               id,
               'in.data.url',
@@ -115,7 +117,7 @@ export const renderFetchGraphNode = ({ id, nodeData, selected, t }: Props) => {
         <div className="pb-2">
           <div className="relative px-4 pb-1">
             <input
-              className="nodrag nopan h-7 w-full rounded border border-slate-200 bg-slate-50 px-2 font-[Inter,sans-serif] text-[11px] font-normal text-slate-700 outline-none focus:border-slate-300 focus:bg-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
+              className="nodrag nopan h-7 w-full rounded border border-(--nodegraph-node-border) bg-(--nodegraph-node-soft-bg) px-2 font-[Inter,sans-serif] text-[11px] font-normal text-(--nodegraph-text) outline-none focus:border-(--nodegraph-node-border-strong) focus:bg-(--nodegraph-node-bg) disabled:cursor-not-allowed disabled:border-(--nodegraph-node-border) disabled:bg-(--nodegraph-node-soft-bg) disabled:text-(--nodegraph-subtle-text)"
               value={nodeData.value ?? ''}
               onChange={(event) =>
                 nodeData.onChangeValue?.(id, event.target.value)
@@ -162,7 +164,7 @@ export const renderFetchGraphNode = ({ id, nodeData, selected, t }: Props) => {
           {statusCodes.map((item) => (
             <div
               key={item.id}
-              className="group relative flex min-h-7 items-center gap-2 px-4 text-[11px] font-normal text-slate-700"
+              className="group relative flex min-h-7 items-center gap-2 px-4 text-[11px] font-normal text-(--nodegraph-text)"
             >
               <input
                 className={STATUS_INPUT_CLASS}
@@ -183,7 +185,7 @@ export const renderFetchGraphNode = ({ id, nodeData, selected, t }: Props) => {
               )}
               <button
                 type="button"
-                className="nodrag nopan ml-auto flex h-5 w-5 items-center justify-center rounded text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                className={`ml-auto ${NODE_REMOVE_BUTTON_CLASS}`}
                 onClick={(event) => {
                   event.stopPropagation();
                   nodeData.onRemoveStatusCode?.(id, item.id);
@@ -194,11 +196,11 @@ export const renderFetchGraphNode = ({ id, nodeData, selected, t }: Props) => {
                   'remove status code'
                 )}
               >
-                ×
+                <X size={12} />
               </button>
             </div>
           ))}
-          <div className="relative flex min-h-7 items-center px-4 text-[11px] font-normal text-slate-700">
+          <div className="relative flex min-h-7 items-center px-4 text-[11px] font-normal text-(--nodegraph-text)">
             <span>{tNode(t, 'fetch.rows.requestError', 'request error')}</span>
             {renderSource(
               id,
@@ -209,7 +211,7 @@ export const renderFetchGraphNode = ({ id, nodeData, selected, t }: Props) => {
               nodeData.onPortContextMenu
             )}
           </div>
-          <div className="relative flex min-h-7 items-center px-4 text-[11px] font-normal text-slate-700">
+          <div className="relative flex min-h-7 items-center px-4 text-[11px] font-normal text-(--nodegraph-text)">
             <span>
               {tNode(t, 'fetch.rows.unexpectedStatus', 'unexpected status')}
             </span>

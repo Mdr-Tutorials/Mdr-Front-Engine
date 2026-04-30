@@ -25,12 +25,12 @@ const AppearanceGroupContent = ({
         })}
         control={
           <input
-            className="h-7 w-full min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+            className="h-7 w-full min-w-0 rounded-md border border-(--border-default) bg-transparent px-2 text-xs text-(--text-primary) outline-none placeholder:text-(--text-muted)"
             value={backgroundColorValue}
             placeholder={t(
               'inspector.panels.layout.placeholders.backgroundColor',
               {
-                defaultValue: 'var(--color-2)',
+                defaultValue: 'var(--bg-raised)',
               }
             )}
             onChange={(event) =>
@@ -51,9 +51,9 @@ const AppearanceGroupContent = ({
         })}
         control={
           <input
-            className="h-7 w-full min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+            className="h-7 w-full min-w-0 rounded-md border border-(--border-default) bg-transparent px-2 text-xs text-(--text-primary) outline-none placeholder:text-(--text-muted)"
             value={borderValue}
-            placeholder="1px solid var(--color-3)"
+            placeholder="1px solid var(--border-default)"
             onChange={(event) =>
               updateNode((current) =>
                 updateLayoutValue(current, 'border', event.target.value ?? '')

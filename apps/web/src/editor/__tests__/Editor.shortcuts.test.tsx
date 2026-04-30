@@ -36,7 +36,11 @@ vi.mock('../editorApi', () => ({
 }));
 
 vi.mock('@/core/executor/executor', () => ({
-  mountGraphExecutionBridge: () => mountGraphExecutionBridgeMock(),
+  mountGraphExecutionBridge: () => {
+    mountGraphExecutionBridgeMock();
+    return vi.fn();
+  },
+  registerGraphExecutionHandler: () => vi.fn(),
 }));
 
 vi.mock('../store/useEditorStore', () => ({

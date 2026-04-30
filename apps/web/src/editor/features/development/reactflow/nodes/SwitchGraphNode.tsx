@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+﻿import { Plus } from 'lucide-react';
 import {
   normalizeCases,
   renderSource,
@@ -9,6 +9,7 @@ import {
 import {
   BranchListEditor,
   buildNodeContainerClass,
+  NODE_ICON_BUTTON_CLASS,
   NodeHeader,
 } from './nodePrimitives';
 import type { NodeI18n } from './nodeI18n';
@@ -89,7 +90,7 @@ export const renderSwitchGraphNode = ({ id, nodeData, selected, t }: Props) => {
         actions={
           <button
             type="button"
-            className="nodrag nopan inline-flex h-6 w-6 items-center justify-center rounded text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+            className={NODE_ICON_BUTTON_CLASS}
             onClick={(event) => {
               event.stopPropagation();
               nodeData.onAddCase?.(id);
@@ -101,7 +102,7 @@ export const renderSwitchGraphNode = ({ id, nodeData, selected, t }: Props) => {
         }
       />
       {isCollapsed ? (
-        <div className="relative flex min-h-7 items-center px-4 pb-2 font-[Inter,sans-serif] text-[11px] font-normal text-slate-500">
+        <div className="relative flex min-h-7 items-center px-4 pb-2 font-[Inter,sans-serif] text-[11px] font-normal text-(--nodegraph-muted-text)">
           <span>
             {tNode(t, 'switch.caseCount', '{{count}} cases', {
               count: cases.length,
@@ -130,7 +131,7 @@ export const renderSwitchGraphNode = ({ id, nodeData, selected, t }: Props) => {
         </div>
       ) : (
         <div className="pb-2">
-          <div className="relative flex min-h-7 items-center px-4 text-[11px] font-normal text-slate-500">
+          <div className="relative flex min-h-7 items-center px-4 text-[11px] font-normal text-(--nodegraph-muted-text)">
             {renderTarget(
               id,
               'in.data.value',
@@ -172,7 +173,7 @@ export const renderSwitchGraphNode = ({ id, nodeData, selected, t }: Props) => {
               )
             }
           />
-          <div className="relative flex min-h-7 items-center gap-2 px-4 text-[11px] font-normal text-slate-700">
+          <div className="relative flex min-h-7 items-center gap-2 px-4 text-[11px] font-normal text-(--nodegraph-text)">
             <span>{tNode(t, 'common.rows.default', 'default')}</span>
             {renderSource(
               id,

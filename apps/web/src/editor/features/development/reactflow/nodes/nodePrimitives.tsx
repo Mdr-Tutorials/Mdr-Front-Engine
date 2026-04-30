@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { ChevronDown, ChevronRight, Plus } from 'lucide-react';
+import { ChevronDown, ChevronRight, Plus, X } from 'lucide-react';
 import type {
   NodeBranchItem,
   NodeKeyValueItem,
@@ -8,17 +8,27 @@ import type { NodeI18n } from './nodeI18n';
 import { tNode } from './nodeI18n';
 
 export const NODE_TEXT_INPUT_CLASS =
-  'nodrag nopan h-7 w-full rounded border border-slate-200 bg-slate-50 px-2 font-[Inter,sans-serif] text-[11px] font-normal text-slate-700 outline-none focus:border-slate-300 focus:bg-white';
+  'nodrag nopan h-7 w-full rounded border border-(--nodegraph-node-border) bg-(--nodegraph-node-soft-bg) px-2 font-[Inter,sans-serif] text-[11px] font-normal text-(--nodegraph-text) outline-none focus:border-(--nodegraph-node-border-strong) focus:bg-(--nodegraph-node-bg)';
 export const NODE_TEXTAREA_CLASS =
-  'nodrag nopan min-h-7 w-full resize-none overflow-hidden rounded border border-slate-200 bg-slate-50 px-2 py-1 font-[Inter,sans-serif] text-[11px] font-normal text-slate-700 outline-none focus:border-slate-300 focus:bg-white';
+  'nodrag nopan min-h-7 w-full resize-none overflow-hidden rounded border border-(--nodegraph-node-border) bg-(--nodegraph-node-soft-bg) px-2 py-1 font-[Inter,sans-serif] text-[11px] font-normal text-(--nodegraph-text) outline-none focus:border-(--nodegraph-node-border-strong) focus:bg-(--nodegraph-node-bg)';
+export const NODE_ROW_CLASS =
+  'relative flex min-h-7 items-center px-4 text-[11px] font-normal text-(--nodegraph-text)';
+export const NODE_MUTED_ROW_CLASS =
+  'relative flex min-h-7 items-center px-4 text-[11px] font-normal text-(--nodegraph-muted-text)';
+export const NODE_ICON_BUTTON_CLASS =
+  'nodrag nopan inline-flex h-6 w-6 items-center justify-center rounded text-(--nodegraph-muted-text) transition hover:bg-(--nodegraph-node-soft-hover) hover:text-(--nodegraph-text)';
+export const NODE_REMOVE_BUTTON_CLASS =
+  'nodrag nopan flex h-5 w-5 items-center justify-center rounded text-(--nodegraph-subtle-text) transition hover:bg-(--nodegraph-node-soft-hover) hover:text-(--nodegraph-text)';
+export const NODE_SECTION_LABEL_CLASS =
+  'px-4 pt-1 pb-1 text-[10px] tracking-[0.08em] text-(--nodegraph-subtle-text) uppercase';
 
 export const buildNodeContainerClass = (
   selected: boolean,
   minWidthClass = 'min-w-[200px]'
 ) =>
-  `relative ${minWidthClass} overflow-visible rounded-xl bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06),0_12px_30px_rgba(15,23,42,0.12)] ${
+  `relative ${minWidthClass} overflow-visible rounded-xl bg-(--nodegraph-node-bg) shadow-(--nodegraph-node-shadow) ${
     selected
-      ? 'ring-1 ring-slate-500/45 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_14px_34px_rgba(15,23,42,0.16)]'
+      ? 'ring-1 ring-(--nodegraph-selection-ring) shadow-(--nodegraph-node-shadow-selected)'
       : ''
   }`;
 
@@ -43,7 +53,7 @@ export const NodeHeader = ({
 }: NodeHeaderProps) => (
   <div className="relative flex min-h-9 items-center justify-between px-3.5 py-1.5">
     {leftSlot}
-    <div className="truncate pr-2 pl-1 font-[Poppins,sans-serif] text-[13px] font-semibold tracking-[0.01em] text-slate-900">
+    <div className="truncate pr-2 pl-1 font-[Poppins,sans-serif] text-[13px] font-semibold tracking-[0.01em] text-(--nodegraph-strong-text)">
       {title}
     </div>
     <div className="nodrag nopan ml-auto flex items-center gap-1">
@@ -52,7 +62,7 @@ export const NodeHeader = ({
       {onToggleCollapse ? (
         <button
           type="button"
-          className="inline-flex h-6 w-6 items-center justify-center rounded text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+          className="inline-flex h-6 w-6 items-center justify-center rounded text-(--nodegraph-muted-text) transition hover:bg-(--nodegraph-node-soft-hover) hover:text-(--nodegraph-text)"
           onClick={(event) => {
             event.stopPropagation();
             onToggleCollapse();
@@ -74,7 +84,7 @@ export const CollapseSummary = ({
   title?: string;
 }) => (
   <span
-    className="max-w-[120px] truncate text-[11px] font-normal text-slate-500"
+    className="max-w-[120px] truncate text-[11px] font-normal text-(--nodegraph-muted-text)"
     title={title || text}
   >
     {text}
@@ -83,7 +93,7 @@ export const CollapseSummary = ({
 
 export const NodeValidationHint = ({ message }: { message?: string }) =>
   message ? (
-    <div className="px-4 pb-2 text-[10px] font-medium text-amber-600">
+    <div className="px-4 pb-2 text-[10px] font-medium text-(--nodegraph-warning)">
       {message}
     </div>
   ) : null;
@@ -107,7 +117,7 @@ export const SelectField = ({
     value={value}
     onChange={(event) => onChange(event.target.value)}
     disabled={disabled}
-    className={`nodrag nopan h-7 rounded border border-slate-200 bg-slate-50 px-2 font-[Inter,sans-serif] text-[11px] font-normal text-slate-700 outline-none focus:border-slate-300 focus:bg-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 ${
+    className={`nodrag nopan h-7 rounded border border-(--nodegraph-node-border) bg-(--nodegraph-node-soft-bg) px-2 font-[Inter,sans-serif] text-[11px] font-normal text-(--nodegraph-text) outline-none focus:border-(--nodegraph-node-border-strong) focus:bg-(--nodegraph-node-bg) disabled:cursor-not-allowed disabled:border-(--nodegraph-node-border) disabled:bg-(--nodegraph-node-soft-bg) disabled:text-(--nodegraph-subtle-text) ${
       className ?? ''
     }`}
   >
@@ -153,14 +163,14 @@ export const KVListEditor = ({
       {items.map((item) => (
         <div key={item.id} className="flex items-center gap-2">
           <input
-            className="nodrag nopan h-6 min-w-0 flex-1 rounded border border-slate-200 bg-slate-50 px-2 text-[11px] font-normal text-slate-700 outline-none focus:border-slate-300 focus:bg-white"
+            className="nodrag nopan h-6 min-w-0 flex-1 rounded border border-(--nodegraph-node-border) bg-(--nodegraph-node-soft-bg) px-2 text-[11px] font-normal text-(--nodegraph-text) outline-none focus:border-(--nodegraph-node-border-strong) focus:bg-(--nodegraph-node-bg)"
             value={item.key}
             onChange={(event) => onChange?.(item.id, 'key', event.target.value)}
             placeholder={resolvedKeyPlaceholder}
             spellCheck={false}
           />
           <input
-            className="nodrag nopan h-6 min-w-0 flex-1 rounded border border-slate-200 bg-slate-50 px-2 text-[11px] font-normal text-slate-700 outline-none focus:border-slate-300 focus:bg-white"
+            className="nodrag nopan h-6 min-w-0 flex-1 rounded border border-(--nodegraph-node-border) bg-(--nodegraph-node-soft-bg) px-2 text-[11px] font-normal text-(--nodegraph-text) outline-none focus:border-(--nodegraph-node-border-strong) focus:bg-(--nodegraph-node-bg)"
             value={item.value}
             onChange={(event) =>
               onChange?.(item.id, 'value', event.target.value)
@@ -171,11 +181,11 @@ export const KVListEditor = ({
           {onRemove ? (
             <button
               type="button"
-              className="nodrag nopan flex h-5 w-5 items-center justify-center rounded text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+              className={NODE_REMOVE_BUTTON_CLASS}
               onClick={() => onRemove(item.id)}
               aria-label={removeEntryAria}
             >
-              ×
+              <X size={12} />
             </button>
           ) : null}
         </div>
@@ -183,7 +193,7 @@ export const KVListEditor = ({
       {onAdd ? (
         <button
           type="button"
-          className="nodrag nopan inline-flex h-6 items-center gap-1 rounded px-2 text-[11px] font-normal text-slate-600 transition hover:bg-slate-100 hover:text-slate-800"
+          className="nodrag nopan inline-flex h-6 items-center gap-1 rounded px-2 text-[11px] font-normal text-(--nodegraph-muted-text) transition hover:bg-(--nodegraph-node-soft-hover) hover:text-(--nodegraph-strong-text)"
           onClick={onAdd}
         >
           <Plus size={12} />
@@ -228,12 +238,12 @@ export const BranchListEditor = ({
       {items.map((item) => (
         <div
           key={item.id}
-          className="group relative flex min-h-7 items-center gap-2 px-4 text-[11px] font-normal text-slate-700"
+          className="group relative flex min-h-7 items-center gap-2 px-4 text-[11px] font-normal text-(--nodegraph-text)"
         >
           {renderStart ? renderStart(item) : null}
           {onChangeLabel ? (
             <input
-              className="nodrag nopan h-6 min-w-0 flex-1 rounded border border-slate-200 bg-slate-50 px-2 text-[11px] font-normal text-slate-700 outline-none focus:border-slate-300 focus:bg-white"
+              className="nodrag nopan h-6 min-w-0 flex-1 rounded border border-(--nodegraph-node-border) bg-(--nodegraph-node-soft-bg) px-2 text-[11px] font-normal text-(--nodegraph-text) outline-none focus:border-(--nodegraph-node-border-strong) focus:bg-(--nodegraph-node-bg)"
               value={item.label}
               onChange={(event) => onChangeLabel(item.id, event.target.value)}
               placeholder={branchPlaceholder}
@@ -246,14 +256,14 @@ export const BranchListEditor = ({
           {onRemove ? (
             <button
               type="button"
-              className="nodrag nopan ml-auto flex h-5 w-5 items-center justify-center rounded text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+              className={`ml-auto ${NODE_REMOVE_BUTTON_CLASS}`}
               onClick={(event) => {
                 event.stopPropagation();
                 onRemove(item.id);
               }}
               aria-label={removeBranchAria}
             >
-              ×
+              <X size={12} />
             </button>
           ) : null}
         </div>
@@ -262,7 +272,7 @@ export const BranchListEditor = ({
         <div className="px-3">
           <button
             type="button"
-            className="nodrag nopan inline-flex h-6 w-6 items-center justify-center rounded text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+            className={NODE_ICON_BUTTON_CLASS}
             onClick={(event) => {
               event.stopPropagation();
               onAdd();

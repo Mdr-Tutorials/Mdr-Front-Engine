@@ -95,12 +95,12 @@ export function InspectorExternalPropsFields() {
                   : [normalizedValue, ...options];
                 return (
                   <div key={key} className="flex items-center gap-1.5">
-                    <span className="min-w-20 text-[10px] text-(--color-6)">
+                    <span className="min-w-20 text-[10px] text-(--text-muted)">
                       {key}
                     </span>
                     <select
                       data-testid={`inspector-external-prop-${key}`}
-                      className="h-7 min-w-0 flex-1 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) dark:border-white/16"
+                      className="h-7 min-w-0 flex-1 rounded-md border border-(--border-default) bg-transparent px-2 text-xs text-(--text-primary)"
                       value={normalizedValue}
                       onChange={(event) => updateProp(key, event.target.value)}
                     >
@@ -114,7 +114,7 @@ export function InspectorExternalPropsFields() {
                       <button
                         type="button"
                         data-testid={`inspector-external-prop-reset-${key}`}
-                        className="h-7 cursor-pointer rounded-md border border-black/10 px-1.5 text-[10px] text-(--color-7) dark:border-white/16"
+                        className="h-7 cursor-pointer rounded-md border border-(--border-default) px-1.5 text-[10px] text-(--text-muted) hover:border-(--border-strong) hover:text-(--text-primary)"
                         onClick={() => clearProp(key)}
                       >
                         {t('inspector.fields.externalProps.reset', {
@@ -128,10 +128,10 @@ export function InspectorExternalPropsFields() {
               if (typeof value === 'boolean') {
                 return (
                   <div key={key} className="flex items-center gap-1.5">
-                    <span className="min-w-20 text-[10px] text-(--color-6)">
+                    <span className="min-w-20 text-[10px] text-(--text-muted)">
                       {key}
                     </span>
-                    <label className="inline-flex items-center gap-1 text-xs text-(--color-8)">
+                    <label className="inline-flex items-center gap-1 text-xs text-(--text-secondary)">
                       <input
                         data-testid={`inspector-external-prop-${key}`}
                         type="checkbox"
@@ -146,7 +146,7 @@ export function InspectorExternalPropsFields() {
                       <button
                         type="button"
                         data-testid={`inspector-external-prop-reset-${key}`}
-                        className="h-7 cursor-pointer rounded-md border border-black/10 px-1.5 text-[10px] text-(--color-7) dark:border-white/16"
+                        className="h-7 cursor-pointer rounded-md border border-(--border-default) px-1.5 text-[10px] text-(--text-muted) hover:border-(--border-strong) hover:text-(--text-primary)"
                         onClick={() => clearProp(key)}
                       >
                         {t('inspector.fields.externalProps.reset', {
@@ -160,12 +160,12 @@ export function InspectorExternalPropsFields() {
               if (typeof value === 'number') {
                 return (
                   <div key={key} className="flex items-center gap-1.5">
-                    <span className="min-w-20 text-[10px] text-(--color-6)">
+                    <span className="min-w-20 text-[10px] text-(--text-muted)">
                       {key}
                     </span>
                     <input
                       data-testid={`inspector-external-prop-${key}`}
-                      className="h-7 min-w-0 flex-1 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) dark:border-white/16"
+                      className="h-7 min-w-0 flex-1 rounded-md border border-(--border-default) bg-transparent px-2 text-xs text-(--text-primary)"
                       type="number"
                       value={value}
                       onChange={(event) => {
@@ -182,7 +182,7 @@ export function InspectorExternalPropsFields() {
                       <button
                         type="button"
                         data-testid={`inspector-external-prop-reset-${key}`}
-                        className="h-7 cursor-pointer rounded-md border border-black/10 px-1.5 text-[10px] text-(--color-7) dark:border-white/16"
+                        className="h-7 cursor-pointer rounded-md border border-(--border-default) px-1.5 text-[10px] text-(--text-muted) hover:border-(--border-strong) hover:text-(--text-primary)"
                         onClick={() => clearProp(key)}
                       >
                         {t('inspector.fields.externalProps.reset', {
@@ -195,12 +195,12 @@ export function InspectorExternalPropsFields() {
               }
               return (
                 <div key={key} className="flex items-center gap-1.5">
-                  <span className="min-w-20 text-[10px] text-(--color-6)">
+                  <span className="min-w-20 text-[10px] text-(--text-muted)">
                     {key}
                   </span>
                   <input
                     data-testid={`inspector-external-prop-${key}`}
-                    className="h-7 min-w-0 flex-1 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) dark:border-white/16"
+                    className="h-7 min-w-0 flex-1 rounded-md border border-(--border-default) bg-transparent px-2 text-xs text-(--text-primary)"
                     list={
                       dataModelFieldPaths.length
                         ? dataModelPathDatalistId
@@ -213,7 +213,7 @@ export function InspectorExternalPropsFields() {
                     <button
                       type="button"
                       data-testid={`inspector-external-prop-reset-${key}`}
-                      className="h-7 cursor-pointer rounded-md border border-black/10 px-1.5 text-[10px] text-(--color-7) dark:border-white/16"
+                      className="h-7 cursor-pointer rounded-md border border-(--border-default) px-1.5 text-[10px] text-(--text-muted) hover:border-(--border-strong) hover:text-(--text-primary)"
                       onClick={() => clearProp(key)}
                     >
                       {t('inspector.fields.externalProps.reset', {

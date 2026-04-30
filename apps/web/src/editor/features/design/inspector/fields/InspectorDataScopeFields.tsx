@@ -157,14 +157,14 @@ export function InspectorDataScopeFields() {
         className="flex min-h-5.5 w-full cursor-pointer items-center justify-between border-0 bg-transparent p-0 text-left"
         onClick={() => togglePanel(panelKey)}
       >
-        <span className="InspectorLabel text-[11px] font-semibold text-(--color-8)">
+        <span className="InspectorLabel text-[11px] font-semibold text-(--text-secondary)">
           {t('inspector.fields.dataModel.title', {
             defaultValue: 'Data Model',
           })}
         </span>
         <ChevronDown
           size={14}
-          className={`${isExpanded ? 'rotate-0' : '-rotate-90'} text-(--color-6) transition-transform`}
+          className={`${isExpanded ? 'rotate-0' : '-rotate-90'} text-(--text-muted) transition-transform`}
         />
       </button>
       {isExpanded ? (
@@ -174,7 +174,7 @@ export function InspectorDataScopeFields() {
               defaultValue: 'Mounted',
             })}
             control={
-              <label className="inline-flex items-center gap-2 text-xs text-(--color-8)">
+              <label className="inline-flex items-center gap-2 text-xs text-(--text-secondary)">
                 <input
                   data-testid="inspector-data-model-enable"
                   type="checkbox"
@@ -215,7 +215,7 @@ export function InspectorDataScopeFields() {
                 control={
                   <textarea
                     data-testid="inspector-data-model-schema"
-                    className="min-h-24 w-full resize-y rounded-md border border-black/10 bg-transparent px-2.5 py-1 text-xs leading-[1.35] text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+                    className="min-h-24 w-full resize-y rounded-md border border-(--border-default) bg-transparent px-2.5 py-1 text-xs leading-[1.35] text-(--text-primary) outline-none placeholder:text-(--text-muted)"
                     value={schemaDraft}
                     placeholder={t(
                       'inspector.fields.dataModel.schemaPlaceholder',
@@ -233,7 +233,7 @@ export function InspectorDataScopeFields() {
                 }
               />
               {schemaError ? (
-                <p className="m-0 text-[10px] text-[rgb(208,53,53)]">
+                <p className="m-0 text-[10px] text-(--danger-color)">
                   {schemaError}
                 </p>
               ) : null}
@@ -245,7 +245,7 @@ export function InspectorDataScopeFields() {
                 control={
                   <textarea
                     data-testid="inspector-data-model-mock"
-                    className="min-h-24 w-full resize-y rounded-md border border-black/10 bg-transparent px-2.5 py-1 text-xs leading-[1.35] text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+                    className="min-h-24 w-full resize-y rounded-md border border-(--border-default) bg-transparent px-2.5 py-1 text-xs leading-[1.35] text-(--text-primary) outline-none placeholder:text-(--text-muted)"
                     value={mockDraft}
                     placeholder={t(
                       'inspector.fields.dataModel.mockPlaceholder',
@@ -263,11 +263,11 @@ export function InspectorDataScopeFields() {
                 }
               />
               {mockError ? (
-                <p className="m-0 text-[10px] text-[rgb(208,53,53)]">
+                <p className="m-0 text-[10px] text-(--danger-color)">
                   {mockError}
                 </p>
               ) : null}
-              <p className="m-0 text-[10px] text-(--color-6)">
+              <p className="m-0 text-[10px] text-(--text-muted)">
                 {t('inspector.fields.dataModel.hint', {
                   defaultValue:
                     'Child properties can bind with field paths directly in their own inputs.',

@@ -53,40 +53,40 @@ const GROUP_COLOR_THEMES: Record<
   { border: string; bg: string; headerBg: string; text: string }
 > = {
   minimal: {
-    border: 'border-slate-300',
+    border: 'border-(--nodegraph-node-border-strong)',
     bg: 'bg-transparent',
     headerBg: 'bg-transparent',
-    text: 'text-slate-700',
+    text: 'text-(--nodegraph-text)',
   },
   mono: {
-    border: 'border-slate-200',
+    border: 'border-(--nodegraph-node-border)',
     bg: 'bg-transparent',
     headerBg: 'bg-transparent',
-    text: 'text-slate-900',
+    text: 'text-(--nodegraph-strong-text)',
   },
   slate: {
-    border: 'border-slate-500/55',
+    border: 'border-(--nodegraph-node-border-strong)',
     bg: 'bg-transparent',
     headerBg: 'bg-transparent',
-    text: 'text-slate-800',
+    text: 'text-(--nodegraph-strong-text)',
   },
   cyan: {
-    border: 'border-cyan-500/55',
+    border: 'border-(--nodegraph-info)',
     bg: 'bg-transparent',
     headerBg: 'bg-transparent',
-    text: 'text-cyan-900',
+    text: 'text-(--nodegraph-info)',
   },
   amber: {
-    border: 'border-amber-500/55',
+    border: 'border-(--nodegraph-warning)',
     bg: 'bg-transparent',
     headerBg: 'bg-transparent',
-    text: 'text-amber-900',
+    text: 'text-(--nodegraph-warning)',
   },
   rose: {
-    border: 'border-rose-500/55',
+    border: 'border-(--nodegraph-danger)',
     bg: 'bg-transparent',
     headerBg: 'bg-transparent',
-    text: 'text-rose-900',
+    text: 'text-(--nodegraph-danger)',
   },
 };
 
@@ -97,32 +97,32 @@ const NOTE_COLOR_THEMES: Record<
   minimal: {
     border: '',
     bg: 'bg-transparent',
-    text: 'text-slate-800',
+    text: 'text-(--nodegraph-strong-text)',
   },
   mono: {
-    border: 'border-slate-200',
+    border: 'border-(--nodegraph-node-border)',
     bg: 'bg-transparent',
-    text: 'text-slate-800',
+    text: 'text-(--nodegraph-strong-text)',
   },
   amber: {
-    border: 'border-amber-300',
+    border: 'border-(--nodegraph-warning)',
     bg: 'bg-transparent',
-    text: 'text-amber-900',
+    text: 'text-(--nodegraph-warning)',
   },
   lime: {
-    border: 'border-lime-300',
+    border: 'border-(--nodegraph-success)',
     bg: 'bg-transparent',
-    text: 'text-lime-900',
+    text: 'text-(--nodegraph-success)',
   },
   sky: {
-    border: 'border-sky-300',
+    border: 'border-(--nodegraph-info)',
     bg: 'bg-transparent',
-    text: 'text-sky-900',
+    text: 'text-(--nodegraph-info)',
   },
   rose: {
-    border: 'border-rose-300',
+    border: 'border-(--nodegraph-danger)',
     bg: 'bg-transparent',
-    text: 'text-rose-900',
+    text: 'text-(--nodegraph-danger)',
   },
 };
 
@@ -153,7 +153,7 @@ const renderInlineMarkdown = (text: string, keyPrefix: string): ReactNode[] => {
       chunks.push(
         <code
           key={`${keyPrefix}-code-${index}`}
-          className="rounded bg-black/10 px-1 py-0.5 text-[10px]"
+          className="rounded bg-(--nodegraph-code-inline-bg) px-1 py-0.5 text-[10px]"
         >
           {match.slice(1, -1)}
         </code>
@@ -191,7 +191,7 @@ const renderInlineMarkdown = (text: string, keyPrefix: string): ReactNode[] => {
         chunks.push(
           <a
             key={`${keyPrefix}-link-${index}`}
-            className="text-sky-700 underline decoration-sky-500/55 underline-offset-2"
+            className="text-(--nodegraph-info) underline decoration-(--nodegraph-info) underline-offset-2"
             href={href}
             rel="noreferrer"
             target="_blank"
@@ -275,7 +275,7 @@ const renderMarkdownBlocks = (
     blocks.push(
       <pre
         key={`${keyPrefix}-code-block-${keyIndex}`}
-        className="overflow-x-auto rounded-md bg-black/80 px-2 py-2 text-[10px] leading-5 text-slate-100"
+        className="overflow-x-auto rounded-md bg-(--nodegraph-code-block-bg) px-2 py-2 text-[10px] leading-5 text-(--nodegraph-code-block-text)"
       >
         <code>{codeLines.join('\n')}</code>
       </pre>
@@ -371,7 +371,7 @@ const renderMarkdownBlocks = (
       blocks.push(
         <blockquote
           key={`${keyPrefix}-quote-${keyIndex}`}
-          className="border-l-2 border-slate-400/60 pl-2 italic"
+          className="border-l-2 border-(--nodegraph-node-border-strong) pl-2 italic"
         >
           {renderInlineMarkdown(
             blockquoteMatch[1],
@@ -442,7 +442,7 @@ const StickyNoteEditor = ({ id, nodeData, selected, t }: Props) => {
           {renderMarkdownBlocks(content, keyPrefix)}
         </div>
       ) : (
-        <span className="text-[11px] text-slate-500/85">
+        <span className="text-[11px] text-(--nodegraph-muted-text)">
           {tNode(t, 'annotation.stickyNote.emptyText', 'Click to edit note')}
         </span>
       ),
@@ -506,7 +506,7 @@ const StickyNoteEditor = ({ id, nodeData, selected, t }: Props) => {
   const noteContainerClass = isMinimalTheme
     ? `relative overflow-visible ${theme.text}`
     : `relative overflow-hidden rounded-xl border ${theme.border} ${theme.bg} ${
-        selected ? 'ring-1 ring-slate-500/45' : ''
+        selected ? 'ring-1 ring-(--nodegraph-selection-ring)' : ''
       }`;
   const noteMeasureClass = isMinimalTheme
     ? `inline-block overflow-visible ${theme.text}`
@@ -546,7 +546,7 @@ const StickyNoteEditor = ({ id, nodeData, selected, t }: Props) => {
       {isModalOpen && typeof document !== 'undefined'
         ? createPortal(
             <div
-              className="fixed inset-0 z-[1200] flex items-center justify-center bg-black/45 p-4"
+              className="fixed inset-0 z-[1200] flex items-center justify-center bg-(--nodegraph-overlay-bg) p-4"
               role="dialog"
               aria-modal="true"
               onMouseDown={(event) => {
@@ -556,11 +556,11 @@ const StickyNoteEditor = ({ id, nodeData, selected, t }: Props) => {
               }}
             >
               <div
-                className="w-[min(980px,100%)] rounded-xl border border-slate-300 bg-white shadow-[0_22px_60px_rgba(15,23,42,0.35)]"
+                className="w-[min(980px,100%)] rounded-xl border border-(--nodegraph-node-border-strong) bg-(--nodegraph-node-bg) shadow-(--nodegraph-surface-shadow)"
                 onMouseDown={(event) => event.stopPropagation()}
               >
-                <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-                  <div className="text-sm font-semibold text-slate-900">
+                <div className="flex items-center justify-between border-b border-(--nodegraph-node-border) px-4 py-3">
+                  <div className="text-sm font-semibold text-(--nodegraph-strong-text)">
                     {tNode(
                       t,
                       'annotation.stickyNote.modalTitle',
@@ -569,7 +569,7 @@ const StickyNoteEditor = ({ id, nodeData, selected, t }: Props) => {
                   </div>
                   <button
                     type="button"
-                    className="rounded px-2 py-1 text-xs text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                    className="rounded px-2 py-1 text-xs text-(--nodegraph-muted-text) transition hover:bg-(--nodegraph-node-soft-hover) hover:text-(--nodegraph-strong-text)"
                     onClick={closeEditor}
                   >
                     {tNode(t, 'annotation.stickyNote.close', 'Close')}
@@ -577,7 +577,7 @@ const StickyNoteEditor = ({ id, nodeData, selected, t }: Props) => {
                 </div>
                 <div className="grid grid-cols-1 gap-3 p-3 lg:grid-cols-2">
                   <section className="min-w-0">
-                    <div className="mb-1 text-[11px] font-medium tracking-[0.08em] text-slate-500 uppercase">
+                    <div className="mb-1 text-[11px] font-medium tracking-[0.08em] text-(--nodegraph-muted-text) uppercase">
                       {tNode(
                         t,
                         'annotation.stickyNote.editorLabel',
@@ -595,7 +595,7 @@ const StickyNoteEditor = ({ id, nodeData, selected, t }: Props) => {
                       height="320px"
                       className="nodrag nopan native-code-node__editor"
                     />
-                    <div className="mt-1 text-[10px] text-slate-500">
+                    <div className="mt-1 text-[10px] text-(--nodegraph-muted-text)">
                       {tNode(
                         t,
                         'annotation.stickyNote.shortcutHint',
@@ -604,14 +604,14 @@ const StickyNoteEditor = ({ id, nodeData, selected, t }: Props) => {
                     </div>
                   </section>
                   <section className="min-w-0">
-                    <div className="mb-1 text-[11px] font-medium tracking-[0.08em] text-slate-500 uppercase">
+                    <div className="mb-1 text-[11px] font-medium tracking-[0.08em] text-(--nodegraph-muted-text) uppercase">
                       {tNode(
                         t,
                         'annotation.stickyNote.previewLabel',
                         'Preview'
                       )}
                     </div>
-                    <div className="h-[320px] overflow-auto rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-[12px] leading-6 text-slate-800">
+                    <div className="h-[320px] overflow-auto rounded-lg border border-(--nodegraph-node-border) bg-(--nodegraph-node-soft-bg) px-3 py-3 text-[12px] leading-6 text-(--nodegraph-strong-text)">
                       {draftContent.trim() ? (
                         <div className="space-y-1">
                           {renderMarkdownBlocks(
@@ -620,7 +620,7 @@ const StickyNoteEditor = ({ id, nodeData, selected, t }: Props) => {
                           )}
                         </div>
                       ) : (
-                        <span className="text-[11px] text-slate-500/85">
+                        <span className="text-[11px] text-(--nodegraph-muted-text)">
                           {tNode(
                             t,
                             'annotation.stickyNote.placeholder',
@@ -631,17 +631,17 @@ const StickyNoteEditor = ({ id, nodeData, selected, t }: Props) => {
                     </div>
                   </section>
                 </div>
-                <div className="flex items-center justify-end gap-2 border-t border-slate-200 px-4 py-3">
+                <div className="flex items-center justify-end gap-2 border-t border-(--nodegraph-node-border) px-4 py-3">
                   <button
                     type="button"
-                    className="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100"
+                    className="rounded-md border border-(--nodegraph-node-border-strong) px-3 py-1.5 text-xs font-medium text-(--nodegraph-text) transition hover:bg-(--nodegraph-node-soft-hover)"
                     onClick={closeEditor}
                   >
                     {tNode(t, 'annotation.stickyNote.cancel', 'Cancel')}
                   </button>
                   <button
                     type="button"
-                    className="rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-slate-700"
+                    className="rounded-md bg-(--nodegraph-strong-text) px-3 py-1.5 text-xs font-medium text-(--nodegraph-node-bg) transition hover:bg-(--nodegraph-text)"
                     onClick={saveEditor}
                   >
                     {tNode(t, 'annotation.stickyNote.save', 'Save')}
@@ -683,10 +683,10 @@ export const renderAnnotationGraphNode = ({
         className={
           isMinimalTheme
             ? `relative overflow-hidden rounded-xl border ${theme.border} ${theme.bg} ${
-                selected ? 'ring-1 ring-slate-500/45' : ''
+                selected ? 'ring-1 ring-(--nodegraph-selection-ring)' : ''
               }`
             : `relative overflow-hidden rounded-xl border-2 border-dashed ${theme.border} ${theme.bg} ${
-                selected ? 'ring-1 ring-slate-500/45' : ''
+                selected ? 'ring-1 ring-(--nodegraph-selection-ring)' : ''
               }`
         }
         style={{ width, height }}
@@ -694,15 +694,15 @@ export const renderAnnotationGraphNode = ({
         <div
           className={`nodrag nopan flex items-center gap-1 px-2 py-1 ${theme.headerBg} ${
             isMinimalTheme
-              ? 'border-b border-slate-300/90'
+              ? 'border-b border-(--nodegraph-node-border-strong)'
               : 'border-b border-dashed'
           }`}
         >
           <input
             className={`h-6 min-w-0 flex-1 px-2 text-[11px] font-medium outline-none ${
               isMinimalTheme
-                ? 'rounded-none border-none bg-transparent text-slate-800'
-                : 'rounded border border-black/10 bg-white/70 text-slate-800 focus:border-black/25'
+                ? 'rounded-none border-none bg-transparent text-(--nodegraph-strong-text)'
+                : 'rounded border border-(--nodegraph-node-border) bg-(--nodegraph-node-bg-translucent) text-(--nodegraph-strong-text) focus:border-(--nodegraph-node-border-strong)'
             }`}
             value={nodeData.value ?? ''}
             onChange={(event) =>

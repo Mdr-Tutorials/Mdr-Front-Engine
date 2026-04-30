@@ -128,7 +128,7 @@ function LayoutPatternPanelView({
   return (
     <div className="InspectorSection flex flex-col gap-2">
       {patternId === 'split' && splitCategory === '2-columns' ? (
-        <div className="rounded-md border border-black/8 px-2 py-1 text-[10px] text-(--color-6) dark:border-white/14">
+        <div className="rounded-md border border-(--border-default) px-2 py-1 text-[10px] text-(--text-muted)">
           {t('inspector.panels.layoutPattern.splitThirdColumnHint', {
             defaultValue:
               'Third column is hidden in 2 columns mode (not deleted).',

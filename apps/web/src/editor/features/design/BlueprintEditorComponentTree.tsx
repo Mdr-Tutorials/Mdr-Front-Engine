@@ -1,3 +1,4 @@
+import type { MouseEvent as ReactMouseEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -46,6 +47,17 @@ const collectExpandedKeys = (node: ComponentNode, keys: string[] = []) => {
   if (node.children && node.children.length > 0) {
     keys.push(node.id);
     node.children.forEach((child) => collectExpandedKeys(child, keys));
+  }
+  return keys;
+};
+
+const collectBranchExpandedKeys = (
+  node: ComponentNode,
+  keys: string[] = []
+) => {
+  if (node.children && node.children.length > 0) {
+    keys.push(node.id);
+    node.children.forEach((child) => collectBranchExpandedKeys(child, keys));
   }
   return keys;
 };
@@ -122,10 +134,36 @@ type TreeNodeProps = {
   onDelete: (nodeId: string) => void;
   onCopy: (nodeId: string) => void;
   onMove: (nodeId: string, direction: 'up' | 'down') => void;
+  onOpenContextMenu: (
+    node: ComponentNode,
+    event: ReactMouseEvent<HTMLDivElement>
+  ) => void;
+};
+
+type TreeContextMenuState = {
+  node: ComponentNode;
+  x: number;
+  y: number;
+};
+
+type TreeContextMenuAction =
+  | 'expand'
+  | 'expandRecursive'
+  | 'collapse'
+  | 'collapseRecursive';
+
+type TreeContextMenuAvailability = {
+  canExpand: boolean;
+  canExpandRecursive: boolean;
+  canCollapse: boolean;
+  canCollapseRecursive: boolean;
 };
 
 const INDENT_PX = 12;
 const NODE_SELECT_DELAY_MS = 220;
+const CONTEXT_MENU_WIDTH_PX = 168;
+const CONTEXT_MENU_HEIGHT_PX = 132;
+const CONTEXT_MENU_VIEWPORT_GAP_PX = 8;
 
 function BlueprintTreeNode({
   node,
@@ -142,6 +180,7 @@ function BlueprintTreeNode({
   onDelete,
   onCopy,
   onMove,
+  onOpenContextMenu,
 }: TreeNodeProps) {
   const children = node.children ?? [];
   const hasChildren = children.length > 0;
@@ -153,6 +192,7 @@ function BlueprintTreeNode({
     isLayoutPatternRoot && layoutPatternId
       ? formatPatternLabel(layoutPatternId)
       : node.type;
+  const nodeLabel = `${nodeTypeLabel} (${node.id})`;
   const hiddenBySplitCategory = isHiddenBySplitCategory(node);
   const nodeTypeSecondaryLabel = hiddenBySplitCategory
     ? 'Hidden by 2 Columns'
@@ -200,11 +240,21 @@ function BlueprintTreeNode({
       <div
         className="BlueprintEditorTreeRow flex items-center [&:focus-within_.BlueprintEditorTreeDragHandle]:opacity-100 [&:hover_.BlueprintEditorTreeDragHandle]:opacity-100"
         style={{ paddingLeft: depth * INDENT_PX }}
+        onContextMenu={(event) => {
+          if (!hasChildren) return;
+          event.preventDefault();
+          event.stopPropagation();
+          if (typeof window !== 'undefined' && selectTimer.current) {
+            window.clearTimeout(selectTimer.current);
+            selectTimer.current = null;
+          }
+          onOpenContextMenu(node, event);
+        }}
       >
         {hasChildren ? (
           <button
             type="button"
-            className={`BlueprintEditorTreeToggle inline-flex h-4 w-4 flex-none items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9) ${isExpanded ? 'Expanded' : ''}`}
+            className={`BlueprintEditorTreeToggle inline-flex h-4 w-4 flex-none items-center justify-center rounded-md border-0 bg-transparent text-(--text-muted) hover:text-(--text-primary) ${isExpanded ? 'Expanded' : ''}`}
             onClick={() => onToggle(node.id)}
             aria-label={isExpanded ? 'Collapse' : 'Expand'}
           >
@@ -222,7 +272,7 @@ function BlueprintTreeNode({
         )}
         <button
           type="button"
-          className="BlueprintEditorTreeDragHandle inline-flex h-4 w-4 flex-none cursor-grab items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) opacity-0 transition-[opacity,color] duration-150 active:cursor-grabbing disabled:cursor-default disabled:opacity-0"
+          className="BlueprintEditorTreeDragHandle inline-flex h-4 w-4 flex-none cursor-grab items-center justify-center rounded-md border-0 bg-transparent text-(--text-muted) opacity-0 transition-[opacity,color] duration-150 active:cursor-grabbing disabled:cursor-default disabled:opacity-0"
           disabled={isRoot}
           aria-label="Drag to reorder"
           title="Drag to reorder"
@@ -235,7 +285,7 @@ function BlueprintTreeNode({
           ref={setNodeRef}
           role="button"
           tabIndex={0}
-          className={`BlueprintEditorTreeItem relative flex min-w-0 flex-1 cursor-pointer items-center gap-1.5 rounded-[8px] border-0 bg-transparent px-0 py-px text-left text-(--color-8) transition-[color,opacity] duration-150 hover:text-(--color-9) [&.IsOver]:text-(--color-9) [&.Selected]:text-(--color-9) [&.Selected_.BlueprintEditorTreeCount]:text-(--color-8) [&.Selected_.BlueprintEditorTreeIcon]:text-(--color-9) [&:focus-within_.BlueprintEditorTreeActions]:opacity-100 [&:hover_.BlueprintEditorTreeActions]:opacity-100 [&:hover_.BlueprintEditorTreeIcon]:text-(--color-9) ${selectedId === node.id ? 'Selected' : ''} ${isOver ? 'IsOver' : ''} ${dropPlacement === 'before' ? 'DropBefore' : ''} ${dropPlacement === 'after' ? 'DropAfter' : ''} ${dropPlacement === 'child' ? 'DropChild bg-[rgba(0,0,0,0.03)] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.18)]' : ''}`.trim()}
+          className={`BlueprintEditorTreeItem relative flex min-w-0 flex-1 cursor-pointer items-center gap-1.5 rounded-[8px] border-0 bg-transparent px-0 py-px text-left text-(--text-secondary) transition-[color,opacity,background,box-shadow] duration-150 hover:text-(--text-primary) [&.IsOver]:text-(--text-primary) [&.Selected]:text-(--text-primary) [&.Selected_.BlueprintEditorTreeCount]:text-(--text-secondary) [&.Selected_.BlueprintEditorTreeIcon]:text-(--text-primary) [&:focus-within_.BlueprintEditorTreeActions]:opacity-100 [&:hover_.BlueprintEditorTreeActions]:opacity-100 [&:hover_.BlueprintEditorTreeIcon]:text-(--text-primary) ${selectedId === node.id ? 'Selected' : ''} ${isOver ? 'IsOver' : ''} ${dropPlacement === 'before' ? 'DropBefore' : ''} ${dropPlacement === 'after' ? 'DropAfter' : ''} ${dropPlacement === 'child' ? 'DropChild bg-(--bg-raised) shadow-[inset_0_0_0_1px_var(--border-strong)]' : ''}`.trim()}
           style={style}
           onClick={(event) => {
             // For collapsed parent nodes, defer selection briefly so double-click can expand only.
@@ -270,40 +320,40 @@ function BlueprintTreeNode({
               onSelect(node.id);
             }
           }}
-          title={nodeTypeLabel}
-          aria-label={nodeTypeLabel}
+          title={nodeLabel}
+          aria-label={nodeLabel}
         >
           {dropPlacement === 'before' && (
             <span
-              className="pointer-events-none absolute -top-1 right-2.5 left-2.5 h-0.5 rounded-full bg-[rgba(0,0,0,0.55)] shadow-[0_0_0_1px_rgba(255,255,255,0.65)]"
+              className="pointer-events-none absolute -top-1 right-2.5 left-2.5 h-0.5 rounded-full bg-(--accent-color) shadow-[0_0_0_1px_var(--bg-canvas)]"
               aria-hidden="true"
             />
           )}
           {dropPlacement === 'after' && (
             <span
-              className="pointer-events-none absolute right-2.5 -bottom-1 left-2.5 h-0.5 rounded-full bg-[rgba(0,0,0,0.55)] shadow-[0_0_0_1px_rgba(255,255,255,0.65)]"
+              className="pointer-events-none absolute right-2.5 -bottom-1 left-2.5 h-0.5 rounded-full bg-(--accent-color) shadow-[0_0_0_1px_var(--bg-canvas)]"
               aria-hidden="true"
             />
           )}
           <span
-            className="BlueprintEditorTreeIcon inline-flex h-[18px] w-[18px] flex-none items-center justify-center rounded-md bg-transparent text-(--color-7)"
+            className="BlueprintEditorTreeIcon inline-flex h-[18px] w-[18px] flex-none items-center justify-center rounded-md bg-transparent text-(--text-muted)"
             aria-hidden="true"
           >
             <Icon size={12} />
           </span>
-          <span className="BlueprintEditorTreeMeta flex min-w-0 items-center gap-1.5">
+          <span className="BlueprintEditorTreeMeta flex min-w-0 items-center gap-1.5 select-none">
             <span className="BlueprintEditorTreeTypeRow inline-flex min-w-0 items-center gap-1.5">
               <span className="BlueprintEditorTreeType truncate text-[10px] font-semibold tracking-[0.01em]">
                 {nodeTypeLabel}
               </span>
               {nodeTypeSecondaryLabel ? (
-                <span className="inline-flex items-center rounded-full border border-black/8 px-1 py-0 text-[8px] text-(--color-6) dark:border-white/14">
+                <span className="inline-flex items-center rounded-full border border-(--border-default) px-1 py-0 text-[8px] text-(--text-muted)">
                   {nodeTypeSecondaryLabel}
                 </span>
               ) : null}
               {hasChildren && (
                 <span
-                  className="BlueprintEditorTreeCount inline-flex h-3.5 min-w-3.5 flex-none items-center justify-center rounded-full border border-[rgba(0,0,0,0.08)] bg-[rgba(0,0,0,0.04)] px-1 text-[9px] text-(--color-7) tabular-nums dark:border-white/16 dark:bg-white/8"
+                  className="BlueprintEditorTreeCount inline-flex h-3.5 min-w-3.5 flex-none items-center justify-center rounded-full border border-(--border-subtle) bg-(--bg-raised) px-1 text-[9px] text-(--text-muted) tabular-nums"
                   aria-label={`${children.length} children`}
                 >
                   {children.length}
@@ -314,7 +364,7 @@ function BlueprintTreeNode({
           <span className="BlueprintEditorTreeActions ml-auto inline-flex items-center opacity-0 transition-opacity duration-150">
             <button
               type="button"
-              className="BlueprintEditorTreeNodeAction Danger inline-flex items-center gap-1 rounded-full border-0 bg-transparent px-0.5 py-0 text-[10px] text-[rgba(220,74,74,0.85)] hover:text-[rgba(220,74,74,1)] disabled:cursor-not-allowed disabled:opacity-45"
+              className="BlueprintEditorTreeNodeAction Danger inline-flex items-center gap-1 rounded-full border-0 bg-transparent px-0.5 py-0 text-[10px] text-(--danger-color) hover:text-(--danger-hover) disabled:cursor-not-allowed disabled:opacity-45"
               onClick={(event) => {
                 event.stopPropagation();
                 onDelete(node.id);
@@ -330,7 +380,7 @@ function BlueprintTreeNode({
             >
               <button
                 type="button"
-                className="BlueprintEditorTreeNodeAction inline-flex items-center gap-1 rounded-full border-0 bg-transparent px-0.5 py-0 text-[10px] text-(--color-6) hover:text-(--color-9) disabled:cursor-not-allowed disabled:opacity-45"
+                className="BlueprintEditorTreeNodeAction inline-flex items-center gap-1 rounded-full border-0 bg-transparent px-0.5 py-0 text-[10px] text-(--text-muted) hover:text-(--text-primary) disabled:cursor-not-allowed disabled:opacity-45"
                 onClick={(event) => {
                   event.stopPropagation();
                   onMenuAction?.(node.id);
@@ -341,12 +391,12 @@ function BlueprintTreeNode({
                 <MoreHorizontal size={12} />
               </button>
               <span
-                className="BlueprintEditorTreeMenuList pointer-events-none invisible absolute top-1/2 left-0 z-[5] inline-flex -translate-x-full -translate-y-1/2 gap-1 rounded-[10px] bg-(--color-0) p-1.5 opacity-0 shadow-[0_10px_20px_rgba(0,0,0,0.12)] transition-[opacity,visibility] delay-[500ms] duration-150 dark:shadow-[0_12px_22px_rgba(0,0,0,0.45)]"
+                className="BlueprintEditorTreeMenuList pointer-events-none invisible absolute top-1/2 left-0 z-[5] inline-flex -translate-x-full -translate-y-1/2 gap-1 rounded-[10px] bg-(--bg-canvas) p-1.5 opacity-0 shadow-(--shadow-md) ring-1 ring-(--border-subtle) transition-[opacity,visibility] delay-[500ms] duration-150"
                 role="menu"
               >
                 <button
                   type="button"
-                  className="BlueprintEditorTreeMenuItem inline-flex items-center justify-center rounded-lg border-0 bg-transparent px-1 py-0.5 text-(--color-6) hover:text-(--color-9) disabled:cursor-not-allowed disabled:opacity-45"
+                  className="BlueprintEditorTreeMenuItem inline-flex items-center justify-center rounded-lg border-0 bg-transparent px-1 py-0.5 text-(--text-muted) hover:text-(--text-primary) disabled:cursor-not-allowed disabled:opacity-45"
                   role="menuitem"
                   onClick={(event) => {
                     event.stopPropagation();
@@ -361,7 +411,7 @@ function BlueprintTreeNode({
                 </button>
                 <button
                   type="button"
-                  className="BlueprintEditorTreeMenuItem inline-flex items-center justify-center rounded-lg border-0 bg-transparent px-1 py-0.5 text-(--color-6) hover:text-(--color-9) disabled:cursor-not-allowed disabled:opacity-45"
+                  className="BlueprintEditorTreeMenuItem inline-flex items-center justify-center rounded-lg border-0 bg-transparent px-1 py-0.5 text-(--text-muted) hover:text-(--text-primary) disabled:cursor-not-allowed disabled:opacity-45"
                   role="menuitem"
                   onClick={(event) => {
                     event.stopPropagation();
@@ -376,7 +426,7 @@ function BlueprintTreeNode({
                 </button>
                 <button
                   type="button"
-                  className="BlueprintEditorTreeMenuItem inline-flex items-center justify-center rounded-lg border-0 bg-transparent px-1 py-0.5 text-(--color-6) hover:text-(--color-9) disabled:cursor-not-allowed disabled:opacity-45"
+                  className="BlueprintEditorTreeMenuItem inline-flex items-center justify-center rounded-lg border-0 bg-transparent px-1 py-0.5 text-(--text-muted) hover:text-(--text-primary) disabled:cursor-not-allowed disabled:opacity-45"
                   role="menuitem"
                   onClick={(event) => {
                     event.stopPropagation();
@@ -413,6 +463,7 @@ function BlueprintTreeNode({
               onDelete={onDelete}
               onCopy={onCopy}
               onMove={onMove}
+              onOpenContextMenu={onOpenContextMenu}
             />
           ))}
         </div>
@@ -453,6 +504,9 @@ export function BlueprintEditorComponentTree({
   const [expandedKeys, setExpandedKeys] =
     useState<string[]>(initialExpandedKeys);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [contextMenu, setContextMenu] = useState<TreeContextMenuState | null>(
+    null
+  );
   const menuHoldTimer = useRef<number | null>(null);
 
   useEffect(() => {
@@ -482,6 +536,27 @@ export function BlueprintEditorComponentTree({
     };
   }, []);
 
+  useEffect(() => {
+    if (!contextMenu || typeof window === 'undefined') return;
+
+    const closeContextMenu = () => setContextMenu(null);
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closeContextMenu();
+    };
+
+    document.addEventListener('pointerdown', closeContextMenu);
+    document.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('resize', closeContextMenu);
+    window.addEventListener('scroll', closeContextMenu, true);
+
+    return () => {
+      document.removeEventListener('pointerdown', closeContextMenu);
+      document.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('resize', closeContextMenu);
+      window.removeEventListener('scroll', closeContextMenu, true);
+    };
+  }, [contextMenu]);
+
   const holdMenuOpen = (nodeId: string) => {
     setOpenMenuId(nodeId);
     if (typeof window === 'undefined') return;
@@ -501,12 +576,91 @@ export function BlueprintEditorComponentTree({
     );
   };
 
+  const openContextMenu = (
+    node: ComponentNode,
+    event: ReactMouseEvent<HTMLDivElement>
+  ) => {
+    const viewportWidth =
+      typeof window === 'undefined' ? Infinity : window.innerWidth;
+    const viewportHeight =
+      typeof window === 'undefined' ? Infinity : window.innerHeight;
+    setOpenMenuId(null);
+    setContextMenu({
+      node,
+      x: Math.max(
+        CONTEXT_MENU_VIEWPORT_GAP_PX,
+        Math.min(
+          event.clientX,
+          viewportWidth - CONTEXT_MENU_WIDTH_PX - CONTEXT_MENU_VIEWPORT_GAP_PX
+        )
+      ),
+      y: Math.max(
+        CONTEXT_MENU_VIEWPORT_GAP_PX,
+        Math.min(
+          event.clientY,
+          viewportHeight - CONTEXT_MENU_HEIGHT_PX - CONTEXT_MENU_VIEWPORT_GAP_PX
+        )
+      ),
+    });
+  };
+
+  const runContextMenuAction = (action: TreeContextMenuAction) => {
+    if (!contextMenu) return;
+    const node = contextMenu.node;
+    const branchKeys = collectBranchExpandedKeys(node);
+
+    setExpandedKeys((prev) => {
+      const next = new Set(prev);
+
+      switch (action) {
+        case 'expand':
+          next.add(node.id);
+          break;
+        case 'expandRecursive':
+          branchKeys.forEach((id) => next.add(id));
+          break;
+        case 'collapse':
+          next.delete(node.id);
+          break;
+        case 'collapseRecursive':
+          branchKeys.forEach((id) => next.delete(id));
+          break;
+      }
+
+      return Array.from(next);
+    });
+    setContextMenu(null);
+  };
+
+  const getContextMenuAvailability = (
+    node: ComponentNode
+  ): TreeContextMenuAvailability => {
+    const branchKeys = collectBranchExpandedKeys(node);
+    const expandedSet = new Set(expandedKeys);
+    const isExpanded = expandedSet.has(node.id);
+    const isBranchFullyExpanded = branchKeys.every((id) => expandedSet.has(id));
+    const isBranchFullyCollapsed = branchKeys.every(
+      (id) => !expandedSet.has(id)
+    );
+
+    return {
+      canExpand: !isExpanded,
+      canExpandRecursive: !isBranchFullyExpanded,
+      canCollapse: isExpanded,
+      canCollapseRecursive: !isBranchFullyCollapsed,
+    };
+  };
+
+  const contextMenuAvailability = contextMenu
+    ? getContextMenuAvailability(contextMenu.node)
+    : null;
+
   if (isCollapsed) {
     return (
       <aside className="BlueprintEditorComponentTree Collapsed absolute bottom-10 left-0 z-[6] h-0 w-0 overflow-visible border-0 bg-transparent shadow-none">
         <button
           type="button"
-          className="BlueprintEditorTreeExpand inline-flex h-8 w-6 items-center justify-center rounded-l-none rounded-r-full border border-l-0 border-black/8 bg-(--color-0) pr-0.5 text-(--color-6) shadow-[0_10px_22px_rgba(0,0,0,0.14)] hover:text-(--color-9) dark:border-white/16 dark:shadow-[0_12px_24px_rgba(0,0,0,0.45)]"
+          className="BlueprintEditorTreeExpand inline-flex h-8 w-6 items-center justify-center rounded-l-none rounded-r-full border border-l-0 border-(--border-default) bg-(--bg-canvas) pr-0.5 text-(--text-muted) shadow-(--shadow-md) hover:text-(--text-primary)"
           onClick={onToggleCollapse}
           aria-label={t('tree.expand', {
             defaultValue: 'Expand component tree',
@@ -520,12 +674,12 @@ export function BlueprintEditorComponentTree({
 
   return (
     <aside
-      className={`BlueprintEditorComponentTree absolute bottom-0 left-0 z-[3] flex h-[var(--component-tree-height)] min-h-0 w-[var(--tree-width)] flex-col overflow-hidden rounded-xl border-0 bg-(--color-0) shadow-[0_10px_20px_rgba(0,0,0,0.06)] ${!isTreeCollapsed ? 'rounded-t-none' : ''}`}
+      className={`BlueprintEditorComponentTree absolute bottom-0 left-0 z-[3] flex h-[var(--component-tree-height)] min-h-0 w-[var(--tree-width)] flex-col overflow-hidden rounded-xl border-0 bg-(--bg-canvas) shadow-(--shadow-sm) ${!isTreeCollapsed ? 'rounded-t-none' : ''}`}
     >
       <div className="BlueprintEditorTreeHeader flex items-center justify-between bg-transparent px-2.5 pt-2.5 pb-1.5 text-[13px] font-semibold">
         <div className="BlueprintEditorTreeHeaderLeft inline-flex min-w-0 items-center gap-2">
           <span
-            className="BlueprintEditorTreeHeaderIcon inline-flex h-[18px] w-[18px] flex-none items-center justify-center rounded-md bg-transparent text-(--color-7)"
+            className="BlueprintEditorTreeHeaderIcon inline-flex h-[18px] w-[18px] flex-none items-center justify-center rounded-md bg-transparent text-(--text-muted)"
             aria-hidden="true"
           >
             <Layers size={14} />
@@ -533,7 +687,7 @@ export function BlueprintEditorComponentTree({
           <span>{t('tree.title', { defaultValue: 'Component Tree' })}</span>
           {totalNodes > 0 && (
             <span
-              className="BlueprintEditorTreeHeaderCount inline-flex h-[18px] flex-none items-center justify-center rounded-full bg-transparent px-1.5 text-[10px] font-bold text-(--color-7) tabular-nums"
+              className="BlueprintEditorTreeHeaderCount inline-flex h-[18px] flex-none items-center justify-center rounded-full bg-transparent px-1.5 text-[10px] font-bold text-(--text-muted) tabular-nums"
               aria-label={`${totalNodes} nodes`}
             >
               {totalNodes}
@@ -543,7 +697,7 @@ export function BlueprintEditorComponentTree({
         <div className="BlueprintEditorTreeHeaderActions inline-flex items-center gap-1">
           <button
             type="button"
-            className="BlueprintEditorTreeAction Danger inline-flex items-center justify-center gap-1.5 rounded-full border-0 bg-transparent px-1.5 py-0.5 text-[rgba(220,74,74,0.85)] hover:text-[rgba(220,74,74,1)] disabled:cursor-not-allowed disabled:text-(--color-6) disabled:opacity-45 dark:text-[rgba(255,128,128,0.85)] dark:hover:text-[rgba(255,160,160,1)]"
+            className="BlueprintEditorTreeAction Danger inline-flex items-center justify-center gap-1.5 rounded-full border-0 bg-transparent px-1.5 py-0.5 text-(--danger-color) hover:text-(--danger-hover) disabled:cursor-not-allowed disabled:text-(--text-muted) disabled:opacity-45"
             onClick={onDeleteSelected}
             disabled={isDeleteDisabled}
             aria-label={t('tree.deleteSelected', {
@@ -557,7 +711,7 @@ export function BlueprintEditorComponentTree({
           </button>
           <button
             type="button"
-            className="BlueprintEditorCollapse inline-flex items-center justify-center gap-1.5 rounded-full border-0 bg-transparent px-1.5 py-0.5 text-(--color-6) hover:text-(--color-9)"
+            className="BlueprintEditorCollapse inline-flex items-center justify-center gap-1.5 rounded-full border-0 bg-transparent px-1.5 py-0.5 text-(--text-muted) hover:text-(--text-primary)"
             onClick={onToggleCollapse}
             aria-label={t('tree.collapse', {
               defaultValue: 'Collapse component tree',
@@ -587,10 +741,11 @@ export function BlueprintEditorComponentTree({
               onDelete={onDeleteNode}
               onCopy={onCopyNode}
               onMove={onMoveNode}
+              onOpenContextMenu={openContextMenu}
             />
           </div>
         ) : (
-          <div className="BlueprintEditorTreePlaceholder px-2 py-3 text-center text-xs text-(--color-6)">
+          <div className="BlueprintEditorTreePlaceholder px-2 py-3 text-center text-xs text-(--text-muted)">
             <p>
               {t('tree.empty', {
                 defaultValue: 'No components yet.',
@@ -599,6 +754,64 @@ export function BlueprintEditorComponentTree({
           </div>
         )}
       </div>
+      {contextMenu && contextMenuAvailability ? (
+        <div
+          className="BlueprintEditorTreeContextMenu fixed z-50 flex w-[168px] flex-col gap-0.5 rounded-[8px] bg-(--bg-canvas) p-1 shadow-(--shadow-md) ring-1 ring-(--border-subtle)"
+          style={{ left: contextMenu.x, top: contextMenu.y }}
+          role="menu"
+          aria-label="Component tree context menu"
+          onPointerDown={(event) => event.stopPropagation()}
+          onContextMenu={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+          }}
+        >
+          {contextMenuAvailability.canExpand ? (
+            <button
+              type="button"
+              className="BlueprintEditorTreeContextMenuItem inline-flex items-center gap-2 rounded-md border-0 bg-transparent px-2 py-1 text-left text-[11px] text-(--text-secondary) hover:bg-(--bg-raised) hover:text-(--text-primary)"
+              role="menuitem"
+              onClick={() => runContextMenuAction('expand')}
+            >
+              <ChevronRight size={13} />
+              <span>Expand</span>
+            </button>
+          ) : null}
+          {contextMenuAvailability.canExpandRecursive ? (
+            <button
+              type="button"
+              className="BlueprintEditorTreeContextMenuItem inline-flex items-center gap-2 rounded-md border-0 bg-transparent px-2 py-1 text-left text-[11px] text-(--text-secondary) hover:bg-(--bg-raised) hover:text-(--text-primary)"
+              role="menuitem"
+              onClick={() => runContextMenuAction('expandRecursive')}
+            >
+              <Layers size={13} />
+              <span>Expand recursively</span>
+            </button>
+          ) : null}
+          {contextMenuAvailability.canCollapse ? (
+            <button
+              type="button"
+              className="BlueprintEditorTreeContextMenuItem inline-flex items-center gap-2 rounded-md border-0 bg-transparent px-2 py-1 text-left text-[11px] text-(--text-secondary) hover:bg-(--bg-raised) hover:text-(--text-primary)"
+              role="menuitem"
+              onClick={() => runContextMenuAction('collapse')}
+            >
+              <ChevronDown size={13} />
+              <span>Collapse</span>
+            </button>
+          ) : null}
+          {contextMenuAvailability.canCollapseRecursive ? (
+            <button
+              type="button"
+              className="BlueprintEditorTreeContextMenuItem inline-flex items-center gap-2 rounded-md border-0 bg-transparent px-2 py-1 text-left text-[11px] text-(--text-secondary) hover:bg-(--bg-raised) hover:text-(--text-primary)"
+              role="menuitem"
+              onClick={() => runContextMenuAction('collapseRecursive')}
+            >
+              <Layers size={13} />
+              <span>Collapse recursively</span>
+            </button>
+          ) : null}
+        </div>
+      ) : null}
     </aside>
   );
 }

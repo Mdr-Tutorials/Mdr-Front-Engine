@@ -133,7 +133,7 @@ function ExternalCodePanelView({
   return (
     <div className="flex flex-col gap-2 pt-1 pb-1">
       <div className="flex items-center justify-between gap-2 py-1">
-        <div className="text-[10px] text-(--color-6)">
+        <div className="text-[10px] text-(--text-muted)">
           {isMounted
             ? t('inspector.panels.external-code.status.mounted', {
                 defaultValue: 'Mounted to external runtime',
@@ -144,7 +144,7 @@ function ExternalCodePanelView({
         </div>
         <button
           type="button"
-          className="h-6 px-1.5 text-[10px] text-(--color-8) hover:text-(--color-9)"
+          className="h-6 px-1.5 text-[10px] text-(--text-secondary) hover:text-(--text-primary)"
           onClick={() =>
             updateNode((current) =>
               updateExternalCodeConfig(current, (config) =>
@@ -169,7 +169,7 @@ function ExternalCodePanelView({
               })}
         </button>
       </div>
-      <div className="rounded-md border border-black/8 px-2 py-1.5 text-[10px] text-(--color-6) dark:border-white/14">
+      <div className="rounded-md border border-(--border-default) px-2 py-1.5 text-[10px] text-(--text-muted)">
         {t('inspector.panels.external-code.description', {
           defaultValue:
             'Mount project script or shader resources for Canvas, WebGL, or other runtime-driven components.',
@@ -213,7 +213,7 @@ function ExternalCodePanelView({
               }
             />
             <div className="flex items-center justify-between gap-2">
-              <span className="text-[10px] text-(--color-6)">
+              <span className="text-[10px] text-(--text-muted)">
                 {!hasCompatibleResources
                   ? t('inspector.panels.external-code.empty', {
                       defaultValue:
@@ -233,7 +233,7 @@ function ExternalCodePanelView({
               </span>
               <button
                 type="button"
-                className="h-6 px-1.5 text-[10px] text-(--color-8) hover:text-(--color-9) disabled:cursor-not-allowed disabled:opacity-40"
+                className="h-6 px-1.5 text-[10px] text-(--text-secondary) hover:text-(--text-primary) disabled:cursor-not-allowed disabled:opacity-40"
                 onClick={openProjectResources}
                 disabled={!projectId?.trim()}
               >
@@ -350,7 +350,7 @@ export const externalCodePanel: InspectorPanelDefinition = {
   match: supportsExternalCodePanel,
   headerActions: (
     <span
-      className="inline-flex h-5 w-5 items-center justify-center text-(--color-6)"
+      className="inline-flex h-5 w-5 items-center justify-center text-(--text-muted)"
       aria-hidden="true"
     >
       <Code2 size={14} />

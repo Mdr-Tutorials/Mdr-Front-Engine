@@ -38,7 +38,7 @@ export function BlueprintEditorInspector({
       <aside className="BlueprintEditorInspector Collapsed absolute top-3 right-0 z-7 h-0 w-0 overflow-visible border-0 bg-transparent shadow-none">
         <button
           type="button"
-          className="BlueprintEditorCollapse absolute top-0 right-0 inline-flex h-8 w-6 items-center justify-center rounded-l-full rounded-r-none border border-r-0 border-black/8 bg-(--color-0) p-0 pl-0.5 text-(--color-6) shadow-[0_10px_22px_rgba(0,0,0,0.14)] hover:text-(--color-9) dark:border-white/16 dark:shadow-[0_12px_24px_rgba(0,0,0,0.45)]"
+          className="BlueprintEditorCollapse absolute top-0 right-0 inline-flex h-8 w-6 items-center justify-center rounded-l-full rounded-r-none border border-r-0 border-(--border-default) bg-(--bg-canvas) p-0 pl-0.5 text-(--text-muted) shadow-(--shadow-md) hover:text-(--text-primary)"
           onClick={onToggleCollapse}
           aria-label={t('inspector.toggle')}
         >
@@ -49,12 +49,12 @@ export function BlueprintEditorInspector({
   }
 
   return (
-    <aside className="BlueprintEditorInspector absolute top-0 right-0 bottom-0 z-4 flex min-h-0 w-(--inspector-width) flex-col rounded-[14px] bg-(--color-0) shadow-[0_12px_26px_rgba(0,0,0,0.08)] ring-1 ring-black/6 dark:ring-transparent">
-      <div className="InspectorHeader flex items-center justify-between border-b border-black/6 px-4 py-2.5 text-[13px] font-semibold text-(--color-9) dark:border-white/8">
+    <aside className="BlueprintEditorInspector absolute top-0 right-0 bottom-0 z-4 flex min-h-0 w-(--inspector-width) flex-col rounded-[14px] bg-(--bg-canvas) shadow-(--shadow-md) ring-1 ring-(--border-subtle)">
+      <div className="InspectorHeader flex items-center justify-between border-b border-(--border-subtle) px-4 py-2.5 text-[13px] font-semibold text-(--text-primary)">
         <span>{t('inspector.title')}</span>
         <button
           type="button"
-          className="BlueprintEditorCollapse inline-flex items-center justify-center gap-1.5 rounded-full border-0 bg-transparent px-1.5 py-0.5 text-(--color-6) hover:text-(--color-9)"
+          className="BlueprintEditorCollapse inline-flex items-center justify-center gap-1.5 rounded-full border-0 bg-transparent px-1.5 py-0.5 text-(--text-muted) hover:text-(--text-primary)"
           onClick={onToggleCollapse}
           aria-label={t('inspector.toggle')}
         >
@@ -73,14 +73,14 @@ export function BlueprintEditorInspector({
         </InspectorContext.Provider>
       ) : (
         <div className="InspectorPlaceholder px-4 pt-2 pb-3">
-          <p className="m-0 text-xs text-(--color-6)">
+          <p className="m-0 text-xs text-(--text-muted)">
             {t('inspector.placeholder')}
           </p>
           <div className="InspectorSkeleton mt-3 grid gap-2">
-            <span className="h-2 rounded-full bg-(--color-2)" />
-            <span className="h-2 w-[80%] rounded-full bg-(--color-2)" />
-            <span className="h-2 w-[65%] rounded-full bg-(--color-2)" />
-            <span className="h-2 w-[90%] rounded-full bg-(--color-2)" />
+            <span className="h-2 rounded-full bg-(--bg-raised)" />
+            <span className="h-2 w-[80%] rounded-full bg-(--bg-raised)" />
+            <span className="h-2 w-[65%] rounded-full bg-(--bg-raised)" />
+            <span className="h-2 w-[90%] rounded-full bg-(--bg-raised)" />
           </div>
         </div>
       )}

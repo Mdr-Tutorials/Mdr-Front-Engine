@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CodeResourcePage } from '@/editor/features/resources/CodeResourcePage';
+import { EditorShortcutProvider } from '@/editor/shortcuts';
 
 vi.mock('@uiw/react-codemirror', () => ({
   default: ({
@@ -26,14 +27,18 @@ describe('CodeResourcePage', () => {
 
   const renderWithRouter = () =>
     render(
-      <MemoryRouter initialEntries={['/editor/project/project-001/resources']}>
-        <Routes>
-          <Route
-            path="/editor/project/:projectId/resources"
-            element={<CodeResourcePage embedded />}
-          />
-        </Routes>
-      </MemoryRouter>
+      <EditorShortcutProvider>
+        <MemoryRouter
+          initialEntries={['/editor/project/project-001/resources']}
+        >
+          <Routes>
+            <Route
+              path="/editor/project/:projectId/resources"
+              element={<CodeResourcePage embedded />}
+            />
+          </Routes>
+        </MemoryRouter>
+      </EditorShortcutProvider>
     );
 
   it('edits and saves selected code file content with Ctrl+S', () => {

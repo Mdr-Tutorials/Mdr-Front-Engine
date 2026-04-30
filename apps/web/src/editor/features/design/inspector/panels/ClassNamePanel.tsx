@@ -10,7 +10,7 @@ function ClassNamePanelHeaderActions() {
   return (
     <button
       type="button"
-      className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
+      className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-(--text-muted) hover:text-(--text-primary)"
       onClick={() => openMountedCssEditor()}
       aria-label={t('inspector.groups.style.openMountedCss', {
         defaultValue: 'Open mounted CSS',

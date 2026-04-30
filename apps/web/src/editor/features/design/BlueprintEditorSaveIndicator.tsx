@@ -40,12 +40,12 @@ export function BlueprintEditorSaveIndicator({
       aria-live="polite"
       className={`inline-flex h-7 w-7 items-center justify-center rounded-full border ${
         tone === 'error'
-          ? 'border-rose-200 bg-rose-100 text-rose-700'
+          ? 'border-(--danger-color) bg-(--danger-subtle) text-(--danger-color)'
           : tone === 'warning'
-            ? 'border-amber-200 bg-amber-100 text-amber-700'
+            ? 'border-(--warning-color) bg-(--warning-subtle) text-(--warning-color)'
             : tone === 'success'
-              ? 'border-emerald-200 bg-emerald-100 text-emerald-700'
-              : 'border-slate-200 bg-slate-100 text-slate-600'
+              ? 'border-(--success-color) bg-(--success-subtle) text-(--success-color)'
+              : 'border-(--border-default) bg-(--bg-raised) text-(--text-secondary)'
       }`}
     >
       {icon}

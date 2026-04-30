@@ -1,4 +1,4 @@
-import {
+﻿import {
   normalizeBranches,
   renderSource,
   renderTarget,
@@ -30,7 +30,7 @@ const renderRowLabel = (
   outHandle: string | null,
   semantic: 'control' | 'data' | 'condition' = 'control'
 ) => (
-  <div className="relative flex min-h-7 items-center px-4 text-[11px] font-normal text-slate-700">
+  <div className="relative flex min-h-7 items-center px-4 text-[11px] font-normal text-(--nodegraph-text)">
     {inHandle
       ? renderTarget(
           id,
@@ -79,7 +79,7 @@ export const renderFlowControlGraphNode = ({
     return (
       <div className={buildNodeContainerClass(selected, 'min-w-[190px]')}>
         <NodeHeader title={nodeData.label} />
-        <div className="relative flex min-h-7 items-center px-4 pb-2 text-[11px] font-normal text-slate-700">
+        <div className="relative flex min-h-7 items-center px-4 pb-2 text-[11px] font-normal text-(--nodegraph-text)">
           <span>{tNode(t, 'common.rows.entry', 'entry')}</span>
           {renderSource(
             id,
@@ -108,7 +108,7 @@ export const renderFlowControlGraphNode = ({
             nodeData.onPortContextMenu
           )}
         />
-        <div className="px-4 pb-2 text-[11px] font-normal text-slate-500">
+        <div className="px-4 pb-2 text-[11px] font-normal text-(--nodegraph-muted-text)">
           {tNode(t, 'common.rows.exit', 'exit')}
         </div>
       </div>

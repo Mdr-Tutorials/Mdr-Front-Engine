@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ReactNode } from 'react';
 import EditorBar from '@/editor/EditorBar/EditorBar';
+import { EditorShortcutProvider } from '@/editor/shortcuts';
 import { resetSettingsStore } from '@/test-utils/editorStore';
 
 const navigateMock = vi.fn();
@@ -39,6 +40,13 @@ vi.mock('@mdr/ui', () => ({
   ),
 }));
 
+const renderEditorBar = () =>
+  render(
+    <EditorShortcutProvider>
+      <EditorBar />
+    </EditorShortcutProvider>
+  );
+
 describe('EditorBar', () => {
   beforeEach(() => {
     navigateMock.mockClear();
@@ -48,7 +56,7 @@ describe('EditorBar', () => {
   });
 
   it('renders project navigation links when a project is active', () => {
-    render(<EditorBar />);
+    renderEditorBar();
 
     expect(screen.getByTitle('bar.projectHome').getAttribute('href')).toBe(
       '/editor/project/project-123'
@@ -82,7 +90,7 @@ describe('EditorBar', () => {
 
   it('shows confirmation modal before leaving when prompts include leave', () => {
     resetSettingsStore({ confirmPrompts: ['leave'] });
-    render(<EditorBar />);
+    renderEditorBar();
 
     fireEvent.click(screen.getByLabelText('bar.exitAria'));
 
@@ -93,7 +101,7 @@ describe('EditorBar', () => {
   });
 
   it('opens confirmation modal on Escape in blueprint route', () => {
-    render(<EditorBar />);
+    renderEditorBar();
 
     fireEvent.keyDown(window, { key: 'Escape' });
 
@@ -102,7 +110,7 @@ describe('EditorBar', () => {
 
   it('supports Enter confirm and Backspace cancel in exit modal', () => {
     resetSettingsStore({ confirmPrompts: ['leave'] });
-    render(<EditorBar />);
+    renderEditorBar();
 
     fireEvent.click(screen.getByLabelText('bar.exitAria'));
     fireEvent.keyDown(window, { key: 'Backspace' });
@@ -115,7 +123,7 @@ describe('EditorBar', () => {
 
   it('navigates immediately when leave prompts are disabled', () => {
     resetSettingsStore({ confirmPrompts: [] });
-    render(<EditorBar />);
+    renderEditorBar();
 
     fireEvent.click(screen.getByLabelText('bar.exitAria'));
 
@@ -125,7 +133,7 @@ describe('EditorBar', () => {
   it('falls back to the home exit target when no project is selected', () => {
     params = {};
     resetSettingsStore({ confirmPrompts: [] });
-    render(<EditorBar />);
+    renderEditorBar();
 
     fireEvent.click(screen.getByLabelText('bar.exitAria'));
 

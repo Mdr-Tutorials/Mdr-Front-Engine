@@ -22,13 +22,13 @@ export function TriggerNavigateFields({
   return (
     <>
       <div className="grid gap-1">
-        <span className="text-[10px] font-semibold text-(--color-7)">
+        <span className="text-[10px] font-semibold text-(--text-muted)">
           {t('inspector.groups.triggers.toLabel', {
             defaultValue: 'Destination',
           })}
         </span>
         <input
-          className="h-7 w-full min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+          className="h-7 w-full min-w-0 rounded-md border border-(--border-default) bg-transparent px-2 text-xs text-(--text-primary) outline-none placeholder:text-(--text-muted)"
           value={toValue}
           title={t('inspector.groups.triggers.toHelp', {
             defaultValue:
@@ -49,7 +49,7 @@ export function TriggerNavigateFields({
           })}
         />
         {!isValidLinkValue && (
-          <span className="text-[10px] text-[rgba(220,74,74,0.9)]">
+          <span className="text-[10px] text-(--danger-color)">
             {t('inspector.groups.triggers.httpsOnly', {
               defaultValue:
                 'Use https:// for external links or /path for internal links.',
@@ -59,7 +59,7 @@ export function TriggerNavigateFields({
       </div>
       <div className="flex items-center gap-1.5">
         <label
-          className="inline-flex items-center gap-1 text-[11px] text-(--color-7)"
+          className="inline-flex items-center gap-1 text-[11px] text-(--text-muted)"
           title={t('inspector.groups.triggers.replaceHelp', {
             defaultValue:
               'When enabled, this navigation replaces the current history entry.',
@@ -84,7 +84,7 @@ export function TriggerNavigateFields({
           })}
         </label>
         <select
-          className="h-7 w-24 min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none dark:border-white/16"
+          className="h-7 w-24 min-w-0 rounded-md border border-(--border-default) bg-transparent px-2 text-xs text-(--text-primary) outline-none"
           value={targetValue}
           title={t('inspector.groups.triggers.targetHelp', {
             defaultValue: 'Browser tab target used by navigation actions.',
@@ -112,7 +112,7 @@ export function TriggerNavigateFields({
           </option>
         </select>
         <input
-          className="h-7 min-w-0 flex-1 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+          className="h-7 min-w-0 flex-1 rounded-md border border-(--border-default) bg-transparent px-2 text-xs text-(--text-primary) outline-none placeholder:text-(--text-muted)"
           value={stateValue}
           title={t('inspector.groups.triggers.stateHelp', {
             defaultValue:

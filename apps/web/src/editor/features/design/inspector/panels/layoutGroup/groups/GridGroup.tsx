@@ -90,6 +90,9 @@ const GridGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
             <MdrInput
               size="Small"
               value={gridColumnsDraft}
+              dataAttributes={{
+                'data-testid': 'inspector-grid-columns',
+              }}
               onChange={(value) => {
                 updateNode((current) => {
                   const next = Number(value);
@@ -117,7 +120,7 @@ const GridGroupContent = ({ node, updateNode, t }: LayoutGroupRenderProps) => {
           })}
           control={
             <input
-              className="h-7 w-full min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+              className="h-7 w-full min-w-0 rounded-md border border-(--border-default) bg-transparent px-2 text-xs text-(--text-primary) outline-none placeholder:text-(--text-muted)"
               value={gridTemplateRows}
               placeholder={t('inspector.panels.layout.placeholders.gridRows', {
                 defaultValue: 'repeat(2, minmax(0, 1fr))',

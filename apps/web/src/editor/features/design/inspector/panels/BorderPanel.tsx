@@ -37,7 +37,7 @@ function BorderPanelView({ node, updateNode }: InspectorPanelRenderProps) {
               )
             }
             placeholder={t('inspector.panels.border.placeholders.border', {
-              defaultValue: '1px solid var(--color-3)',
+              defaultValue: '1px solid var(--border-default)',
             })}
           />
         }

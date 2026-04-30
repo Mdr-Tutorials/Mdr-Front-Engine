@@ -23,14 +23,14 @@ export function InspectorListTemplateFields() {
         className="flex min-h-5.5 w-full cursor-pointer items-center justify-between border-0 bg-transparent p-0 text-left"
         onClick={() => togglePanel(panelKey)}
       >
-        <span className="InspectorLabel text-[11px] font-semibold text-(--color-8)">
+        <span className="InspectorLabel text-[11px] font-semibold text-(--text-secondary)">
           {t('inspector.fields.listTemplate.title', {
             defaultValue: 'List Template',
           })}
         </span>
         <ChevronDown
           size={14}
-          className={`${isExpanded ? 'rotate-0' : '-rotate-90'} text-(--color-6) transition-transform`}
+          className={`${isExpanded ? 'rotate-0' : '-rotate-90'} text-(--text-muted) transition-transform`}
         />
       </button>
       {isExpanded ? (
@@ -40,7 +40,7 @@ export function InspectorListTemplateFields() {
               defaultValue: 'Mounted',
             })}
             control={
-              <label className="inline-flex items-center gap-2 text-xs text-(--color-8)">
+              <label className="inline-flex items-center gap-2 text-xs text-(--text-secondary)">
                 <input
                   data-testid="inspector-list-template-enable"
                   type="checkbox"
@@ -77,7 +77,7 @@ export function InspectorListTemplateFields() {
               control={
                 <input
                   data-testid="inspector-list-array-field"
-                  className="h-7 min-w-0 rounded-md border border-black/10 bg-transparent px-2.5 text-xs text-(--color-9) outline-none dark:border-white/16"
+                  className="h-7 min-w-0 rounded-md border border-(--border-default) bg-transparent px-2.5 text-xs text-(--text-primary) outline-none"
                   value={arrayField}
                   onChange={(event) => {
                     const nextValue = event.target.value;
@@ -103,7 +103,7 @@ export function InspectorListTemplateFields() {
             />
           ) : null}
           {enabled ? (
-            <span className="text-[10px] text-(--color-6)">
+            <span className="text-[10px] text-(--text-muted)">
               {t('inspector.fields.listTemplate.hint', {
                 defaultValue:
                   'Item and index aliases are managed automatically in code generation.',

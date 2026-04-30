@@ -1,4 +1,4 @@
-import {
+﻿import {
   normalizeBindingEntries,
   renderSource,
   renderTarget,
@@ -33,7 +33,7 @@ const row = (
     outSemantic?: 'control' | 'data' | 'condition';
   }
 ) => (
-  <div className="relative flex min-h-7 items-center px-4 text-[11px] font-normal text-slate-700">
+  <div className="relative flex min-h-7 items-center px-4 text-[11px] font-normal text-(--nodegraph-text)">
     {options.inHandle
       ? renderTarget(
           id,
@@ -123,7 +123,7 @@ export const renderAbstractionGraphNode = ({
             outHandle: 'out.data.result',
             outSemantic: 'data',
           })}
-          <div className="px-4 pt-1 pb-1 text-[10px] tracking-[0.08em] text-slate-400 uppercase">
+          <div className="px-4 pt-1 pb-1 text-[10px] tracking-[0.08em] text-(--nodegraph-subtle-text) uppercase">
             {tNode(
               t,
               'abstraction.subFlowCall.inputBindings',
@@ -153,7 +153,7 @@ export const renderAbstractionGraphNode = ({
               'binding'
             )}
           />
-          <div className="px-4 pt-1 pb-1 text-[10px] tracking-[0.08em] text-slate-400 uppercase">
+          <div className="px-4 pt-1 pb-1 text-[10px] tracking-[0.08em] text-(--nodegraph-subtle-text) uppercase">
             {tNode(
               t,
               'abstraction.subFlowCall.outputBindings',

@@ -42,14 +42,14 @@ export function PresetInput({
       className="InspectorInputRow group relative flex w-full items-center gap-1"
     >
       <input
-        className="h-7 w-full min-w-0 rounded-md border border-black/10 bg-transparent px-2 pr-7 text-xs text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+        className="h-7 w-full min-w-0 rounded-md border border-(--border-default) bg-transparent px-2 pr-7 text-xs text-(--text-primary) outline-none placeholder:text-(--text-muted)"
         value={value}
         placeholder={placeholder}
         onChange={(event) => onChange(event.target.value)}
       />
       <button
         type="button"
-        className="absolute right-1 inline-flex h-5 w-5 items-center justify-center rounded-sm border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
+        className="absolute right-1 inline-flex h-5 w-5 items-center justify-center rounded-sm border-0 bg-transparent text-(--text-muted) hover:text-(--text-primary)"
         onClick={() => setOpen((current) => !current)}
         aria-label={t('inspector.fields.presetInput.toggle', {
           defaultValue: 'Toggle presets',
@@ -58,12 +58,12 @@ export function PresetInput({
         <ChevronDown size={14} />
       </button>
       {open ? (
-        <div className="absolute top-[calc(100%+4px)] right-0 left-0 z-20 max-h-44 overflow-auto rounded-md border border-black/10 bg-(--color-0) p-1 shadow-[0_8px_18px_rgba(0,0,0,0.12)] dark:border-white/14">
+        <div className="absolute top-[calc(100%+4px)] right-0 left-0 z-20 max-h-44 overflow-auto rounded-md border border-(--border-default) bg-(--bg-canvas) p-1 shadow-(--shadow-md)">
           {options.map((option) => (
             <button
               key={option.value}
               type="button"
-              className="flex w-full items-center rounded-sm border-0 bg-transparent px-2 py-1 text-left text-xs text-(--color-8) hover:bg-black/4 hover:text-(--color-9) dark:hover:bg-white/8"
+              className="flex w-full items-center rounded-sm border-0 bg-transparent px-2 py-1 text-left text-xs text-(--text-secondary) hover:bg-(--bg-raised) hover:text-(--text-primary)"
               onClick={() => {
                 onChange(option.value);
                 setOpen(false);

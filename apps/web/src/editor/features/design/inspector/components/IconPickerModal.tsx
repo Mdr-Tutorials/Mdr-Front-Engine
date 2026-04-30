@@ -220,22 +220,22 @@ export function IconPickerModal({
 
   return (
     <div
-      className="fixed inset-0 z-[9998] flex items-center justify-center bg-[rgba(7,7,7,0.45)] p-4 backdrop-blur-[3px]"
+      className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/45 p-4 backdrop-blur-[3px]"
       onClick={onClose}
       data-testid="icon-picker-modal"
     >
       <div
-        className="flex h-[min(78vh,760px)] w-[min(900px,96vw)] flex-col overflow-hidden rounded-[16px] border border-black/8 bg-(--color-0) shadow-[0_18px_34px_rgba(0,0,0,0.2)] dark:border-white/14"
+        className="flex h-[min(78vh,760px)] w-[min(900px,96vw)] flex-col overflow-hidden rounded-[16px] border border-(--border-default) bg-(--bg-canvas) shadow-(--shadow-lg)"
         onClick={(event) => event.stopPropagation()}
       >
-        <header className="flex items-center justify-between border-b border-black/8 px-4 py-3 dark:border-white/12">
+        <header className="flex items-center justify-between border-b border-(--border-default) px-4 py-3">
           <div className="min-w-0">
-            <h3 className="m-0 truncate text-[14px] font-semibold text-(--color-9)">
+            <h3 className="m-0 truncate text-[14px] font-semibold text-(--text-primary)">
               {t('inspector.iconPicker.title', {
                 defaultValue: 'Select icon',
               })}
             </h3>
-            <p className="m-0 mt-1 text-[11px] text-(--color-6)">
+            <p className="m-0 mt-1 text-[11px] text-(--text-muted)">
               {t('inspector.iconPicker.subtitle', {
                 defaultValue:
                   'Source + search. Ready for multiple icon providers.',
@@ -244,7 +244,7 @@ export function IconPickerModal({
           </div>
           <button
             type="button"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md border-0 bg-transparent text-(--text-muted) hover:text-(--text-primary)"
             onClick={onClose}
             data-testid="icon-picker-close"
             aria-label={t('inspector.iconPicker.close', {
@@ -255,13 +255,13 @@ export function IconPickerModal({
           </button>
         </header>
 
-        <div className="grid grid-cols-1 gap-2 border-b border-black/8 px-4 py-3 md:grid-cols-[180px_1fr] dark:border-white/12">
-          <label className="grid gap-1 text-[11px] font-semibold text-(--color-7)">
+        <div className="grid grid-cols-1 gap-2 border-b border-(--border-default) px-4 py-3 md:grid-cols-[180px_1fr]">
+          <label className="grid gap-1 text-[11px] font-semibold text-(--text-muted)">
             {t('inspector.iconPicker.source', {
               defaultValue: 'Source',
             })}
             <select
-              className="h-8 rounded-md border border-black/10 bg-transparent px-2 text-[12px] text-(--color-9) outline-none dark:border-white/16"
+              className="h-8 rounded-md border border-(--border-default) bg-transparent px-2 text-[12px] text-(--text-primary) outline-none"
               value={providerSelectValue}
               onChange={(event) => {
                 const selection = parseProviderSelectValue(event.target.value);
@@ -279,17 +279,17 @@ export function IconPickerModal({
               ))}
             </select>
           </label>
-          <label className="grid gap-1 text-[11px] font-semibold text-(--color-7)">
+          <label className="grid gap-1 text-[11px] font-semibold text-(--text-muted)">
             {t('inspector.iconPicker.search', {
               defaultValue: 'Search',
             })}
             <div className="relative">
               <Search
                 size={13}
-                className="pointer-events-none absolute top-1/2 left-2 -translate-y-1/2 text-(--color-5)"
+                className="pointer-events-none absolute top-1/2 left-2 -translate-y-1/2 text-(--text-muted)"
               />
               <input
-                className="h-8 w-full rounded-md border border-black/10 bg-transparent pr-2 pl-7 text-[12px] text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+                className="h-8 w-full rounded-md border border-(--border-default) bg-transparent pr-2 pl-7 text-[12px] text-(--text-primary) outline-none placeholder:text-(--text-muted)"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder={t('inspector.iconPicker.searchPlaceholder', {
@@ -303,7 +303,7 @@ export function IconPickerModal({
 
         <div className="flex min-h-0 flex-1">
           <div className="flex min-w-0 flex-1 flex-col">
-            <div className="flex items-center justify-between border-b border-black/8 px-4 py-2 text-[11px] text-(--color-6) dark:border-white/12">
+            <div className="flex items-center justify-between border-b border-(--border-default) px-4 py-2 text-[11px] text-(--text-muted)">
               <span>
                 {t('inspector.iconPicker.matched', {
                   defaultValue: '{{count}} matched',
@@ -324,14 +324,14 @@ export function IconPickerModal({
               </span>
             </div>
             {isProviderLoading && !filteredNames.length && (
-              <div className="border-b border-black/8 px-4 py-2 text-[11px] text-(--color-6) dark:border-white/12">
+              <div className="border-b border-(--border-default) px-4 py-2 text-[11px] text-(--text-muted)">
                 {t('inspector.iconPicker.loading', {
                   defaultValue: 'Loading icons from esm.sh...',
                 })}
               </div>
             )}
             {hasProviderError && !filteredNames.length && (
-              <div className="flex items-center justify-between gap-2 border-b border-black/8 px-4 py-2 text-[11px] text-(--color-6) dark:border-white/12">
+              <div className="flex items-center justify-between gap-2 border-b border-(--border-default) px-4 py-2 text-[11px] text-(--text-muted)">
                 <span className="truncate">
                   {t('inspector.iconPicker.loadError', {
                     defaultValue: 'Icon provider failed to load.',
@@ -339,7 +339,7 @@ export function IconPickerModal({
                 </span>
                 <button
                   type="button"
-                  className="h-7 rounded-md border border-black/10 px-2 text-[11px] text-(--color-7)"
+                  className="h-7 rounded-md border border-(--border-default) px-2 text-[11px] text-(--text-muted) hover:border-(--border-strong) hover:text-(--text-primary)"
                   onClick={() =>
                     void ensureIconProviderReady(providerId).catch(
                       () => undefined
@@ -368,7 +368,7 @@ export function IconPickerModal({
                   <button
                     type="button"
                     key={name}
-                    className={`group flex h-[76px] cursor-pointer flex-col items-center justify-center gap-1 rounded-md border px-1 text-center transition-colors ${isActive ? 'border-black/40 bg-black/[0.03] text-(--color-10)' : 'border-black/8 bg-transparent text-(--color-7) hover:border-black/18 hover:text-(--color-9) dark:border-white/12 dark:hover:border-white/25'}`}
+                    className={`group flex h-[76px] cursor-pointer flex-col items-center justify-center gap-1 rounded-md border px-1 text-center transition-colors ${isActive ? 'border-(--border-strong) bg-(--bg-raised) text-(--text-primary)' : 'border-(--border-subtle) bg-transparent text-(--text-muted) hover:border-(--border-strong) hover:text-(--text-primary)'}`}
                     onClick={() => setSelectedName(name)}
                     data-testid={`icon-picker-option-${name}`}
                     title={name}
@@ -383,14 +383,14 @@ export function IconPickerModal({
                 );
               })}
               {!visibleNames.length && (
-                <div className="col-span-full rounded-md border border-dashed border-black/12 px-3 py-5 text-center text-[12px] text-(--color-6) dark:border-white/16">
+                <div className="col-span-full rounded-md border border-dashed border-(--border-default) px-3 py-5 text-center text-[12px] text-(--text-muted)">
                   {t('inspector.iconPicker.empty', {
                     defaultValue: 'No icons found.',
                   })}
                 </div>
               )}
             </div>
-            <div className="flex items-center justify-between border-t border-black/8 px-3 py-2 text-[11px] text-(--color-6) dark:border-white/12">
+            <div className="flex items-center justify-between border-t border-(--border-default) px-3 py-2 text-[11px] text-(--text-muted)">
               <span>
                 {t('inspector.iconPicker.page', {
                   defaultValue: 'Page {{current}}/{{total}}',
@@ -401,7 +401,7 @@ export function IconPickerModal({
               <div className="inline-flex items-center gap-1">
                 <button
                   type="button"
-                  className="h-7 rounded-md border border-black/10 px-2 text-[11px] text-(--color-7) disabled:cursor-not-allowed disabled:opacity-40"
+                  className="h-7 rounded-md border border-(--border-default) px-2 text-[11px] text-(--text-muted) hover:border-(--border-strong) hover:text-(--text-primary) disabled:cursor-not-allowed disabled:opacity-40"
                   onClick={() => setPage((current) => Math.max(1, current - 1))}
                   disabled={currentPage <= 1}
                   data-testid="icon-picker-prev-page"
@@ -412,7 +412,7 @@ export function IconPickerModal({
                 </button>
                 <button
                   type="button"
-                  className="h-7 rounded-md border border-black/10 px-2 text-[11px] text-(--color-7) disabled:cursor-not-allowed disabled:opacity-40"
+                  className="h-7 rounded-md border border-(--border-default) px-2 text-[11px] text-(--text-muted) hover:border-(--border-strong) hover:text-(--text-primary) disabled:cursor-not-allowed disabled:opacity-40"
                   onClick={() =>
                     setPage((current) => Math.min(totalPages, current + 1))
                   }
@@ -425,7 +425,7 @@ export function IconPickerModal({
                 </button>
                 <div className="ml-1 inline-flex items-center gap-1">
                   <input
-                    className="h-7 w-14 rounded-md border border-black/10 bg-transparent px-2 text-center text-[11px] text-(--color-8) outline-none dark:border-white/16"
+                    className="h-7 w-14 rounded-md border border-(--border-default) bg-transparent px-2 text-center text-[11px] text-(--text-secondary) outline-none"
                     value={pageInput}
                     onChange={(event) => {
                       const digitsOnly = event.target.value.replace(
@@ -446,7 +446,7 @@ export function IconPickerModal({
                   />
                   <button
                     type="button"
-                    className="h-7 rounded-md border border-black/10 px-2 text-[11px] text-(--color-7)"
+                    className="h-7 rounded-md border border-(--border-default) px-2 text-[11px] text-(--text-muted) hover:border-(--border-strong) hover:text-(--text-primary)"
                     onClick={applyPageInput}
                     data-testid="icon-picker-jump-go"
                   >
@@ -458,33 +458,33 @@ export function IconPickerModal({
               </div>
             </div>
           </div>
-          <aside className="hidden w-52 border-l border-black/8 px-3 py-3 md:flex md:flex-col dark:border-white/12">
-            <span className="text-[11px] font-semibold text-(--color-7)">
+          <aside className="hidden w-52 border-l border-(--border-default) px-3 py-3 md:flex md:flex-col">
+            <span className="text-[11px] font-semibold text-(--text-muted)">
               {t('inspector.iconPicker.preview', {
                 defaultValue: 'Preview',
               })}
             </span>
-            <div className="mt-3 flex flex-1 flex-col items-center justify-center rounded-md border border-black/8 bg-black/[0.02] dark:border-white/14">
+            <div className="mt-3 flex flex-1 flex-col items-center justify-center rounded-md border border-(--border-default) bg-(--bg-raised)">
               {SelectedIcon ? (
                 <SelectedIcon size={34} width={34} height={34} />
               ) : (
-                <span className="text-[11px] text-(--color-5)">
+                <span className="text-[11px] text-(--text-muted)">
                   {t('inspector.iconPicker.noIcon', {
                     defaultValue: 'No icon',
                   })}
                 </span>
               )}
-              <span className="mt-2 max-w-[90%] truncate text-[11px] text-(--color-7)">
+              <span className="mt-2 max-w-[90%] truncate text-[11px] text-(--text-muted)">
                 {selectedName || '--'}
               </span>
             </div>
           </aside>
         </div>
 
-        <footer className="flex items-center justify-end gap-2 border-t border-black/8 px-4 py-3 dark:border-white/12">
+        <footer className="flex items-center justify-end gap-2 border-t border-(--border-default) px-4 py-3">
           <button
             type="button"
-            className="h-8 rounded-md border border-black/12 bg-transparent px-3 text-[12px] text-(--color-7) hover:text-(--color-9)"
+            className="h-8 rounded-md border border-(--border-default) bg-transparent px-3 text-[12px] text-(--text-muted) hover:border-(--border-strong) hover:text-(--text-primary)"
             onClick={onClose}
           >
             {t('inspector.iconPicker.cancel', {
@@ -493,7 +493,7 @@ export function IconPickerModal({
           </button>
           <button
             type="button"
-            className="h-8 rounded-md border border-black/14 bg-black px-3 text-[12px] text-white disabled:cursor-not-allowed disabled:opacity-40"
+            className="h-8 rounded-md border border-(--text-primary) bg-(--text-primary) px-3 text-[12px] text-(--text-inverse) disabled:cursor-not-allowed disabled:opacity-40"
             onClick={() => {
               if (!selectedRef) return;
               onSelect(selectedRef);

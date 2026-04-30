@@ -83,13 +83,13 @@ export function InspectorTriggerItem({ item }: { item: TriggerEntry }) {
     <div className="grid gap-1.5" data-testid={`inspector-trigger-${item.key}`}>
       <div className="grid grid-cols-[1fr_1fr_auto] gap-1.5">
         <div className="grid gap-1">
-          <span className="text-[10px] font-semibold text-(--color-7)">
+          <span className="text-[10px] font-semibold text-(--text-muted)">
             {t('inspector.groups.triggers.eventLabel', {
               defaultValue: 'Trigger Event',
             })}
           </span>
           <select
-            className="h-7 min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none dark:border-white/16"
+            className="h-7 min-w-0 rounded-md border border-(--border-default) bg-transparent px-2 text-xs text-(--text-primary) outline-none"
             value={item.trigger}
             title={t('inspector.groups.triggers.eventHelp', {
               defaultValue: 'Choose which DOM event will trigger this action.',
@@ -109,13 +109,13 @@ export function InspectorTriggerItem({ item }: { item: TriggerEntry }) {
           </select>
         </div>
         <div className="grid gap-1">
-          <span className="text-[10px] font-semibold text-(--color-7)">
+          <span className="text-[10px] font-semibold text-(--text-muted)">
             {t('inspector.groups.triggers.actionLabel', {
               defaultValue: 'Action',
             })}
           </span>
           <select
-            className="h-7 min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none dark:border-white/16"
+            className="h-7 min-w-0 rounded-md border border-(--border-default) bg-transparent px-2 text-xs text-(--text-primary) outline-none"
             value={actionValue}
             title={t('inspector.groups.triggers.actionHelp', {
               defaultValue: 'Choose what should run when the event is fired.',
@@ -143,7 +143,7 @@ export function InspectorTriggerItem({ item }: { item: TriggerEntry }) {
         </div>
         <button
           type="button"
-          className="mt-[18px] inline-flex h-7 w-7 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-[rgba(220,74,74,0.95)]"
+          className="mt-[18px] inline-flex h-7 w-7 items-center justify-center rounded-md border-0 bg-transparent text-(--text-muted) hover:text-(--danger-color)"
           data-testid={`inspector-delete-trigger-${item.key}`}
           onClick={() => removeTrigger(item.key)}
           aria-label={t('inspector.groups.triggers.delete', {

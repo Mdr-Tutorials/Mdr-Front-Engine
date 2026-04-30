@@ -283,7 +283,7 @@ export function UnitInput({
         if (event.key === 'Escape') setIsOpen(false);
       }}
     >
-      <div className="InspectorUnitInputFrame inline-flex h-7 w-full items-center justify-between overflow-hidden rounded-md border border-black/12 bg-(--color-0)">
+      <div className="InspectorUnitInputFrame inline-flex h-7 w-full items-center justify-between overflow-hidden rounded-md border border-(--border-default) bg-(--bg-canvas)">
         <div className="InspectorUnitInputAmount w-12 flex-none [&_.InspectorTextInput]:h-7 [&_.InspectorTextInput]:px-1.5 [&_.InspectorTextInput]:text-right [&_.InspectorTextInput]:tabular-nums">
           <InspectorTextInput
             value={draftAmount}
@@ -307,14 +307,14 @@ export function UnitInput({
           />
         </div>
         <span
-          className="InspectorUnitInputDivider h-[18px] w-px flex-none bg-black/12"
+          className="InspectorUnitInputDivider h-[18px] w-px flex-none bg-(--border-default)"
           aria-hidden="true"
         />
         <div className="InspectorUnitInputUnit flex h-full flex-none items-center justify-between">
           <button
             ref={buttonRef}
             type="button"
-            className="InspectorUnitInputUnitButton inline-flex h-full w-[47px] items-center justify-between gap-1 border-0 bg-transparent px-2 text-xs text-(--color-9) outline-none disabled:cursor-not-allowed"
+            className="InspectorUnitInputUnitButton inline-flex h-full w-[47px] items-center justify-between gap-1 border-0 bg-transparent px-2 text-xs text-(--text-primary) outline-none disabled:cursor-not-allowed"
             disabled={disabled}
             aria-label={draftUnit}
             aria-expanded={isOpen}
@@ -327,7 +327,7 @@ export function UnitInput({
       </div>
       {isOpen && !disabled && menuPosition ? (
         <div
-          className="InspectorUnitInputUnitMenu fixed z-[8] max-h-[200px] w-[400px] overflow-auto rounded-xl border border-black/8 bg-(--color-0) p-2 shadow-[0_12px_26px_rgba(0,0,0,0.12)]"
+          className="InspectorUnitInputUnitMenu fixed z-[8] max-h-[200px] w-[400px] overflow-auto rounded-xl border border-(--border-default) bg-(--bg-canvas) p-2 shadow-(--shadow-md)"
           role="listbox"
           style={{
             top: `${menuPosition.top}px`,
@@ -358,7 +358,7 @@ export function UnitInput({
               key={group.label}
               className="InspectorUnitInputUnitGroup flex flex-col gap-1.5 [&+&]:mt-2.5"
             >
-              <div className="InspectorUnitInputUnitGroupLabel text-[10px] tracking-[0.06em] text-(--color-6) uppercase">
+              <div className="InspectorUnitInputUnitGroupLabel text-[10px] tracking-[0.06em] text-(--text-muted) uppercase">
                 {group.label}
               </div>
               <div className="InspectorUnitInputUnitGroupItems grid [grid-template-columns:repeat(auto-fit,minmax(44px,1fr))] gap-1.5">
@@ -366,9 +366,9 @@ export function UnitInput({
                   <button
                     key={unitOption.unit}
                     type="button"
-                    className={`InspectorUnitInputUnitOption h-[26px] cursor-pointer rounded-[10px] border border-black/8 bg-transparent text-xs text-(--color-8) hover:border-black/18 hover:text-(--color-9) ${
+                    className={`InspectorUnitInputUnitOption h-[26px] cursor-pointer rounded-[10px] border border-(--border-default) bg-transparent text-xs text-(--text-secondary) hover:border-(--border-strong) hover:text-(--text-primary) ${
                       unitOption.unit === draftUnit
-                        ? 'Active border-black/18 bg-black/4 text-(--color-9)'
+                        ? 'Active border-(--border-strong) bg-(--bg-raised) text-(--text-primary)'
                         : ''
                     }`.trim()}
                     title={unitOption.title}

@@ -1,4 +1,4 @@
-import {
+﻿import {
   renderSource,
   resolveMultiplicity,
   type GraphNodeData,
@@ -97,7 +97,7 @@ export const renderEventGraphNode = ({ id, nodeData, selected, t }: Props) => {
             />
           </div>
         ) : null}
-        <div className="relative flex min-h-7 items-center px-4 text-[11px] font-normal text-slate-700">
+        <div className="relative flex min-h-7 items-center px-4 text-[11px] font-normal text-(--nodegraph-text)">
           <span>
             {meta ? meta.label : tNode(t, 'event.trigger', 'trigger')}
           </span>

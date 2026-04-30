@@ -3,7 +3,7 @@ import type { ComponentGroup } from '@/editor/features/design/BlueprintEditor.ty
 
 const PATTERN_PREVIEW_STYLE = {
   borderRadius: '8px',
-  backgroundColor: 'var(--color-1)',
+  backgroundColor: 'var(--bg-panel)',
 };
 
 export const LAYOUT_PATTERN_GROUP: ComponentGroup = {

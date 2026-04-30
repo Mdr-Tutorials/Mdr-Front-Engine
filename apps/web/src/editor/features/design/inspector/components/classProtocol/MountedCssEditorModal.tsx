@@ -230,15 +230,15 @@ export function MountedCssEditorModal({
       className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40 p-4"
       data-testid="mounted-css-modal"
     >
-      <div className="grid h-[min(80vh,720px)] w-[min(880px,96vw)] grid-rows-[auto_1fr_auto] rounded-xl border border-black/10 bg-(--color-0) shadow-[0_26px_48px_rgba(0,0,0,0.3)] dark:border-white/12">
-        <header className="flex items-center justify-between border-b border-black/8 px-3 py-2 dark:border-white/12">
+      <div className="grid h-[min(80vh,720px)] w-[min(880px,96vw)] grid-rows-[auto_1fr_auto] rounded-xl border border-(--border-default) bg-(--bg-canvas) shadow-(--shadow-lg)">
+        <header className="flex items-center justify-between border-b border-(--border-default) px-3 py-2">
           <div className="min-w-0">
-            <div className="text-xs font-semibold text-(--color-9)">
+            <div className="text-xs font-semibold text-(--text-primary)">
               {t('inspector.classProtocol.mountedCss.title', {
                 defaultValue: 'Mounted CSS',
               })}
             </div>
-            <div className="truncate text-[11px] text-(--color-6)">
+            <div className="truncate text-[11px] text-(--text-muted)">
               {path ||
                 t('inspector.classProtocol.mountedCss.untitled', {
                   defaultValue: 'untitled.css',
@@ -247,7 +247,7 @@ export function MountedCssEditorModal({
           </div>
           <button
             type="button"
-            className="inline-flex h-7 w-7 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-md border-0 bg-transparent text-(--text-muted) hover:text-(--text-primary)"
             onClick={onClose}
             aria-label={t('inspector.classProtocol.mountedCss.close', {
               defaultValue: 'Close mounted CSS editor',
@@ -258,14 +258,14 @@ export function MountedCssEditorModal({
         </header>
         <div className="min-h-0 overflow-hidden px-3 py-2">
           {highlightedClassName ? (
-            <div className="mb-2 text-[11px] text-(--color-6)">
+            <div className="mb-2 text-[11px] text-(--text-muted)">
               {t('inspector.classProtocol.mountedCss.focusClass', {
                 defaultValue: 'Focus class',
               })}
               : <code>.{highlightedClassName}</code>
             </div>
           ) : null}
-          <div className="h-[calc(100%-2px)] overflow-hidden rounded-md border border-black/10 dark:border-white/14">
+          <div className="h-[calc(100%-2px)] overflow-hidden rounded-md border border-(--border-default)">
             <CodeMirror
               value={value || DEFAULT_CSS_CONTENT}
               height="100%"
@@ -289,10 +289,10 @@ export function MountedCssEditorModal({
             />
           </div>
         </div>
-        <footer className="flex items-center justify-end gap-2 border-t border-black/8 px-3 py-2 dark:border-white/12">
+        <footer className="flex items-center justify-end gap-2 border-t border-(--border-default) px-3 py-2">
           <button
             type="button"
-            className="h-7 rounded-md border border-black/12 px-3 text-xs text-(--color-7) hover:text-(--color-9)"
+            className="h-7 rounded-md border border-(--border-default) px-3 text-xs text-(--text-muted) hover:border-(--border-strong) hover:text-(--text-primary)"
             onClick={onClose}
           >
             {t('inspector.classProtocol.mountedCss.cancel', {
@@ -301,7 +301,7 @@ export function MountedCssEditorModal({
           </button>
           <button
             type="button"
-            className="h-7 rounded-md bg-black px-3 text-xs text-white"
+            className="h-7 rounded-md bg-(--text-primary) px-3 text-xs text-(--text-inverse)"
             onClick={onSave}
             data-testid="mounted-css-save"
           >

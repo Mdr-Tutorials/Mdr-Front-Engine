@@ -83,7 +83,7 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
     <LayoutGroupContext.Provider value={contextValue}>
       <div className="InspectorSection grid w-[288px] max-w-full grid-cols-[repeat(9,32px)] gap-y-2 [&>*]:col-span-9">
         {isPatternStructureControlled ? (
-          <div className="col-span-9 rounded-md border border-black/8 px-2 py-1 text-[10px] text-(--color-6) dark:border-white/14">
+          <div className="col-span-9 rounded-md border border-(--border-default) px-2 py-1 text-[10px] text-(--text-muted)">
             {t('inspector.panels.layout.patternControlled', {
               defaultValue: 'Layout structure is controlled by pattern params.',
             })}
@@ -191,13 +191,14 @@ function LayoutPanelView({ node, updateNode }: InspectorPanelRenderProps) {
                 type="button"
                 className="flex min-h-5.5 w-full cursor-pointer items-center justify-between border-0 bg-transparent p-0 text-left"
                 onClick={() => toggleGroup(group.key)}
+                data-testid={`inspector-layout-group-toggle-${group.key}`}
               >
-                <span className="InspectorLabel text-[11px] font-semibold text-(--color-8)">
+                <span className="InspectorLabel text-[11px] font-semibold text-(--text-secondary)">
                   {groupTitle}
                 </span>
                 <ChevronDown
                   size={14}
-                  className={`${isExpanded ? 'rotate-0' : '-rotate-90'} text-(--color-6) transition-transform`}
+                  className={`${isExpanded ? 'rotate-0' : '-rotate-90'} text-(--text-muted) transition-transform`}
                 />
               </button>
               {isExpanded ? (

@@ -54,11 +54,11 @@ export function InspectorNodeCapabilitiesFields() {
               <div className="flex w-full items-center gap-2">
                 <button
                   type="button"
-                  className="inline-flex h-7 min-w-0 flex-1 cursor-pointer items-center justify-start gap-2 rounded-md border border-black/10 bg-transparent px-2 text-left text-xs text-(--color-8) dark:border-white/16"
+                  className="inline-flex h-7 min-w-0 flex-1 cursor-pointer items-center justify-start gap-2 rounded-md border border-(--border-default) bg-transparent px-2 text-left text-xs text-(--text-secondary)"
                   onClick={() => setIconPickerOpen(true)}
                   data-testid="inspector-open-icon-picker"
                 >
-                  <span className="inline-flex h-4 w-4 items-center justify-center text-(--color-9)">
+                  <span className="inline-flex h-4 w-4 items-center justify-center text-(--text-primary)">
                     {SelectedIconComponent ? (
                       <SelectedIconComponent size={14} width={14} height={14} />
                     ) : null}
@@ -131,7 +131,7 @@ export function InspectorNodeCapabilitiesFields() {
               control={
                 <input
                   data-testid="inspector-route-current-path"
-                  className="w-full rounded-md border border-black/10 bg-transparent px-2 py-1 text-xs dark:border-white/16"
+                  className="w-full rounded-md border border-(--border-default) bg-transparent px-2 py-1 text-xs"
                   placeholder={t(
                     'inspector.fields.routeCurrentPath.placeholder',
                     {
@@ -161,7 +161,7 @@ export function InspectorNodeCapabilitiesFields() {
               control={
                 <input
                   data-testid="inspector-route-empty-text"
-                  className="w-full rounded-md border border-black/10 bg-transparent px-2 py-1 text-xs dark:border-white/16"
+                  className="w-full rounded-md border border-(--border-default) bg-transparent px-2 py-1 text-xs"
                   placeholder={t(
                     'inspector.fields.routeEmptyText.placeholder',
                     {
@@ -199,7 +199,7 @@ export function InspectorNodeCapabilitiesFields() {
               control={
                 <input
                   data-testid="inspector-route-child-path"
-                  className="w-full rounded-md border border-black/10 bg-transparent px-2 py-1 text-xs dark:border-white/16"
+                  className="w-full rounded-md border border-(--border-default) bg-transparent px-2 py-1 text-xs"
                   placeholder={t('inspector.fields.routePath.placeholder', {
                     defaultValue: '/about or details/:id',
                   })}
@@ -231,7 +231,7 @@ export function InspectorNodeCapabilitiesFields() {
                 defaultValue: 'Index Route',
               })}
               control={
-                <label className="inline-flex items-center gap-2 text-xs text-(--color-8)">
+                <label className="inline-flex items-center gap-2 text-xs text-(--text-secondary)">
                   <input
                     data-testid="inspector-route-child-index"
                     type="checkbox"
@@ -266,7 +266,7 @@ export function InspectorNodeCapabilitiesFields() {
                 defaultValue: 'Fallback',
               })}
               control={
-                <label className="inline-flex items-center gap-2 text-xs text-(--color-8)">
+                <label className="inline-flex items-center gap-2 text-xs text-(--text-secondary)">
                   <input
                     data-testid="inspector-route-child-fallback"
                     type="checkbox"
@@ -306,7 +306,7 @@ export function InspectorNodeCapabilitiesFields() {
             control={
               <div className="flex w-full items-center gap-2">
                 <select
-                  className="min-w-0 flex-1 rounded-md border border-black/10 bg-transparent px-2 py-1 text-xs dark:border-white/16"
+                  className="min-w-0 flex-1 rounded-md border border-(--border-default) bg-transparent px-2 py-1 text-xs"
                   value={outletRouteNodeId}
                   onChange={(event) => {
                     const routeNodeId = event.currentTarget.value;
@@ -333,7 +333,7 @@ export function InspectorNodeCapabilitiesFields() {
                 {activeRouteNodeId ? (
                   <button
                     type="button"
-                    className="rounded-md border border-black/10 px-2 py-1 text-xs dark:border-white/16"
+                    className="rounded-md border border-(--border-default) px-2 py-1 text-xs hover:border-(--border-strong) hover:text-(--text-primary)"
                     onClick={() =>
                       bindOutletToRoute(activeRouteNodeId, selectedNode.id)
                     }
@@ -346,7 +346,7 @@ export function InspectorNodeCapabilitiesFields() {
                 {outletRouteNodeId ? (
                   <button
                     type="button"
-                    className="rounded-md border border-black/10 px-2 py-1 text-xs dark:border-white/16"
+                    className="rounded-md border border-(--border-default) px-2 py-1 text-xs hover:border-(--border-strong) hover:text-(--text-primary)"
                     onClick={() =>
                       bindOutletToRoute(outletRouteNodeId, undefined)
                     }

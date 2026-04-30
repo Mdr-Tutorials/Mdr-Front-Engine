@@ -28,14 +28,14 @@ export function InspectorPanelFrame({
       data-testid={`inspector-panel-${panelKey}`}
     >
       <div className="flex w-full items-center justify-between gap-1 px-0 py-1">
-        <span className="min-w-0 flex-1 text-[14px] font-semibold text-(--color-9)">
+        <span className="min-w-0 flex-1 text-[14px] font-semibold text-(--text-primary)">
           {title}
         </span>
         <div className="flex shrink-0 items-center gap-1">
           {actions}
           <button
             type="button"
-            className="inline-flex h-5 w-5 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
+            className="inline-flex h-5 w-5 items-center justify-center rounded-md border-0 bg-transparent text-(--text-muted) hover:text-(--text-primary)"
             onClick={onToggle}
             aria-label={isExpanded ? 'Collapse panel' : 'Expand panel'}
             title={isExpanded ? 'Collapse panel' : 'Expand panel'}

@@ -20,17 +20,19 @@ vi.mock('react-router', () => ({
 vi.mock('@mdr/ui', () => ({
   MdrInput: ({
     value,
+    dataAttributes,
     onChange,
     onBlur,
     onKeyDown,
   }: {
     value: string;
+    dataAttributes?: Record<string, string>;
     onChange: (value: string) => void;
     onBlur?: () => void;
     onKeyDown?: (event: ReactKeyboardEvent<HTMLInputElement>) => void;
   }) => (
     <input
-      data-testid="mdr-input"
+      data-testid={dataAttributes?.['data-testid'] ?? 'mdr-input'}
       value={value}
       onChange={(event) => onChange(event.target.value)}
       onBlur={onBlur}
@@ -67,14 +69,14 @@ beforeEach(() => {
 });
 
 const ensureLayoutGroupButton = async (groupName: 'Grid' | 'Spacing') => {
-  if (!screen.queryByRole('button', { name: 'Layout' })) {
-    const styleToggle = await screen.findByRole('button', { name: 'Style' });
-    fireEvent.click(styleToggle);
+  const groupKey = groupName.toLowerCase();
+  if (!screen.queryByTestId('inspector-panel-layout')) {
+    fireEvent.click(screen.getByTestId('inspector-tab-style'));
   }
-  if (!screen.queryByRole('button', { name: groupName })) {
-    fireEvent.click(await screen.findByRole('button', { name: 'Layout' }));
+  if (!screen.queryByTestId(`inspector-layout-group-toggle-${groupKey}`)) {
+    fireEvent.click(screen.getByTestId('inspector-panel-toggle-layout'));
   }
-  return await screen.findByRole('button', { name: groupName });
+  return await screen.findByTestId(`inspector-layout-group-toggle-${groupKey}`);
 };
 
 describe('BlueprintEditorInspector layout panel', () => {
@@ -103,6 +105,7 @@ describe('BlueprintEditorInspector layout panel', () => {
       />
     );
 
+    fireEvent.click(screen.getByTestId('inspector-tab-style'));
     fireEvent.change(await screen.findByPlaceholderText('8'), {
       target: { value: '24' },
     });
@@ -138,14 +141,9 @@ describe('BlueprintEditorInspector layout panel', () => {
     );
 
     fireEvent.click(await ensureLayoutGroupButton('Grid'));
-    await waitFor(() => {
-      expect(screen.getAllByTestId('mdr-input').length).toBeGreaterThanOrEqual(
-        2
-      );
+    fireEvent.change(await screen.findByTestId('inspector-grid-columns'), {
+      target: { value: '3' },
     });
-    const inputs = screen.getAllByTestId('mdr-input') as HTMLInputElement[];
-    // [0] id, [1] columns (gap uses editor-only UnitInput)
-    fireEvent.change(inputs[1], { target: { value: '3' } });
 
     await waitFor(() => {
       const child = useEditorStore.getState().mirDoc.ui.root.children?.[0];

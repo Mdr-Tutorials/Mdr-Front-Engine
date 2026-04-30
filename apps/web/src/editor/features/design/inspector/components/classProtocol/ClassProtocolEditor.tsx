@@ -238,7 +238,7 @@ export function ClassProtocolEditor({
 
   const tokenEditor = (
     <div className="InspectorClassProtocol relative grid w-full gap-1.5">
-      <div className="flex min-h-8 flex-wrap items-center gap-1.5 rounded-md border border-black/10 px-1.5 py-1 pr-7 dark:border-white/16">
+      <div className="flex min-h-8 flex-wrap items-center gap-1.5 rounded-md border border-(--border-default) px-1.5 py-1 pr-7">
         {tokens.map((token, index) => {
           const tokenSwatch = resolveClassTokenColorSwatch(token);
           const mountedCssTarget = resolveMountedCssTokenTarget(
@@ -252,7 +252,7 @@ export function ClassProtocolEditor({
           return (
             <span
               key={`${token}-${index}`}
-              className={`inline-flex min-h-6 items-center gap-1 rounded-md border border-black/10 bg-black/[0.03] py-[2px] pr-1 pl-1.5 text-[11px] leading-[1.25] text-(--color-8) dark:border-white/16 dark:bg-white/6 ${
+              className={`inline-flex min-h-6 items-center gap-1 rounded-md border border-(--border-default) bg-(--bg-raised) py-[2px] pr-1 pl-1.5 text-[11px] leading-[1.25] text-(--text-secondary) ${
                 isOverridden ? 'opacity-60' : ''
               }`}
               onDoubleClick={(event) => {
@@ -283,7 +283,7 @@ export function ClassProtocolEditor({
                 <span
                   className={`inline-flex h-1.5 w-1.5 shrink-0 rounded-full ${
                     tokenSwatch.kind === 'background'
-                      ? 'ring-[1px] ring-black/35'
+                      ? 'ring-[1px] ring-(--border-strong)'
                       : ''
                   } ${
                     tokenSwatch.kind === 'border'
@@ -316,7 +316,7 @@ export function ClassProtocolEditor({
               {mountedCssTarget ? (
                 <button
                   type="button"
-                  className="inline-flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-transparent p-0 text-(--color-6) hover:text-(--color-9)"
+                  className="inline-flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-transparent p-0 text-(--text-muted) hover:text-(--text-primary)"
                   onClick={() =>
                     onOpenMountedCss?.({
                       path: mountedCssTarget.path,
@@ -346,7 +346,7 @@ export function ClassProtocolEditor({
               ) : null}
               <button
                 type="button"
-                className="inline-flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-transparent p-0 text-(--color-6) hover:text-(--color-9)"
+                className="inline-flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-transparent p-0 text-(--text-muted) hover:text-(--text-primary)"
                 onClick={() => removeTokenAt(index)}
                 data-testid={`inspector-classname-token-remove-${index}`}
                 aria-label={t(
@@ -364,7 +364,7 @@ export function ClassProtocolEditor({
         })}
         <input
           ref={draftInputRef}
-          className="h-6 min-w-24 flex-1 border-0 bg-transparent px-1 text-xs text-(--color-9) outline-none placeholder:text-(--color-5)"
+          className="h-6 min-w-24 flex-1 border-0 bg-transparent px-1 text-xs text-(--text-primary) outline-none placeholder:text-(--text-muted)"
           value={draft}
           onChange={(event) => {
             const nextValue = event.target.value;
@@ -424,7 +424,7 @@ export function ClassProtocolEditor({
         />
         <button
           type="button"
-          className="absolute top-1.5 right-1.5 inline-flex h-5 w-5 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
+          className="absolute top-1.5 right-1.5 inline-flex h-5 w-5 items-center justify-center rounded-md border-0 bg-transparent text-(--text-muted) hover:text-(--text-primary)"
           onClick={() => setMode(nextMode)}
           data-testid="inspector-classname-mode-toggle"
           aria-label={t('inspector.fields.className.actions.switchMode', {
@@ -441,7 +441,7 @@ export function ClassProtocolEditor({
       </div>
       {draft.trim() && suggestions.length ? (
         <div
-          className="absolute top-[calc(100%+2px)] right-0 left-0 z-10 grid gap-0.5 rounded-md border border-black/10 bg-(--color-0) p-1 shadow-[0_10px_20px_rgba(0,0,0,0.12)] dark:border-white/16"
+          className="absolute top-[calc(100%+2px)] right-0 left-0 z-10 grid gap-0.5 rounded-md border border-(--border-default) bg-(--bg-canvas) p-1 shadow-(--shadow-md)"
           role="listbox"
           data-testid="inspector-classname-suggestions"
         >
@@ -453,8 +453,8 @@ export function ClassProtocolEditor({
                 type="button"
                 className={`flex min-h-6 items-center gap-1.5 rounded-md border-0 px-2 py-0.5 text-left text-xs leading-[1.25] ${
                   activeSuggestionIndex === index
-                    ? 'bg-black/8 text-(--color-9) dark:bg-white/14'
-                    : 'bg-transparent text-(--color-7) hover:bg-black/5 hover:text-(--color-9) dark:hover:bg-white/10'
+                    ? 'bg-(--bg-raised) text-(--text-primary)'
+                    : 'bg-transparent text-(--text-muted) hover:bg-(--bg-raised) hover:text-(--text-primary)'
                 }`}
                 role="option"
                 aria-selected={activeSuggestionIndex === index}
@@ -489,7 +489,7 @@ export function ClassProtocolEditor({
         <div className="relative w-full">
           <textarea
             ref={inlineTextareaRef}
-            className="min-h-8 w-full min-w-0 resize-none overflow-hidden rounded-md border border-black/10 bg-transparent px-2 py-1 pr-7 text-xs leading-[1.35] text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+            className="min-h-8 w-full min-w-0 resize-none overflow-hidden rounded-md border border-(--border-default) bg-transparent px-2 py-1 pr-7 text-xs leading-[1.35] text-(--text-primary) outline-none placeholder:text-(--text-muted)"
             rows={2}
             value={inlineDraft}
             onChange={(event) => {
@@ -502,7 +502,7 @@ export function ClassProtocolEditor({
           />
           <button
             type="button"
-            className="absolute top-1 right-1 inline-flex h-5 w-5 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9)"
+            className="absolute top-1 right-1 inline-flex h-5 w-5 items-center justify-center rounded-md border-0 bg-transparent text-(--text-muted) hover:text-(--text-primary)"
             onClick={() => setMode(nextMode)}
             data-testid="inspector-classname-mode-toggle"
             aria-label={t('inspector.fields.className.actions.switchMode', {

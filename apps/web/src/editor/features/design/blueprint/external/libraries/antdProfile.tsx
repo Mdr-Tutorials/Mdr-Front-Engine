@@ -218,7 +218,7 @@ class AntdPreviewBoundary extends React.Component<
 
   render() {
     if (this.state.hasError) {
-      return <div className="text-[10px] text-(--color-7)">Preview</div>;
+      return <div className="text-[10px] text-(--text-muted)">Preview</div>;
     }
     return this.props.children;
   }
@@ -427,7 +427,7 @@ const renderAntdDefaultPreview = (
       return React.createElement(
         component,
         { count: 5 },
-        <span className="inline-block h-4 w-4 rounded bg-black/10 dark:bg-white/10" />
+        <span className="inline-block h-4 w-4 rounded bg-(--border-subtle)" />
       );
     case 'Card':
       return React.createElement(
@@ -635,13 +635,13 @@ const createPreviewItem = (
   name: path,
   runtimeType: pathToRuntimeType(path),
   defaultProps: defaultPropsForPath(path),
-  preview: <div className="text-[10px] text-(--color-7)">{path}</div>,
+  preview: <div className="text-[10px] text-(--text-muted)">{path}</div>,
   renderPreview: ({ size, status }) => (
     <AntdPreviewBoundary>
       {
         (renderAntdPreview(path, module, component)?.({ size, status }) ??
           renderAntdDefaultPreview(path, module, component, size, status) ?? (
-            <div className="text-[10px] text-(--color-7)">{path}</div>
+            <div className="text-[10px] text-(--text-muted)">{path}</div>
           )) as React.ReactNode
       }
     </AntdPreviewBoundary>

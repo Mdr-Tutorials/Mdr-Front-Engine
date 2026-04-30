@@ -36,7 +36,7 @@ export function InspectorStyleTab() {
           );
         })
       ) : (
-        <div className="InspectorDescription pt-1 text-[10px] text-(--color-6)">
+        <div className="InspectorDescription pt-1 text-[10px] text-(--text-muted)">
           {t('inspector.groups.style.empty', {
             defaultValue: 'No style settings for this component.',
           })}

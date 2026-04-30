@@ -107,11 +107,12 @@ describe('BlueprintEditorInspector layout pattern panel', () => {
       />
     );
 
-    if (!screen.queryByText('Pattern')) {
-      fireEvent.click(screen.getByText('Style'));
-    }
+    fireEvent.click(screen.getByTestId('inspector-tab-style'));
+    const patternPanelToggle = screen.getByTestId(
+      'inspector-panel-toggle-layout-pattern'
+    );
     if (!screen.queryByText('Split Ratio')) {
-      fireEvent.click(screen.getByText('Pattern'));
+      fireEvent.click(patternPanelToggle);
     }
 
     const ratioInput = screen.getByPlaceholderText('1-1') as HTMLInputElement;

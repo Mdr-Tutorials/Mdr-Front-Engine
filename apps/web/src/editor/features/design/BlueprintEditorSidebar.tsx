@@ -86,7 +86,7 @@ const PreviewWrapper = ({
   children,
 }: PreviewWrapperProps) => (
   <div
-    className={`ComponentPreviewSurface relative flex h-[60px] min-w-20 items-center justify-center overflow-hidden rounded-md border border-black/6 bg-black/[0.02] dark:border-white/12 dark:bg-white/4 [&_.MdrDrawer]:max-h-full [&_.MdrDrawer]:max-w-full [&_.MdrDrawerOverlay]:absolute [&_.MdrDrawerOverlay]:inset-1 [&_.MdrDrawerOverlay]:z-0 [&_.MdrDrawerOverlay]:rounded-md [&_.MdrModal]:w-[140px] [&_.MdrModal]:max-w-full [&_.MdrModalOverlay]:absolute [&_.MdrModalOverlay]:inset-1 [&_.MdrModalOverlay]:z-0 [&_.MdrModalOverlay]:rounded-md [&_.MuiDialog-root]:absolute [&_.MuiDialog-root]:inset-0 [&_.MuiPaper-root]:m-0 [&_.MuiPaper-root]:max-h-full [&_.MuiPaper-root]:max-w-[150px] [&_.ant-modal]:my-1 [&_.ant-modal]:max-w-[150px] [&_.ant-modal-root]:relative [&_.ant-modal-root]:inset-auto [&_.ant-modal-root]:z-[1] [&_.ant-modal-wrap]:relative [&_.ant-modal-wrap]:inset-auto [&_.ant-modal-wrap]:overflow-hidden ${wide ? 'Wide w-full' : ''} ${className}`.trim()}
+    className={`ComponentPreviewSurface relative flex h-[60px] min-w-20 items-center justify-center overflow-hidden rounded-md border border-(--border-subtle) bg-(--bg-raised) [&_.MdrDrawer]:max-h-full [&_.MdrDrawer]:max-w-full [&_.MdrDrawerOverlay]:absolute [&_.MdrDrawerOverlay]:inset-1 [&_.MdrDrawerOverlay]:z-0 [&_.MdrDrawerOverlay]:rounded-md [&_.MdrModal]:w-[140px] [&_.MdrModal]:max-w-full [&_.MdrModalOverlay]:absolute [&_.MdrModalOverlay]:inset-1 [&_.MdrModalOverlay]:z-0 [&_.MdrModalOverlay]:rounded-md [&_.MuiDialog-root]:absolute [&_.MuiDialog-root]:inset-0 [&_.MuiPaper-root]:m-0 [&_.MuiPaper-root]:max-h-full [&_.MuiPaper-root]:max-w-[150px] [&_.ant-modal]:my-1 [&_.ant-modal]:max-w-[150px] [&_.ant-modal-root]:relative [&_.ant-modal-root]:inset-auto [&_.ant-modal-root]:z-[1] [&_.ant-modal-wrap]:relative [&_.ant-modal-wrap]:inset-auto [&_.ant-modal-wrap]:overflow-hidden ${wide ? 'Wide w-full' : ''} ${className}`.trim()}
   >
     <div
       className="ComponentPreviewInner pointer-events-none inline-flex origin-center items-center justify-center"
@@ -342,10 +342,10 @@ export function BlueprintEditorSidebar({
 
   return (
     <aside
-      className={`BlueprintEditorSidebar absolute flex min-h-0 w-[var(--sidebar-width)] flex-col rounded-[14px] border border-black/6 bg-(--color-0) shadow-[0_12px_26px_rgba(0,0,0,0.08)] dark:border-transparent ${isCollapsed ? 'Collapsed top-3 left-0 z-[7] h-0 w-0 overflow-visible border-none bg-transparent p-0 shadow-none' : `top-0 left-0 z-[4] ${!isTreeCollapsed ? '[bottom:var(--component-tree-height)] rounded-b-none border-b-0' : 'bottom-0'}`}`}
+      className={`BlueprintEditorSidebar absolute flex min-h-0 w-[var(--sidebar-width)] flex-col rounded-[14px] border border-(--border-subtle) bg-(--bg-canvas) shadow-(--shadow-md) ${isCollapsed ? 'Collapsed top-3 left-0 z-[7] h-0 w-0 overflow-visible border-none bg-transparent p-0 shadow-none' : `top-0 left-0 z-[4] ${!isTreeCollapsed ? '[bottom:var(--component-tree-height)] rounded-b-none border-b-0' : 'bottom-0'}`}`}
     >
       <div
-        className={`BlueprintEditorSidebarHeader flex items-center justify-between gap-2.5 border-b border-black/6 px-3 py-2.5 text-[13px] font-semibold dark:border-white/8 ${isCollapsed ? 'w-full items-center justify-center border-b-0 p-0' : ''}`}
+        className={`BlueprintEditorSidebarHeader flex items-center justify-between gap-2.5 border-b border-(--border-subtle) px-3 py-2.5 text-[13px] font-semibold text-(--text-primary) ${isCollapsed ? 'w-full items-center justify-center border-b-0 p-0' : ''}`}
       >
         <span
           className={`BlueprintEditorSidebarTitle min-w-0 ${isCollapsed ? 'hidden' : ''}`}
@@ -355,7 +355,7 @@ export function BlueprintEditorSidebar({
         <div className="BlueprintEditorSidebarHeaderRight inline-flex min-w-0 items-center justify-end gap-2">
           {!isCollapsed && (
             <div
-              className={`BlueprintEditorSidebarSearch inline-flex h-7 items-center gap-1.5 overflow-hidden rounded-full border border-transparent bg-transparent px-1 transition-[width,border-color,background] duration-150 ${effectiveSearchOpen ? 'IsOpen w-[220px] border-black/6 bg-white/78 backdrop-blur-[6px]' : 'w-[30px]'}`.trim()}
+              className={`BlueprintEditorSidebarSearch inline-flex h-7 items-center gap-1.5 overflow-hidden rounded-full border border-transparent bg-transparent px-1 transition-[width,border-color,background] duration-150 ${effectiveSearchOpen ? 'IsOpen w-[220px] border-(--border-subtle) bg-(--bg-raised) backdrop-blur-[6px]' : 'w-[30px]'}`.trim()}
               role="search"
               onKeyDown={(event) => {
                 if (event.key !== 'Escape') return;
@@ -366,7 +366,7 @@ export function BlueprintEditorSidebar({
             >
               <button
                 type="button"
-                className="BlueprintEditorSidebarSearchToggle inline-flex h-6 w-6 items-center justify-center rounded-full border-0 bg-transparent p-0 text-(--color-6) hover:bg-black/4 hover:text-(--color-9)"
+                className="BlueprintEditorSidebarSearchToggle inline-flex h-6 w-6 items-center justify-center rounded-full border-0 bg-transparent p-0 text-(--text-muted) hover:bg-(--bg-raised) hover:text-(--text-primary)"
                 onClick={() => {
                   if (effectiveSearchOpen) return;
                   openSearch();
@@ -377,7 +377,7 @@ export function BlueprintEditorSidebar({
               </button>
               <input
                 ref={searchInputRef}
-                className={`BlueprintEditorSidebarSearchInput min-w-0 flex-1 border-0 bg-transparent text-xs text-(--color-9) transition-opacity outline-none placeholder:text-(--color-6) ${effectiveSearchOpen ? 'pointer-events-auto w-auto opacity-100' : 'pointer-events-none w-0 opacity-0'}`}
+                className={`BlueprintEditorSidebarSearchInput min-w-0 flex-1 border-0 bg-transparent text-xs text-(--text-primary) transition-opacity outline-none placeholder:text-(--text-muted) ${effectiveSearchOpen ? 'pointer-events-auto w-auto opacity-100' : 'pointer-events-none w-0 opacity-0'}`}
                 value={query}
                 placeholder={t('sidebar.searchPlaceholder')}
                 onChange={handleQueryChange}
@@ -389,7 +389,7 @@ export function BlueprintEditorSidebar({
               />
               <button
                 type="button"
-                className={`BlueprintEditorSidebarSearchClear inline-flex h-6 w-6 items-center justify-center rounded-full border-0 bg-transparent p-0 text-(--color-6) transition-opacity hover:bg-black/4 hover:text-(--color-9) disabled:cursor-default disabled:bg-transparent disabled:opacity-30 ${effectiveSearchOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}
+                className={`BlueprintEditorSidebarSearchClear inline-flex h-6 w-6 items-center justify-center rounded-full border-0 bg-transparent p-0 text-(--text-muted) transition-opacity hover:bg-(--bg-raised) hover:text-(--text-primary) disabled:cursor-default disabled:bg-transparent disabled:opacity-30 ${effectiveSearchOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}
                 onClick={() => {
                   clearQuery();
                   searchInputRef.current?.focus();
@@ -402,7 +402,7 @@ export function BlueprintEditorSidebar({
             </div>
           )}
           <button
-            className={`BlueprintEditorCollapse inline-flex items-center justify-center gap-1.5 rounded-full border-0 bg-transparent px-1.5 py-0.5 text-(--color-6) hover:text-(--color-9) ${isCollapsed ? 'absolute top-0 left-0 h-8 w-6 rounded-l-none rounded-r-full border border-l-0 border-black/8 bg-(--color-0) p-0 pr-0.5 shadow-[0_10px_22px_rgba(0,0,0,0.14)] dark:border-white/16 dark:shadow-[0_12px_24px_rgba(0,0,0,0.45)]' : ''}`}
+            className={`BlueprintEditorCollapse inline-flex items-center justify-center gap-1.5 rounded-full border-0 bg-transparent px-1.5 py-0.5 text-(--text-muted) hover:text-(--text-primary) ${isCollapsed ? 'absolute top-0 left-0 h-8 w-6 rounded-l-none rounded-r-full border border-l-0 border-(--border-default) bg-(--bg-canvas) p-0 pr-0.5 shadow-(--shadow-md)' : ''}`}
             onClick={onToggleCollapse}
             aria-label={t('sidebar.toggleLibrary')}
           >
@@ -416,15 +416,15 @@ export function BlueprintEditorSidebar({
       </div>
       {!isCollapsed && (
         <div className="BlueprintEditorSidebarLibraryBar px-3 py-2">
-          <div className="flex w-full flex-wrap items-center gap-1 text-[11px] text-(--color-7)">
+          <div className="flex w-full flex-wrap items-center gap-1 text-[11px] text-(--text-muted)">
             {libraryTabs.map((tab) => (
               <button
                 key={tab.id}
                 type="button"
                 className={`h-6 cursor-pointer rounded-full px-2 transition-colors ${
                   activeLibraryId === tab.id
-                    ? 'border border-black/16 text-(--color-9) dark:border-white/20'
-                    : 'border border-transparent bg-transparent hover:text-(--color-9)'
+                    ? 'border border-(--border-strong) text-(--text-primary)'
+                    : 'border border-transparent bg-transparent hover:text-(--text-primary)'
                 }`}
                 onClick={() => setActiveLibraryId(tab.id)}
                 aria-label={tab.label}
@@ -439,14 +439,14 @@ export function BlueprintEditorSidebar({
         activeLibraryTab?.source === 'external' &&
         scopedExternalDiagnostics.length > 0 && (
           <div className="px-3 pb-2">
-            <div className="grid max-h-24 gap-1 overflow-auto rounded-md border border-black/8 bg-black/[0.02] p-1.5 text-[10px] dark:border-white/14 dark:bg-white/4">
+            <div className="grid max-h-24 gap-1 overflow-auto rounded-md border border-(--border-default) bg-(--bg-raised) p-1.5 text-[10px]">
               {scopedExternalDiagnostics.map((item, index) => (
                 <div
                   key={`${item.code}-${item.libraryId ?? 'global'}-${index}`}
-                  className="rounded px-1.5 py-1 text-(--color-7)"
+                  className="rounded px-1.5 py-1 text-(--text-muted)"
                   title={item.hint}
                 >
-                  <span className="mr-1 font-semibold text-(--color-8)">
+                  <span className="mr-1 font-semibold text-(--text-secondary)">
                     [{item.code}]
                   </span>
                   <span>{item.message}</span>
@@ -459,19 +459,19 @@ export function BlueprintEditorSidebar({
         activeLibraryTab?.source === 'external' &&
         failedExternalLibraries.length > 0 && (
           <div className="px-3 pb-2">
-            <div className="rounded-md border border-black/8 bg-black/[0.02] px-2 py-1.5 text-[10px] text-(--color-7) dark:border-white/14 dark:bg-white/4">
+            <div className="rounded-md border border-(--border-default) bg-(--bg-raised) px-2 py-1.5 text-[10px] text-(--text-muted)">
               <div className="mt-1.5 grid gap-1">
                 {failedExternalLibraries.map((state) => (
                   <div
                     key={state.libraryId}
-                    className="flex items-center justify-between gap-2 rounded border border-black/6 bg-white/50 px-1.5 py-1 dark:border-white/10 dark:bg-white/5"
+                    className="flex items-center justify-between gap-2 rounded border border-(--border-subtle) bg-(--bg-canvas) px-1.5 py-1"
                   >
-                    <span className="truncate text-(--color-8)">
+                    <span className="truncate text-(--text-secondary)">
                       {state.libraryId}
                     </span>
                     <button
                       type="button"
-                      className="cursor-pointer rounded border border-black/10 px-1.5 py-0.5 text-[10px] text-(--color-8) dark:border-white/16"
+                      className="cursor-pointer rounded border border-(--border-default) px-1.5 py-0.5 text-[10px] text-(--text-secondary) hover:border-(--border-strong) hover:text-(--text-primary)"
                       onClick={() => onRetryExternalLibrary?.(state.libraryId)}
                     >
                       Retry
@@ -486,7 +486,7 @@ export function BlueprintEditorSidebar({
         activeLibraryTab?.source === 'external' &&
         isExternalLibraryLoading && (
           <div className="px-3 pb-2">
-            <div className="rounded-md border border-black/8 bg-black/[0.02] px-2 py-1.5 text-[10px] text-(--color-7) dark:border-white/14 dark:bg-white/4">
+            <div className="rounded-md border border-(--border-default) bg-(--bg-raised) px-2 py-1.5 text-[10px] text-(--text-muted)">
               Loading external components...
             </div>
           </div>
@@ -496,11 +496,11 @@ export function BlueprintEditorSidebar({
         !isExternalLibraryLoading &&
         !hasExternalItems && (
           <div className="px-3 pb-2">
-            <div className="flex items-center justify-between gap-2 rounded-md border border-black/8 bg-black/[0.02] px-2 py-1.5 text-[10px] text-(--color-7) dark:border-white/14 dark:bg-white/4">
+            <div className="flex items-center justify-between gap-2 rounded-md border border-(--border-default) bg-(--bg-raised) px-2 py-1.5 text-[10px] text-(--text-muted)">
               <span>No external components available.</span>
               <button
                 type="button"
-                className="inline-flex h-4 w-4 items-center justify-center rounded border border-black/10 text-(--color-7) transition-colors hover:border-black/20 hover:text-(--color-9) disabled:cursor-default disabled:opacity-40 dark:border-white/16 dark:hover:border-white/24"
+                className="inline-flex h-4 w-4 items-center justify-center rounded border border-(--border-default) text-(--text-muted) transition-colors hover:border-(--border-strong) hover:text-(--text-primary) disabled:cursor-default disabled:opacity-40"
                 onClick={() => {
                   void onReloadExternalLibraries?.();
                 }}
@@ -524,15 +524,15 @@ export function BlueprintEditorSidebar({
             return (
               <div key={group.id} className="ComponentGroup grid gap-2.5">
                 <button
-                  className="ComponentGroupHeader sticky top-0 z-[2] flex w-full cursor-pointer items-center justify-between border-0 bg-white/52 py-1 backdrop-blur-[6px] in-data-[theme='dark']:bg-[rgba(12,12,12,0.72)]"
+                  className="ComponentGroupHeader sticky top-0 z-[2] flex w-full cursor-pointer items-center justify-between border-0 bg-(--bg-canvas) py-1 backdrop-blur-[6px]"
                   onClick={() => onToggleGroup(group.id)}
                 >
-                  <span className="ComponentGroupTitle text-[11px] tracking-[0.06em] text-(--color-6) uppercase">
+                  <span className="ComponentGroupTitle text-[11px] tracking-[0.06em] text-(--text-muted) uppercase">
                     {groupTitle} ({group.items.length})
                   </span>
                   <ChevronDown
                     size={14}
-                    className={`ComponentGroupIcon text-(--color-6) transition-transform ${isGroupCollapsed ? '-rotate-90' : ''}`}
+                    className={`ComponentGroupIcon text-(--text-muted) transition-transform ${isGroupCollapsed ? '-rotate-90' : ''}`}
                   />
                 </button>
                 {!isGroupCollapsed && (
@@ -582,7 +582,7 @@ export function BlueprintEditorSidebar({
                           <DraggablePreviewCard
                             itemId={item.id}
                             selectedSize={selectedSizeValue}
-                            className={`ComponentPreviewCard relative grid min-h-[94px] cursor-grab gap-1.5 rounded-lg border border-transparent bg-transparent px-1.5 pt-1.5 pb-[18px] transition-[border-color,background,opacity] select-none ${hasVariants ? 'HasVariants hover:border-black/8 hover:bg-(--color-1) dark:hover:border-white/12 dark:hover:bg-white/4' : ''}`}
+                            className={`ComponentPreviewCard relative grid min-h-[94px] cursor-grab gap-1.5 rounded-lg border border-transparent bg-transparent px-1.5 pt-1.5 pb-[18px] transition-[border-color,background,opacity] select-none ${hasVariants ? 'HasVariants hover:border-(--border-subtle) hover:bg-(--bg-panel)' : ''}`}
                             role={hasVariants ? 'button' : undefined}
                             tabIndex={hasVariants ? 0 : -1}
                             ariaExpanded={hasVariants ? isExpanded : undefined}
@@ -609,7 +609,7 @@ export function BlueprintEditorSidebar({
                             {hasVariants && (
                               <button
                                 type="button"
-                                className={`ComponentPreviewExpand absolute right-2 bottom-0 z-[2] inline-flex items-center gap-1 rounded-full border border-black/8 bg-black/6 px-1.5 py-[1px] text-[9px] tracking-[0.02em] text-(--color-7) dark:border-white/16 dark:bg-white/8 ${isExpanded ? 'Open' : ''}`}
+                                className={`ComponentPreviewExpand absolute right-2 bottom-0 z-[2] inline-flex items-center gap-1 rounded-full border border-(--border-default) bg-(--bg-raised) px-1.5 py-[1px] text-[9px] tracking-[0.02em] text-(--text-muted) ${isExpanded ? 'Open' : ''}`}
                                 onClick={(event) => {
                                   event.stopPropagation();
                                   onTogglePreview(item.id);
@@ -630,7 +630,7 @@ export function BlueprintEditorSidebar({
                                 />
                               </button>
                             )}
-                            <span className="ComponentPreviewLabel text-center text-[10px] text-(--color-7)">
+                            <span className="ComponentPreviewLabel text-center text-[10px] text-(--text-muted)">
                               {itemName}
                             </span>
                             {showControls && (
@@ -641,7 +641,7 @@ export function BlueprintEditorSidebar({
                                       <button
                                         key={option.id}
                                         type="button"
-                                        className={`ComponentPreviewSize cursor-pointer rounded border border-black/8 bg-transparent px-1 text-[9px] leading-[14px] text-(--color-7) dark:border-white/18 ${selectedSizeId === option.id ? 'Active border-black/18 bg-(--color-1) text-(--color-9) dark:border-white/30 dark:bg-white/8' : ''}`}
+                                        className={`ComponentPreviewSize cursor-pointer rounded border border-(--border-default) bg-transparent px-1 text-[9px] leading-[14px] text-(--text-muted) ${selectedSizeId === option.id ? 'Active border-(--border-strong) bg-(--bg-panel) text-(--text-primary)' : ''}`}
                                         onClick={(event) => {
                                           event.stopPropagation();
                                           onSizeSelect(item.id, option.id);
@@ -661,7 +661,7 @@ export function BlueprintEditorSidebar({
                                       <button
                                         key={option.id}
                                         type="button"
-                                        className={`ComponentPreviewStatusDot h-1.5 w-1.5 cursor-pointer rounded-full border border-black/20 bg-transparent p-0 dark:border-white/30 ${index === statusIndex ? 'Active border-black/60 bg-black/60 dark:border-white/65 dark:bg-white/65' : ''}`}
+                                        className={`ComponentPreviewStatusDot h-1.5 w-1.5 cursor-pointer rounded-full border border-(--border-default) bg-transparent p-0 ${index === statusIndex ? 'Active border-(--text-secondary) bg-(--text-secondary)' : ''}`}
                                         title={option.label}
                                         aria-label={option.label}
                                         onClick={(event) => {
@@ -681,7 +681,7 @@ export function BlueprintEditorSidebar({
                           </DraggablePreviewCard>
                           {hasVariants && isExpanded && (
                             <div
-                              className={`ComponentPreviewVariants grid [grid-template-columns:repeat(auto-fit,minmax(80px,1fr))] gap-2 rounded-lg border border-black/6 bg-(--color-1) p-2 dark:border-white/12 dark:bg-white/4 ${isWide ? 'Wide [grid-template-columns:1fr]' : ''}`}
+                              className={`ComponentPreviewVariants grid [grid-template-columns:repeat(auto-fit,minmax(80px,1fr))] gap-2 rounded-lg border border-(--border-subtle) bg-(--bg-panel) p-2 ${isWide ? 'Wide [grid-template-columns:1fr]' : ''}`}
                             >
                               {variants.map((variant) => {
                                 const variantScale = getPreviewScale(
@@ -711,7 +711,7 @@ export function BlueprintEditorSidebar({
                                     >
                                       {variantNode}
                                     </PreviewWrapper>
-                                    <span className="ComponentVariantLabel text-[9px] text-(--color-6)">
+                                    <span className="ComponentVariantLabel text-[9px] text-(--text-muted)">
                                       {variant.label}
                                     </span>
                                   </DraggableVariantCard>

@@ -17,7 +17,7 @@ export const LAYOUT_GROUP: ComponentGroup = {
       preview: (
         <MdrDiv
           padding="6px"
-          backgroundColor="var(--color-1)"
+          backgroundColor="var(--bg-panel)"
           borderRadius="6px"
         >
           <MdrText size="Tiny">Div</MdrText>
@@ -32,13 +32,13 @@ export const LAYOUT_GROUP: ComponentGroup = {
           display="Flex"
           gap="6px"
           padding="6px"
-          backgroundColor="var(--color-1)"
+          backgroundColor="var(--bg-panel)"
           borderRadius="6px"
         >
           <MdrDiv
             width="18px"
             height="18px"
-            backgroundColor="var(--color-3)"
+            backgroundColor="var(--border-subtle)"
             borderRadius="4px"
           >
             {null}
@@ -46,7 +46,7 @@ export const LAYOUT_GROUP: ComponentGroup = {
           <MdrDiv
             width="18px"
             height="18px"
-            backgroundColor="var(--color-4)"
+            backgroundColor="var(--border-default)"
             borderRadius="4px"
           >
             {null}
@@ -54,7 +54,7 @@ export const LAYOUT_GROUP: ComponentGroup = {
           <MdrDiv
             width="18px"
             height="18px"
-            backgroundColor="var(--color-5)"
+            backgroundColor="var(--border-strong)"
             borderRadius="4px"
           >
             {null}
@@ -70,34 +70,34 @@ export const LAYOUT_GROUP: ComponentGroup = {
           display="Grid"
           gap="6px"
           padding="6px"
-          backgroundColor="var(--color-1)"
+          backgroundColor="var(--bg-panel)"
           borderRadius="6px"
           style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}
         >
           <MdrDiv
             height="16px"
-            backgroundColor="var(--color-3)"
+            backgroundColor="var(--border-subtle)"
             borderRadius="4px"
           >
             {null}
           </MdrDiv>
           <MdrDiv
             height="16px"
-            backgroundColor="var(--color-4)"
+            backgroundColor="var(--border-default)"
             borderRadius="4px"
           >
             {null}
           </MdrDiv>
           <MdrDiv
             height="16px"
-            backgroundColor="var(--color-5)"
+            backgroundColor="var(--border-strong)"
             borderRadius="4px"
           >
             {null}
           </MdrDiv>
           <MdrDiv
             height="16px"
-            backgroundColor="var(--color-6)"
+            backgroundColor="var(--text-muted)"
             borderRadius="4px"
           >
             {null}

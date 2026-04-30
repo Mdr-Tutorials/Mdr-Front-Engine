@@ -93,7 +93,7 @@ class MuiPreviewBoundary extends React.Component<
 
   render() {
     if (this.state.hasError) {
-      return <div className="text-[10px] text-(--color-7)">Preview</div>;
+      return <div className="text-[10px] text-(--text-muted)">Preview</div>;
     }
     return this.props.children;
   }
@@ -265,7 +265,7 @@ const createPreviewItem = (
   name: path,
   runtimeType: pathToRuntimeType(path),
   defaultProps: defaultPropsForPath(path),
-  preview: <div className="text-[10px] text-(--color-7)">{path}</div>,
+  preview: <div className="text-[10px] text-(--text-muted)">{path}</div>,
   renderPreview: ({ size, status }) => (
     <MuiPreviewBoundary>
       {renderMuiPreview(path, component, { size, status })}

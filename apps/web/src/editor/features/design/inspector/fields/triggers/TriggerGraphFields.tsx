@@ -19,11 +19,11 @@ export function TriggerGraphFields({
   );
 
   return (
-    <div className="grid gap-1 rounded-md border border-black/8 p-2 dark:border-white/14">
+    <div className="grid gap-1 rounded-md border border-(--border-default) p-2">
       <div className="inline-flex gap-1">
         <button
           type="button"
-          className={`h-6 rounded-md border px-2 text-[11px] ${graphMode === 'new' ? 'border-black/18 text-(--color-9)' : 'border-transparent text-(--color-6)'}`}
+          className={`h-6 rounded-md border px-2 text-[11px] ${graphMode === 'new' ? 'border-(--border-strong) text-(--text-primary)' : 'border-transparent text-(--text-muted)'}`}
           title={t('inspector.groups.triggers.graph.newHelp', {
             defaultValue: 'Create and execute a new node graph.',
           })}
@@ -44,7 +44,7 @@ export function TriggerGraphFields({
         </button>
         <button
           type="button"
-          className={`h-6 rounded-md border px-2 text-[11px] ${graphMode === 'existing' ? 'border-black/18 text-(--color-9)' : 'border-transparent text-(--color-6)'}`}
+          className={`h-6 rounded-md border px-2 text-[11px] ${graphMode === 'existing' ? 'border-(--border-strong) text-(--text-primary)' : 'border-transparent text-(--text-muted)'}`}
           title={t('inspector.groups.triggers.graph.selectHelp', {
             defaultValue: 'Run one of the existing node graphs.',
           })}
@@ -67,7 +67,7 @@ export function TriggerGraphFields({
       </div>
       {graphMode === 'new' ? (
         <input
-          className="h-7 w-full min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none placeholder:text-(--color-5) dark:border-white/16"
+          className="h-7 w-full min-w-0 rounded-md border border-(--border-default) bg-transparent px-2 text-xs text-(--text-primary) outline-none placeholder:text-(--text-muted)"
           value={graphName}
           title={t('inspector.groups.triggers.graph.nameHelp', {
             defaultValue: 'Name for the new node graph to be created.',
@@ -87,7 +87,7 @@ export function TriggerGraphFields({
         />
       ) : (
         <select
-          className="h-7 w-full min-w-0 rounded-md border border-black/10 bg-transparent px-2 text-xs text-(--color-9) outline-none dark:border-white/16"
+          className="h-7 w-full min-w-0 rounded-md border border-(--border-default) bg-transparent px-2 text-xs text-(--text-primary) outline-none"
           value={selectedGraphId}
           title={t('inspector.groups.triggers.graph.selectHelp', {
             defaultValue: 'Run one of the existing node graphs.',

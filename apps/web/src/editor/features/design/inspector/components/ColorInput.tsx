@@ -36,7 +36,7 @@ export function ColorInput({
           placeholder={
             placeholder ??
             t('inspector.fields.colorInput.placeholder', {
-              defaultValue: '#RRGGBB / var(--color-x)',
+              defaultValue: '#RRGGBB / var(--bg-panel)',
             })
           }
           disabled={disabled}
@@ -47,7 +47,7 @@ export function ColorInput({
         value={swatchValue ?? '#000000'}
         disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
-        className="h-7 w-6 cursor-pointer rounded-md border border-[rgba(0,0,0,0.12)] bg-transparent p-0 in-data-[theme='dark']:border-[rgba(255,255,255,0.16)]"
+        className="h-7 w-6 cursor-pointer rounded-md border border-(--border-default) bg-transparent p-0"
         aria-label={t('inspector.fields.colorInput.pickerAria', {
           defaultValue: 'Color picker',
         })}

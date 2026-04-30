@@ -1,4 +1,4 @@
-import {
+﻿import {
   normalizeKeyValueEntries,
   renderSource,
   renderTarget,
@@ -37,7 +37,7 @@ const row = (
   const inSemantic = options.inSemantic ?? semantic;
   const outSemantic = options.outSemantic ?? semantic;
   return (
-    <div className="relative flex min-h-7 items-center px-4 text-[11px] font-normal text-slate-700">
+    <div className="relative flex min-h-7 items-center px-4 text-[11px] font-normal text-(--nodegraph-text)">
       {options.inHandle
         ? renderTarget(
             id,

@@ -56,7 +56,7 @@ function BlueprintEditor() {
   );
 
   return (
-    <div className="relative flex h-full min-h-screen flex-col text-(--color-10)">
+    <div className="relative flex h-full min-h-screen flex-col text-(--text-primary)">
       <BlueprintEditorAddressBar
         currentPath={addressBar.currentPath}
         newPath={addressBar.newPath}
@@ -140,7 +140,7 @@ function BlueprintEditor() {
         <DragOverlay>
           {dnd.activePaletteItemId ? (
             <div className="pointer-events-none">
-              <div className="inline-flex items-center justify-center rounded-xl border border-black/10 bg-white/92 px-2.5 py-2 text-xs font-bold tracking-[0.01em] text-(--color-9) shadow-[0_14px_30px_rgba(0,0,0,0.18)] dark:border-white/14 dark:bg-[rgba(10,10,10,0.92)]">
+              <div className="inline-flex items-center justify-center rounded-xl border border-(--border-default) bg-(--bg-canvas) px-2.5 py-2 text-xs font-bold tracking-[0.01em] text-(--text-primary) shadow-(--shadow-lg)">
                 {dnd.activePaletteItemId}
               </div>
             </div>

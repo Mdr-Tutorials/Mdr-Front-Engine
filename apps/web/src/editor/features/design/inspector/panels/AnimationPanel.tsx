@@ -9,7 +9,7 @@ function AnimationPanelHeaderActions() {
   return (
     <button
       type="button"
-      className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-(--color-6) hover:text-(--color-9) disabled:cursor-not-allowed disabled:opacity-40"
+      className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-(--text-muted) hover:text-(--text-primary) disabled:cursor-not-allowed disabled:opacity-40"
       onClick={openAnimationEditor}
       disabled={!canOpenAnimationEditor}
       aria-label={t('inspector.groups.animation.openEditor', {
@@ -38,13 +38,13 @@ function AnimationPanelView() {
 
   return (
     <div className="flex flex-col gap-1.5 pt-1 pb-1">
-      <span className="text-[10px] text-(--color-6)">
+      <span className="text-[10px] text-(--text-muted)">
         {selectedNode?.id ? (
           <>
             {t('inspector.groups.animation.selectedNode', {
               defaultValue: 'Current node',
             })}
-            <span className="font-mono text-(--color-8)">
+            <span className="font-mono text-(--text-secondary)">
               {`: ${selectedNode.id}`}
             </span>
           </>
@@ -55,7 +55,7 @@ function AnimationPanelView() {
         )}
       </span>
       {!hasAnimationDefinition ? (
-        <div className="text-[10px] text-(--color-6)">
+        <div className="text-[10px] text-(--text-muted)">
           {t('inspector.groups.animation.empty', {
             defaultValue:
               'No animation yet. Mounting will initialize the animation document.',
@@ -64,7 +64,7 @@ function AnimationPanelView() {
       ) : null}
       {selectedNode?.id ? (
         <div className="flex items-center justify-between gap-2 py-1">
-          <div className="text-[10px] text-(--color-6)">
+          <div className="text-[10px] text-(--text-muted)">
             {isAnimationMounted
               ? t('inspector.groups.animation.mounted', {
                   defaultValue: 'Mounted to animation',
@@ -73,7 +73,7 @@ function AnimationPanelView() {
                   defaultValue: 'Not mounted',
                 })}
             {isAnimationMounted && mountedAnimationBindingCount > 1 ? (
-              <span className="text-(--color-5)">
+              <span className="text-(--text-muted)">
                 {t('inspector.groups.animation.bindingCount', {
                   defaultValue: `(${mountedAnimationBindingCount} bindings)`,
                   count: mountedAnimationBindingCount,
@@ -84,7 +84,7 @@ function AnimationPanelView() {
           {isAnimationMounted ? (
             <button
               type="button"
-              className="h-6 px-1.5 text-[10px] text-(--color-7) hover:text-(--color-9)"
+              className="h-6 px-1.5 text-[10px] text-(--text-muted) hover:text-(--text-primary)"
               onClick={unmountSelectedNodeFromAnimation}
             >
               {t('inspector.groups.animation.unmount', {
@@ -94,7 +94,7 @@ function AnimationPanelView() {
           ) : (
             <button
               type="button"
-              className="h-6 px-1.5 text-[10px] text-(--color-8) hover:text-(--color-9)"
+              className="h-6 px-1.5 text-[10px] text-(--text-secondary) hover:text-(--text-primary)"
               onClick={mountSelectedNodeToAnimation}
             >
               {t('inspector.groups.animation.mount', {

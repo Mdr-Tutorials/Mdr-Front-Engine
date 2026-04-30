@@ -1,29 +1,59 @@
 .nodegraph-native-root {
-  --nodegraph-canvas-bg: var(--color-0);
-  --nodegraph-surface-bg: rgb(var(--color-0-rgb) / 0.96);
-  --nodegraph-surface-border: rgb(var(--color-3-rgb) / 0.9);
-  --nodegraph-surface-shadow:
-    0 1px 2px rgb(15 23 42 / 0.08), 0 12px 30px rgb(15 23 42 / 0.16);
-  --nodegraph-text: var(--color-8);
-  --nodegraph-strong-text: var(--color-9);
-  --nodegraph-muted-text: var(--color-6);
-  --nodegraph-subtle-text: rgb(var(--color-5-rgb) / 0.9);
-  --nodegraph-node-bg: var(--color-0);
-  --nodegraph-node-soft-bg: var(--color-1);
-  --nodegraph-node-soft-hover: var(--color-2);
-  --nodegraph-node-border: rgb(var(--color-3-rgb) / 0.92);
-  --nodegraph-node-border-strong: rgb(var(--color-4-rgb) / 0.92);
-  --nodegraph-node-shadow:
-    0 1px 2px rgb(15 23 42 / 0.06), 0 10px 28px rgb(15 23 42 / 0.1);
+  --nodegraph-canvas-bg: var(--bg-canvas);
+  --nodegraph-surface-bg: color-mix(in srgb, var(--bg-panel) 96%, transparent);
+  --nodegraph-surface-border: var(--border-default);
+  --nodegraph-surface-shadow: var(--shadow-md);
+  --nodegraph-text: var(--text-secondary);
+  --nodegraph-strong-text: var(--text-primary);
+  --nodegraph-muted-text: var(--text-muted);
+  --nodegraph-subtle-text: color-mix(
+    in srgb,
+    var(--text-muted) 78%,
+    transparent
+  );
+  --nodegraph-node-bg: var(--bg-canvas);
+  --nodegraph-node-bg-translucent: color-mix(
+    in srgb,
+    var(--bg-canvas) 72%,
+    transparent
+  );
+  --nodegraph-node-soft-bg: var(--bg-raised);
+  --nodegraph-node-soft-hover: color-mix(
+    in srgb,
+    var(--text-primary) 6%,
+    var(--bg-raised)
+  );
+  --nodegraph-node-border: var(--border-subtle);
+  --nodegraph-node-border-strong: var(--border-strong);
+  --nodegraph-node-shadow: var(--shadow-md);
   --nodegraph-node-shadow-selected:
-    0 0 0 1px rgb(var(--color-6-rgb) / 0.42), 0 12px 30px rgb(15 23 42 / 0.14);
-  --nodegraph-edge: rgb(var(--color-7-rgb) / 0.9);
-  --nodegraph-handle: rgb(var(--color-7-rgb) / 0.96);
+    0 0 0 1px var(--border-strong), var(--shadow-lg);
+  --nodegraph-overlay-bg: color-mix(
+    in srgb,
+    var(--text-primary) 45%,
+    transparent
+  );
+  --nodegraph-selection-ring: color-mix(
+    in srgb,
+    var(--accent-color) 45%,
+    transparent
+  );
+  --nodegraph-edge: color-mix(in srgb, var(--text-muted) 86%, transparent);
+  --nodegraph-handle: color-mix(in srgb, var(--text-muted) 96%, transparent);
+  --nodegraph-grid: color-mix(in srgb, var(--text-primary) 16%, transparent);
   --nodegraph-code-inline-bg: rgb(0 0 0 / 0.1);
   --nodegraph-code-block-bg: rgb(0 0 0 / 0.8);
-  --nodegraph-code-block-text: rgb(248 250 252 / 0.95);
-  --nodegraph-danger: var(--color-danger);
-  --nodegraph-danger-bg: rgb(var(--color-danger-rgb) / 0.14);
+  --nodegraph-code-block-text: var(--text-inverse);
+  --nodegraph-danger: var(--danger-color);
+  --nodegraph-danger-bg: var(--danger-subtle);
+  --nodegraph-warning: var(--warning-color);
+  --nodegraph-warning-bg: var(--warning-subtle);
+  --nodegraph-info: var(--info-color);
+  --nodegraph-info-bg: var(--info-subtle);
+  --nodegraph-success: var(--success-color);
+  --nodegraph-success-bg: var(--success-subtle);
+  --nodegraph-accent: var(--accent-color);
+  --nodegraph-accent-hover: var(--accent-hover);
   position: relative;
   height: 100%;
   min-height: 100vh;
@@ -32,19 +62,8 @@
 }
 
 .nodegraph-native-root[data-theme='dark'] {
-  --nodegraph-surface-shadow:
-    0 1px 2px rgb(0 0 0 / 0.46), 0 16px 34px rgb(0 0 0 / 0.5);
-  --nodegraph-node-border: rgb(var(--color-5-rgb) / 0.72);
-  --nodegraph-node-border-strong: rgb(var(--color-6-rgb) / 0.86);
-  --nodegraph-node-shadow:
-    0 0 0 1px rgb(var(--color-5-rgb) / 0.54), 0 2px 6px rgb(0 0 0 / 0.4),
-    0 14px 30px rgb(0 0 0 / 0.46);
-  --nodegraph-node-shadow-selected:
-    0 0 0 1px rgb(var(--color-6-rgb) / 0.8),
-    0 0 0 3px rgb(var(--color-7-rgb) / 0.24), 0 16px 36px rgb(0 0 0 / 0.52);
   --nodegraph-code-inline-bg: rgb(255 255 255 / 0.12);
   --nodegraph-code-block-bg: rgb(0 0 0 / 0.56);
-  --nodegraph-code-block-text: rgb(var(--color-10-rgb) / 0.92);
 }
 
 .nodegraph-graph-manager {
@@ -124,8 +143,8 @@
 
 .nodegraph-native-canvas .react-flow__background-pattern line,
 .nodegraph-native-canvas .react-flow__background-pattern circle {
-  stroke: rgb(var(--color-5-rgb) / 0.34);
-  fill: rgb(var(--color-5-rgb) / 0.34);
+  stroke: var(--nodegraph-grid);
+  fill: var(--nodegraph-grid);
 }
 
 .nodegraph-native-canvas .react-flow__controls {
@@ -365,132 +384,4 @@
   font-weight: 400;
   color: var(--nodegraph-strong-text);
   box-shadow: var(--nodegraph-surface-shadow);
-}
-
-.nodegraph-native-root [class~='bg-slate-50'] {
-  background-color: var(--nodegraph-node-soft-bg) !important;
-}
-
-.nodegraph-native-root [class~='bg-white'] {
-  background-color: var(--nodegraph-node-bg) !important;
-}
-
-.nodegraph-native-root [class~='bg-white/70'] {
-  background-color: rgb(var(--color-0-rgb) / 0.7) !important;
-}
-
-.nodegraph-native-root [class~='bg-black/10'] {
-  background-color: var(--nodegraph-code-inline-bg) !important;
-}
-
-.nodegraph-native-root [class~='bg-black/80'] {
-  background-color: var(--nodegraph-code-block-bg) !important;
-}
-
-.nodegraph-native-root [class~='text-slate-100'] {
-  color: var(--nodegraph-code-block-text) !important;
-}
-
-.nodegraph-native-root [class~='text-slate-900'] {
-  color: var(--nodegraph-strong-text) !important;
-}
-
-.nodegraph-native-root [class~='text-slate-800'] {
-  color: var(--nodegraph-strong-text) !important;
-}
-
-.nodegraph-native-root [class~='text-slate-700'] {
-  color: var(--nodegraph-text) !important;
-}
-
-.nodegraph-native-root [class~='text-slate-600'] {
-  color: var(--nodegraph-muted-text) !important;
-}
-
-.nodegraph-native-root [class~='text-slate-500'] {
-  color: var(--nodegraph-muted-text) !important;
-}
-
-.nodegraph-native-root [class~='text-slate-500/85'] {
-  color: rgb(var(--color-6-rgb) / 0.85) !important;
-}
-
-.nodegraph-native-root [class~='text-slate-400'] {
-  color: var(--nodegraph-subtle-text) !important;
-}
-
-.nodegraph-native-root [class~='text-amber-900'],
-.nodegraph-native-root [class~='text-amber-600'] {
-  color: rgb(var(--color-warning-rgb) / 0.95) !important;
-}
-
-.nodegraph-native-root [class~='border-slate-200'] {
-  border-color: var(--nodegraph-node-border) !important;
-}
-
-.nodegraph-native-root [class~='border-slate-300'] {
-  border-color: var(--nodegraph-node-border-strong) !important;
-}
-
-.nodegraph-native-root [class~='border-slate-300/90'] {
-  border-color: rgb(var(--color-4-rgb) / 0.9) !important;
-}
-
-.nodegraph-native-root [class~='border-slate-500/55'] {
-  border-color: rgb(var(--color-6-rgb) / 0.55) !important;
-}
-
-.nodegraph-native-root [class~='border-black/10'] {
-  border-color: rgb(var(--color-10-rgb) / 0.14) !important;
-}
-
-.nodegraph-native-root [class~='border-amber-300'],
-.nodegraph-native-root [class~='border-amber-500/55'] {
-  border-color: rgb(var(--color-warning-rgb) / 0.58) !important;
-}
-
-.nodegraph-native-root [class~='ring-slate-500/45'] {
-  --tw-ring-color: rgb(var(--color-7-rgb) / 0.45) !important;
-}
-
-.nodegraph-native-root
-  :is(input, textarea, select)[class*='focus:border-slate-300']:focus {
-  border-color: var(--nodegraph-node-border-strong) !important;
-}
-
-.nodegraph-native-root
-  :is(input, textarea, select)[class*='focus:bg-white']:focus {
-  background-color: var(--nodegraph-node-bg) !important;
-}
-
-.nodegraph-native-root
-  :is(input, textarea, select)[class*='focus:border-black/25']:focus {
-  border-color: rgb(var(--color-10-rgb) / 0.28) !important;
-}
-
-.nodegraph-native-root
-  :is(input, textarea, select)[class*='disabled:border-slate-200']:disabled {
-  border-color: var(--nodegraph-node-border) !important;
-}
-
-.nodegraph-native-root
-  :is(input, textarea, select)[class*='disabled:bg-slate-100']:disabled {
-  background-color: var(--nodegraph-node-soft-bg) !important;
-}
-
-.nodegraph-native-root
-  :is(input, textarea, select)[class*='disabled:text-slate-400']:disabled {
-  color: var(--nodegraph-subtle-text) !important;
-}
-
-.nodegraph-native-root button[class*='hover:bg-slate-100']:hover {
-  background-color: var(--nodegraph-node-soft-hover) !important;
-}
-
-.nodegraph-native-root button[class*='hover:text-slate-700']:hover {
-  color: var(--nodegraph-text) !important;
-}
-
-.nodegraph-native-root button[class*='hover:text-slate-800']:hover {
-  color: var(--nodegraph-strong-text) !important;
 }
