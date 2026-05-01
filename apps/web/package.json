@@ -12,7 +12,8 @@
     "test": "vitest --config vitest.config.ts --run",
     "test:ci": "vitest --config vitest.config.ts --run --maxWorkers=1",
     "test:watch": "vitest --config vitest.config.ts",
-    "test:coverage": "vitest --config vitest.config.ts --run --coverage --maxConcurrency=1"
+    "test:coverage": "vitest --config vitest.config.ts --run --coverage --maxConcurrency=1",
+    "typecheck": "tsc -b --pretty false"
   },
   "dependencies": {
     "@builder.io/mitosis": "^0.13.0",

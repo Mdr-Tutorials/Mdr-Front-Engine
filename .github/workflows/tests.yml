@@ -50,7 +50,7 @@ jobs:
         run: pnpm --filter @mdr/web test:ci
 
       - name: Type check web
-        run: pnpm --filter @mdr/web exec tsc -p tsconfig.json --noEmit
+        run: pnpm --filter @mdr/web typecheck
 
   backend:
     name: Backend
