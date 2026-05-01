@@ -310,6 +310,16 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@24.10.0)(jiti@2.6.1)(jsdom@27.1.0)(lightningcss@1.30.2)(sass@1.93.3)(tsx@4.20.6)
 
+  packages/ai:
+    dependencies:
+      '@mdr/shared':
+        specifier: workspace:*
+        version: link:../shared
+    devDependencies:
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+
   packages/eslint-plugin-mdr:
     devDependencies:
       '@types/eslint':
