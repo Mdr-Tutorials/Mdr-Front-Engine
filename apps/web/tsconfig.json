@@ -7,6 +7,7 @@
     "noUnusedParameters": false,
     "paths": {
       "@/*": ["./src/*"],
+      "@mdr/ai": ["../../packages/ai/src"],
       "@mdr/shared": ["../../packages/shared/src"],
       "@mdr/themes": ["../../packages/themes/src"],
       "@mdr/ui": ["../../packages/ui/src"]
@@ -22,6 +23,9 @@
   "references": [
     {
       "path": "../../packages/shared"
+    },
+    {
+      "path": "../../packages/ai"
     },
     {
       "path": "../../packages/ui"

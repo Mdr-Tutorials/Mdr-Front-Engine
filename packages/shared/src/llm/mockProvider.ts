@@ -1,5 +1,6 @@
 import type {
   LlmProvider,
+  LlmProviderGenerateResult,
   LlmProviderRequest,
   LlmStructuredOutput,
 } from './types';
@@ -9,7 +10,7 @@ export class MockLlmProvider implements LlmProvider {
 
   constructor(private readonly output: LlmStructuredOutput) {}
 
-  generate(_request: LlmProviderRequest): Promise<LlmStructuredOutput> {
+  generate(_request: LlmProviderRequest): Promise<LlmProviderGenerateResult> {
     return Promise.resolve(this.output);
   }
 }

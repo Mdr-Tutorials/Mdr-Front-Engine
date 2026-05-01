@@ -28,6 +28,7 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@mdr/ai": "workspace:*",
     "@mdr/i18n": "workspace:*",
     "@mdr/shared": "workspace:*",
     "@mdr/themes": "workspace:*",

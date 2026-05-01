@@ -1,5 +1,9 @@
 import type { ChangeEvent, KeyboardEvent, RefObject } from 'react';
-import { ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
+import { ChevronLeft, PanelLeft, Search, X } from 'lucide-react';
+import {
+  headerCollapseButtonClassName,
+  leftCollapsedButtonClassName,
+} from '../collapseButtonStyles';
 
 type SidebarHeaderProps = {
   title: string;
@@ -10,7 +14,8 @@ type SidebarHeaderProps = {
   searchPlaceholder: string;
   openSearchLabel: string;
   clearSearchLabel: string;
-  toggleLabel: string;
+  collapseLabel: string;
+  expandLabel: string;
   onQueryChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onQueryClear: () => void;
   onSearchOpen: () => void;
@@ -27,7 +32,8 @@ export function SidebarHeader({
   searchPlaceholder,
   openSearchLabel,
   clearSearchLabel,
-  toggleLabel,
+  collapseLabel,
+  expandLabel,
   onQueryChange,
   onQueryClear,
   onSearchOpen,
@@ -40,6 +46,7 @@ export function SidebarHeader({
     onQueryClear();
     onSearchClose();
   };
+  const toggleLabel = isCollapsed ? expandLabel : collapseLabel;
 
   return (
     <div
@@ -95,11 +102,12 @@ export function SidebarHeader({
           </div>
         )}
         <button
-          className={`BlueprintEditorCollapse inline-flex items-center justify-center gap-1.5 rounded-full border-0 bg-transparent px-1.5 py-0.5 text-(--text-muted) hover:text-(--text-primary) ${isCollapsed ? 'absolute top-0 left-0 h-8 w-6 rounded-l-none rounded-r-full border border-l-0 border-(--border-default) bg-(--bg-canvas) p-0 pr-0.5 shadow-(--shadow-md)' : ''}`}
+          className={`BlueprintEditorCollapse ${isCollapsed ? `absolute top-0 left-0 ${leftCollapsedButtonClassName}` : headerCollapseButtonClassName}`}
           onClick={onToggleCollapse}
           aria-label={toggleLabel}
+          title={toggleLabel}
         >
-          {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          {isCollapsed ? <PanelLeft size={15} /> : <ChevronLeft size={16} />}
         </button>
       </div>
     </div>

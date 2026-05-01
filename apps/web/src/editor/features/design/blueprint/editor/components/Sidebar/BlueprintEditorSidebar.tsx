@@ -174,7 +174,8 @@ export function BlueprintEditorSidebar({
         searchPlaceholder={t('sidebar.searchPlaceholder')}
         openSearchLabel={t('sidebar.openSearch')}
         clearSearchLabel={t('sidebar.clearSearch')}
-        toggleLabel={t('sidebar.toggleLibrary')}
+        collapseLabel={t('sidebar.collapse')}
+        expandLabel={t('sidebar.expand')}
         onQueryChange={handleQueryChange}
         onQueryClear={clearQuery}
         onSearchOpen={openSearch}

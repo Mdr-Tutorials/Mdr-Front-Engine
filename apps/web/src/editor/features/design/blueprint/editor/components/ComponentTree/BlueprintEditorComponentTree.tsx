@@ -1,7 +1,7 @@
 import type { MouseEvent as ReactMouseEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, ChevronUp, Layers, Trash2 } from 'lucide-react';
+import { ChevronDown, Layers, Trash2 } from 'lucide-react';
 import { useDroppable } from '@dnd-kit/core';
 import type { ComponentNode } from '@/core/types/engine.types';
 import { useEditorStore } from '@/editor/store/useEditorStore';
@@ -22,6 +22,10 @@ import type {
   TreeContextMenuState,
 } from './componentTreeTypes';
 import { TreeContextMenu } from './TreeContextMenu';
+import {
+  headerCollapseButtonClassName,
+  leftCollapsedButtonClassName,
+} from '../collapseButtonStyles';
 
 export function BlueprintEditorComponentTree({
   isCollapsed,
@@ -211,13 +215,16 @@ export function BlueprintEditorComponentTree({
       <aside className="BlueprintEditorComponentTree Collapsed absolute bottom-10 left-0 z-[6] h-0 w-0 overflow-visible border-0 bg-transparent shadow-none">
         <button
           type="button"
-          className="BlueprintEditorTreeExpand inline-flex h-8 w-6 items-center justify-center rounded-l-none rounded-r-full border border-l-0 border-(--border-default) bg-(--bg-canvas) pr-0.5 text-(--text-muted) shadow-(--shadow-md) hover:text-(--text-primary)"
+          className={`BlueprintEditorTreeExpand ${leftCollapsedButtonClassName}`}
           onClick={onToggleCollapse}
           aria-label={t('tree.expand', {
             defaultValue: 'Expand component tree',
           })}
+          title={t('tree.expand', {
+            defaultValue: 'Expand component tree',
+          })}
         >
-          <ChevronUp size={16} />
+          <Layers size={15} />
         </button>
       </aside>
     );
@@ -262,9 +269,12 @@ export function BlueprintEditorComponentTree({
           </button>
           <button
             type="button"
-            className="BlueprintEditorCollapse inline-flex items-center justify-center gap-1.5 rounded-full border-0 bg-transparent px-1.5 py-0.5 text-(--text-muted) hover:text-(--text-primary)"
+            className={`BlueprintEditorCollapse ${headerCollapseButtonClassName}`}
             onClick={onToggleCollapse}
             aria-label={t('tree.collapse', {
+              defaultValue: 'Collapse component tree',
+            })}
+            title={t('tree.collapse', {
               defaultValue: 'Collapse component tree',
             })}
           >

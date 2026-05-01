@@ -1,10 +1,12 @@
 import type {
   LlmOutputChannel,
   LlmProvider,
+  LlmProviderGenerateResult,
   LlmStructuredOutput,
   LlmTaskRequest,
   LlmTaskResult,
 } from './types';
+import { LlmProviderError } from './types';
 import type { LlmTraceStore } from './traceStore';
 import { LlmToolRegistry } from './toolRegistry';
 
@@ -29,6 +31,39 @@ const getOutputChannel = (
   }
 
   return 'plan';
+};
+
+const unwrapProviderResult = (
+  result: LlmProviderGenerateResult
+): { output: LlmStructuredOutput; rawResponse?: string } => {
+  if (isProviderResultEnvelope(result)) {
+    return result;
+  }
+
+  return { output: result };
+};
+
+const isProviderResultEnvelope = (
+  result: LlmProviderGenerateResult
+): result is { output: LlmStructuredOutput; rawResponse?: string } =>
+  typeof result === 'object' &&
+  result !== null &&
+  'output' in result &&
+  isStructuredOutput((result as { output?: unknown }).output);
+
+const isStructuredOutput = (value: unknown): value is LlmStructuredOutput => {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const candidate = value as Partial<LlmStructuredOutput>;
+  return (
+    ('goal' in candidate && typeof candidate.goal === 'string') ||
+    ('channel' in candidate &&
+      (candidate.channel === 'mir-command' ||
+        candidate.channel === 'node-graph-operation' ||
+        candidate.channel === 'code-artifact'))
+  );
 };
 
 /**
@@ -60,10 +95,11 @@ export class LlmGateway {
     const allowedTools = this.tools.pick(task.allowedTools);
 
     try {
-      const output = await this.provider.generate({
+      const providerResult = await this.provider.generate({
         task,
         tools: allowedTools,
       });
+      const { output, rawResponse } = unwrapProviderResult(providerResult);
       const outputChannel = getOutputChannel(output);
 
       if (
@@ -94,10 +130,13 @@ export class LlmGateway {
         taskId: task.id,
         status: task.requiresPlan ? 'planned' : 'dry-run',
         output,
+        rawResponse,
         diagnostics: [],
         traceId,
       };
     } catch (error) {
+      const rawResponse =
+        error instanceof LlmProviderError ? error.rawResponse : undefined;
       const diagnostic = {
         code: 'LLM_PROVIDER_FAILED',
         severity: 'error' as const,
@@ -121,6 +160,7 @@ export class LlmGateway {
       return {
         taskId: task.id,
         status: 'failed',
+        rawResponse,
         diagnostics: [diagnostic],
         traceId,
       };

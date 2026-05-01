@@ -117,6 +117,29 @@ export type LlmStructuredOutput =
   | LlmNodeGraphOperationBatch
   | LlmCodeArtifact;
 
+export type LlmProviderGenerateResult<
+  TOutput extends LlmStructuredOutput = LlmStructuredOutput,
+> =
+  | TOutput
+  | {
+      output: TOutput;
+      rawResponse?: string;
+    };
+
+export interface LlmProviderErrorOptions {
+  rawResponse?: string;
+}
+
+export class LlmProviderError extends Error {
+  readonly rawResponse?: string;
+
+  constructor(message: string, options?: LlmProviderErrorOptions) {
+    super(message);
+    this.name = 'LlmProviderError';
+    this.rawResponse = options?.rawResponse;
+  }
+}
+
 export interface LlmTaskRequest {
   id: string;
   intent: string;
@@ -138,6 +161,7 @@ export interface LlmTaskResult<
   taskId: string;
   status: LlmTaskStatus;
   output?: TOutput;
+  rawResponse?: string;
   diagnostics: readonly LlmDiagnostic[];
   traceId?: string;
 }
@@ -167,7 +191,7 @@ export interface LlmProviderRequest {
 export interface LlmProvider {
   id: string;
   capabilities?: LlmProviderCapabilities;
-  generate(request: LlmProviderRequest): Promise<LlmStructuredOutput>;
+  generate(request: LlmProviderRequest): Promise<LlmProviderGenerateResult>;
 }
 
 export interface LlmGatewayTrace {

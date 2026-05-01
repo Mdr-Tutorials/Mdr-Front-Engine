@@ -1,5 +1,6 @@
 import { DndContext, DragOverlay } from '@dnd-kit/core';
 import { BlueprintEditorAddressBar } from './BlueprintEditorAddressBar';
+import { BlueprintAssistantPanel } from './blueprint/editor/components/Assistant';
 import { BlueprintEditorCanvas } from './BlueprintEditorCanvas';
 import { BlueprintEditorComponentTree } from './BlueprintEditorComponentTree';
 import { useBlueprintEditorController } from './BlueprintEditor.controller';
@@ -135,6 +136,10 @@ function BlueprintEditor() {
           <BlueprintEditorInspector
             isCollapsed={inspector.isCollapsed}
             onToggleCollapse={inspector.onToggleCollapse}
+          />
+          <BlueprintAssistantPanel
+            currentPath={addressBar.currentPath}
+            selectedId={canvas.selectedId}
           />
         </div>
         <DragOverlay>

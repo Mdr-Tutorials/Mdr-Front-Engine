@@ -1,5 +1,5 @@
 ﻿import { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronRight, SlidersHorizontal } from 'lucide-react';
 import { IconPickerModal } from '@/editor/features/design/inspector/components/IconPickerModal';
 import { MountedCssEditorModal } from '@/editor/features/design/inspector/components/classProtocol/MountedCssEditorModal';
 import { InspectorContext } from '@/editor/features/design/inspector/InspectorContext';
@@ -10,6 +10,10 @@ import { InspectorDataTab } from '@/editor/features/design/inspector/tabs/Inspec
 import { InspectorCodeTab } from '@/editor/features/design/inspector/tabs/InspectorCodeTab';
 import { useBlueprintEditorInspectorController } from '@/editor/features/design/BlueprintEditorInspector.controller';
 import type { InspectorTab } from '@/editor/features/design/inspector/InspectorContext.types';
+import {
+  headerCollapseButtonClassName,
+  rightCollapsedButtonClassName,
+} from '../collapseButtonStyles';
 
 type BlueprintEditorInspectorProps = {
   isCollapsed: boolean;
@@ -38,11 +42,12 @@ export function BlueprintEditorInspector({
       <aside className="BlueprintEditorInspector Collapsed absolute top-3 right-0 z-7 h-0 w-0 overflow-visible border-0 bg-transparent shadow-none">
         <button
           type="button"
-          className="BlueprintEditorCollapse absolute top-0 right-0 inline-flex h-8 w-6 items-center justify-center rounded-l-full rounded-r-none border border-r-0 border-(--border-default) bg-(--bg-canvas) p-0 pl-0.5 text-(--text-muted) shadow-(--shadow-md) hover:text-(--text-primary)"
+          className={`BlueprintEditorCollapse absolute top-0 right-0 ${rightCollapsedButtonClassName}`}
           onClick={onToggleCollapse}
-          aria-label={t('inspector.toggle')}
+          aria-label={t('inspector.expand')}
+          title={t('inspector.expand')}
         >
-          <ChevronLeft size={16} />
+          <SlidersHorizontal size={15} />
         </button>
       </aside>
     );
@@ -54,9 +59,10 @@ export function BlueprintEditorInspector({
         <span>{t('inspector.title')}</span>
         <button
           type="button"
-          className="BlueprintEditorCollapse inline-flex items-center justify-center gap-1.5 rounded-full border-0 bg-transparent px-1.5 py-0.5 text-(--text-muted) hover:text-(--text-primary)"
+          className={`BlueprintEditorCollapse ${headerCollapseButtonClassName}`}
           onClick={onToggleCollapse}
-          aria-label={t('inspector.toggle')}
+          aria-label={t('inspector.collapse')}
+          title={t('inspector.collapse')}
         >
           <ChevronRight size={16} />
         </button>

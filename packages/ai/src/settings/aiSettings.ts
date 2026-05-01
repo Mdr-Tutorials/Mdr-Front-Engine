@@ -1,3 +1,5 @@
+import type { LlmExecutionBudget, LlmModelPreferences } from '@mdr/shared';
+
 export type MdrAiProviderKind = 'mock' | 'openai-compatible';
 
 export interface MdrAiBaseSettings {
@@ -10,6 +12,8 @@ export interface MdrAiOpenAICompatibleSettings extends MdrAiBaseSettings {
   baseURL: string;
   apiKey?: string;
   model: string;
+  modelPreferences?: LlmModelPreferences;
+  budget?: LlmExecutionBudget;
 }
 
 export interface MdrAiMockSettings extends MdrAiBaseSettings {

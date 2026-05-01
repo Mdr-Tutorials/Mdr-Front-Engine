@@ -1,9 +1,11 @@
 import type {
   LlmProvider,
+  LlmProviderGenerateResult,
   LlmProviderRequest,
-  LlmStructuredOutput,
 } from '@mdr/shared';
+import { LlmProviderError } from '@mdr/shared';
 import { validateStructuredOutput } from '../validation/validateStructuredOutput';
+import { createOpenAICompatibleMessages } from './openAICompatiblePrompt';
 
 export type MdrAiFetch = (
   input: string,
@@ -28,13 +30,28 @@ export interface OpenAICompatibleProviderOptions {
 
 const normalizeBaseURL = (baseURL: string) => baseURL.replace(/\/+$/, '');
 
+const stripJsonFence = (value: string) => {
+  const trimmed = value.trim();
+  const fenced = trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+  return fenced?.[1]?.trim() ?? trimmed;
+};
+
+const extractRawResponse = (response: unknown): string => {
+  const choice = readPath(response, ['choices', 0, 'message', 'content']);
+  if (typeof choice === 'string') {
+    return choice;
+  }
+
+  return JSON.stringify(response, null, 2);
+};
+
 const extractStructuredOutput = (response: unknown): unknown => {
   const choice = readPath(response, ['choices', 0, 'message', 'content']);
   if (typeof choice !== 'string') {
     return response;
   }
 
-  return JSON.parse(choice);
+  return JSON.parse(stripJsonFence(choice));
 };
 
 const readPath = (value: unknown, path: readonly (string | number)[]) =>
@@ -82,7 +99,9 @@ export class OpenAICompatibleProvider implements LlmProvider {
    * parses the model JSON response back into MFE structured output and validates
    * the requested output channel.
    */
-  async generate(request: LlmProviderRequest): Promise<LlmStructuredOutput> {
+  async generate(
+    request: LlmProviderRequest
+  ): Promise<LlmProviderGenerateResult> {
     const response = await this.fetcher(`${this.baseURL}/chat/completions`, {
       method: 'POST',
       headers: {
@@ -91,24 +110,12 @@ export class OpenAICompatibleProvider implements LlmProvider {
       },
       body: JSON.stringify({
         model: this.model,
-        messages: [
-          {
-            role: 'system',
-            content:
-              'You are MdrFrontEngine AI runtime. Return only JSON that matches the requested MFE structured output.',
-          },
-          {
-            role: 'user',
-            content: JSON.stringify({
-              intent: request.task.intent,
-              context: request.task.context,
-              outputChannels: request.task.outputChannels,
-              allowedTools: request.task.allowedTools,
-            }),
-          },
-        ],
+        messages: createOpenAICompatibleMessages(request.task),
         temperature: request.task.budget?.temperature ?? 0.2,
         max_tokens: request.task.budget?.maxOutputTokens,
+        response_format: request.task.modelPreferences?.jsonMode
+          ? { type: 'json_object' }
+          : undefined,
       }),
     });
 
@@ -119,17 +126,32 @@ export class OpenAICompatibleProvider implements LlmProvider {
     }
 
     const body = await response.json();
+    const rawResponse = extractRawResponse(body);
+    let structuredOutput: unknown;
+
+    try {
+      structuredOutput = extractStructuredOutput(body);
+    } catch (error) {
+      throw new LlmProviderError(
+        error instanceof Error
+          ? error.message
+          : 'Failed to parse structured LLM output.',
+        { rawResponse }
+      );
+    }
+
     const validation = validateStructuredOutput(
-      extractStructuredOutput(body),
+      structuredOutput,
       request.task.outputChannels
     );
 
     if (!validation.output) {
-      throw new Error(
-        validation.diagnostics[0]?.message ?? 'Invalid structured LLM output.'
+      throw new LlmProviderError(
+        validation.diagnostics[0]?.message ?? 'Invalid structured LLM output.',
+        { rawResponse }
       );
     }
 
-    return validation.output;
+    return { output: validation.output, rawResponse };
   }
 }

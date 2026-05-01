@@ -1,3 +1,4 @@
+export * from './Assistant';
 export * from './AddressBar';
 export * from './Canvas';
 export * from './ComponentTree';
