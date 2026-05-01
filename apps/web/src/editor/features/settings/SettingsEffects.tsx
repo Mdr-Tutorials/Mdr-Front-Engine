@@ -44,36 +44,16 @@ export const SettingsEffects = () => {
     (state) => state.projectGlobalById
   );
   const language = useSettingsStore((state) => {
-    const projectSettings = projectId
-      ? state.projectGlobalById[projectId]
-      : undefined;
-    return projectSettings?.overrides.language
-      ? projectSettings.values.language
-      : state.global.language;
+    return state.global.language;
   });
   const theme = useSettingsStore((state) => {
-    const projectSettings = projectId
-      ? state.projectGlobalById[projectId]
-      : undefined;
-    return projectSettings?.overrides.theme
-      ? projectSettings.values.theme
-      : state.global.theme;
+    return state.global.theme;
   });
   const density = useSettingsStore((state) => {
-    const projectSettings = projectId
-      ? state.projectGlobalById[projectId]
-      : undefined;
-    return projectSettings?.overrides.density
-      ? projectSettings.values.density
-      : state.global.density;
+    return state.global.density;
   });
   const fontScale = useSettingsStore((state) => {
-    const projectSettings = projectId
-      ? state.projectGlobalById[projectId]
-      : undefined;
-    return projectSettings?.overrides.fontScale
-      ? projectSettings.values.fontScale
-      : state.global.fontScale;
+    return state.global.fontScale;
   });
   const ensureProjectGlobal = useSettingsStore(
     (state) => state.ensureProjectGlobal

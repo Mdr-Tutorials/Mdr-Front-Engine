@@ -1,15 +1,15 @@
-.MdrEmbed {
+﻿.MdrEmbed {
   display: block;
   transition: all var(--transition-normal);
 
   > div {
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
-    background-color: var(--color-3);
+    background-color: var(--border-default);
   }
 
   iframe {
-    background-color: var(--color-0);
+    background-color: var(--bg-canvas);
   }
 
   &.aspect-16-9 {
@@ -39,7 +39,7 @@
   &.YouTube,
   &.Vimeo {
     > div {
-      background-color: var(--color-10);
+      background-color: var(--text-primary);
     }
   }
 
@@ -47,7 +47,7 @@
   &.Instagram,
   &.Facebook {
     > div {
-      background-color: var(--color-0);
+      background-color: var(--bg-canvas);
     }
   }
 

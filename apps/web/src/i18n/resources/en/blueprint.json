@@ -17,6 +17,7 @@
       "workspaceSaved": "Saved to workspace.",
       "projectSaved": "Saved to project.",
       "saved": "Saved.",
+      "manualPending": "Unsaved changes. Click to save or press Ctrl+S.",
       "idle": "Ready"
     },
     "messages": {

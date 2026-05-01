@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { MdrButton, MdrHeading, MdrParagraph, MdrTabs } from '@mdr/ui';
+import { MdrButton, MdrHeading, MdrParagraph } from '@mdr/ui';
 import { GlobalSettingsContent } from './GlobalSettingsContent';
 import { ProjectSettingsContent } from './ProjectSettingsContent';
 import { createGlobalDefaults } from './SettingsDefaults';
@@ -44,36 +44,6 @@ export const ProjectSettingsPage = () => {
 
   const basePath = projectId ? `/editor/project/${projectId}` : '/editor';
 
-  const tabs = [
-    {
-      key: 'project',
-      label: t('settings.projectPage.tabs.project'),
-      content: <ProjectSettingsContent />,
-    },
-    {
-      key: 'global',
-      label: t('settings.projectPage.tabs.global'),
-      content: (
-        <div className="grid gap-3">
-          <div className="flex items-center gap-2.5 rounded-xl bg-[rgba(0,0,0,0.04)] px-3 py-2 text-[12px] text-(--color-7) in-data-[theme='dark']:bg-[rgba(255,255,255,0.08)]">
-            <span className="font-semibold text-(--color-9)">
-              {t('settings.projectPage.overrides.title')}
-            </span>
-            <span className="text-(--color-6)">
-              {t('settings.projectPage.overrides.body')}
-            </span>
-          </div>
-          <GlobalSettingsContent
-            mode="project"
-            projectId={projectId}
-            overrides={overrides}
-            onToggleOverride={handleToggleOverride}
-          />
-        </div>
-      ),
-    },
-  ];
-
   return (
     <div className="mx-auto flex min-h-screen max-w-350 flex-col px-6 text-(--color-10)">
       <header className="flex items-center justify-between gap-4 border-b border-b-[rgba(0,0,0,0.06)] px-6 py-4 backdrop-blur-[10px] in-data-[theme='dark']:border-b-[rgba(255,255,255,0.08)]">
@@ -93,7 +63,23 @@ export const ProjectSettingsPage = () => {
         </div>
       </header>
       <main className="flex flex-col gap-4.5 px-6 pt-4 pb-8 max-[1100px]:px-4.5 max-[1100px]:pt-3.5 max-[1100px]:pb-6">
-        <MdrTabs items={tabs} />
+        <ProjectSettingsContent />
+        <section className="grid gap-3">
+          <div className="flex items-center gap-2.5 rounded-xl bg-[rgba(0,0,0,0.04)] px-3 py-2 text-[12px] text-(--color-7) in-data-[theme='dark']:bg-[rgba(255,255,255,0.08)]">
+            <span className="font-semibold text-(--color-9)">
+              {t('settings.projectPage.overrides.title')}
+            </span>
+            <span className="text-(--color-6)">
+              {t('settings.projectPage.overrides.body')}
+            </span>
+          </div>
+          <GlobalSettingsContent
+            mode="project"
+            projectId={projectId}
+            overrides={overrides}
+            onToggleOverride={handleToggleOverride}
+          />
+        </section>
       </main>
     </div>
   );

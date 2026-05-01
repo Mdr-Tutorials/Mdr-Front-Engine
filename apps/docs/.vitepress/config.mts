@@ -1,9 +1,9 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig } from 'vitepress';
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: "MdrFrontEngine",
-  description: "可视化前端开发平台 - 从设计到部署的一站式解决方案",
+  title: 'MdrFrontEngine',
+  description: '可视化前端开发平台 - 从设计到部署的一站式解决方案',
   lang: 'zh-CN',
   lastUpdated: true,
 
@@ -12,7 +12,13 @@ export default defineConfig({
     ['meta', { name: 'theme-color', content: '#5f67ee' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'MdrFrontEngine' }],
-    ['meta', { property: 'og:description', content: '可视化前端开发平台 - 从设计到部署的一站式解决方案' }],
+    [
+      'meta',
+      {
+        property: 'og:description',
+        content: '可视化前端开发平台 - 从设计到部署的一站式解决方案',
+      },
+    ],
   ],
 
   themeConfig: {
@@ -29,9 +35,9 @@ export default defineConfig({
           { text: '组件库', link: '/api/components' },
           { text: 'CLI 工具', link: '/api/cli' },
           { text: '后端 API', link: '/api/backend' },
-        ]
+        ],
       },
-      { text: '社区', link: '/community/contributing' }
+      { text: '社区', link: '/community/contributing' },
     ],
 
     sidebar: {
@@ -42,16 +48,17 @@ export default defineConfig({
             { text: '简介', link: '/guide/introduction' },
             { text: '快速开始', link: '/guide/getting-started' },
             { text: '项目结构', link: '/guide/project-structure' },
-          ]
+          ],
         },
         {
           text: '核心概念',
           items: [
             { text: '蓝图编辑器', link: '/guide/blueprint-editor' },
+            { text: 'AI 助手', link: '/guide/ai-assistant' },
             { text: '节点图系统', link: '/guide/node-graph' },
             { text: 'MIR 中间表示', link: '/guide/mir' },
             { text: '组件系统', link: '/guide/components' },
-          ]
+          ],
         },
         {
           text: '进阶',
@@ -60,8 +67,8 @@ export default defineConfig({
             { text: '部署', link: '/guide/deployment' },
             { text: '主题定制', link: '/guide/theming' },
             { text: '国际化', link: '/guide/i18n' },
-          ]
-        }
+          ],
+        },
       ],
       '/reference/': [
         {
@@ -70,8 +77,8 @@ export default defineConfig({
             { text: 'MIR 语法规范', link: '/reference/mir-spec' },
             { text: '组件规范', link: '/reference/component-spec' },
             { text: '节点规范', link: '/reference/node-spec' },
-          ]
-        }
+          ],
+        },
       ],
       '/api/': [
         {
@@ -80,8 +87,8 @@ export default defineConfig({
             { text: '组件库', link: '/api/components' },
             { text: 'CLI 工具', link: '/api/cli' },
             { text: '后端 API', link: '/api/backend' },
-          ]
-        }
+          ],
+        },
       ],
       '/community/': [
         {
@@ -90,18 +97,21 @@ export default defineConfig({
             { text: '贡献指南', link: '/community/contributing' },
             { text: '开发指南', link: '/community/development' },
             { text: '更新日志', link: '/community/changelog' },
-          ]
-        }
-      ]
+          ],
+        },
+      ],
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/mdr-front-engine/mdr-front-engine' }
+      {
+        icon: 'github',
+        link: 'https://github.com/mdr-front-engine/mdr-front-engine',
+      },
     ],
 
     footer: {
       message: '基于 MIT 许可证发布',
-      copyright: 'Copyright © 2024-present MdrFrontEngine Team'
+      copyright: 'Copyright © 2024-present MdrFrontEngine Team',
     },
 
     search: {
@@ -110,42 +120,42 @@ export default defineConfig({
         translations: {
           button: {
             buttonText: '搜索文档',
-            buttonAriaLabel: '搜索文档'
+            buttonAriaLabel: '搜索文档',
           },
           modal: {
             noResultsText: '无法找到相关结果',
             resetButtonTitle: '清除查询条件',
             footer: {
               selectText: '选择',
-              navigateText: '切换'
-            }
-          }
-        }
-      }
+              navigateText: '切换',
+            },
+          },
+        },
+      },
     },
 
     outline: {
       label: '页面导航',
-      level: [2, 3]
+      level: [2, 3],
     },
 
     docFooter: {
       prev: '上一页',
-      next: '下一页'
+      next: '下一页',
     },
 
     lastUpdated: {
       text: '最后更新于',
       formatOptions: {
         dateStyle: 'short',
-        timeStyle: 'medium'
-      }
+        timeStyle: 'medium',
+      },
     },
 
     returnToTopLabel: '回到顶部',
     sidebarMenuLabel: '菜单',
     darkModeSwitchLabel: '主题',
     lightModeSwitchTitle: '切换到浅色模式',
-    darkModeSwitchTitle: '切换到深色模式'
-  }
-})
+    darkModeSwitchTitle: '切换到深色模式',
+  },
+});

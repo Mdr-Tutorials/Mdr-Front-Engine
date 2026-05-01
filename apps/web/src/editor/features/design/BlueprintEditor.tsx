@@ -72,6 +72,9 @@ function BlueprintEditor() {
             label={saveIndicator.saveIndicatorLabel}
             tone={saveIndicator.saveIndicatorTone}
             isWorkspaceSaveDisabled={saveIndicator.isWorkspaceSaveDisabled}
+            hasPendingChanges={saveIndicator.hasPendingChanges}
+            isManualSave={saveIndicator.isManualSave}
+            onSaveNow={saveIndicator.onSaveNow}
           />
         }
       />

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import {
   createGlobalDefaults,
   createProjectDefaults,
+  isProjectOverridableSetting,
   type GlobalSettingsState,
   type OverrideState,
 } from '@/editor/features/settings/SettingsDefaults';
@@ -119,7 +120,10 @@ const normalizeOverrides = (value: unknown): OverrideState => {
   if (!isRecord(value)) return fallback;
   Object.keys(fallback).forEach((key) => {
     fallback[key] =
-      typeof value[key] === 'boolean' ? Boolean(value[key]) : false;
+      isProjectOverridableSetting(key as keyof GlobalSettingsState) &&
+      typeof value[key] === 'boolean'
+        ? Boolean(value[key])
+        : false;
   });
   return fallback;
 };
@@ -184,6 +188,7 @@ export const useSettingsStore = create<SettingsStore>()((set) => ({
   setProjectGlobalValue: (projectId, key, value) =>
     set((state) => {
       if (!projectId) return state;
+      if (!isProjectOverridableSetting(key)) return state;
       const current = state.projectGlobalById[projectId] ?? {
         values: createProjectDefaults(),
         overrides: Object.keys(createGlobalDefaults()).reduce<OverrideState>(
@@ -229,6 +234,7 @@ export const useSettingsStore = create<SettingsStore>()((set) => ({
   toggleProjectOverride: (projectId, key) =>
     set((state) => {
       if (!projectId) return state;
+      if (!isProjectOverridableSetting(key)) return state;
       const current = state.projectGlobalById[projectId] ?? {
         values: createProjectDefaults(),
         overrides: Object.keys(createGlobalDefaults()).reduce<OverrideState>(
@@ -259,7 +265,7 @@ export const useSettingsStore = create<SettingsStore>()((set) => ({
     const state = useSettingsStore.getState();
     const projectSettings = state.projectGlobalById[projectId];
     if (!projectSettings) return state.global[key];
-    return projectSettings.overrides[key]
+    return isProjectOverridableSetting(key) && projectSettings.overrides[key]
       ? projectSettings.values[key]
       : state.global[key];
   },

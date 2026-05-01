@@ -12,6 +12,7 @@ import {
   type GlobalSettingsState,
   type OverrideState,
   type SettingsMode,
+  isProjectOverridableSetting,
 } from './SettingsDefaults';
 import {
   SettingsPanel,
@@ -47,11 +48,18 @@ export const GlobalSettingsContent = ({
 
   const isProjectMode = mode === 'project';
 
+  const canOverrideInProject = (key: keyof GlobalSettingsState) =>
+    isProjectMode && isProjectOverridableSetting(key);
+
   const isOverrideEnabled = (key: keyof GlobalSettingsState) =>
-    isProjectMode ? Boolean(overrides[key]) : true;
+    canOverrideInProject(key) ? Boolean(overrides[key]) : false;
+
+  const canEditValue = (key: keyof GlobalSettingsState) =>
+    !canOverrideInProject(key) || isOverrideEnabled(key);
 
   const resolveValue = (key: keyof GlobalSettingsState) => {
     if (!isProjectMode) return globalValues[key];
+    if (!canOverrideInProject(key)) return globalValues[key];
     const projectValue = projectValues?.[key] ?? projectFallback[key];
     return isOverrideEnabled(key) ? projectValue : globalValues[key];
   };
@@ -61,6 +69,10 @@ export const GlobalSettingsContent = ({
     value: GlobalSettingsState[K]
   ) => {
     if (isProjectMode) {
+      if (!canOverrideInProject(key)) {
+        setGlobalValue(key, value);
+        return;
+      }
       if (!projectId || !isOverrideEnabled(key)) return;
       setProjectGlobalValue(projectId, key, value);
       return;
@@ -70,6 +82,13 @@ export const GlobalSettingsContent = ({
 
   const renderMeta = (key: keyof GlobalSettingsState) => {
     if (!isProjectMode) return undefined;
+    if (!canOverrideInProject(key)) {
+      return (
+        <span className="rounded-full border border-[rgba(0,0,0,0.12)] bg-(--color-1) px-2.5 py-1 text-[11px] leading-[1.2] text-(--color-7) in-data-[theme='dark']:border-[rgba(255,255,255,0.16)] in-data-[theme='dark']:bg-[rgba(255,255,255,0.08)]">
+          {t('settings.overrides.labels.globalOnly')}
+        </span>
+      );
+    }
     const enabled = isOverrideEnabled(key);
     const globalValue = formatValue(globalValues[key]);
     const effectiveValue = formatValue(resolveValue(key));
@@ -128,7 +147,7 @@ export const GlobalSettingsContent = ({
               ]}
               value={String(resolveValue('language'))}
               onChange={(value) => updateValue('language', value)}
-              disabled={!isOverrideEnabled('language')}
+              disabled={!canEditValue('language')}
             />
           }
         />
@@ -153,7 +172,7 @@ export const GlobalSettingsContent = ({
                 },
               ].map((option) => ({
                 ...option,
-                disabled: !isOverrideEnabled('theme'),
+                disabled: !canEditValue('theme'),
               }))}
               value={String(resolveValue('theme'))}
               onChange={(value) => updateValue('theme', value)}
@@ -177,7 +196,7 @@ export const GlobalSettingsContent = ({
                 },
               ].map((option) => ({
                 ...option,
-                disabled: !isOverrideEnabled('density'),
+                disabled: !canEditValue('density'),
               }))}
               value={String(resolveValue('density'))}
               onChange={(value) => updateValue('density', value)}
@@ -197,7 +216,7 @@ export const GlobalSettingsContent = ({
               onChange={(value) => updateValue('fontScale', value)}
               showValue
               size="Small"
-              disabled={!isOverrideEnabled('fontScale')}
+              disabled={!canEditValue('fontScale')}
             />
           }
         />
@@ -206,6 +225,38 @@ export const GlobalSettingsContent = ({
         title={t('settings.global.panels.behavior.title')}
         description={t('settings.global.panels.behavior.description')}
       >
+        <SettingsRow
+          label={t('settings.global.rows.autosaveMode.label')}
+          description={t('settings.global.rows.autosaveMode.description')}
+          meta={renderMeta('autosaveMode')}
+          control={
+            <MdrRadioGroup
+              options={[
+                {
+                  label: t('settings.global.rows.autosaveMode.options.manual'),
+                  value: 'manual',
+                },
+                {
+                  label: t(
+                    'settings.global.rows.autosaveMode.options.onChange'
+                  ),
+                  value: 'on-change',
+                },
+                {
+                  label: t(
+                    'settings.global.rows.autosaveMode.options.interval'
+                  ),
+                  value: 'interval',
+                },
+              ].map((option) => ({
+                ...option,
+                disabled: !canEditValue('autosaveMode'),
+              }))}
+              value={String(resolveValue('autosaveMode'))}
+              onChange={(value) => updateValue('autosaveMode', value)}
+            />
+          }
+        />
         <SettingsRow
           label={t('settings.global.rows.autosaveInterval.label')}
           description={t('settings.global.rows.autosaveInterval.description')}
@@ -218,7 +269,7 @@ export const GlobalSettingsContent = ({
               value={resolveValue('autosaveInterval') as number}
               onChange={(value) => updateValue('autosaveInterval', value)}
               size="Small"
-              disabled={!isOverrideEnabled('autosaveInterval')}
+              disabled={!canEditValue('autosaveInterval')}
             />
           }
         />
@@ -231,7 +282,7 @@ export const GlobalSettingsContent = ({
               size="Small"
               value={String(resolveValue('undoSteps'))}
               onChange={(value) => updateValue('undoSteps', value)}
-              disabled={!isOverrideEnabled('undoSteps')}
+              disabled={!canEditValue('undoSteps')}
             />
           }
         />
@@ -262,7 +313,7 @@ export const GlobalSettingsContent = ({
                     value: 'leave',
                   },
                 ],
-                !isOverrideEnabled('confirmPrompts')
+                !canEditValue('confirmPrompts')
               )}
               value={resolveValue('confirmPrompts') as string[]}
               onChange={(values) => updateValue('confirmPrompts', values)}
@@ -292,7 +343,7 @@ export const GlobalSettingsContent = ({
               ]}
               value={String(resolveValue('panelLayout'))}
               onChange={(value) => updateValue('panelLayout', value)}
-              disabled={!isOverrideEnabled('panelLayout')}
+              disabled={!canEditValue('panelLayout')}
             />
           }
         />
@@ -319,7 +370,7 @@ export const GlobalSettingsContent = ({
                 },
               ].map((option) => ({
                 ...option,
-                disabled: !isOverrideEnabled('classPxTransformMode'),
+                disabled: !canEditValue('classPxTransformMode'),
               }))}
               value={String(resolveValue('classPxTransformMode'))}
               onChange={(value) => updateValue('classPxTransformMode', value)}
@@ -341,14 +392,14 @@ export const GlobalSettingsContent = ({
                 size="Small"
                 value={String(resolveValue('viewportWidth'))}
                 onChange={(value) => updateValue('viewportWidth', value)}
-                disabled={!isOverrideEnabled('viewportWidth')}
+                disabled={!canEditValue('viewportWidth')}
               />
               <span className="text-[12px] text-(--color-6)">×</span>
               <MdrInput
                 size="Small"
                 value={String(resolveValue('viewportHeight'))}
                 onChange={(value) => updateValue('viewportHeight', value)}
-                disabled={!isOverrideEnabled('viewportHeight')}
+                disabled={!canEditValue('viewportHeight')}
               />
             </div>
           }
@@ -365,7 +416,7 @@ export const GlobalSettingsContent = ({
               value={resolveValue('zoomStep') as number}
               onChange={(value) => updateValue('zoomStep', value)}
               size="Small"
-              disabled={!isOverrideEnabled('zoomStep')}
+              disabled={!canEditValue('zoomStep')}
             />
           }
         />
@@ -390,7 +441,7 @@ export const GlobalSettingsContent = ({
                     value: 'snap',
                   },
                 ],
-                !isOverrideEnabled('assist')
+                !canEditValue('assist')
               )}
               value={resolveValue('assist') as string[]}
               onChange={(values) => updateValue('assist', values)}
@@ -409,7 +460,7 @@ export const GlobalSettingsContent = ({
               value={resolveValue('panInertia') as number}
               onChange={(value) => updateValue('panInertia', value)}
               size="Small"
-              disabled={!isOverrideEnabled('panInertia')}
+              disabled={!canEditValue('panInertia')}
             />
           }
         />
@@ -434,7 +485,7 @@ export const GlobalSettingsContent = ({
                 },
               ].map((option) => ({
                 ...option,
-                disabled: !isOverrideEnabled('eventTriggerMode'),
+                disabled: !canEditValue('eventTriggerMode'),
               }))}
               value={String(resolveValue('eventTriggerMode'))}
               onChange={(value) => updateValue('eventTriggerMode', value)}
@@ -475,7 +526,7 @@ export const GlobalSettingsContent = ({
               ]}
               value={String(resolveValue('resolverOrder'))}
               onChange={(value) => updateValue('resolverOrder', value)}
-              disabled={!isOverrideEnabled('resolverOrder')}
+              disabled={!canEditValue('resolverOrder')}
             />
           }
         />
@@ -489,7 +540,7 @@ export const GlobalSettingsContent = ({
               rows={3}
               value={String(resolveValue('customNamespaces'))}
               onChange={(value) => updateValue('customNamespaces', value)}
-              disabled={!isOverrideEnabled('customNamespaces')}
+              disabled={!canEditValue('customNamespaces')}
             />
           }
         />
@@ -510,7 +561,7 @@ export const GlobalSettingsContent = ({
                 },
               ].map((option) => ({
                 ...option,
-                disabled: !isOverrideEnabled('renderMode'),
+                disabled: !canEditValue('renderMode'),
               }))}
               value={String(resolveValue('renderMode'))}
               onChange={(value) => updateValue('renderMode', value)}
@@ -536,7 +587,7 @@ export const GlobalSettingsContent = ({
                 },
               ].map((option) => ({
                 ...option,
-                disabled: !isOverrideEnabled('allowExternalProps'),
+                disabled: !canEditValue('allowExternalProps'),
               }))}
               value={String(resolveValue('allowExternalProps'))}
               onChange={(value) => updateValue('allowExternalProps', value)}
@@ -575,7 +626,7 @@ export const GlobalSettingsContent = ({
               ]}
               value={String(resolveValue('defaultFramework'))}
               onChange={(value) => updateValue('defaultFramework', value)}
-              disabled={!isOverrideEnabled('defaultFramework')}
+              disabled={!canEditValue('defaultFramework')}
             />
           }
         />
@@ -596,7 +647,7 @@ export const GlobalSettingsContent = ({
                 },
               ].map((option) => ({
                 ...option,
-                disabled: !isOverrideEnabled('formatting'),
+                disabled: !canEditValue('formatting'),
               }))}
               value={String(resolveValue('formatting'))}
               onChange={(value) => updateValue('formatting', value)}
@@ -612,7 +663,7 @@ export const GlobalSettingsContent = ({
               size="Small"
               value={String(resolveValue('outputPath'))}
               onChange={(value) => updateValue('outputPath', value)}
-              disabled={!isOverrideEnabled('outputPath')}
+              disabled={!canEditValue('outputPath')}
             />
           }
         />
@@ -639,7 +690,7 @@ export const GlobalSettingsContent = ({
               ]}
               value={String(resolveValue('importStyle'))}
               onChange={(value) => updateValue('importStyle', value)}
-              disabled={!isOverrideEnabled('importStyle')}
+              disabled={!canEditValue('importStyle')}
             />
           }
         />
@@ -660,7 +711,7 @@ export const GlobalSettingsContent = ({
                 },
               ].map((option) => ({
                 ...option,
-                disabled: !isOverrideEnabled('metadata'),
+                disabled: !canEditValue('metadata'),
               }))}
               value={String(resolveValue('metadata'))}
               onChange={(value) => updateValue('metadata', value)}
@@ -699,7 +750,7 @@ export const GlobalSettingsContent = ({
               ]}
               value={String(resolveValue('shortcutPreset'))}
               onChange={(value) => updateValue('shortcutPreset', value)}
-              disabled={!isOverrideEnabled('shortcutPreset')}
+              disabled={!canEditValue('shortcutPreset')}
             />
           }
         />
@@ -730,7 +781,7 @@ export const GlobalSettingsContent = ({
                     value: 'events',
                   },
                 ],
-                !isOverrideEnabled('diagnostics')
+                !canEditValue('diagnostics')
               )}
               value={resolveValue('diagnostics') as string[]}
               onChange={(values) => updateValue('diagnostics', values)}
@@ -760,7 +811,7 @@ export const GlobalSettingsContent = ({
               ]}
               value={String(resolveValue('logLevel'))}
               onChange={(value) => updateValue('logLevel', value)}
-              disabled={!isOverrideEnabled('logLevel')}
+              disabled={!canEditValue('logLevel')}
             />
           }
         />
@@ -781,7 +832,7 @@ export const GlobalSettingsContent = ({
                 },
               ].map((option) => ({
                 ...option,
-                disabled: !isOverrideEnabled('telemetry'),
+                disabled: !canEditValue('telemetry'),
               }))}
               value={String(resolveValue('telemetry'))}
               onChange={(value) => updateValue('telemetry', value)}

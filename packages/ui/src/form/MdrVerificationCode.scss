@@ -21,30 +21,35 @@
   width: 44px;
   height: 44px;
   text-align: center;
-  border: 1px solid var(--color-6);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
-  font-size: 18px;
-  background-color: var(--color-0);
-  color: var(--color-10);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
   transition:
-    border-color var(--transition-fast),
-    box-shadow var(--transition-fast);
+    border-color var(--motion-duration-fast) var(--motion-easing-standard),
+    box-shadow var(--motion-duration-fast) var(--motion-easing-standard),
+    transform var(--motion-duration-fast) var(--motion-easing-standard);
 
   &:focus {
     outline: none;
-    border-color: var(--color-9);
-    box-shadow: 0 0 0 3px rgba(var(--color-9-rgb, 0, 0, 0), 0.08);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px
+      color-mix(in srgb, var(--accent-color) 12%, transparent);
+    transform: translateY(-1px);
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    background-color: var(--color-2);
+    background-color: var(--bg-raised);
   }
 }
 
 .MdrVerificationCodeSeparator {
-  color: var(--color-5);
+  color: var(--border-strong);
   font-size: 14px;
 }
 
@@ -61,13 +66,13 @@
 }
 
 .MdrVerificationCode.Error .MdrVerificationCodeInput {
-  border-color: var(--color-danger);
+  border-color: var(--danger-color);
 }
 
 .MdrVerificationCode.Warning .MdrVerificationCodeInput {
-  border-color: var(--color-warning);
+  border-color: var(--warning-color);
 }
 
 .MdrVerificationCode.Success .MdrVerificationCodeInput {
-  border-color: var(--color-success);
+  border-color: var(--success-color);
 }

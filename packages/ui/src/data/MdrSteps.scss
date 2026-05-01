@@ -1,7 +1,7 @@
 .MdrSteps {
   display: flex;
   gap: var(--spacing-lg);
-  color: var(--color-8);
+  color: var(--text-primary);
 }
 
 .MdrSteps.Vertical {
@@ -24,29 +24,38 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border: 2px solid var(--color-4);
+  border: 2px solid var(--border-default);
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 auto;
   font-size: 12px;
-  background-color: var(--color-0);
+  font-weight: var(--font-weight-semibold);
+  background-color: var(--bg-canvas);
+  color: var(--text-muted);
+  transition:
+    border-color var(--motion-duration-fast) var(--motion-easing-standard),
+    background-color var(--motion-duration-fast) var(--motion-easing-standard),
+    color var(--motion-duration-fast) var(--motion-easing-standard);
 }
 
 .MdrStep.Active .MdrStepIndicator {
-  border-color: var(--color-9);
-  color: var(--color-9);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 10%, transparent);
 }
 
 .MdrStep.Completed .MdrStepIndicator {
-  border-color: var(--color-success);
-  background-color: var(--color-success);
-  color: var(--color-0);
+  border-color: var(--success-color);
+  background-color: var(--success-color);
+  color: var(--text-inverse);
 }
 
 .MdrStepContent {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .MdrStepTitle {
@@ -55,13 +64,13 @@
 
 .MdrStepDescription {
   font-size: 12px;
-  color: var(--color-6);
+  color: var(--text-muted);
 }
 
 .MdrStepConnector {
   flex: 1;
   height: 2px;
-  background-color: var(--color-3);
+  background-color: var(--border-default);
   margin-left: var(--spacing-sm);
 }
 

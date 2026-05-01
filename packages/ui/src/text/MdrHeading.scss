@@ -1,4 +1,4 @@
-.MdrHeading {
+﻿.MdrHeading {
   line-height: 1.3;
   margin: 0;
   word-wrap: break-word;
@@ -60,30 +60,30 @@
   }
 
   &.Default {
-    color: var(--color-10);
+    color: var(--text-primary);
   }
 
   &.Muted {
-    color: var(--color-6);
+    color: var(--text-muted);
   }
 
   &.Primary {
-    color: var(--color-9);
+    color: var(--text-primary);
   }
 
   &.Secondary {
-    color: var(--color-8);
+    color: var(--text-secondary);
   }
 
   &.Danger {
-    color: var(--color-danger);
+    color: var(--danger-color);
   }
 
   &.Warning {
-    color: var(--color-warning);
+    color: var(--warning-color);
   }
 
   &.Success {
-    color: var(--color-success, #10b981);
+    color: var(--success-color);
   }
 }

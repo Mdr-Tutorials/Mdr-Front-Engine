@@ -548,14 +548,14 @@
     },
     "projectPage": {
       "title": "项目设置",
-      "subtitle": "项目专属配置，并可选覆盖全局默认值。",
+      "subtitle": "管理项目配置，也可直接调整全局编辑器偏好。",
       "tabs": {
         "project": "项目设置",
         "global": "全局默认值"
       },
       "overrides": {
-        "title": "覆盖",
-        "body": "切换某一行即可为此项目覆盖对应的全局默认值。"
+        "title": "编辑器设置",
+        "body": "多数设置是全局偏好；只有影响项目输出或运行语义的设置可开启项目覆盖。"
       }
     },
     "overrides": {
@@ -565,7 +565,8 @@
       },
       "labels": {
         "global": "全局：{{value}}",
-        "effective": "生效：{{value}}"
+        "effective": "生效：{{value}}",
+        "globalOnly": "全局设置"
       }
     },
     "global": {
@@ -625,9 +626,18 @@
           "label": "字体缩放",
           "description": "缩放整个编辑器界面的文字大小。"
         },
+        "autosaveMode": {
+          "label": "保存模式",
+          "description": "选择编辑器变更何时同步到后端。",
+          "options": {
+            "manual": "手动保存",
+            "onChange": "有修改则保存",
+            "interval": "固定时长间隔保存"
+          }
+        },
         "autosaveInterval": {
           "label": "自动保存间隔（秒）",
-          "description": "自动保存更改的时间间隔。"
+          "description": "启用固定时长间隔保存时使用。"
         },
         "undoSteps": {
           "label": "撤销步数",

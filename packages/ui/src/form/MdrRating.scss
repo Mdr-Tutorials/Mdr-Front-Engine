@@ -13,13 +13,13 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  color: var(--color-4);
+  color: var(--border-default);
   padding: 0;
   line-height: 1;
   transition: color var(--transition-fast);
 
   &.Active {
-    color: var(--color-warning);
+    color: var(--warning-color);
   }
 
   &:disabled {

@@ -40,6 +40,7 @@ export {
 
 interface EditorStore {
   mirDoc: MIRDocument;
+  mirDocRevision: number;
   setMirDoc: (doc: MIRDocument) => void;
   updateMirDoc: (updater: (doc: MIRDocument) => MIRDocument) => void;
   workspaceId?: string;
@@ -130,6 +131,7 @@ const normalizeProject = (project: {
 
 export const useEditorStore = create<EditorStore>()((set) => ({
   mirDoc: createDefaultMirDoc(),
+  mirDocRevision: 0,
   setMirDoc: (doc) =>
     set((state) => {
       if (!state.activeDocumentId) {
@@ -158,15 +160,22 @@ export const useEditorStore = create<EditorStore>()((set) => ({
         return state;
       }
       if (!state.activeDocumentId) {
-        return { mirDoc: nextMirDoc };
+        return {
+          mirDoc: nextMirDoc,
+          mirDocRevision: state.mirDocRevision + 1,
+        };
       }
       const activeDocument =
         state.workspaceDocumentsById[state.activeDocumentId];
       if (!activeDocument) {
-        return { mirDoc: nextMirDoc };
+        return {
+          mirDoc: nextMirDoc,
+          mirDocRevision: state.mirDocRevision + 1,
+        };
       }
       return {
         mirDoc: nextMirDoc,
+        mirDocRevision: state.mirDocRevision + 1,
         workspaceDocumentsById: {
           ...state.workspaceDocumentsById,
           [state.activeDocumentId]: {

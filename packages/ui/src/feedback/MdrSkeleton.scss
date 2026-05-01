@@ -1,9 +1,9 @@
-.MdrSkeleton {
+﻿.MdrSkeleton {
   background: linear-gradient(
     90deg,
-    var(--color-2) 25%,
-    var(--color-3) 50%,
-    var(--color-2) 75%
+    var(--bg-raised) 25%,
+    var(--border-default) 50%,
+    var(--bg-raised) 75%
   );
   background-size: 200% 100%;
   animation: mdr-skeleton 1.4s ease infinite;

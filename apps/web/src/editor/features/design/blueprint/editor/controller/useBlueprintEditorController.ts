@@ -36,10 +36,12 @@ import {
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
 import { useAuthStore } from '@/auth/useAuthStore';
 import { editorApi } from '@/editor/editorApi';
+import { useEditorShortcut } from '@/editor/shortcuts';
 import {
   flattenRouteItems,
   normalizeRoutePath,
 } from '@/editor/store/routeManifest';
+import type { AutosaveMode } from '@/editor/features/design/BlueprintEditor.autosave';
 
 const CAPABILITY_MIR_DOCUMENT_UPDATE = 'core.mir.document.update@1.0';
 const CAPABILITY_ROUTE_MANIFEST_UPDATE = 'core.route.manifest.update@1.0';
@@ -108,6 +110,7 @@ export const useBlueprintEditorController = () => {
   );
   const patchRuntimeState = useEditorStore((state) => state.patchRuntimeState);
   const mirDoc = useEditorStore((state) => state.mirDoc);
+  const mirDocRevision = useEditorStore((state) => state.mirDocRevision);
   const updateMirDoc = useEditorStore((state) => state.updateMirDoc);
   const workspaceId = useEditorStore((state) => state.workspaceId);
   const workspaceRev = useEditorStore((state) => state.workspaceRev);
@@ -139,6 +142,14 @@ export const useBlueprintEditorController = () => {
     (state) => state.applyWorkspaceMutation
   );
   const token = useAuthStore((state) => state.token);
+  const autosaveMode = useSettingsStore(
+    (state) =>
+      state.getEffectiveGlobalValue(projectId, 'autosaveMode') as AutosaveMode
+  );
+  const autosaveInterval = useSettingsStore(
+    (state) =>
+      state.getEffectiveGlobalValue(projectId, 'autosaveInterval') as number
+  );
   const zoomStep = useSettingsStore((state) => state.global.zoomStep);
   const defaultViewportWidth = useSettingsStore(
     (state) => state.global.viewportWidth
@@ -181,16 +192,28 @@ export const useBlueprintEditorController = () => {
     saveIndicatorTone,
     saveIndicatorLabel,
     isWorkspaceSaveDisabled,
+    hasPendingChanges,
+    saveNow,
   } = useBlueprintAutosave({
     token,
     projectId: projectId ?? undefined,
     mirDoc,
+    mirDocRevision,
+    autosaveMode,
+    autosaveIntervalMs: autosaveInterval * 1000,
     workspaceId,
     activeDocumentId: activeDocumentId ?? undefined,
     activeDocumentContentRev,
     canUpdateWorkspaceDocument,
     workspaceCapabilitiesLoaded,
     applyWorkspaceMutation,
+  });
+
+  useEditorShortcut('Mod+S', saveNow, {
+    scope: 'blueprint',
+    priority: 30,
+    enabled: autosaveMode === 'manual' && hasPendingChanges,
+    allowInEditable: true,
   });
   const routeSyncRequestSeqRef = useRef(0);
   const syncedRouteManifestRef = useRef<string>(JSON.stringify(routeManifest));
@@ -621,6 +644,9 @@ export const useBlueprintEditorController = () => {
       saveIndicatorTone,
       saveIndicatorLabel,
       isWorkspaceSaveDisabled,
+      hasPendingChanges,
+      isManualSave: autosaveMode === 'manual',
+      onSaveNow: saveNow,
     },
     addressBar: {
       currentPath,

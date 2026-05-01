@@ -25,6 +25,7 @@ export const resetEditorStore = (overrides: Partial<EditorState> = {}) => {
     {
       ...state,
       mirDoc: createMirDoc(),
+      mirDocRevision: 0,
       workspaceId: undefined,
       workspaceRev: undefined,
       routeRev: undefined,

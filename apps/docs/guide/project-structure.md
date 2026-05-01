@@ -15,6 +15,7 @@ mdr-front-engine/
 │
 ├── packages/                  # 共享的库和包
 │   ├── mir-compiler/          # MIR 编译器
+│   ├── ai/                    # 跨端 AI Provider 与设置协议
 │   ├── ui/                    # UI 组件库
 │   ├── shared/                # 共享类型和工具
 │   ├── themes/                # 主题系统
@@ -106,6 +107,9 @@ apps/web/
 │   │   ├── useEditorStore.ts
 │   │   └── useSettingsStore.ts
 │   │
+│   ├── ai/                   # Web 端 AI 设置持久化
+│   │   └── aiSettingsStore.ts
+│   │
 │   ├── auth/                 # 认证模块
 │   ├── community/            # 社区模块
 │   ├── home/                 # 首页
@@ -132,6 +136,15 @@ apps/web/
 - Monaco Editor
 - @dnd-kit（拖拽）
 - @xyflow/react（节点图）
+
+**AI 相关目录**：
+
+| 目录                                                                        | 职责                                            |
+| --------------------------------------------------------------------------- | ----------------------------------------------- |
+| `apps/web/src/ai`                                                           | Web 端 AI 设置持久化                            |
+| `apps/web/src/editor/features/design/blueprint/editor/components/Assistant` | Blueprint 右下角 AI 助手和设置弹窗              |
+| `packages/ai`                                                               | Provider 创建、OpenAI-compatible 请求、模型发现 |
+| `packages/shared/src/llm`                                                   | LLM 协议、gateway、trace、mock provider         |
 
 ### apps/backend - Go 后端
 
@@ -300,11 +313,33 @@ packages/mir-compiler/
 
 **说明**：当前 MIR 编译逻辑位于 `apps/web/src/mir/generator/` 中。
 
+### packages/ai - AI 运行时
+
+```
+packages/ai/
+├── src/
+│   ├── providers/            # Provider 创建、模型发现、OpenAI-compatible 请求
+│   ├── settings/             # AI 设置类型
+│   ├── tasks/                # LLM task 创建工具
+│   └── validation/           # 结构化输出校验
+├── package.json
+└── tsconfig.json
+```
+
+**职责**：
+
+- 创建 mock 或 OpenAI-compatible provider
+- 发送 Chat Completions 请求
+- 从 `{baseURL}/models` 发现模型基础信息
+- 构造可调试的 OpenAI-compatible messages
+- 校验 LLM 返回的结构化输出
+
 ### packages/shared - 共享工具
 
 ```
 packages/shared/
 ├── src/
+│   ├── llm/                  # LLM 协议、gateway、tool registry、trace store
 │   ├── types/                # 类型定义
 │   │   ├── MdrComponent.ts
 │   │   └── mir.ts
@@ -435,5 +470,6 @@ packages:
 ## 下一步
 
 - [蓝图编辑器](/guide/blueprint-editor) - 了解可视化设计功能
+- [AI 助手](/guide/ai-assistant) - 了解 LLM Provider 和 Blueprint AI UI
 - [MIR 规范](/reference/mir-spec) - 深入理解组件描述格式
 - [开发指南](/community/development) - 参与项目开发

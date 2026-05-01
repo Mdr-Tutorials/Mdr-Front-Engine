@@ -1,4 +1,4 @@
-@use './MdrField.scss';
+﻿@use './MdrField.scss';
 
 .MdrRadioGroup {
   width: 100%;
@@ -27,7 +27,7 @@
   display: flex;
   align-items: flex-start;
   gap: var(--spacing-sm);
-  color: var(--color-8);
+  color: var(--text-primary);
   cursor: pointer;
 }
 
@@ -51,5 +51,5 @@
 
 .MdrRadioGroupDescription {
   font-size: 11px;
-  color: var(--color-6);
+  color: var(--text-muted);
 }

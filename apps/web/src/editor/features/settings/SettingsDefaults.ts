@@ -3,6 +3,7 @@ export const createGlobalDefaults = () => ({
   theme: 'home',
   density: 'comfortable',
   fontScale: 100,
+  autosaveMode: 'on-change',
   autosaveInterval: 20,
   undoSteps: '80',
   confirmPrompts: ['delete', 'reset', 'leave'],
@@ -40,3 +41,33 @@ export const createProjectDefaults = () => ({
 export type GlobalSettingsState = ReturnType<typeof createGlobalDefaults>;
 export type SettingsMode = 'global' | 'project';
 export type OverrideState = Record<string, boolean>;
+
+export const PROJECT_OVERRIDABLE_SETTINGS = [
+  'classPxTransformMode',
+  'viewportWidth',
+  'viewportHeight',
+  'eventTriggerMode',
+  'resolverOrder',
+  'customNamespaces',
+  'renderMode',
+  'allowExternalProps',
+  'defaultFramework',
+  'formatting',
+  'outputPath',
+  'importStyle',
+  'metadata',
+] as const satisfies ReadonlyArray<keyof GlobalSettingsState>;
+
+export const GLOBAL_ONLY_SETTINGS = (
+  Object.keys(createGlobalDefaults()) as Array<keyof GlobalSettingsState>
+).filter(
+  (key) =>
+    !PROJECT_OVERRIDABLE_SETTINGS.includes(
+      key as (typeof PROJECT_OVERRIDABLE_SETTINGS)[number]
+    )
+) as Array<keyof GlobalSettingsState>;
+
+export const isProjectOverridableSetting = (key: keyof GlobalSettingsState) =>
+  PROJECT_OVERRIDABLE_SETTINGS.includes(
+    key as (typeof PROJECT_OVERRIDABLE_SETTINGS)[number]
+  );

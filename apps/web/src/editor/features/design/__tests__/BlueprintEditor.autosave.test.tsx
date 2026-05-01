@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ReactNode } from 'react';
 import { ApiError } from '@/auth/authApi';
@@ -11,6 +11,7 @@ import {
   resetSettingsStore,
 } from '@/test-utils/editorStore';
 import BlueprintEditor from '@/editor/features/design/BlueprintEditor';
+import { EditorShortcutProvider } from '@/editor/shortcuts';
 
 const PROJECT_ID = 'project-1';
 
@@ -59,6 +60,10 @@ vi.mock('../BlueprintEditorInspector', () => ({
   BlueprintEditorInspector: () => <aside data-testid="inspector" />,
 }));
 
+vi.mock('../blueprint/editor/components/Assistant', () => ({
+  BlueprintAssistantPanel: () => <aside data-testid="assistant" />,
+}));
+
 const withWorkspaceDocumentState = (capable: boolean, loaded = true) => ({
   workspaceId: 'ws-1',
   workspaceRev: 6,
@@ -84,6 +89,26 @@ const withWorkspaceDocumentState = (capable: boolean, loaded = true) => ({
   },
   mirDoc: createMirDoc(),
 });
+
+const editMirDocument = () => {
+  useEditorStore.getState().updateMirDoc((doc) => ({
+    ...doc,
+    ui: {
+      ...doc.ui,
+      root: {
+        ...doc.ui.root,
+        children: [{ id: 'edited-node', type: 'MdrText', text: 'Edited' }],
+      },
+    },
+  }));
+};
+
+const renderBlueprintEditor = () =>
+  render(
+    <EditorShortcutProvider>
+      <BlueprintEditor />
+    </EditorShortcutProvider>
+  );
 
 beforeEach(() => {
   vi.restoreAllMocks();
@@ -121,10 +146,20 @@ describe('BlueprintEditor autosave', () => {
     resetEditorStore(withWorkspaceDocumentState(true));
 
     try {
-      render(<BlueprintEditor />);
+      renderBlueprintEditor();
 
       await act(async () => {
-        await vi.advanceTimersByTimeAsync(701);
+        await vi.advanceTimersByTimeAsync(1101);
+      });
+
+      expect(saveWorkspaceDocument).not.toHaveBeenCalled();
+
+      act(() => {
+        editMirDocument();
+      });
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1101);
       });
 
       expect(saveWorkspaceDocument).toHaveBeenCalledTimes(1);
@@ -184,10 +219,20 @@ describe('BlueprintEditor autosave', () => {
     resetEditorStore(withWorkspaceDocumentState(false));
 
     try {
-      render(<BlueprintEditor />);
+      renderBlueprintEditor();
 
       await act(async () => {
-        await vi.advanceTimersByTimeAsync(701);
+        await vi.advanceTimersByTimeAsync(1101);
+      });
+
+      expect(saveProjectMir).not.toHaveBeenCalled();
+
+      act(() => {
+        editMirDocument();
+      });
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1101);
       });
 
       expect(saveWorkspaceDocument).not.toHaveBeenCalled();
@@ -229,10 +274,14 @@ describe('BlueprintEditor autosave', () => {
     resetEditorStore(withWorkspaceDocumentState(false, false));
 
     try {
-      render(<BlueprintEditor />);
+      renderBlueprintEditor();
+
+      act(() => {
+        editMirDocument();
+      });
 
       await act(async () => {
-        await vi.advanceTimersByTimeAsync(701);
+        await vi.advanceTimersByTimeAsync(1101);
       });
 
       expect(saveWorkspaceDocument).not.toHaveBeenCalled();
@@ -248,7 +297,7 @@ describe('BlueprintEditor autosave', () => {
       });
 
       await act(async () => {
-        await vi.advanceTimersByTimeAsync(701);
+        await vi.advanceTimersByTimeAsync(1101);
       });
 
       expect(saveWorkspaceDocument).toHaveBeenCalledTimes(1);
@@ -279,10 +328,14 @@ describe('BlueprintEditor autosave', () => {
     resetEditorStore(withWorkspaceDocumentState(true));
 
     try {
-      render(<BlueprintEditor />);
+      renderBlueprintEditor();
+
+      act(() => {
+        editMirDocument();
+      });
 
       await act(async () => {
-        await vi.advanceTimersByTimeAsync(701);
+        await vi.advanceTimersByTimeAsync(1101);
       });
 
       expect(saveWorkspaceDocument).toHaveBeenCalledTimes(1);
@@ -299,6 +352,92 @@ describe('BlueprintEditor autosave', () => {
       const saveIndicator = screen.getByTestId('blueprint-save-indicator');
       expect(saveIndicator.getAttribute('data-status')).toBe('idle');
       expect(saveIndicator.getAttribute('data-transport')).toBe('none');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('saves manually by clicking the pending save indicator', async () => {
+    vi.useFakeTimers();
+
+    const saveWorkspaceDocument = vi
+      .spyOn(editorApi, 'saveWorkspaceDocument')
+      .mockResolvedValue({
+        workspaceId: 'ws-1',
+        workspaceRev: 7,
+        routeRev: 3,
+        opSeq: 12,
+        updatedDocuments: [{ id: 'doc-home', contentRev: 4, metaRev: 2 }],
+      });
+
+    useAuthStore.setState({
+      token: 'token-1',
+      expiresAt: null,
+      user: null,
+    });
+    resetSettingsStore({ autosaveMode: 'manual' });
+    resetEditorStore(withWorkspaceDocumentState(true));
+
+    try {
+      renderBlueprintEditor();
+
+      act(() => {
+        editMirDocument();
+      });
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(5000);
+      });
+
+      expect(saveWorkspaceDocument).not.toHaveBeenCalled();
+
+      fireEvent.click(screen.getByTestId('blueprint-save-indicator'));
+
+      await act(async () => {
+        await Promise.resolve();
+      });
+
+      expect(saveWorkspaceDocument).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('saves manually with Ctrl+S', async () => {
+    vi.useFakeTimers();
+
+    const saveWorkspaceDocument = vi
+      .spyOn(editorApi, 'saveWorkspaceDocument')
+      .mockResolvedValue({
+        workspaceId: 'ws-1',
+        workspaceRev: 7,
+        routeRev: 3,
+        opSeq: 12,
+        updatedDocuments: [{ id: 'doc-home', contentRev: 4, metaRev: 2 }],
+      });
+
+    useAuthStore.setState({
+      token: 'token-1',
+      expiresAt: null,
+      user: null,
+    });
+    resetSettingsStore({ autosaveMode: 'manual' });
+    resetEditorStore(withWorkspaceDocumentState(true));
+
+    try {
+      renderBlueprintEditor();
+
+      act(() => {
+        editMirDocument();
+      });
+
+      fireEvent.keyDown(window, { key: 's', ctrlKey: true });
+
+      await act(async () => {
+        await Promise.resolve();
+      });
+
+      expect(saveWorkspaceDocument).toHaveBeenCalledTimes(1);
     } finally {
       vi.useRealTimers();
     }

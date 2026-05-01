@@ -1,4 +1,4 @@
-.MdrBadge {
+﻿.MdrBadge {
   position: relative;
   display: inline-flex;
 }
@@ -11,8 +11,8 @@
   height: 18px;
   padding: 0 4px;
   border-radius: var(--radius-full);
-  background-color: var(--color-danger);
-  color: var(--color-0);
+  background-color: var(--danger-color);
+  color: var(--bg-canvas);
   font-size: 11px;
   display: flex;
   align-items: center;

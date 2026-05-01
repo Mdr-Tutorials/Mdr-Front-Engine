@@ -7,7 +7,7 @@
 .MdrRangeValue {
   margin-left: auto;
   font-size: 12px;
-  color: var(--color-6);
+  color: var(--text-muted);
 }
 
 .MdrRangeTrack {
@@ -16,12 +16,12 @@
   border-radius: var(--radius-full);
   background: linear-gradient(
     to right,
-    var(--color-3) 0%,
-    var(--color-3) var(--range-start),
-    var(--color-9) var(--range-start),
-    var(--color-9) var(--range-end),
-    var(--color-3) var(--range-end),
-    var(--color-3) 100%
+    var(--border-default) 0%,
+    var(--border-default) var(--range-start),
+    var(--accent-color) var(--range-start),
+    var(--accent-color) var(--range-end),
+    var(--border-default) var(--range-end),
+    var(--border-default) 100%
   );
 }
 
@@ -41,8 +41,8 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: var(--color-9);
-  border: 2px solid var(--color-0);
+  background: var(--accent-color);
+  border: 2px solid var(--bg-canvas);
   cursor: pointer;
 }
 
@@ -50,17 +50,11 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: var(--color-9);
-  border: 2px solid var(--color-0);
+  background: var(--accent-color);
+  border: 2px solid var(--bg-canvas);
   cursor: pointer;
 }
 
 .MdrRange.Disabled .MdrRangeTrack {
   opacity: 0.6;
-}
-
-[data-theme='dark'] {
-  .MdrRangeTrack {
-    background: linear-gradient(to right);
-  }
 }

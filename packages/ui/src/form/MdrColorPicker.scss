@@ -21,19 +21,30 @@
 
 .MdrColorPickerText {
   flex: 1;
-  border: 1px solid var(--color-6);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   padding: var(--spacing-xs) var(--spacing-sm);
-  font-size: 14px;
-  background-color: var(--color-0);
-  color: var(--color-10);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  transition:
+    border-color var(--motion-duration-fast) var(--motion-easing-standard),
+    box-shadow var(--motion-duration-fast) var(--motion-easing-standard);
+
+  &:focus {
+    border-color: var(--accent-color);
+    outline: none;
+    box-shadow: 0 0 0 3px
+      color-mix(in srgb, var(--accent-color) 12%, transparent);
+  }
 }
 
 .MdrColorPickerSwatch {
   width: 28px;
   height: 28px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--color-4);
+  border: 1px solid var(--border-default);
 }
 
 .MdrColorPicker.Disabled {

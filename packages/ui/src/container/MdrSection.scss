@@ -1,4 +1,4 @@
-.MdrSection {
+﻿.MdrSection {
   box-sizing: border-box;
   width: 100%;
   position: relative;
@@ -55,29 +55,29 @@
   }
 
   &.Default {
-    background-color: var(--color-0);
-    border: 1px solid var(--color-2);
+    background-color: var(--bg-canvas);
+    border: 1px solid var(--bg-raised);
   }
 
   &.Light {
-    background-color: var(--color-2);
-    border: 1px solid var(--color-3);
+    background-color: var(--bg-raised);
+    border: 1px solid var(--border-default);
   }
 
   &.Dark {
-    background-color: var(--color-10);
-    color: var(--color-0);
+    background-color: var(--text-primary);
+    color: var(--bg-canvas);
   }
 
   &.Primary {
-    background-color: var(--color-9);
-    color: var(--color-0);
+    background-color: var(--accent-color);
+    color: var(--bg-canvas);
     box-shadow: var(--shadow-sm);
   }
 
   &.Secondary {
-    background-color: var(--color-8);
-    color: var(--color-0);
+    background-color: var(--text-primary);
+    color: var(--bg-canvas);
     box-shadow: var(--shadow-sm);
   }
 }

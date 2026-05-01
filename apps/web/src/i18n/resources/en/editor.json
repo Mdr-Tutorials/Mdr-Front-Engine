@@ -548,14 +548,14 @@
     },
     "projectPage": {
       "title": "Project Settings",
-      "subtitle": "Project-specific configuration with optional global overrides.",
+      "subtitle": "Manage project configuration and adjust global editor preferences here.",
       "tabs": {
         "project": "Project settings",
         "global": "Global defaults"
       },
       "overrides": {
-        "title": "Overrides",
-        "body": "Toggle a row to override the global default for this project."
+        "title": "Editor settings",
+        "body": "Most settings are global preferences. Only settings that affect project output or runtime semantics can be overridden for this project."
       }
     },
     "overrides": {
@@ -565,7 +565,8 @@
       },
       "labels": {
         "global": "Global: {{value}}",
-        "effective": "Effective: {{value}}"
+        "effective": "Effective: {{value}}",
+        "globalOnly": "Global setting"
       }
     },
     "global": {
@@ -625,9 +626,18 @@
           "label": "Font scale",
           "description": "Scale typography across the editor UI."
         },
+        "autosaveMode": {
+          "label": "Save mode",
+          "description": "Choose when editor changes are persisted to the backend.",
+          "options": {
+            "manual": "Manual",
+            "onChange": "On change",
+            "interval": "Timed interval"
+          }
+        },
         "autosaveInterval": {
           "label": "Auto-save interval (sec)",
-          "description": "Interval to persist changes automatically."
+          "description": "Used when timed interval saving is enabled."
         },
         "undoSteps": {
           "label": "Undo steps",

@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ApiError } from '@/auth/authApi';
 import { editorApi, type WorkspaceCommandEnvelope } from '@/editor/editorApi';
 import type { MIRDocument } from '@/core/types/engine.types';
 import { validateMirDocument } from '@/mir/validator/validator';
 
+export type AutosaveMode = 'manual' | 'on-change' | 'interval';
 export type SaveTransport = 'workspace' | 'project' | null;
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 export type SaveIndicatorTone = 'error' | 'warning' | 'success' | 'neutral';
@@ -17,6 +18,9 @@ type UseBlueprintAutosaveOptions = {
   token: string | null;
   projectId?: string;
   mirDoc: MIRDocument;
+  mirDocRevision: number;
+  autosaveMode: AutosaveMode;
+  autosaveIntervalMs: number;
   workspaceId?: string;
   activeDocumentId?: string;
   activeDocumentContentRev?: number;
@@ -31,7 +35,11 @@ type UseBlueprintAutosaveResult = {
   saveIndicatorTone: SaveIndicatorTone;
   saveIndicatorLabel: string;
   isWorkspaceSaveDisabled: boolean;
+  hasPendingChanges: boolean;
+  saveNow: () => void;
 };
+
+const ON_CHANGE_AUTOSAVE_DELAY_MS = 1000;
 
 const createCommandId = () => {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
@@ -72,6 +80,9 @@ export const useBlueprintAutosave = ({
   token,
   projectId,
   mirDoc,
+  mirDocRevision,
+  autosaveMode,
+  autosaveIntervalMs,
   workspaceId,
   activeDocumentId,
   activeDocumentContentRev,
@@ -81,10 +92,16 @@ export const useBlueprintAutosave = ({
 }: UseBlueprintAutosaveOptions): UseBlueprintAutosaveResult => {
   const { t } = useTranslation('blueprint');
   const saveRequestSeqRef = useRef(0);
-  const lastQueuedSaveDocRef = useRef<MIRDocument | null>(null);
+  const isSavingRef = useRef(false);
+  const [lastSavedRevision, setLastSavedRevision] = useState(mirDocRevision);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [saveTransport, setSaveTransport] = useState<SaveTransport>(null);
   const [saveMessage, setSaveMessage] = useState('');
+  const hasPendingChanges = mirDocRevision > lastSavedRevision;
+  const normalizedAutosaveIntervalMs = Math.max(
+    1000,
+    Number.isFinite(autosaveIntervalMs) ? Math.round(autosaveIntervalMs) : 1000
+  );
 
   const hasWorkspaceTarget =
     Boolean(workspaceId) &&
@@ -104,16 +121,18 @@ export const useBlueprintAutosave = ({
           ? 'warning'
           : saveStatus === 'saved'
             ? 'success'
-            : 'neutral';
+            : autosaveMode === 'manual' && hasPendingChanges
+              ? 'warning'
+              : 'neutral';
 
   const saveIndicatorLabel = useMemo(() => {
     if (hasWorkspaceTarget && !workspaceCapabilitiesLoaded) {
       return t('autosave.capabilities.loading', {
-        defaultValue: 'Checking workspace capabilities…',
+        defaultValue: 'Checking workspace capabilities...',
       });
     }
     if (saveStatus === 'saving') {
-      return t('autosave.status.saving', { defaultValue: 'Saving…' });
+      return t('autosave.status.saving', { defaultValue: 'Saving...' });
     }
     if (saveStatus === 'error') {
       return (
@@ -122,6 +141,11 @@ export const useBlueprintAutosave = ({
           defaultValue: 'Save failed. Retrying on next change.',
         })
       );
+    }
+    if (autosaveMode === 'manual' && hasPendingChanges) {
+      return t('autosave.status.manualPending', {
+        defaultValue: 'Unsaved changes. Click to save.',
+      });
     }
     if (saveStatus === 'saved') {
       if (saveMessage) return saveMessage;
@@ -134,6 +158,8 @@ export const useBlueprintAutosave = ({
     }
     return t('autosave.status.idle', { defaultValue: 'Ready' });
   }, [
+    autosaveMode,
+    hasPendingChanges,
     hasWorkspaceTarget,
     saveMessage,
     saveStatus,
@@ -158,120 +184,155 @@ export const useBlueprintAutosave = ({
   });
   const mirValidationFailedMessageKey = 'autosave.messages.mirValidationFailed';
 
-  useEffect(() => {
+  const flushSave = useCallback(() => {
     if (!token) return;
+    if (!hasPendingChanges) return;
     if (hasWorkspaceTarget && !workspaceCapabilitiesLoaded) return;
-    if (lastQueuedSaveDocRef.current === mirDoc) return;
-    let disposed = false;
+    if (isSavingRef.current) return;
 
-    const timeoutId = window.setTimeout(() => {
-      lastQueuedSaveDocRef.current = mirDoc;
-      const validation = validateMirDocument(mirDoc);
-      if (validation.hasError) {
-        setSaveTransport(null);
-        setSaveStatus('error');
-        setSaveMessage(
-          t(mirValidationFailedMessageKey, {
-            defaultValue: 'MIR validation failed: {{message}}',
-            message: validation.issues[0]?.message ?? 'Invalid MIR document.',
-          })
-        );
-        return;
-      }
-      if (
-        workspaceId &&
-        activeDocumentId &&
-        typeof activeDocumentContentRev === 'number' &&
-        activeDocumentContentRev > 0 &&
-        canUpdateWorkspaceDocument
-      ) {
-        const command = createDocumentUpdateCommand(
-          workspaceId,
-          activeDocumentId
-        );
-        const requestSeq = saveRequestSeqRef.current + 1;
-        saveRequestSeqRef.current = requestSeq;
-        setSaveTransport('workspace');
-        setSaveStatus('saving');
-        setSaveMessage('');
-        editorApi
-          .saveWorkspaceDocument(token, workspaceId, activeDocumentId, {
-            expectedContentRev: activeDocumentContentRev,
-            content: mirDoc,
-            command,
-          })
-          .then((mutation) => {
-            if (disposed || saveRequestSeqRef.current !== requestSeq) {
-              return;
-            }
-            applyWorkspaceMutation(mutation);
-            setSaveStatus('saved');
-            setSaveMessage('');
-          })
-          .catch((error: unknown) => {
-            if (disposed || saveRequestSeqRef.current !== requestSeq) {
-              return;
-            }
-            setSaveStatus('error');
-            setSaveMessage(
-              resolveApiErrorMessage(error) || workspaceRetryMessage
-            );
-          });
-        return;
-      }
+    const targetRevision = mirDocRevision;
+    const validation = validateMirDocument(mirDoc);
+    if (validation.hasError) {
+      setSaveTransport(null);
+      setSaveStatus('error');
+      setSaveMessage(
+        t(mirValidationFailedMessageKey, {
+          defaultValue: 'MIR validation failed: {{message}}',
+          message: validation.issues[0]?.message ?? 'Invalid MIR document.',
+        })
+      );
+      return;
+    }
 
-      if (projectId) {
-        const requestSeq = saveRequestSeqRef.current + 1;
-        saveRequestSeqRef.current = requestSeq;
-        const fallbackMessage = isWorkspaceSaveDisabled
-          ? workspaceUnavailableMessage
-          : '';
-        setSaveTransport('project');
-        setSaveStatus('saving');
-        setSaveMessage(fallbackMessage);
-        editorApi
-          .saveProjectMir(token, projectId, mirDoc)
-          .then(() => {
-            if (disposed || saveRequestSeqRef.current !== requestSeq) {
-              return;
-            }
-            setSaveStatus('saved');
-            setSaveMessage(fallbackMessage || projectSavedMessage);
-          })
-          .catch((error: unknown) => {
-            if (disposed || saveRequestSeqRef.current !== requestSeq) {
-              return;
-            }
-            setSaveStatus('error');
-            setSaveMessage(
-              resolveApiErrorMessage(error) || projectRetryMessage
-            );
-          });
-      }
-    }, 700);
+    if (
+      workspaceId &&
+      activeDocumentId &&
+      typeof activeDocumentContentRev === 'number' &&
+      activeDocumentContentRev > 0 &&
+      canUpdateWorkspaceDocument
+    ) {
+      const command = createDocumentUpdateCommand(
+        workspaceId,
+        activeDocumentId
+      );
+      const requestSeq = saveRequestSeqRef.current + 1;
+      saveRequestSeqRef.current = requestSeq;
+      isSavingRef.current = true;
+      setSaveTransport('workspace');
+      setSaveStatus('saving');
+      setSaveMessage('');
+      editorApi
+        .saveWorkspaceDocument(token, workspaceId, activeDocumentId, {
+          expectedContentRev: activeDocumentContentRev,
+          content: mirDoc,
+          command,
+        })
+        .then((mutation) => {
+          if (saveRequestSeqRef.current !== requestSeq) {
+            return;
+          }
+          applyWorkspaceMutation(mutation);
+          setLastSavedRevision((previous) =>
+            Math.max(previous, targetRevision)
+          );
+          setSaveStatus('saved');
+          setSaveMessage('');
+        })
+        .catch((error: unknown) => {
+          if (saveRequestSeqRef.current !== requestSeq) {
+            return;
+          }
+          setSaveStatus('error');
+          setSaveMessage(
+            resolveApiErrorMessage(error) || workspaceRetryMessage
+          );
+        })
+        .finally(() => {
+          if (saveRequestSeqRef.current === requestSeq) {
+            isSavingRef.current = false;
+          }
+        });
+      return;
+    }
 
-    return () => {
-      disposed = true;
-      window.clearTimeout(timeoutId);
-    };
+    if (projectId) {
+      const requestSeq = saveRequestSeqRef.current + 1;
+      saveRequestSeqRef.current = requestSeq;
+      isSavingRef.current = true;
+      const fallbackMessage = isWorkspaceSaveDisabled
+        ? workspaceUnavailableMessage
+        : '';
+      setSaveTransport('project');
+      setSaveStatus('saving');
+      setSaveMessage(fallbackMessage);
+      editorApi
+        .saveProjectMir(token, projectId, mirDoc)
+        .then(() => {
+          if (saveRequestSeqRef.current !== requestSeq) {
+            return;
+          }
+          setLastSavedRevision((previous) =>
+            Math.max(previous, targetRevision)
+          );
+          setSaveStatus('saved');
+          setSaveMessage(fallbackMessage || projectSavedMessage);
+        })
+        .catch((error: unknown) => {
+          if (saveRequestSeqRef.current !== requestSeq) {
+            return;
+          }
+          setSaveStatus('error');
+          setSaveMessage(resolveApiErrorMessage(error) || projectRetryMessage);
+        })
+        .finally(() => {
+          if (saveRequestSeqRef.current === requestSeq) {
+            isSavingRef.current = false;
+          }
+        });
+    }
   }, [
     activeDocumentContentRev,
     activeDocumentId,
     applyWorkspaceMutation,
     canUpdateWorkspaceDocument,
+    hasPendingChanges,
     hasWorkspaceTarget,
     isWorkspaceSaveDisabled,
     mirDoc,
+    mirDocRevision,
     projectId,
     projectRetryMessage,
     projectSavedMessage,
+    t,
     token,
-    workspaceRetryMessage,
-    workspaceUnavailableMessage,
     workspaceCapabilitiesLoaded,
     workspaceId,
-    t,
+    workspaceRetryMessage,
+    workspaceUnavailableMessage,
   ]);
+
+  useEffect(() => {
+    if (autosaveMode !== 'on-change') return;
+    if (!hasPendingChanges) return;
+    let disposed = false;
+
+    const timeoutId = window.setTimeout(() => {
+      if (!disposed) flushSave();
+    }, ON_CHANGE_AUTOSAVE_DELAY_MS);
+
+    return () => {
+      disposed = true;
+      window.clearTimeout(timeoutId);
+    };
+  }, [autosaveMode, flushSave, hasPendingChanges]);
+
+  useEffect(() => {
+    if (autosaveMode !== 'interval') return;
+    const intervalId = window.setInterval(() => {
+      flushSave();
+    }, normalizedAutosaveIntervalMs);
+    return () => window.clearInterval(intervalId);
+  }, [autosaveMode, flushSave, normalizedAutosaveIntervalMs]);
 
   useEffect(() => {
     if (saveStatus !== 'saved') return;
@@ -289,5 +350,7 @@ export const useBlueprintAutosave = ({
     saveIndicatorTone,
     saveIndicatorLabel,
     isWorkspaceSaveDisabled,
+    hasPendingChanges,
+    saveNow: flushSave,
   };
 };

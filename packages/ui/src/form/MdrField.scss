@@ -13,31 +13,31 @@
 .MdrFieldLabel {
   font-size: 14px;
   font-weight: 600;
-  color: var(--color-8);
+  color: var(--text-primary);
 }
 
 .MdrFieldRequired {
-  color: var(--color-danger);
+  color: var(--danger-color);
 }
 
 .MdrFieldDescription {
   font-size: 12px;
-  color: var(--color-6);
+  color: var(--text-muted);
 }
 
 .MdrFieldMessage {
   font-size: 12px;
-  color: var(--color-6);
+  color: var(--text-muted);
 }
 
 .MdrFieldMessage.Error {
-  color: var(--color-danger);
+  color: var(--danger-color);
 }
 
 .MdrFieldMessage.Warning {
-  color: var(--color-warning);
+  color: var(--warning-color);
 }
 
 .MdrFieldMessage.Success {
-  color: var(--color-success);
+  color: var(--success-color);
 }

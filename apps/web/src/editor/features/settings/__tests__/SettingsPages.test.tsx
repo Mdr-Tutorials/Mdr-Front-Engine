@@ -6,7 +6,6 @@ import { ProjectSettingsPage } from '@/editor/features/settings/ProjectSettingsP
 
 const navigateMock = vi.fn();
 let params: { projectId?: string } = { projectId: 'project-99' };
-const tabsSpy = vi.fn();
 
 vi.mock('react-router', () => ({
   useNavigate: () => navigateMock,
@@ -21,23 +20,6 @@ vi.mock('@mdr/ui', () => ({
   ),
   MdrHeading: ({ children }: { children: ReactNode }) => <h2>{children}</h2>,
   MdrParagraph: ({ children }: { children: ReactNode }) => <p>{children}</p>,
-  MdrTabs: ({
-    items,
-  }: {
-    items: { key: string; label: string; content: ReactNode }[];
-  }) => {
-    tabsSpy(items);
-    return (
-      <div data-testid="tabs">
-        {items.map((item) => (
-          <div key={item.key} data-testid={`tab-${item.key}`}>
-            {item.label}
-            {item.content}
-          </div>
-        ))}
-      </div>
-    );
-  },
 }));
 
 vi.mock('../GlobalSettingsContent', () => ({
@@ -53,7 +35,6 @@ vi.mock('../ProjectSettingsContent', () => ({
 describe('Settings pages', () => {
   beforeEach(() => {
     navigateMock.mockClear();
-    tabsSpy.mockClear();
     params = { projectId: 'project-99' };
   });
 
@@ -67,12 +48,16 @@ describe('Settings pages', () => {
     expect(navigateMock).toHaveBeenCalledWith('/editor');
   });
 
-  it('renders project and global tabs and exits to project home', () => {
+  it('renders project settings and editor settings sections without tabs', () => {
     render(<ProjectSettingsPage />);
 
-    expect(screen.getByTestId('tab-project')).toBeTruthy();
-    expect(screen.getByTestId('tab-global')).toBeTruthy();
+    expect(screen.queryByTestId('tabs')).toBeNull();
+    expect(screen.getByTestId('project-settings')).toBeTruthy();
     expect(screen.getByTestId('global-settings-project')).toBeTruthy();
+  });
+
+  it('routes back to project home from project settings', () => {
+    render(<ProjectSettingsPage />);
 
     fireEvent.click(
       screen.getByRole('button', { name: 'settings.actions.exit' })
