@@ -1,0 +1,179 @@
+import type React from 'react';
+import type { ComponentNode } from '@/core/types/engine.types';
+import type { RenderState, UnsafeRecord } from './MIRRenderer.types';
+
+export const VOID_ELEMENTS = new Set([
+  'input',
+  'img',
+  'br',
+  'hr',
+  'meta',
+  'link',
+]);
+
+export const buildInitialState = (
+  logicState?: Record<string, { initial: any }>
+) => {
+  const result: RenderState = {};
+  if (!logicState) return result;
+  Object.entries(logicState).forEach(([key, value]) => {
+    result[key] = value.initial;
+  });
+  return result;
+};
+
+export const pickIncrementTarget = (state: RenderState) => {
+  if (typeof state.count === 'number') return 'count';
+  const numericKey = Object.keys(state).find(
+    (key) => typeof state[key] === 'number'
+  );
+  return numericKey || null;
+};
+
+export const toReactEventName = (trigger: string) => {
+  const normalized = trigger?.trim();
+  if (!normalized) return undefined;
+  if (/^on[A-Z]/.test(normalized)) return normalized;
+  const lower = normalized.toLowerCase();
+  if (lower === 'click') return 'onClick';
+  if (lower === 'change') return 'onChange';
+  if (lower === 'input') return 'onInput';
+  if (lower === 'submit') return 'onSubmit';
+  if (lower === 'focus') return 'onFocus';
+  if (lower === 'blur') return 'onBlur';
+  return `on${normalized.charAt(0).toUpperCase()}${normalized.slice(1)}`;
+};
+
+export const mergeHandlers = (first: any, second: any) => {
+  if (typeof first === 'function' && typeof second === 'function') {
+    return (event: any) => {
+      first(event);
+      second(event);
+    };
+  }
+  return typeof second === 'function' ? second : first;
+};
+
+export const isSyntheticEvent = (
+  value: unknown
+): value is React.SyntheticEvent =>
+  typeof value === 'object' && value !== null && 'nativeEvent' in value;
+
+export const isClickTrigger = (trigger: string) =>
+  toReactEventName(trigger) === 'onClick';
+
+export const isInteractiveEventTarget = (target: Element | null) => {
+  if (!target) return false;
+  return Boolean(
+    target.closest(
+      'button, input, textarea, select, option, a, label, [role="button"], [role="checkbox"], [role="radio"], [role="switch"], [contenteditable="true"]'
+    )
+  );
+};
+
+export const deferSelectionNotification = (callback: () => void) => {
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.setTimeout === 'function'
+  ) {
+    window.setTimeout(callback, 0);
+    return;
+  }
+  setTimeout(callback, 0);
+};
+
+export const collectNodeEvents = (
+  node: ComponentNode,
+  map: Record<string, ComponentNode['events']> = {}
+) => {
+  if (node.events && Object.keys(node.events).length > 0) {
+    map[node.id] = node.events;
+  }
+  node.children?.forEach((child) => collectNodeEvents(child, map));
+  return map;
+};
+
+export const collectNodesById = (
+  node: ComponentNode,
+  map: Record<string, ComponentNode> = {}
+) => {
+  map[node.id] = node;
+  node.children?.forEach((child) => collectNodesById(child, map));
+  return map;
+};
+
+const asRecord = (value: unknown): UnsafeRecord | null =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+    ? (value as UnsafeRecord)
+    : null;
+
+const readMountedCssContent = (value: unknown): string | null => {
+  const record = asRecord(value);
+  if (!record) return null;
+  return typeof record.content === 'string' && record.content.trim()
+    ? record.content
+    : null;
+};
+
+export const collectMountedCssFromNode = (
+  node: ComponentNode,
+  result: Array<{ key: string; content: string }> = []
+) => {
+  const anyNode = node as ComponentNode & { metadata?: unknown };
+  const props = asRecord(anyNode.props);
+  const metadata = asRecord(anyNode.metadata);
+  const mountedCandidates = [
+    props?.mountedCss,
+    props?.styleMount,
+    props?.styleMountCss,
+    metadata?.mountedCss,
+    metadata?.styleMount,
+  ];
+  mountedCandidates.forEach((candidate, candidateIndex) => {
+    if (Array.isArray(candidate)) {
+      candidate.forEach((entry, entryIndex) => {
+        const content = readMountedCssContent(entry);
+        if (!content) return;
+        result.push({
+          key: `${node.id}-${candidateIndex}-${entryIndex}`,
+          content,
+        });
+      });
+      return;
+    }
+    const content = readMountedCssContent(candidate);
+    if (!content) return;
+    result.push({
+      key: `${node.id}-${candidateIndex}`,
+      content,
+    });
+  });
+  node.children?.forEach((child) => collectMountedCssFromNode(child, result));
+  return result;
+};
+
+export const stripInternalProps = (props: Record<string, any>) => {
+  const next = { ...props };
+  delete next.mountedCss;
+  delete next.styleMount;
+  delete next.styleMountCss;
+  delete next.textMode;
+  return next;
+};
+
+const isSelectionDebugEnabled = () =>
+  typeof window !== 'undefined' &&
+  Boolean(
+    (window as unknown as { __MDR_DEBUG_SELECTION__?: boolean })
+      .__MDR_DEBUG_SELECTION__
+  );
+
+export const emitSelectionDebug = (detail: Record<string, unknown>) => {
+  if (!isSelectionDebugEnabled() || typeof window === 'undefined') return;
+  window.dispatchEvent(
+    new CustomEvent('mdr:selection-debug', {
+      detail,
+    })
+  );
+  console.debug('[mdr-selection]', detail);
+};
