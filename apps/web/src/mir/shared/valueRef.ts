@@ -17,7 +17,18 @@ export type ValueRefContext = {
   index?: number;
 };
 
-const PATH_SEGMENT_PATTERN = /[^.[\]]+|\[(\d+)\]/g;
+export const VALUE_REF_PATH_SEGMENT_PATTERN = /[^.[\]]+|\[(\d+)\]/g;
+export const VALUE_REF_IDENTIFIER_PATTERN = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+
+const PATH_SEGMENT_PATTERN = VALUE_REF_PATH_SEGMENT_PATTERN;
+
+export const parseValueRefPathSegments = (path: string): string[] => {
+  const trimmed = path.trim();
+  if (!trimmed) return [];
+  return Array.from(trimmed.matchAll(VALUE_REF_PATH_SEGMENT_PATTERN)).map(
+    (token) => token[1] ?? token[0]
+  );
+};
 
 const isPlainObject = (value: unknown): value is UnsafeRecord =>
   typeof value === 'object' && value !== null && !Array.isArray(value);

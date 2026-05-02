@@ -6,6 +6,16 @@ import type { AdapterImportSpec } from '@/mir/generator/core/adapter';
 import { createDiagnosticBag } from '@/mir/generator/core/diagnostics';
 import { resolvePackageImport } from '@/mir/generator/core/packageResolver';
 import { isBuiltInActionName } from '@/mir/actions/registry';
+import {
+  VALUE_REF_IDENTIFIER_PATTERN,
+  isDataReference,
+  isIndexReference,
+  isItemReference,
+  isParamReference,
+  isStateReference,
+  isValueReference,
+  parseValueRefPathSegments,
+} from '@/mir/shared/valueRef';
 import type {
   MirDocLike,
   ReactCompileOptions,
@@ -39,22 +49,11 @@ const stringifyLiteral = (value: unknown): string | null => {
   return json;
 };
 
-const PATH_SEGMENT_PATTERN = /[^.[\]]+|\[(\d+)\]/g;
-const IDENTIFIER_SEGMENT_PATTERN = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
-
-const parsePathSegments = (path: string) => {
-  const trimmed = path.trim();
-  if (!trimmed) return [];
-  return Array.from(trimmed.matchAll(PATH_SEGMENT_PATTERN)).map(
-    (token) => token[1] ?? token[0]
-  );
-};
-
 const compilePathAccessExpression = (
   sourceExpression: string,
   path: string
 ) => {
-  const segments = parsePathSegments(path);
+  const segments = parseValueRefPathSegments(path);
   const baseExpression = `(${sourceExpression} as any)`;
   if (segments.length === 0) return baseExpression;
 
@@ -63,7 +62,7 @@ const compilePathAccessExpression = (
     if (Number.isInteger(index)) {
       return `${expression}?.[${index}]`;
     }
-    if (IDENTIFIER_SEGMENT_PATTERN.test(segment)) {
+    if (VALUE_REF_IDENTIFIER_PATTERN.test(segment)) {
       return `${expression}?.${segment}`;
     }
     return `${expression}?.[${JSON.stringify(segment)}]`;
@@ -71,23 +70,20 @@ const compilePathAccessExpression = (
 };
 
 const compileValueExpression = (value: unknown, scopeVar: string): string => {
-  if (typeof value === 'object' && value !== null) {
-    const record = value as Record<string, unknown>;
-    if ('$param' in record && typeof record.$param === 'string') {
-      return toIdentifier(record.$param);
-    }
-    if ('$state' in record && typeof record.$state === 'string') {
-      return toIdentifier(record.$state);
-    }
-    if ('$data' in record && typeof record.$data === 'string') {
-      return compilePathAccessExpression(`${scopeVar}.data`, record.$data);
-    }
-    if ('$item' in record && typeof record.$item === 'string') {
-      return compilePathAccessExpression(`${scopeVar}.item`, record.$item);
-    }
-    if ('$index' in record && record.$index === true) {
-      return `${scopeVar}.index`;
-    }
+  if (isParamReference(value)) {
+    return toIdentifier(value.$param);
+  }
+  if (isStateReference(value)) {
+    return toIdentifier(value.$state);
+  }
+  if (isDataReference(value)) {
+    return compilePathAccessExpression(`${scopeVar}.data`, value.$data);
+  }
+  if (isItemReference(value)) {
+    return compilePathAccessExpression(`${scopeVar}.item`, value.$item);
+  }
+  if (isIndexReference(value)) {
+    return `${scopeVar}.index`;
   }
   if (typeof value === 'string') {
     return stringify(value);
@@ -209,15 +205,7 @@ const compileTextContent = (value: CanonicalNode['text'], scopeVar: string) => {
     }
     return `{${stringify(value)}}`;
   }
-  if (
-    typeof value === 'object' &&
-    value !== null &&
-    !('$param' in value) &&
-    !('$state' in value) &&
-    !('$data' in value) &&
-    !('$item' in value) &&
-    !('$index' in value)
-  ) {
+  if (typeof value === 'object' && value !== null && !isValueReference(value)) {
     return stringify(JSON.stringify(value));
   }
   return `{${compileValueExpression(value, scopeVar)}}`;
