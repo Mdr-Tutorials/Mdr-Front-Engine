@@ -79,6 +79,7 @@ export const createWorkspaceSlice: StateCreator<
         [workspace.activeRouteNodeId, state.activeRouteNodeId]
       );
 
+      const nextMirDoc = activeDocument?.content ?? state.mirDoc;
       return {
         workspaceId: workspace.id,
         workspaceRev: workspace.workspaceRev,
@@ -96,7 +97,11 @@ export const createWorkspaceSlice: StateCreator<
         routeManifest: nextRouteManifest,
         activeRouteNodeId: nextActiveRouteNodeId,
         activeDocumentId: nextActiveDocumentId,
-        mirDoc: activeDocument?.content ?? state.mirDoc,
+        mirDoc: nextMirDoc,
+        mirDocRevision:
+          nextMirDoc === state.mirDoc
+            ? state.mirDocRevision
+            : state.mirDocRevision + 1,
       };
     }),
   setWorkspaceCapabilities: (workspaceId, capabilities) =>
@@ -133,15 +138,20 @@ export const createWorkspaceSlice: StateCreator<
     set((state) => {
       const normalizedDocumentId = documentId?.trim();
       if (!normalizedDocumentId) {
+        if (state.activeDocumentId === undefined) return state;
         return { activeDocumentId: undefined };
       }
       const nextDocument = state.workspaceDocumentsById[normalizedDocumentId];
       if (!nextDocument) {
         return state;
       }
+      const mirDocChanged = nextDocument.content !== state.mirDoc;
       return {
         activeDocumentId: normalizedDocumentId,
         mirDoc: nextDocument.content,
+        mirDocRevision: mirDocChanged
+          ? state.mirDocRevision + 1
+          : state.mirDocRevision,
       };
     }),
   applyWorkspaceMutation: (mutation) =>

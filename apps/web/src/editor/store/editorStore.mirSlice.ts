@@ -17,16 +17,19 @@ export const createMirSlice: StateCreator<EditorStore, [], [], MirSlice> = (
   mirDocRevision: 0,
   setMirDoc: (doc) =>
     set((state) => {
+      if (doc === state.mirDoc) return state;
+      const nextRevision = state.mirDocRevision + 1;
       if (!state.activeDocumentId) {
-        return { mirDoc: doc };
+        return { mirDoc: doc, mirDocRevision: nextRevision };
       }
       const activeDocument =
         state.workspaceDocumentsById[state.activeDocumentId];
       if (!activeDocument) {
-        return { mirDoc: doc };
+        return { mirDoc: doc, mirDocRevision: nextRevision };
       }
       return {
         mirDoc: doc,
+        mirDocRevision: nextRevision,
         workspaceDocumentsById: {
           ...state.workspaceDocumentsById,
           [state.activeDocumentId]: {
