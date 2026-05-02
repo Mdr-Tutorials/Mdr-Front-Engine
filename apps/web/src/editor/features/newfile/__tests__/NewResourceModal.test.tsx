@@ -81,13 +81,6 @@ describe('NewResourceModal', () => {
     resetEditorStore();
   });
 
-  it('does not render when closed', () => {
-    const { container } = render(
-      <NewResourceModal open={false} onClose={() => {}} />
-    );
-    expect(container.firstChild).toBeNull();
-  });
-
   it('creates a project in backend and navigates to blueprint', async () => {
     const onClose = vi.fn();
     createProjectMock.mockResolvedValue({

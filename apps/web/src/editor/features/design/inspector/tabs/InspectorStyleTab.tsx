@@ -28,10 +28,12 @@ export function InspectorStyleTab() {
               onToggle={() => togglePanel(panel.key)}
               actions={panel.headerActions}
             >
-              {panel.render({
-                node: selectedNode!,
-                updateNode: updateSelectedNode,
-              })}
+              {isExpanded
+                ? panel.render({
+                    node: selectedNode!,
+                    updateNode: updateSelectedNode,
+                  })
+                : null}
             </InspectorPanelFrame>
           );
         })

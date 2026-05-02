@@ -8,7 +8,6 @@ import { useEditorStore } from '@/editor/store/useEditorStore';
 import { BlueprintTreeNode } from './BlueprintTreeNode';
 import {
   collectBranchExpandedKeys,
-  collectExpandedKeys,
   CONTEXT_MENU_HEIGHT_PX,
   CONTEXT_MENU_VIEWPORT_GAP_PX,
   CONTEXT_MENU_WIDTH_PX,
@@ -52,17 +51,25 @@ export function BlueprintEditorComponentTree({
     () => (rootNode ? countNodes(rootNode) : 0),
     [rootNode]
   );
-  const initialExpandedKeys = useMemo(
-    () => (rootNode ? collectExpandedKeys(rootNode) : []),
+  const defaultExpandedKeys = useMemo(
+    () => (rootNode && rootNode.children?.length ? [rootNode.id] : []),
     [rootNode]
   );
   const [expandedKeys, setExpandedKeys] =
-    useState<string[]>(initialExpandedKeys);
+    useState<string[]>(defaultExpandedKeys);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<TreeContextMenuState | null>(
     null
   );
   const menuHoldTimer = useRef<number | null>(null);
+  const rootIdRef = useRef(rootNode?.id);
+
+  useEffect(() => {
+    const nextRootId = rootNode?.id;
+    if (rootIdRef.current === nextRootId) return;
+    rootIdRef.current = nextRootId;
+    setExpandedKeys(defaultExpandedKeys);
+  }, [defaultExpandedKeys, rootNode?.id]);
 
   useEffect(() => {
     if (!rootNode || !selectedId) return;

@@ -269,44 +269,6 @@ describe('BlueprintEditorInspector', () => {
     expect(params?.target).toBe('_blank');
   });
 
-  it('resets action params when switching trigger action type', () => {
-    resetEditorStore({
-      mirDoc: createMirDoc([
-        { id: 'child-1', type: 'MdrButton', text: 'Button' },
-      ]),
-      blueprintStateByProject: {
-        [PROJECT_ID]: {
-          ...DEFAULT_BLUEPRINT_STATE,
-          selectedId: 'child-1',
-        },
-      },
-    });
-
-    render(
-      <BlueprintEditorInspector
-        isCollapsed={false}
-        onToggleCollapse={() => {}}
-      />
-    );
-
-    openCodeTab();
-    fireEvent.click(screen.getByTestId('inspector-add-trigger'));
-    const triggerCard = screen.getByTestId('inspector-trigger-trigger-1');
-    const selects = triggerCard.querySelectorAll('select');
-    fireEvent.change(selects[1] as HTMLSelectElement, {
-      target: { value: 'executeGraph' },
-    });
-
-    const node = useEditorStore
-      .getState()
-      .mirDoc.ui.root.children?.find((item) => item.id === 'child-1');
-    const params = node?.events?.['trigger-1']?.params;
-    expect(params?.graphMode).toBe('new');
-    expect(params?.graphName).toBe('');
-    expect(params?.graphId).toBe('');
-    expect(params?.target).toBeUndefined();
-  });
-
   it('persists data model schema, mock json and list array field', () => {
     resetEditorStore({
       mirDoc: createMirDoc([{ id: 'child-1', type: 'MdrDiv', text: 'Item' }]),
@@ -828,51 +790,5 @@ describe('BlueprintEditorInspector', () => {
       .getState()
       .mirDoc.ui.root.children?.find((item) => item.id === 'card-1');
     expect(node?.data?.mock).toEqual([{ data: 'mdr' }, { data: 'mar' }]);
-  });
-
-  it('shows parent data-model field paths in child external prop input', () => {
-    setExternalRuntimeMeta('MuiCard', {
-      libraryId: 'mui',
-      runtimeType: 'MuiCard',
-      defaultProps: { title: '' },
-    });
-    resetEditorStore({
-      mirDoc: createMirDoc([
-        {
-          id: 'parent',
-          type: 'MdrDiv',
-          data: {
-            extend: {
-              title: 'Demo',
-              detail: { price: 18 },
-            },
-          },
-          children: [{ id: 'card-1', type: 'MuiCard' }],
-        },
-      ]),
-      blueprintStateByProject: {
-        [PROJECT_ID]: {
-          ...DEFAULT_BLUEPRINT_STATE,
-          selectedId: 'card-1',
-        },
-      },
-    });
-
-    render(
-      <BlueprintEditorInspector
-        isCollapsed={false}
-        onToggleCollapse={() => {}}
-      />
-    );
-
-    const input = screen.getByTestId(
-      'inspector-external-prop-title'
-    ) as HTMLInputElement;
-    expect(input.getAttribute('list')).toBe('inspector-prop-paths-card-1');
-    const datalist = document.getElementById('inspector-prop-paths-card-1');
-    expect(datalist?.querySelector('option[value=\"title\"]')).toBeTruthy();
-    expect(
-      datalist?.querySelector('option[value=\"detail.price\"]')
-    ).toBeTruthy();
   });
 });

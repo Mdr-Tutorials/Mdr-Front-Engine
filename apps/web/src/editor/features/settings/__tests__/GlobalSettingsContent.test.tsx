@@ -1,8 +1,7 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ReactNode } from 'react';
 import { GlobalSettingsContent } from '@/editor/features/settings/GlobalSettingsContent';
-import { createProjectDefaults } from '@/editor/features/settings/SettingsDefaults';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
 import { resetSettingsStore } from '@/test-utils/editorStore';
 
@@ -140,46 +139,6 @@ describe('GlobalSettingsContent', () => {
       outputPath: 'src/generated',
     });
     useSettingsStore.getState().ensureProjectGlobal('project-1');
-  });
-
-  it('edits global-only settings directly from project settings', () => {
-    const overrides =
-      useSettingsStore.getState().projectGlobalById['project-1']?.overrides ??
-      {};
-
-    render(
-      <GlobalSettingsContent
-        mode="project"
-        projectId="project-1"
-        overrides={overrides}
-      />
-    );
-
-    fireEvent.click(
-      screen.getByRole('button', {
-        name: 'settings.global.rows.autosaveMode.options.manual',
-      })
-    );
-
-    const state = useSettingsStore.getState();
-    expect(state.global.autosaveMode).toBe('manual');
-    expect(state.projectGlobalById['project-1']?.values.autosaveMode).toBe(
-      createProjectDefaults().autosaveMode
-    );
-    const autosaveModeRow = screen.getByText(
-      'settings.global.rows.autosaveMode.label'
-    ).parentElement?.parentElement;
-    expect(autosaveModeRow).toBeTruthy();
-    expect(
-      within(autosaveModeRow as HTMLElement).queryByRole('button', {
-        name: 'settings.overrides.toggle.off',
-      })
-    ).toBeNull();
-    expect(
-      within(autosaveModeRow as HTMLElement).getByText(
-        'settings.overrides.labels.globalOnly'
-      )
-    ).toBeTruthy();
   });
 
   it('keeps project-overridable settings disabled until override is enabled', () => {

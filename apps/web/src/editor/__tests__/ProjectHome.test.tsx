@@ -50,41 +50,6 @@ describe('ProjectHome', () => {
     });
   });
 
-  it('shows project identity and routes to blueprint', () => {
-    render(<ProjectHome />);
-
-    expect(screen.getByText('project-1')).toBeTruthy();
-    expect(screen.getByText('Project Alpha')).toBeTruthy();
-
-    const blueprintLabel = screen.getByText(
-      'projectHome.actions.blueprint.label'
-    );
-    const blueprintButton = blueprintLabel.closest('button');
-    expect(blueprintButton).not.toBeNull();
-    fireEvent.click(blueprintButton as HTMLButtonElement);
-
-    expect(navigateMock).toHaveBeenCalledWith(
-      '/editor/project/project-1/blueprint'
-    );
-  });
-
-  it('disables actions when no project id is available', () => {
-    params = {};
-    render(<ProjectHome />);
-
-    const settingsButton = screen.getByRole('button', {
-      name: 'projectHome.actions.settings.label',
-    });
-    const blueprintLabel = screen.getByText(
-      'projectHome.actions.blueprint.label'
-    );
-    const blueprintButton = blueprintLabel.closest('button');
-
-    expect(settingsButton.disabled).toBe(true);
-    expect(blueprintButton).not.toBeNull();
-    expect((blueprintButton as HTMLButtonElement).disabled).toBe(true);
-  });
-
   it('publishes a private project and keeps community entry in new tab', async () => {
     publishProjectMock.mockResolvedValue({
       project: {
