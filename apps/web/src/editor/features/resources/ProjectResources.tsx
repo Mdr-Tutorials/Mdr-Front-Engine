@@ -3,6 +3,7 @@ import {
   ArrowRight,
   FileArchive,
   FileCode2,
+  FileCog,
   Globe2,
   LayoutDashboard,
   Library,
@@ -15,6 +16,7 @@ import { useParams } from 'react-router';
 import { CodeResourcePage } from './CodeResourcePage';
 import { ExternalLibraryManager } from './ExternalLibraryManager';
 import { I18nResourcePage } from './I18nResourcePage';
+import { ProjectFileManager } from './ProjectFileManager';
 import { PublicResourcePage } from './PublicResourcePage';
 import {
   collectBestPracticeHints,
@@ -30,8 +32,18 @@ import {
   type CodeResourceNode,
 } from './codeTree';
 import { collectLocaleMissingStats, readI18nStore } from './i18nStore';
+import {
+  flattenEnabledProjectFiles,
+  readProjectFiles,
+} from './projectFileStore';
 
-type SectionId = 'overview' | 'public' | 'code' | 'i18n' | 'external';
+type SectionId =
+  | 'overview'
+  | 'public'
+  | 'code'
+  | 'i18n'
+  | 'external'
+  | 'projectFiles';
 
 type SectionMeta = {
   id: SectionId;
@@ -44,6 +56,7 @@ const sectionMetas: SectionMeta[] = [
   { id: 'code', icon: FileCode2 },
   { id: 'i18n', icon: Globe2 },
   { id: 'external', icon: Library },
+  { id: 'projectFiles', icon: FileCog },
 ];
 
 const getResourceManagerViewStorageKey = (projectId?: string) =>
@@ -114,6 +127,12 @@ type OverviewSnapshot = {
   external: {
     componentLibraries: number;
     iconLibraries: number;
+  };
+  projectFiles: {
+    files: number;
+    enabled: number;
+    updatedAt: string | null;
+    hasLicense: boolean;
   };
 };
 
@@ -195,6 +214,8 @@ const buildOverviewSnapshot = (projectId?: string): OverviewSnapshot => {
           getResourceManagerIconSelectionStorageKey(projectId)
         )
   );
+  const projectFiles = readProjectFiles(projectId);
+  const enabledProjectFiles = flattenEnabledProjectFiles(projectFiles);
 
   return {
     public: {
@@ -227,6 +248,14 @@ const buildOverviewSnapshot = (projectId?: string): OverviewSnapshot => {
     external: {
       componentLibraries: externalComponentIds.length,
       iconLibraries: externalIconIds.length,
+    },
+    projectFiles: {
+      files: projectFiles.length,
+      enabled: enabledProjectFiles.length,
+      updatedAt: resolveLatestUpdatedAt(
+        projectFiles.map((file) => file.updatedAt)
+      ),
+      hasLicense: enabledProjectFiles.some((file) => file.path === 'LICENSE'),
     },
   };
 };
@@ -370,7 +399,8 @@ export function ProjectResources() {
       raw === 'public' ||
       raw === 'code' ||
       raw === 'i18n' ||
-      raw === 'external'
+      raw === 'external' ||
+      raw === 'projectFiles'
     ) {
       return raw;
     }
@@ -582,6 +612,36 @@ export function ProjectResources() {
                 actionLabel={t('resourceManager.overview.actions.open')}
                 onAction={() => setActiveSection('external')}
               />
+              <ResourceTile
+                icon={FileCog}
+                title={t('resourceManager.tabs.projectFiles')}
+                description={t(
+                  'resourceManager.overview.cards.projectFiles.description'
+                )}
+                metrics={[
+                  {
+                    label: t('resourceManager.overview.metrics.files'),
+                    value: String(overviewSnapshot.projectFiles.files),
+                  },
+                  {
+                    label: t('resourceManager.overview.metrics.included'),
+                    value: String(overviewSnapshot.projectFiles.enabled),
+                  },
+                  {
+                    label: t('resourceManager.overview.metrics.updated'),
+                    value: formatUpdatedAt(
+                      overviewSnapshot.projectFiles.updatedAt
+                    ),
+                  },
+                ]}
+                status={
+                  overviewSnapshot.projectFiles.hasLicense
+                    ? 'default'
+                    : 'warning'
+                }
+                actionLabel={t('resourceManager.overview.actions.open')}
+                onAction={() => setActiveSection('projectFiles')}
+              />
             </div>
           ) : null}
 
@@ -735,6 +795,10 @@ export function ProjectResources() {
 
       {activeSection === 'external' ? (
         <ExternalLibraryManager projectId={projectId} />
+      ) : null}
+
+      {activeSection === 'projectFiles' ? (
+        <ProjectFileManager embedded />
       ) : null}
     </section>
   );

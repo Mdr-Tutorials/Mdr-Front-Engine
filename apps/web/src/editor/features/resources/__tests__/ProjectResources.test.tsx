@@ -112,6 +112,9 @@ describe('ProjectResources', () => {
     expect(
       screen.getByRole('button', { name: 'resourceManager.tabs.i18n' })
     ).toBeTruthy();
+    expect(
+      screen.getByRole('button', { name: 'resourceManager.tabs.projectFiles' })
+    ).toBeTruthy();
   });
 
   it('switches to public tab inside same route', () => {
@@ -175,6 +178,31 @@ describe('ProjectResources', () => {
     );
     expect(screen.getByText('resourceManager.i18n.header.title')).toBeTruthy();
     expect(screen.queryByText('i18n assets tab is reserved.')).toBeNull();
+  });
+
+  it('switches to project files tab and saves root file content', () => {
+    renderWithRouter();
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'resourceManager.tabs.projectFiles',
+      })
+    );
+    expect(
+      screen.getByText('resourceManager.projectFiles.header.title')
+    ).toBeTruthy();
+
+    const editor = screen.getByTestId('project-resources-codemirror');
+    fireEvent.change(editor, {
+      target: { value: 'node_modules\ncustom-cache\n' },
+    });
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: /resourceManager\.projectFiles\.actions\.save/,
+      })
+    );
+
+    const rawFiles = localStorage.getItem('mdr.projectFiles.project-001');
+    expect(rawFiles).toContain('custom-cache');
   });
 
   it('restores last opened resource tab', () => {

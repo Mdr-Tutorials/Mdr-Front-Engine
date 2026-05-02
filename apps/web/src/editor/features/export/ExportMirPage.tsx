@@ -17,14 +17,25 @@ import {
   flattenPublicFiles,
   readPublicTree,
 } from '@/editor/features/resources/publicTree';
+import {
+  flattenEnabledProjectFiles,
+  readProjectFiles,
+} from '@/editor/features/resources/projectFileStore';
 import { CodeViewer } from './CodeViewer';
 import { resolveZipFilePayload } from './exportZip';
 import './ExportMirPage.scss';
 
 type ExportTab = 'mir' | 'react';
+type ExportFileLanguage =
+  | 'typescript'
+  | 'json'
+  | 'html'
+  | 'css'
+  | 'markdown'
+  | 'text';
 type ExportCodeFile = {
   path: string;
-  language: 'typescript' | 'json' | 'html' | 'css';
+  language: ExportFileLanguage;
   content: string;
   binaryDataUrl?: string;
 };
@@ -32,14 +43,14 @@ type FileTreeNode = {
   key: string;
   name: string;
   path: string;
-  file?: { path: string; language: 'typescript' | 'json' | 'html' | 'css' };
+  file?: { path: string; language: ExportFileLanguage };
   children: FileTreeNode[];
 };
 
 const buildFileTree = (
   files: Array<{
     path: string;
-    language: 'typescript' | 'json' | 'html' | 'css';
+    language: ExportFileLanguage;
   }>
 ): FileTreeNode[] => {
   const root: FileTreeNode = {
@@ -91,6 +102,24 @@ const sanitizeFileName = (value: string) =>
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '') || 'mdr-react-export';
+
+const resolveProjectFileLanguage = (path: string): ExportFileLanguage => {
+  const lower = path.toLowerCase();
+  if (lower.endsWith('.json')) return 'json';
+  if (lower.endsWith('.html') || lower.endsWith('.htm')) return 'html';
+  if (lower.endsWith('.css')) return 'css';
+  if (lower.endsWith('.md')) return 'markdown';
+  return 'text';
+};
+
+const resolveCodeViewerLanguage = (language?: ExportFileLanguage) => {
+  if (language === 'json') return 'json';
+  if (language === 'html') return 'html';
+  if (language === 'css') return 'css';
+  if (language === 'markdown') return 'markdown';
+  if (language === 'text') return 'text';
+  return 'typescript';
+};
 
 export function ExportMirPage() {
   const { t } = useTranslation('export');
@@ -164,6 +193,15 @@ export function ExportMirPage() {
   ]);
 
   const publicTree = useMemo(() => readPublicTree(projectId), [projectId]);
+  const projectFileExportFiles = useMemo<ExportCodeFile[]>(
+    () =>
+      flattenEnabledProjectFiles(readProjectFiles(projectId)).map((file) => ({
+        path: file.path,
+        language: resolveProjectFileLanguage(file.path),
+        content: file.content,
+      })),
+    [projectId]
+  );
   const publicExportFiles = useMemo<ExportCodeFile[]>(
     () =>
       flattenPublicFiles(publicTree).map((file) => {
@@ -201,8 +239,12 @@ export function ExportMirPage() {
     [publicTree]
   );
   const reactProjectFiles = useMemo<ExportCodeFile[]>(
-    () => [...(reactBundle?.files ?? []), ...publicExportFiles],
-    [publicExportFiles, reactBundle?.files]
+    () => [
+      ...projectFileExportFiles,
+      ...(reactBundle?.files ?? []),
+      ...publicExportFiles,
+    ],
+    [projectFileExportFiles, publicExportFiles, reactBundle?.files]
   );
   const reactFileTree = useMemo(
     () => buildFileTree(reactProjectFiles),
@@ -473,15 +515,7 @@ export function ExportMirPage() {
             </aside>
             <CodeViewer
               code={activeReactFileContent}
-              lang={
-                activeReactFileRecord?.language === 'json'
-                  ? 'json'
-                  : activeReactFileRecord?.language === 'html'
-                    ? 'html'
-                    : activeReactFileRecord?.language === 'css'
-                      ? 'css'
-                      : 'typescript'
-              }
+              lang={resolveCodeViewerLanguage(activeReactFileRecord?.language)}
             />
           </div>
         ) : (

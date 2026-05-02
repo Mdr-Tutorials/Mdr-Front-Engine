@@ -1002,7 +1002,8 @@
       "public": "Public",
       "code": "Code",
       "i18n": "i18n",
-      "external": "External libs"
+      "external": "External libs",
+      "projectFiles": "Project files"
     },
     "overview": {
       "tile": {
@@ -1022,6 +1023,9 @@
         },
         "external": {
           "description": "Runtime component + icon libraries (local presets + custom ids)."
+        },
+        "projectFiles": {
+          "description": "Root files such as .gitignore, LICENSE, README and env examples."
         }
       },
       "metrics": {
@@ -1036,7 +1040,8 @@
         "icons": "icons",
         "status": "status",
         "configured": "configured",
-        "none": "none"
+        "none": "none",
+        "included": "included"
       },
       "actions": {
         "open": "Open"
@@ -1111,6 +1116,26 @@
         "save": "Save"
       },
       "empty": "Select a code file from the tree to edit its content."
+    },
+    "projectFiles": {
+      "header": {
+        "title": "Project files",
+        "description": "Manage root-level engineering files that are included with generated exports."
+      },
+      "labels": {
+        "rootFiles": "Root files",
+        "enabled": "Included",
+        "disabled": "Not included",
+        "selected": "Selected",
+        "updated": "Updated",
+        "templates": "Templates"
+      },
+      "actions": {
+        "include": "Include in export",
+        "included": "Included in export",
+        "save": "Save"
+      },
+      "empty": "Select a project file to edit."
     },
     "i18n": {
       "header": {

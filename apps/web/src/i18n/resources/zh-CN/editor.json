@@ -1002,7 +1002,8 @@
       "public": "Public",
       "code": "Code",
       "i18n": "i18n",
-      "external": "外部库"
+      "external": "外部库",
+      "projectFiles": "项目文件"
     },
     "overview": {
       "tile": {
@@ -1022,6 +1023,9 @@
         },
         "external": {
           "description": "运行时组件库与图标库（本地预设 + 自定义库 id）。"
+        },
+        "projectFiles": {
+          "description": "管理 .gitignore、LICENSE、README 与环境变量示例等根目录文件。"
         }
       },
       "metrics": {
@@ -1036,7 +1040,8 @@
         "icons": "图标",
         "status": "状态",
         "configured": "已配置",
-        "none": "无"
+        "none": "无",
+        "included": "已包含"
       },
       "actions": {
         "open": "打开"
@@ -1111,6 +1116,26 @@
         "save": "保存"
       },
       "empty": "请从左侧树中选择一个代码文件进行编辑。"
+    },
+    "projectFiles": {
+      "header": {
+        "title": "项目文件",
+        "description": "管理导出项目根目录中的工程化文件。"
+      },
+      "labels": {
+        "rootFiles": "根目录文件",
+        "enabled": "已包含",
+        "disabled": "未包含",
+        "selected": "当前选中",
+        "updated": "更新时间",
+        "templates": "模板"
+      },
+      "actions": {
+        "include": "包含到导出",
+        "included": "已包含到导出",
+        "save": "保存"
+      },
+      "empty": "请选择一个项目文件进行编辑。"
     },
     "i18n": {
       "header": {
