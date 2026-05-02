@@ -96,7 +96,7 @@ export const useBlueprintAutosave = ({
   const saveRequestSeqRef = useRef(0);
   const isSavingRef = useRef(false);
   const lastSavedGraphRef = useRef(mirDoc.ui.graph);
-  const lastTrackedDocumentIdRef = useRef(activeDocumentId);
+  const [trackedDocumentId, setTrackedDocumentId] = useState(activeDocumentId);
   const [lastSavedRevision, setLastSavedRevision] = useState(mirDocRevision);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [saveTransport, setSaveTransport] = useState<SaveTransport>(null);
@@ -106,17 +106,19 @@ export const useBlueprintAutosave = ({
   // lastSavedGraphRef would still point at the previous document's graph and
   // the next save would emit reverseOps that fail the backend round-trip
   // check (see workspace/store.go: command.reverseOps must restore original).
-  if (lastTrackedDocumentIdRef.current !== activeDocumentId) {
-    lastTrackedDocumentIdRef.current = activeDocumentId;
+  // The trackedDocumentId !== activeDocumentId guard on hasPendingChanges
+  // suppresses any save attempt during the render cycle in which the switch
+  // is observed, until this effect has committed the new baseline.
+  useEffect(() => {
+    if (trackedDocumentId === activeDocumentId) return;
     lastSavedGraphRef.current = mirDoc.ui.graph;
-    if (lastSavedRevision !== mirDocRevision) {
-      setLastSavedRevision(mirDocRevision);
-    }
-  }
+    setTrackedDocumentId(activeDocumentId);
+    setLastSavedRevision(mirDocRevision);
+  }, [activeDocumentId, mirDoc, mirDocRevision, trackedDocumentId]);
 
   const hasPendingChanges =
-    mirDocRevision > lastSavedRevision &&
-    lastTrackedDocumentIdRef.current === activeDocumentId;
+    trackedDocumentId === activeDocumentId &&
+    mirDocRevision > lastSavedRevision;
   const normalizedAutosaveIntervalMs = Math.max(
     1000,
     Number.isFinite(autosaveIntervalMs) ? Math.round(autosaveIntervalMs) : 1000
