@@ -78,18 +78,20 @@ MFE 内置多种部署选项：
 ## 系统架构
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                      MdrFrontEngine                         │
-├─────────────┬─────────────┬─────────────┬─────────────────┤
-│   apps/web  │ apps/backend│  apps/cli   │   apps/vscode   │
-│  (React 编辑器) │  (Go 后端)   │ (命令行工具)  │  (VS Code 插件) │
-├─────────────┴─────────────┴─────────────┴─────────────────┤
-│                      packages/                              │
-├──────────┬──────────┬──────────┬──────────┬───────────────┤
-│    ui    │mir-compiler│  shared  │  themes  │     i18n      │
-│ (组件库)  │ (MIR 编译器)│ (共享类型) │ (主题系统) │  (国际化)     │
-└──────────┴──────────┴──────────┴──────────┴───────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│                          MdrFrontEngine                              │
+├─────────────┬──────────────┬────────────┬───────────────┬───────────┤
+│   apps/web  │ apps/backend │  apps/cli  │  apps/vscode  │ apps/docs │
+│ (React 编辑器)│ (Go + PG 服务)│ (命令行工具)│ (VS Code 扩展) │ (VitePress)│
+├─────────────┴──────────────┴────────────┴───────────────┴───────────┤
+│                            packages/                                 │
+├──────┬──────────────┬────────┬────────┬──────┬──────┬───────────────┤
+│  ui  │ mir-compiler │ shared │ themes │ i18n │  ai  │vscode-debugger│
+└──────┴──────────────┴────────┴────────┴──────┴──────┴───────────────┘
 ```
+
+前端三个编辑器（蓝图 / 节点图 / 动画）统一收敛到 **MIR**，由后端 **Workspace VFS** 持久化；
+前后端共用同一份 **MIR v1.3** 校验逻辑（`apps/web/src/mir/validator` ↔ `apps/backend/internal/modules/workspace/mir_v13_validator.go`）。
 
 ## 与同类工具对比
 
@@ -109,17 +111,20 @@ MFE 内置多种部署选项：
 
 ### 已完成功能 ✅
 
-| 功能模块       | 说明                                   |
-| -------------- | -------------------------------------- |
-| 蓝图编辑器     | 拖拽式 UI 设计、组件树管理、属性检查器 |
-| 组件库         | 75+ 内置组件，覆盖常见 UI 场景         |
-| 外部库集成     | 支持 Ant Design、Material UI 动态加载  |
-| MIR 渲染器     | 运行时渲染 MIR 文档                    |
-| React 代码生成 | 将 MIR 转换为 React 组件代码           |
-| 后端服务       | 用户认证、项目管理、工作区协作         |
-| 版本控制       | 乐观更新、冲突检测机制                 |
-| 国际化         | 支持中文、英文                         |
-| AI 助手        | Blueprint 最小 UI、设置弹窗、模型发现  |
+| 功能模块         | 说明                                                                |
+| ---------------- | ------------------------------------------------------------------- |
+| 蓝图编辑器       | 拖拽式 UI 设计、组件树、Inspector Panel 架构、布局范式              |
+| 组件库           | 75+ 内置组件 + Radix 子集，覆盖常见 UI 场景                         |
+| 外部库运行时     | esm.sh 桥接 + Canonical External IR，支持 Ant Design / MUI 动态加载 |
+| MIR v1.3 渲染器  | 运行时渲染、ValueRef 解析、列表渲染、数据作用域                     |
+| React 代码生成   | MIR → JSX + Hooks（mitosis 桥接）                                   |
+| Workspace VFS    | 多文档工作区、文件树、路由清单、文档级保存                          |
+| 同步协议         | 分区 rev 乐观并发（workspaceRev/routeRev/contentRev）+ 冲突检测     |
+| 路由清单 + Outlet| 多级路由 / 布局路由 / Outlet 占位 + 编辑器结构诊断                  |
+| MIR 双端校验     | 前后端共用 v1.3 graph 校验（循环 / 孤立节点 / 父子关系）            |
+| 后端服务         | 用户认证、项目管理、Workspace 同步、Capability 协商                 |
+| 国际化           | 支持中文、英文                                                      |
+| AI 助手          | Provider 抽象（Mock / OpenAI 兼容）+ 模型发现 + 调试可见            |
 
 ### 开发中功能 🚧
 
@@ -132,10 +137,13 @@ MFE 内置多种部署选项：
 
 ### 计划功能 📋
 
-- Vue 3 代码生成
-- Angular 代码生成
+- Vue 3 / Angular / Solid / Svelte / Qwik 代码生成
 - 原生 HTML/CSS/JS 导出
-- 团队协作功能
+- 团队协作（CRDT 作为 rev 模式后置层，见 `specs/decisions/07.workspace-sync.md`）
+- 插件沙箱与 Capability 治理（`specs/decisions/14.plugin-sandbox-and-capability.md`）
+- 类协议样式编辑器（`specs/decisions/16.class-protocol-editor.md`）
+- LLM 深度集成（`specs/decisions/22.llm-integration-architecture.md`）
+- GitHub App 与 Git 集成（`specs/decisions/23.github-app-integration.md`）
 - 文件上传 API
 - OAuth 第三方登录
 

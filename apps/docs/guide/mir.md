@@ -1,6 +1,17 @@
 # MIR 中间表示
 
-MIR（Minimal Intermediate Representation）是 MdrFrontEngine 的核心创新，它是一种框架无关的组件描述格式，使得"一次设计，多端运行"成为可能。
+MIR（Modular Intermediate Representation）是 MdrFrontEngine 的核心创新，它是一种框架无关的组件描述格式，使得"一次设计，多端运行"成为可能。
+
+::: warning 版本说明
+本页示例使用的是 v1.0 的**树状** `ui.root` 形态，便于入门理解。
+当前实现（自 commit `63fb25e` 起）已迁移到 **v1.3 graph** 形态：`ui.graph = { rootId, nodesById, childIdsById }`。
+- 权威 Schema：`specs/mir/MIR-v1.3.json`
+- 契约说明：`specs/mir/mir-contract-v1.3.md`
+- 迁移记录：`specs/implementation/mir-v1.3-graph-patch-migration-plan.md`
+- 数据作用域与列表渲染：`specs/decisions/15.mir-data-scope-and-list-render.md`
+
+读取链路对 v1.0 ~ v1.3 向下兼容；写入链路统一输出 v1.3。
+:::
 
 ## 什么是 MIR？
 
