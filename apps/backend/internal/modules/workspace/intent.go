@@ -103,7 +103,14 @@ func (module *Module) ApplyIntentMutation(ctx context.Context, workspaceID strin
 		Target:     WorkspaceCommandTarget{WorkspaceID: workspaceID},
 	}
 	request.Intent = intent
-	for _, handler := range module.intentHandlers {
+	handlers := module.intentHandlers
+	if handlers == nil {
+		// Allow callers to construct Module via struct literal without going
+		// through NewModule; without this guard every intent would fall
+		// through to "Unsupported intent" silently.
+		handlers = defaultIntentHandlers()
+	}
+	for _, handler := range handlers {
 		if handler.CanHandle(intent) {
 			return handler.Handle(ctx, module.store, workspaceID, request, intent, command)
 		}
