@@ -102,48 +102,18 @@ func (module *Module) ApplyIntentMutation(ctx context.Context, workspaceID strin
 		ReverseOps: make([]WorkspacePatchOp, 0),
 		Target:     WorkspaceCommandTarget{WorkspaceID: workspaceID},
 	}
-	switch {
-	case intent.Namespace == "core.route" && intent.Type == "manifest.update":
-		if request.ExpectedRouteRev <= 0 {
-			return nil, NewRequestFailure(http.StatusUnprocessableEntity, ErrorInvalidPayload, "expectedRouteRev must be positive for route intents.", nil)
+	request.Intent = intent
+	for _, handler := range module.intentHandlers {
+		if handler.CanHandle(intent) {
+			return handler.Handle(ctx, module.store, workspaceID, request, intent, command)
 		}
-		var payload struct {
-			RouteManifest json.RawMessage `json:"routeManifest"`
-		}
-		if len(intent.Payload) == 0 || json.Unmarshal(intent.Payload, &payload) != nil || len(payload.RouteManifest) == 0 {
-			return nil, NewRequestFailure(http.StatusUnprocessableEntity, ErrorInvalidPayload, "intent payload.routeManifest is required.", nil)
-		}
-		result, err := module.store.SaveRouteManifest(ctx, SaveRouteManifestParams{
-			WorkspaceID:          workspaceID,
-			ExpectedWorkspaceRev: request.ExpectedWorkspaceRev,
-			ExpectedRouteRev:     request.ExpectedRouteRev,
-			RouteManifest:        payload.RouteManifest,
-			Command:              command,
-		})
-		if err != nil {
-			return nil, MapStoreError(err)
-		}
-		return result, nil
-	case intent.Namespace == "core.settings" && intent.Type == "global.update":
-		var payload struct {
-			Settings json.RawMessage `json:"settings"`
-		}
-		if len(intent.Payload) == 0 || json.Unmarshal(intent.Payload, &payload) != nil || len(payload.Settings) == 0 {
-			return nil, NewRequestFailure(http.StatusUnprocessableEntity, ErrorInvalidPayload, "intent payload.settings is required.", nil)
-		}
-		result, err := module.store.SaveWorkspaceSettings(ctx, SaveWorkspaceSettingsParams{
-			WorkspaceID:          workspaceID,
-			ExpectedWorkspaceRev: request.ExpectedWorkspaceRev,
-			Settings:             payload.Settings,
-			Command:              command,
-		})
-		if err != nil {
-			return nil, MapStoreError(err)
-		}
-		return result, nil
-	default:
-		return nil, NewRequestFailure(http.StatusUnprocessableEntity, ErrorUnsupportedIntent, "Unsupported intent.", mapKV("namespace", intent.Namespace, "type", intent.Type))
 	}
+	return nil, NewRequestFailure(
+		http.StatusUnprocessableEntity,
+		ErrorUnsupportedIntent,
+		"Unsupported intent.",
+		mapKV("namespace", intent.Namespace, "type", intent.Type),
+	)
 }
 
 func NormalizeIntent(intent IntentEnvelope) IntentEnvelope {

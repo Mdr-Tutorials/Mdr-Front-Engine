@@ -12,12 +12,17 @@ import (
 )
 
 type Module struct {
-	store    *WorkspaceStore
-	projects *backendproject.ProjectStore
+	store          *WorkspaceStore
+	projects       *backendproject.ProjectStore
+	intentHandlers []IntentHandler
 }
 
 func NewModule(store *WorkspaceStore, projects *backendproject.ProjectStore) *Module {
-	return &Module{store: store, projects: projects}
+	return &Module{
+		store:          store,
+		projects:       projects,
+		intentHandlers: defaultIntentHandlers(),
+	}
 }
 
 func (module *Module) Store() *WorkspaceStore {
