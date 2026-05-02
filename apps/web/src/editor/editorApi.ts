@@ -1,5 +1,9 @@
 ﻿import type { MIRDocument } from '@/core/types/engine.types';
 import { apiRequest } from '@/infra/api';
+import {
+  validateMirDocument,
+  type MirValidationIssue,
+} from '@/mir/validator/validator';
 
 export type ProjectResourceType = 'project' | 'component' | 'nodegraph';
 
@@ -125,6 +129,39 @@ const request = async <T>(
     defaultHeaders: JSON_HEADERS,
   });
 
+const reportMirIssues = (origin: string, issues: MirValidationIssue[]) => {
+  if (!issues.length) return;
+  console.warn(
+    `[mir-validation] ${origin} returned ${issues.length} issue(s):`,
+    issues
+  );
+};
+
+const validateAndUnwrapMir = (origin: string, candidate: unknown): MIRDocument => {
+  const result = validateMirDocument(candidate);
+  reportMirIssues(origin, result.issues);
+  return result.document;
+};
+
+const validateProjectDetail = (origin: string, project: ProjectDetail): ProjectDetail => {
+  if (!project?.mir) return project;
+  return { ...project, mir: validateAndUnwrapMir(origin, project.mir) };
+};
+
+const validateWorkspaceSnapshot = (
+  workspace: WorkspaceSnapshot
+): WorkspaceSnapshot => {
+  if (!workspace?.documents?.length) return workspace;
+  const documents = workspace.documents.map((document) => ({
+    ...document,
+    content: validateAndUnwrapMir(
+      `workspace.${workspace.id}/document.${document.id}`,
+      document.content
+    ),
+  }));
+  return { ...workspace, documents };
+};
+
 export const editorApi = {
   listProjects: async (token: string, options: RequestInit = {}) =>
     request<{ projects: ProjectSummary[] }>(token, '/projects', options),
@@ -148,12 +185,16 @@ export const editorApi = {
     token: string,
     projectId: string,
     options: RequestInit = {}
-  ) =>
-    request<{ project: ProjectDetail }>(
+  ) => {
+    const response = await request<{ project: ProjectDetail }>(
       token,
       `/projects/${encodeURIComponent(projectId)}`,
       options
-    ),
+    );
+    return {
+      project: validateProjectDetail(`project.${projectId}`, response.project),
+    };
+  },
 
   updateProject: async (
     token: string,
@@ -176,12 +217,14 @@ export const editorApi = {
     token: string,
     workspaceId: string,
     options: RequestInit = {}
-  ) =>
-    request<{ workspace: WorkspaceSnapshot }>(
+  ) => {
+    const response = await request<{ workspace: WorkspaceSnapshot }>(
       token,
       `/workspaces/${encodeURIComponent(workspaceId)}`,
       options
-    ),
+    );
+    return { workspace: validateWorkspaceSnapshot(response.workspace) };
+  },
 
   getWorkspaceCapabilities: async (
     token: string,
