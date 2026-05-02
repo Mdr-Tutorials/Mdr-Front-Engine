@@ -96,11 +96,27 @@ export const useBlueprintAutosave = ({
   const saveRequestSeqRef = useRef(0);
   const isSavingRef = useRef(false);
   const lastSavedGraphRef = useRef(mirDoc.ui.graph);
+  const lastTrackedDocumentIdRef = useRef(activeDocumentId);
   const [lastSavedRevision, setLastSavedRevision] = useState(mirDocRevision);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [saveTransport, setSaveTransport] = useState<SaveTransport>(null);
   const [saveMessage, setSaveMessage] = useState('');
-  const hasPendingChanges = mirDocRevision > lastSavedRevision;
+
+  // Re-anchor save baseline when the active document changes. Without this,
+  // lastSavedGraphRef would still point at the previous document's graph and
+  // the next save would emit reverseOps that fail the backend round-trip
+  // check (see workspace/store.go: command.reverseOps must restore original).
+  if (lastTrackedDocumentIdRef.current !== activeDocumentId) {
+    lastTrackedDocumentIdRef.current = activeDocumentId;
+    lastSavedGraphRef.current = mirDoc.ui.graph;
+    if (lastSavedRevision !== mirDocRevision) {
+      setLastSavedRevision(mirDocRevision);
+    }
+  }
+
+  const hasPendingChanges =
+    mirDocRevision > lastSavedRevision &&
+    lastTrackedDocumentIdRef.current === activeDocumentId;
   const normalizedAutosaveIntervalMs = Math.max(
     1000,
     Number.isFinite(autosaveIntervalMs) ? Math.round(autosaveIntervalMs) : 1000
