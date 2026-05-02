@@ -137,13 +137,19 @@ const reportMirIssues = (origin: string, issues: MirValidationIssue[]) => {
   );
 };
 
-const validateAndUnwrapMir = (origin: string, candidate: unknown): MIRDocument => {
+const validateAndUnwrapMir = (
+  origin: string,
+  candidate: unknown
+): MIRDocument => {
   const result = validateMirDocument(candidate);
   reportMirIssues(origin, result.issues);
   return result.document;
 };
 
-const validateProjectDetail = (origin: string, project: ProjectDetail): ProjectDetail => {
+const validateProjectDetail = (
+  origin: string,
+  project: ProjectDetail
+): ProjectDetail => {
   if (!project?.mir) return project;
   return { ...project, mir: validateAndUnwrapMir(origin, project.mir) };
 };

@@ -22,7 +22,10 @@ import type {
   UseBlueprintDragDropOptions,
 } from './dragdrop.types';
 
-export type { TreeDropHint, UseBlueprintDragDropOptions } from './dragdrop.types';
+export type {
+  TreeDropHint,
+  UseBlueprintDragDropOptions,
+} from './dragdrop.types';
 
 export const useBlueprintDragDrop = ({
   mirDoc,

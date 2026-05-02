@@ -31,8 +31,7 @@ export const applyTreeSortDragEnd = (
 
   const overNodeIdRaw = getOverNodeId(overData, overId);
   const isOverRoot = overId === 'tree-root' || overData?.kind === 'tree-root';
-  const overNodeId =
-    typeof overNodeIdRaw === 'string' ? overNodeIdRaw : null;
+  const overNodeId = typeof overNodeIdRaw === 'string' ? overNodeIdRaw : null;
   if (overNodeId === activeId) return doc;
 
   const overNode = overNodeId ? findNodeById(root, overNodeId) : null;
@@ -68,9 +67,7 @@ export const applyTreeSortDragEnd = (
       if (!parentId) return doc;
       const parentNode = findNodeById(root, parentId);
       const siblings = parentNode?.children ?? [];
-      const overIndex = siblings.findIndex(
-        (item) => item.id === overNode.id
-      );
+      const overIndex = siblings.findIndex((item) => item.id === overNode.id);
       if (overIndex === -1) return doc;
       targetParentId = parentId;
       targetIndex = placement === 'before' ? overIndex : overIndex + 1;

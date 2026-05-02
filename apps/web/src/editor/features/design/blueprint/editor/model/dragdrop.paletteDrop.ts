@@ -141,11 +141,7 @@ export const applyPaletteItemDrop = (
     }
 
     if (selectedNode && selectedNode.id !== root.id) {
-      const insertedSibling = insertAfterById(
-        root,
-        selectedNode.id,
-        newNode
-      );
+      const insertedSibling = insertAfterById(root, selectedNode.id, newNode);
       if (insertedSibling.inserted) {
         return {
           doc: {
