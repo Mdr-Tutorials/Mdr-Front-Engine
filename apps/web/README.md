@@ -18,7 +18,9 @@ apps/web
 │   │   ├── generator/   #   MIR → React (mitosis 桥接)
 │   │   ├── graph/       #   v1.3 graph patch / mutation / materialize
 │   │   ├── actions/     #   内置动作 registry（navigate / executeGraph...）
-│   │   └── shared/      #   ValueRef 解析
+│   │   ├── shared/      #   ValueRef 解析（路径解析 + 引用类型守卫，渲染器与 generator 共用）
+│   │   ├── resolveMirDocument.ts          #   主入口：直接 MIR / Workspace 快照 → MIRDocument
+│   │   └── resolveWorkspaceShape.ts       #   Workspace shape 检测 + 文档规范化挑选
 │   ├── core/            # 执行引擎、节点定义、Web Worker
 │   ├── components/      # 通用 UI 组件封装
 │   ├── auth/            # 鉴权 store + 页面
@@ -52,6 +54,13 @@ apps/web
 - **外部库运行时**：esm.sh + canonical external IR（见 `specs/decisions/17.external-library-runtime-and-adapter.md`）
 - **Inspector Panel 架构**：每个面板独立 schema（见 `specs/decisions/21.inspector-panel-architecture.md`）
 
+## 类型规范
+
+`@typescript-eslint/no-explicit-any` 在本仓库为 **error**。新代码不允许 `any`，需要"任意值"时用 `unknown` + 类型守卫；图标库等罕见多态场景必须使用时，需附带 `// eslint-disable-next-line @typescript-eslint/no-explicit-any -- 原因` 注释。规则配置：
+
+- `apps/web/eslint.config.js`（flat config）
+- 根 `.eslintrc.cjs`（其他 workspace 共用）
+
 ## 常用命令
 
 ```bash
@@ -61,6 +70,7 @@ pnpm test:web             # 单元测试
 pnpm test:web:watch       # watch 模式
 pnpm test:web:coverage    # 覆盖率（v8）
 pnpm --filter @mdr/web typecheck   # tsc -b 类型检查
+pnpm --filter @mdr/web lint        # ESLint（含 no-explicit-any 强制）
 pnpm storybook:ui         # 组件库 Storybook
 ```
 

@@ -190,7 +190,7 @@ pnpm format
 ### TypeScript
 
 - 使用严格模式
-- 避免使用 `any`，必要时使用 `unknown`
+- **禁止使用 `any`**：ESLint 规则 `@typescript-eslint/no-explicit-any` 已设为 `error`（在 `apps/web/eslint.config.js` 与根 `.eslintrc.cjs`），CI 会拦下任何引入 `any` 的 PR。需要"任意值"时一律用 `unknown` + 类型守卫；少数 React 多态场景（图标库、动态 ElementType）必须用 `any` 时，加 `// eslint-disable-next-line @typescript-eslint/no-explicit-any -- 原因` 显式说明。
 - 为公共 API 添加类型注释
 - 优先使用接口而非类型别名
 
@@ -203,9 +203,13 @@ interface ButtonProps {
 
 // 避免
 type ButtonProps = {
-  text: any;
+  text: any; // ❌ ESLint error: no-explicit-any
   onClick: Function;
 };
+
+// 必须用 any 时（罕见）
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- icon libs have heterogeneous prop shapes
+type IconComponent = React.ComponentType<any>;
 ```
 
 ### React 组件
