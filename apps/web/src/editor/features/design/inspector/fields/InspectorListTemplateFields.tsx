@@ -47,7 +47,7 @@ export function InspectorListTemplateFields() {
                   checked={enabled}
                   onChange={(event) => {
                     const checked = event.currentTarget.checked;
-                    updateSelectedNode((current: any) => {
+                    updateSelectedNode((current) => {
                       if (!checked) {
                         const next = { ...current };
                         delete next.list;
@@ -81,7 +81,7 @@ export function InspectorListTemplateFields() {
                   value={arrayField}
                   onChange={(event) => {
                     const nextValue = event.target.value;
-                    updateSelectedNode((current: any) => {
+                    updateSelectedNode((current) => {
                       if (!current.list) return current;
                       return {
                         ...current,

@@ -1,7 +1,11 @@
 import React, { useMemo } from 'react';
 import type { ComponentNode } from '@/core/types/engine.types';
 import { deepResolveValueOrRef, readValueByPath } from '@/mir/shared/valueRef';
-import type { AdapterContext, ComponentRegistry } from './registry';
+import type {
+  AdapterContext,
+  AdapterResult,
+  ComponentRegistry,
+} from './registry';
 import { renderRichTextValue } from './richText';
 import { decodeHtmlEntities } from './textEntities';
 import type { RenderContext } from './MIRRenderer.types';
@@ -42,7 +46,7 @@ export const MIRNode: React.FC<{
     [context, resolvedNodeData]
   );
   const resolvedProps = useMemo(() => {
-    const p: Record<string, any> = {};
+    const p: Record<string, unknown> = {};
     if (node.props) {
       Object.entries(node.props).forEach(([key, val]) => {
         p[key] = resolveValue(val, scopedContext);
@@ -59,7 +63,7 @@ export const MIRNode: React.FC<{
   }, [node.props, node.type, scopedContext]);
 
   const resolvedStyle = useMemo(() => {
-    const s: Record<string, any> = {};
+    const s: Record<string, unknown> = {};
     if (node.style) {
       Object.entries(node.style).forEach(([key, val]) => {
         s[key] = resolveValue(val, scopedContext);
@@ -90,12 +94,12 @@ export const MIRNode: React.FC<{
     [registry, node.type]
   );
 
-  const adapterResult = useMemo(() => {
+  const adapterResult = useMemo<AdapterResult>(() => {
     const adapterContext: AdapterContext = {
       node,
       resolvedProps,
       resolvedStyle,
-      resolvedText: renderedText,
+      resolvedText: renderedText as React.ReactNode,
     };
     return (
       resolvedComponent.adapter.mapProps?.(adapterContext) ?? {
@@ -105,7 +109,7 @@ export const MIRNode: React.FC<{
   }, [node, resolvedComponent, resolvedProps, resolvedStyle, renderedText]);
 
   const eventProps = useMemo(() => {
-    const handlers: Record<string, any> = {};
+    const handlers: Record<string, unknown> = {};
     if (!node.events) return handlers;
     Object.entries(node.events).forEach(([eventKey, eventDef]) => {
       const trigger = eventDef.trigger || eventKey;
@@ -120,7 +124,7 @@ export const MIRNode: React.FC<{
           return;
         }
         const resolvedParams = eventDef.params
-          ? (deepResolveValueOrRef(eventDef.params as any, {
+          ? (deepResolveValueOrRef(eventDef.params, {
               state: scopedContext.state,
               params: scopedContext.params,
               data: scopedContext.data,
@@ -153,7 +157,7 @@ export const MIRNode: React.FC<{
   const mergedProps = useMemo(() => {
     const combined = {
       ...(adapterResult.props ?? resolvedProps),
-    } as Record<string, any>;
+    } as Record<string, unknown>;
     Object.entries(eventProps).forEach(([key, handler]) => {
       combined[key] = mergeHandlers(combined[key], handler);
     });
@@ -168,7 +172,7 @@ export const MIRNode: React.FC<{
           : {}),
       }
     : {};
-  let finalProps: Record<string, any> = { ...mergedProps };
+  let finalProps: Record<string, unknown> = { ...mergedProps };
 
   if (resolvedComponent.missing && context.renderMode === 'strict') {
     finalProps = {
@@ -218,7 +222,7 @@ export const MIRNode: React.FC<{
     if (!node.list) return null;
     const source =
       node.list.source !== undefined
-        ? deepResolveValueOrRef(node.list.source as any, {
+        ? deepResolveValueOrRef(node.list.source, {
             state: scopedContext.state,
             params: scopedContext.params,
             data: scopedContext.data,
@@ -289,7 +293,7 @@ export const MIRNode: React.FC<{
 
   const { style: propStyle, ...restProps } = finalProps;
   const mergedStyle = propStyle
-    ? { ...(propStyle as Record<string, any>), ...resolvedStyle }
+    ? { ...(propStyle as Record<string, unknown>), ...resolvedStyle }
     : resolvedStyle;
 
   if (!supportsChildren) {

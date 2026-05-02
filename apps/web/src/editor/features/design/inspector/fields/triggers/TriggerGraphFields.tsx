@@ -28,7 +28,7 @@ export function TriggerGraphFields({
             defaultValue: 'Create and execute a new node graph.',
           })}
           onClick={() => {
-            updateTrigger(itemKey, (currentEvent: any) => ({
+            updateTrigger(itemKey, (currentEvent) => ({
               ...currentEvent,
               params: {
                 ...(currentEvent.params ?? {}),
@@ -49,7 +49,7 @@ export function TriggerGraphFields({
             defaultValue: 'Run one of the existing node graphs.',
           })}
           onClick={() => {
-            updateTrigger(itemKey, (currentEvent: any) => ({
+            updateTrigger(itemKey, (currentEvent) => ({
               ...currentEvent,
               params: {
                 ...(currentEvent.params ?? {}),
@@ -73,7 +73,7 @@ export function TriggerGraphFields({
             defaultValue: 'Name for the new node graph to be created.',
           })}
           onChange={(event) => {
-            updateTrigger(itemKey, (currentEvent: any) => ({
+            updateTrigger(itemKey, (currentEvent) => ({
               ...currentEvent,
               params: {
                 ...(currentEvent.params ?? {}),
@@ -98,7 +98,7 @@ export function TriggerGraphFields({
               (option: { id: string; label: string }) =>
                 option.id === nextGraphId
             );
-            updateTrigger(itemKey, (currentEvent: any) => ({
+            updateTrigger(itemKey, (currentEvent) => ({
               ...currentEvent,
               params: {
                 ...(currentEvent.params ?? {}),
@@ -110,7 +110,7 @@ export function TriggerGraphFields({
           }}
         >
           {graphOptions.length ? (
-            graphOptions.map((option: any) => (
+            graphOptions.map((option) => (
               <option key={option.id} value={option.id}>
                 {option.label}
               </option>

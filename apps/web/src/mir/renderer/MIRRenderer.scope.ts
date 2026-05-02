@@ -16,7 +16,7 @@ export const resolveValue = (
   if (typeof value === 'string') {
     return resolvePathLikeString(value, context.data);
   }
-  return deepResolveValueOrRef(value as any, {
+  return deepResolveValueOrRef(value, {
     state: context.state,
     params: context.params,
     data: context.data,
@@ -68,7 +68,7 @@ export const resolveNodeDataScope = (
     typeof scope.extend === 'object' &&
     !Array.isArray(scope.extend)
   ) {
-    const resolvedExtend = deepResolveValueOrRef(scope.extend as any, {
+    const resolvedExtend = deepResolveValueOrRef(scope.extend, {
       state: context.state,
       params: context.params,
       data: context.data,

@@ -24,7 +24,7 @@ vi.mock('@dnd-kit/core', () => ({
 vi.mock('@dnd-kit/utilities', () => ({
   CSS: {
     Transform: {
-      toString: (transform: any) => {
+      toString: (transform: { x: number; y: number } | null | undefined) => {
         if (!transform) return '';
         return `translate3d(${transform.x}px, ${transform.y}px, 0)`;
       },

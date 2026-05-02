@@ -405,9 +405,7 @@ const getBlueprintState = () =>
 
 const countNodes = (node: { children?: unknown[] }): number => {
   const children = Array.isArray(node.children) ? node.children : [];
-  return (
-    1 + children.reduce((total, child: any) => total + countNodes(child), 0)
-  );
+  return 1 + children.reduce((total, child) => total + countNodes(child), 0);
 };
 
 const getPaletteItemIds = () => {

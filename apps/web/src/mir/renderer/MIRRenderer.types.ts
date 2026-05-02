@@ -2,8 +2,8 @@ import type React from 'react';
 import type { ComponentNode } from '@/core/types/engine.types';
 import type { ComponentRegistry } from './registry';
 
-export type RenderState = Record<string, any>;
-export type RenderParams = Record<string, any>;
+export type RenderState = Record<string, unknown>;
+export type RenderParams = Record<string, unknown>;
 
 export type ActionContext = {
   state: RenderState;
@@ -48,7 +48,7 @@ export type RenderContext = {
 export interface MIRRendererProps {
   node?: ComponentNode;
   mirDoc: import('@/core/types/engine.types').MIRDocument;
-  overrides?: Record<string, any>;
+  overrides?: Record<string, unknown>;
   runtimeState?: Record<string, unknown>;
   actions?: ActionHandlers;
   selectedId?: string;

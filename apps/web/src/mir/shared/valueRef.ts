@@ -121,7 +121,7 @@ export const resolveValueOrRef = (
 ): unknown => resolveReferenceValue(value, context);
 
 export const deepResolveValueOrRef = (
-  value: ValueOrRef,
+  value: unknown,
   context: ValueRefContext,
   depth = 0,
   maxDepth = 12
@@ -131,18 +131,13 @@ export const deepResolveValueOrRef = (
   if (resolved === null || resolved === undefined) return resolved;
   if (Array.isArray(resolved)) {
     return resolved.map((entry) =>
-      deepResolveValueOrRef(entry as ValueOrRef, context, depth + 1, maxDepth)
+      deepResolveValueOrRef(entry, context, depth + 1, maxDepth)
     );
   }
   if (isPlainObject(resolved) && !isValueReference(resolved)) {
     const next: UnsafeRecord = {};
     Object.entries(resolved).forEach(([key, entry]) => {
-      next[key] = deepResolveValueOrRef(
-        entry as ValueOrRef,
-        context,
-        depth + 1,
-        maxDepth
-      );
+      next[key] = deepResolveValueOrRef(entry, context, depth + 1, maxDepth);
     });
     return next;
   }

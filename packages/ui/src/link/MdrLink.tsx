@@ -33,7 +33,7 @@ function MdrLink({
 
   const dataProps = { ...dataAttributes };
 
-  const Element = LinkComponent as React.ComponentType<any>;
+  const Element = LinkComponent as React.ElementType;
   const linkProps = {
     to,
     className: fullClassName,

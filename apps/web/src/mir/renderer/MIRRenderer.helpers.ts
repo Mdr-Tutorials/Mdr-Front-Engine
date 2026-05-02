@@ -12,7 +12,7 @@ export const VOID_ELEMENTS = new Set([
 ]);
 
 export const buildInitialState = (
-  logicState?: Record<string, { initial: any }>
+  logicState?: Record<string, { initial: unknown }>
 ) => {
   const result: RenderState = {};
   if (!logicState) return result;
@@ -44,11 +44,16 @@ export const toReactEventName = (trigger: string) => {
   return `on${normalized.charAt(0).toUpperCase()}${normalized.slice(1)}`;
 };
 
-export const mergeHandlers = (first: any, second: any) => {
+type EventLike = unknown;
+type Handler = (event: EventLike) => void;
+
+export const mergeHandlers = (first: unknown, second: unknown): unknown => {
   if (typeof first === 'function' && typeof second === 'function') {
-    return (event: any) => {
-      first(event);
-      second(event);
+    const firstFn = first as Handler;
+    const secondFn = second as Handler;
+    return (event: EventLike) => {
+      firstFn(event);
+      secondFn(event);
     };
   }
   return typeof second === 'function' ? second : first;
@@ -152,7 +157,7 @@ export const collectMountedCssFromNode = (
   return result;
 };
 
-export const stripInternalProps = (props: Record<string, any>) => {
+export const stripInternalProps = (props: Record<string, unknown>) => {
   const next = { ...props };
   delete next.mountedCss;
   delete next.styleMount;

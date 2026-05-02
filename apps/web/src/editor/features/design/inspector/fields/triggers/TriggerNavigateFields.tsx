@@ -35,7 +35,7 @@ export function TriggerNavigateFields({
               'Use https:// for external links, or /path for in-app preview routes.',
           })}
           onChange={(event) => {
-            updateTrigger(itemKey, (currentEvent: any) => ({
+            updateTrigger(itemKey, (currentEvent) => ({
               ...currentEvent,
               action: 'navigate',
               params: {
@@ -69,7 +69,7 @@ export function TriggerNavigateFields({
             type="checkbox"
             checked={replaceValue}
             onChange={(event) => {
-              updateTrigger(itemKey, (currentEvent: any) => ({
+              updateTrigger(itemKey, (currentEvent) => ({
                 ...currentEvent,
                 action: 'navigate',
                 params: {
@@ -90,7 +90,7 @@ export function TriggerNavigateFields({
             defaultValue: 'Browser tab target used by navigation actions.',
           })}
           onChange={(event) => {
-            updateTrigger(itemKey, (currentEvent: any) => ({
+            updateTrigger(itemKey, (currentEvent) => ({
               ...currentEvent,
               action: 'navigate',
               params: {
@@ -119,7 +119,7 @@ export function TriggerNavigateFields({
               'Optional navigation state. Plain text or JSON string.',
           })}
           onChange={(event) => {
-            updateTrigger(itemKey, (currentEvent: any) => ({
+            updateTrigger(itemKey, (currentEvent) => ({
               ...currentEvent,
               action: 'navigate',
               params: {

@@ -157,7 +157,7 @@ export function InspectorNodeIdentityFields() {
                         defaultValue: 'Switch to plain text input',
                       })}
                       onClick={() => {
-                        updateSelectedNode((current: any) =>
+                        updateSelectedNode((current) =>
                           updateNodeTextFieldMode(current, 'text', 'plain')
                         );
                       }}
@@ -170,7 +170,7 @@ export function InspectorNodeIdentityFields() {
                       className="w-full"
                       value={primaryTextField.value}
                       onChange={(value) => {
-                        updateSelectedNode((current: any) =>
+                        updateSelectedNode((current) =>
                           updateNodeTextField(current, primaryTextField, value)
                         );
                       }}
@@ -187,7 +187,7 @@ export function InspectorNodeIdentityFields() {
                     }
                     value={primaryTextField.value}
                     onChange={(value) => {
-                      updateSelectedNode((current: any) =>
+                      updateSelectedNode((current) =>
                         updateNodeTextField(current, primaryTextField, value)
                       );
                     }}
@@ -206,7 +206,7 @@ export function InspectorNodeIdentityFields() {
                             'Switch to rich text editor (bold/italic/color/size)',
                         })}
                         onClick={() => {
-                          updateSelectedNode((current: any) =>
+                          updateSelectedNode((current) =>
                             updateNodeTextFieldMode(current, 'text', 'rich')
                           );
                         }}

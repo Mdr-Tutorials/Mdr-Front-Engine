@@ -1,4 +1,5 @@
 import type { Rule } from 'eslint';
+import type { ImportDeclaration } from 'estree';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -15,7 +16,7 @@ const rule: Rule.RuleModule = {
 
   create(context): Rule.RuleListener {
     return {
-      ImportDeclaration(node: any) {
+      ImportDeclaration(node: ImportDeclaration) {
         const currentFile = context.filename;
         const importPath = node.source.value;
 

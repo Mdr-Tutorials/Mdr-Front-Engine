@@ -52,7 +52,7 @@ export function InspectorExternalPropsFields() {
   const dataModelPathDatalistId = `inspector-prop-paths-${selectedNode.id}`;
 
   const updateProp = (key: string, value: unknown) => {
-    updateSelectedNode((current: any) => ({
+    updateSelectedNode((current) => ({
       ...current,
       props: {
         ...(current.props ?? {}),
@@ -61,7 +61,7 @@ export function InspectorExternalPropsFields() {
     }));
   };
   const clearProp = (key: string) => {
-    updateSelectedNode((current: any) => {
+    updateSelectedNode((current) => {
       const nextProps = { ...(current.props ?? {}) };
       delete nextProps[key];
       return {

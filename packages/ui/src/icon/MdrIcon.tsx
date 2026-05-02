@@ -4,8 +4,8 @@ import { type MdrComponent } from '@mdr/shared';
 import './MdrIcon.scss';
 
 type IconRenderable =
-  | React.ReactElement<Record<string, any>>
-  | React.ComponentType<any>;
+  | React.ReactElement<Record<string, unknown>>
+  | React.ComponentType<Record<string, unknown>>;
 
 interface IconSpecificProps {
   icon: IconRenderable;
@@ -54,9 +54,9 @@ function enhanceIcon(
 
   // ------------ 1. 图标是 React Element ------------
   if (React.isValidElement(icon)) {
-    const element = icon as React.ReactElement<any>;
+    const element = icon as React.ReactElement<Record<string, unknown>>;
     const originalProps = element.props || {};
-    const clonedProps: Record<string, any> = {};
+    const clonedProps: Record<string, unknown> = {};
 
     // --- 强制性 size 规则 ---
     if (size !== undefined) {
@@ -70,8 +70,10 @@ function enhanceIcon(
           clonedProps.height = size;
         } else {
           // 其他情况（比如 react-icons 的 svg），通过 style 覆盖
+          const baseStyle =
+            (originalProps.style as React.CSSProperties | undefined) ?? {};
           clonedProps.style = {
-            ...(originalProps.style || {}),
+            ...baseStyle,
             width: size,
             height: size,
           };
@@ -104,7 +106,7 @@ function enhanceIcon(
   }
 
   const IconComponent = icon;
-  const componentProps: Record<string, any> = {};
+  const componentProps: Record<string, unknown> = {};
   if (size !== undefined) {
     componentProps.size = size;
     componentProps.width = size;

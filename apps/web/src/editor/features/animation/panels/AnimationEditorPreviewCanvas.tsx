@@ -42,7 +42,7 @@ const findNodeById = (
 const renderSvgPrimitive = (
   primitive: SvgFilterDefinition['primitives'][number]
 ) => {
-  const props: Record<string, any> = { key: primitive.id };
+  const props: Record<string, unknown> = { key: primitive.id };
   if (primitive.in) props['in'] = primitive.in;
   if (primitive.in2) props.in2 = primitive.in2;
   if (primitive.result) props.result = primitive.result;

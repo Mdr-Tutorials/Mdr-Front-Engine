@@ -1,5 +1,5 @@
 import type { Rule } from 'eslint';
-import type { Node } from 'estree';
+import type { Identifier, Node, VariableDeclarator } from 'estree';
 
 const rule: Rule.RuleModule = {
   meta: {
@@ -21,13 +21,13 @@ const rule: Rule.RuleModule = {
     const usedVars = new Set<string>();
 
     return {
-      VariableDeclarator(node: any) {
+      VariableDeclarator(node: VariableDeclarator) {
         if (node.id.type === 'Identifier') {
           declaredVars.set(node.id.name, node);
         }
       },
 
-      Identifier(node: any) {
+      Identifier(node: Identifier) {
         usedVars.add(node.name);
       },
 

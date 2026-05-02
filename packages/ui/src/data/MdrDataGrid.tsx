@@ -57,7 +57,7 @@ function MdrDataGrid<T extends Record<string, unknown>>({
       return rowKey(record);
     }
     if (typeof rowKey === 'string') {
-      return String((record as any)[rowKey]);
+      return String((record as Record<string, unknown>)[rowKey as string]);
     }
     return String(index);
   };
@@ -93,7 +93,7 @@ function MdrDataGrid<T extends Record<string, unknown>>({
         >
           {columns.map((column) => {
             const value = column.dataIndex
-              ? (record as any)[column.dataIndex]
+              ? (record as Record<string, unknown>)[column.dataIndex as string]
               : undefined;
             return (
               <div

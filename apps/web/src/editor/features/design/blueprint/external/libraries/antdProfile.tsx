@@ -231,7 +231,9 @@ const antdTextAdapter: ComponentAdapter = {
     const props = { ...resolvedProps };
     return {
       props,
-      children: props.children ?? (resolvedText ? String(resolvedText) : null),
+      children:
+        (props.children as React.ReactNode) ??
+        (resolvedText ? String(resolvedText) : null),
     };
   },
 };
@@ -259,7 +261,9 @@ const antdModalAdapter: ComponentAdapter = {
     if (props.footer === undefined) props.footer = null;
     return {
       props,
-      children: props.children ?? (resolvedText ? String(resolvedText) : null),
+      children:
+        (props.children as React.ReactNode) ??
+        (resolvedText ? String(resolvedText) : null),
     };
   },
 };

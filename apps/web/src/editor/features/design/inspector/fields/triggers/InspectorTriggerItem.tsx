@@ -60,7 +60,7 @@ export function InspectorTriggerItem({ item }: { item: TriggerEntry }) {
     if (rawGraphId === selectedGraphId && rawGraphName === nextGraphName) {
       return;
     }
-    updateTrigger(item.key, (currentEvent: any) => ({
+    updateTrigger(item.key, (currentEvent) => ({
       ...currentEvent,
       params: {
         ...(currentEvent.params ?? {}),
@@ -95,7 +95,7 @@ export function InspectorTriggerItem({ item }: { item: TriggerEntry }) {
               defaultValue: 'Choose which DOM event will trigger this action.',
             })}
             onChange={(event) => {
-              updateTrigger(item.key, (currentEvent: any) => ({
+              updateTrigger(item.key, (currentEvent) => ({
                 ...currentEvent,
                 trigger: event.target.value,
               }));
@@ -121,7 +121,7 @@ export function InspectorTriggerItem({ item }: { item: TriggerEntry }) {
               defaultValue: 'Choose what should run when the event is fired.',
             })}
             onChange={(event) => {
-              updateTrigger(item.key, (currentEvent: any) => ({
+              updateTrigger(item.key, (currentEvent) => ({
                 ...currentEvent,
                 action: event.target.value,
                 params: createDefaultActionParams(

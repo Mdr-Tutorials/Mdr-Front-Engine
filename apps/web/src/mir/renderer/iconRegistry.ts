@@ -13,10 +13,18 @@ export type IconRef = {
   variant?: 'outline' | 'solid';
 };
 
-type IconResolver = (
-  name: string,
-  iconRef?: IconRef
-) => React.ComponentType<any> | null;
+/**
+ * Polymorphic icon component type. Icon libraries (lucide, fontawesome, antd,
+ * mui, heroicons) each expose components with their own prop shapes; we accept
+ * any prop shape so the renderer can pass through className / size / style
+ * without committing to one library's typing. Consumers that need a stricter
+ * shape (e.g. InspectorCapabilitiesContext.SelectedIconComponent) cast at the
+ * boundary.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- see comment above
+type IconComponent = React.ComponentType<any>;
+
+type IconResolver = (name: string, iconRef?: IconRef) => IconComponent | null;
 type IconNameProvider = () => string[];
 
 type IconProviderRegistration = {
@@ -55,7 +63,7 @@ const DEFAULT_ICON_LIBRARY_IDS: string[] = [];
 export const iconLibraryConfigUpdatedEvent = 'mdr:icon-library-config-updated';
 
 const iconProviders = new Map<string, IconProviderRecord>();
-const iconFallbackComponentCache = new Map<string, React.ComponentType<any>>();
+const iconFallbackComponentCache = new Map<string, IconComponent>();
 
 const registryListeners = new Set<() => void>();
 let registryRevision = 0;
@@ -78,7 +86,7 @@ export const subscribeIconRegistry = (listener: () => void) => {
 
 export const getIconRegistryRevision = () => registryRevision;
 
-const isIconComponent = (value: unknown): value is React.ComponentType<any> =>
+const isIconComponent = (value: unknown): value is IconComponent =>
   typeof value === 'function' ||
   (typeof value === 'object' && value !== null && '$$typeof' in value);
 
@@ -384,7 +392,7 @@ const resolveLucideIcon = (name: string) => {
   for (const candidate of candidates) {
     const icon = (LucideIcons as Record<string, unknown>)[candidate];
     if (isIconComponent(icon)) {
-      return icon as React.ComponentType<any>;
+      return icon as IconComponent;
     }
   }
   return null;
@@ -426,7 +434,7 @@ const loadEsmCandidates = async (urls: string[]) => {
 
 type IconComponentRuntime = {
   iconNames: string[];
-  iconLookup: Map<string, React.ComponentType<any>>;
+  iconLookup: Map<string, IconComponent>;
 };
 
 type IconComponentRuntimeBuildOptions = {
@@ -441,14 +449,14 @@ const buildIconComponentRuntime = (
   const excluded = new Set(options.excludeExports ?? []);
   excluded.add('default');
 
-  const iconLookup = new Map<string, React.ComponentType<any>>();
+  const iconLookup = new Map<string, IconComponent>();
   const iconNames = new Set<string>();
 
   Object.entries(iconModule).forEach(([exportName, exported]) => {
     if (excluded.has(exportName)) return;
     if (!isIconComponent(exported)) return;
 
-    const component = exported as React.ComponentType<any>;
+    const component = exported as IconComponent;
     const canonicalName =
       options.stripIconSuffix && exportName.endsWith('Icon')
         ? exportName.slice(0, -4)
@@ -487,13 +495,13 @@ type FontAwesomeIconDefinition = {
 };
 
 type FontAwesomeRuntime = {
-  FontAwesomeIcon: React.ComponentType<any>;
+  FontAwesomeIcon: IconComponent;
   iconNames: string[];
   iconLookup: Map<string, FontAwesomeIconDefinition>;
 };
 
 let fontAwesomeRuntime: FontAwesomeRuntime | null = null;
-const fontAwesomeComponentCache = new Map<string, React.ComponentType<any>>();
+const fontAwesomeComponentCache = new Map<string, IconComponent>();
 
 const isFontAwesomeDefinition = (
   value: unknown

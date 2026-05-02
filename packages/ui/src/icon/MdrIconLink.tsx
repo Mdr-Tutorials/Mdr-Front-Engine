@@ -9,7 +9,7 @@ export interface MdrIconLinkSpecificProps
     React.RefAttributes<HTMLAnchorElement> {
   to: To;
   replace?: boolean;
-  state?: any;
+  state?: unknown;
 }
 
 function MdrIconLink(props: MdrIconLinkSpecificProps) {

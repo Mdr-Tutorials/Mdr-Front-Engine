@@ -20,7 +20,7 @@ vi.mock('@/mir/renderer/MIRRenderer', () => ({
     onNodeSelect,
     requireSelectionForEvents,
   }: {
-    node: any;
+    node: { id: string; children?: { id: string }[] };
     onNodeSelect: (id: string) => void;
     requireSelectionForEvents?: boolean;
   }) => (

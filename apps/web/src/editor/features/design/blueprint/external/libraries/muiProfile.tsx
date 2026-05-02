@@ -105,7 +105,8 @@ const muiTextAdapter: ComponentAdapter = {
   mapProps: ({ resolvedProps, resolvedText }) => ({
     props: { ...resolvedProps },
     children:
-      resolvedProps.children ?? (resolvedText ? String(resolvedText) : null),
+      (resolvedProps.children as React.ReactNode) ??
+      (resolvedText ? String(resolvedText) : null),
   }),
 };
 
@@ -133,7 +134,9 @@ const muiDialogAdapter: ComponentAdapter = {
     if (props.hideBackdrop === undefined) props.hideBackdrop = true;
     return {
       props,
-      children: props.children ?? (resolvedText ? String(resolvedText) : null),
+      children:
+        (props.children as React.ReactNode) ??
+        (resolvedText ? String(resolvedText) : null),
     };
   },
 };

@@ -4,6 +4,7 @@ import {
   componentToReact,
   componentToVue,
 } from '@builder.io/mitosis';
+import type { ComponentNode, MIRDocument } from '@/core/types/engine.types';
 import { materializeMirRoot } from '@/mir/graph';
 
 export const testSimpleGeneration = (target: 'react' | 'vue') => {
@@ -62,7 +63,7 @@ export const testSimpleGeneration = (target: 'react' | 'vue') => {
   }
 };
 // 1. 递归转换节点，修复 Binding 严格类型报错
-const transformNode = (node: any): MitosisNode => {
+const transformNode = (node: ComponentNode): MitosisNode => {
   // 1. 确定绑定代码
   let bindingCode = '';
 
@@ -79,10 +80,17 @@ const transformNode = (node: any): MitosisNode => {
   // 2. 打印一下，方便你调试
   console.log(`Node ID: ${node.id}, Binding Code: ${bindingCode}`);
 
+  const properties: Record<string, string> = {};
+  if (node.props) {
+    Object.entries(node.props).forEach(([key, value]) => {
+      if (typeof value === 'string') properties[key] = value;
+    });
+  }
+
   return {
     '@type': '@builder.io/mitosis/node',
     name: node.type === 'container' ? 'div' : node.type,
-    properties: { ...node.props },
+    properties,
     bindings: {
       children: {
         code: bindingCode, // 这里的代码现在是安全的了
@@ -96,7 +104,10 @@ const transformNode = (node: any): MitosisNode => {
   };
 };
 
-export const convertMirToCode = (mirDoc: any, target: 'react' | 'vue') => {
+export const convertMirToCode = (
+  mirDoc: MIRDocument,
+  target: 'react' | 'vue'
+) => {
   const root = materializeMirRoot(mirDoc);
   // 2. 构建符合严格接口的 MitosisComponent
   const mitosisJson: MitosisComponent = {

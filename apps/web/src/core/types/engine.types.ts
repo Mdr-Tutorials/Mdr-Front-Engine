@@ -173,7 +173,7 @@ export interface LogicDefinition {
     {
       type: 'string' | 'number' | 'boolean' | 'object' | 'array' | string;
       description?: string;
-      default?: any;
+      default?: unknown;
     }
   >;
 
@@ -182,12 +182,12 @@ export interface LogicDefinition {
     string,
     {
       type?: string;
-      initial: any;
+      initial: unknown;
     }
   >;
 
   // 节点图逻辑
-  graphs?: any[];
+  graphs?: unknown[];
 }
 
 // 4. 根文档结构

@@ -8,7 +8,7 @@ export interface MdrButtonLinkSpecificProps
     React.RefAttributes<HTMLAnchorElement> {
   to: To;
   replace?: boolean;
-  state?: any;
+  state?: unknown;
 }
 
 function MdrButtonLink(props: MdrButtonLinkSpecificProps) {

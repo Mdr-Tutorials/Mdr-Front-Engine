@@ -74,7 +74,7 @@ export function InspectorDataScopeFields() {
   const applySchemaDraft = () => {
     const raw = schemaDraft.trim();
     if (!raw) {
-      updateSelectedNode((current: any) => {
+      updateSelectedNode((current) => {
         const nextNode = { ...current };
         delete nextNode.data;
         return nextNode;
@@ -93,7 +93,7 @@ export function InspectorDataScopeFields() {
         return;
       }
       setSchemaError(null);
-      updateSelectedNode((current: any) => {
+      updateSelectedNode((current) => {
         const nextData = {
           ...(current.data ?? {}),
           value: parsed,
@@ -117,7 +117,7 @@ export function InspectorDataScopeFields() {
   const applyMockDraft = () => {
     const raw = mockDraft.trim();
     if (!raw) {
-      updateSelectedNode((current: any) => {
+      updateSelectedNode((current) => {
         if (!current.data) return current;
         const nextData = { ...(current.data as Record<string, unknown>) };
         delete nextData.mock;
@@ -132,7 +132,7 @@ export function InspectorDataScopeFields() {
     try {
       const parsed = JSON.parse(raw);
       setMockError(null);
-      updateSelectedNode((current: any) => {
+      updateSelectedNode((current) => {
         const nextData = {
           ...(current.data ?? {}),
           mock: parsed,
@@ -181,7 +181,7 @@ export function InspectorDataScopeFields() {
                   checked={isMounted}
                   onChange={(event) => {
                     const checked = event.currentTarget.checked;
-                    updateSelectedNode((current: any) => {
+                    updateSelectedNode((current) => {
                       if (!checked) {
                         const nextNode = { ...current };
                         delete nextNode.data;

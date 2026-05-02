@@ -28,7 +28,10 @@ describe('muiExternalLibraryProfile', () => {
       resolvedText: 'Accordion',
     });
 
-    const injectedChildren = mapped?.children as any[];
+    const injectedChildren = mapped?.children as React.ReactElement<{
+      id?: string;
+      'aria-controls'?: string;
+    }>[];
     expect(Array.isArray(injectedChildren)).toBe(true);
     expect(injectedChildren).toHaveLength(2);
     expect(injectedChildren[0]?.props?.id).toBe('node-accordion-1-summary');

@@ -84,7 +84,7 @@ export function InspectorNodeCapabilitiesFields() {
           title={linkTitle}
           t={t}
           onChangeDestination={(value) => {
-            updateSelectedNode((current: any) => ({
+            updateSelectedNode((current) => ({
               ...current,
               props: {
                 ...(current.props ?? {}),
@@ -93,7 +93,7 @@ export function InspectorNodeCapabilitiesFields() {
             }));
           }}
           onChangeTarget={(value) => {
-            updateSelectedNode((current: any) => ({
+            updateSelectedNode((current) => ({
               ...current,
               props: {
                 ...(current.props ?? {}),
@@ -102,7 +102,7 @@ export function InspectorNodeCapabilitiesFields() {
             }));
           }}
           onChangeRel={(value) => {
-            updateSelectedNode((current: any) => ({
+            updateSelectedNode((current) => ({
               ...current,
               props: {
                 ...(current.props ?? {}),
@@ -111,7 +111,7 @@ export function InspectorNodeCapabilitiesFields() {
             }));
           }}
           onChangeTitle={(value) => {
-            updateSelectedNode((current: any) => ({
+            updateSelectedNode((current) => ({
               ...current,
               props: {
                 ...(current.props ?? {}),
@@ -141,7 +141,7 @@ export function InspectorNodeCapabilitiesFields() {
                   value={currentPathValue}
                   onChange={(event) => {
                     const value = event.currentTarget.value;
-                    updateSelectedNode((current: any) => ({
+                    updateSelectedNode((current) => ({
                       ...current,
                       props: {
                         ...(current.props ?? {}),
@@ -171,7 +171,7 @@ export function InspectorNodeCapabilitiesFields() {
                   value={emptyTextValue}
                   onChange={(event) => {
                     const value = event.currentTarget.value;
-                    updateSelectedNode((current: any) => {
+                    updateSelectedNode((current) => {
                       const nextProps = {
                         ...(current.props ?? {}),
                       } as Record<string, unknown>;
@@ -207,7 +207,7 @@ export function InspectorNodeCapabilitiesFields() {
                   disabled={routeIndexValue}
                   onChange={(event) => {
                     const value = event.currentTarget.value;
-                    updateSelectedNode((current: any) => {
+                    updateSelectedNode((current) => {
                       const nextProps = {
                         ...(current.props ?? {}),
                       } as Record<string, unknown>;
@@ -238,7 +238,7 @@ export function InspectorNodeCapabilitiesFields() {
                     checked={routeIndexValue}
                     onChange={(event) => {
                       const checked = event.currentTarget.checked;
-                      updateSelectedNode((current: any) => {
+                      updateSelectedNode((current) => {
                         const nextProps = {
                           ...(current.props ?? {}),
                         } as Record<string, unknown>;
@@ -273,7 +273,7 @@ export function InspectorNodeCapabilitiesFields() {
                     checked={routeFallbackValue}
                     onChange={(event) => {
                       const checked = event.currentTarget.checked;
-                      updateSelectedNode((current: any) => {
+                      updateSelectedNode((current) => {
                         const nextProps = {
                           ...(current.props ?? {}),
                         } as Record<string, unknown>;

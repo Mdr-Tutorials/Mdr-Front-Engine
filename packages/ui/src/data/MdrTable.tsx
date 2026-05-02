@@ -81,7 +81,9 @@ function MdrTable<T extends Record<string, unknown>>({
             <tr key={index}>
               {columns.map((column) => {
                 const value = column.dataIndex
-                  ? (record as any)[column.dataIndex]
+                  ? (record as Record<string, unknown>)[
+                      column.dataIndex as string
+                    ]
                   : undefined;
                 return (
                   <td

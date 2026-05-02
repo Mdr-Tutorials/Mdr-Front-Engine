@@ -5,6 +5,7 @@ module.exports = {
     rules: {
         'react/react-in-jsx-scope': 'off',
         '@typescript-eslint/no-unused-vars': 'warn',
+        '@typescript-eslint/no-explicit-any': 'error',
     },
     env: { browser: true, es2022: true },
     settings: { react: { version: 'detect' } },
