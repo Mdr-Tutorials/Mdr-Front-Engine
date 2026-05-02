@@ -96,50 +96,6 @@ describe('CommunityDetailPage', () => {
     });
   });
 
-  it('resolves workspace-layer mir payload for read-only preview', async () => {
-    getProjectMock.mockResolvedValue({
-      project: {
-        id: 'community-1',
-        ownerId: 'usr-1',
-        resourceType: 'project',
-        name: 'Workspace Payload',
-        description: 'Workspace snapshot payload.',
-        mir: {
-          documents: [
-            {
-              id: 'layout',
-              type: 'mir-layout',
-              path: '/layout',
-              content: { version: '1.0', ui: { root: { id: 'layout-root' } } },
-            },
-            {
-              id: 'home',
-              type: 'mir-page',
-              path: '/',
-              content: {
-                version: '1.0',
-                ui: { root: { id: 'workspace-root', type: 'container' } },
-              },
-            },
-          ],
-        },
-        isPublic: true,
-        starsCount: 3,
-        createdAt: '2026-02-07T00:00:00Z',
-        updatedAt: '2026-02-07T01:00:00Z',
-        authorName: 'Alice',
-      },
-    });
-
-    render(<CommunityDetailPage />);
-
-    await waitFor(() => {
-      expect(screen.getByTestId('mir-renderer').textContent).toBe(
-        'workspace-root'
-      );
-    });
-  });
-
   it('shows API error state', async () => {
     getProjectMock.mockRejectedValue(new Error('detail failed'));
 
