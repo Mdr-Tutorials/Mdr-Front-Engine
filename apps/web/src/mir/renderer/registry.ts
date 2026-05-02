@@ -8,13 +8,13 @@ export type RegistryGroup = 'custom' | 'mdr' | 'native';
 
 export type AdapterContext = {
   node: ComponentNode;
-  resolvedProps: Record<string, any>;
-  resolvedStyle: Record<string, any>;
-  resolvedText: any;
+  resolvedProps: Record<string, unknown>;
+  resolvedStyle: Record<string, unknown>;
+  resolvedText: React.ReactNode;
 };
 
 export type AdapterResult = {
-  props?: Record<string, any>;
+  props?: Record<string, unknown>;
   children?: React.ReactNode;
   supportsChildren?: boolean;
   isVoid?: boolean;
@@ -26,9 +26,9 @@ export type ComponentAdapter = {
   isVoid?: boolean;
   mapProps?: (context: AdapterContext) => AdapterResult;
   applySelection?: (
-    props: Record<string, any>,
+    props: Record<string, unknown>,
     selectionData: Record<string, string>
-  ) => Record<string, any>;
+  ) => Record<string, unknown>;
 };
 
 export type RegistryEntry = {
@@ -117,7 +117,7 @@ const normalizeSelectionData = (selectionData?: Record<string, string>) =>
   selectionData ?? {};
 
 const applyHtmlSelection = (
-  props: Record<string, any>,
+  props: Record<string, unknown>,
   selectionData: Record<string, string>
 ) => {
   const { dataAttributes, ...rest } = props;
@@ -127,7 +127,7 @@ const applyHtmlSelection = (
 };
 
 const applyMdrSelection = (
-  props: Record<string, any>,
+  props: Record<string, unknown>,
   selectionData: Record<string, string>
 ) => {
   const dataProps =
@@ -255,7 +255,7 @@ export const mdrInputAdapter: ComponentAdapter = {
   },
 };
 
-const resolveIconProps = (resolvedProps: Record<string, any>) => {
+const resolveIconProps = (resolvedProps: Record<string, unknown>) => {
   const props = { ...resolvedProps };
   const iconRef =
     props.iconRef ??
@@ -603,6 +603,26 @@ export const createDefaultComponentRegistry = () => {
   registerHeadlessComponents(registry);
   registerRuntimeEntries(registry);
   return registry;
+};
+
+let cachedDefaultRegistry: ComponentRegistry | null = null;
+let cachedDefaultRegistryRevision = -1;
+
+/**
+ * Returns a lazily-initialised default ComponentRegistry shared across all
+ * MIRRenderer instances that don't pass an explicit `registry` prop. The cache
+ * is invalidated whenever runtimeRegistryRevision advances so dynamically
+ * registered runtime components are reflected on next access.
+ */
+export const getDefaultComponentRegistry = (): ComponentRegistry => {
+  if (
+    cachedDefaultRegistry === null ||
+    cachedDefaultRegistryRevision !== runtimeRegistryRevision
+  ) {
+    cachedDefaultRegistry = createDefaultComponentRegistry();
+    cachedDefaultRegistryRevision = runtimeRegistryRevision;
+  }
+  return cachedDefaultRegistry;
 };
 
 export const defaultComponentRegistry = createDefaultComponentRegistry();

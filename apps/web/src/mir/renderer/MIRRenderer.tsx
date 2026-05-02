@@ -5,7 +5,7 @@ import {
   type BuiltInActionContext,
 } from '@/mir/actions/registry';
 import { materializeUiTree } from '@/mir/graph/materialize';
-import { createDefaultComponentRegistry } from './registry';
+import { getDefaultComponentRegistry } from './registry';
 import { resolveLinkCapability } from './capabilities';
 import { MIRNode } from './MIRNode';
 import type {
@@ -132,7 +132,7 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
   );
 
   const registry = useMemo(
-    () => registryProp ?? createDefaultComponentRegistry(),
+    () => registryProp ?? getDefaultComponentRegistry(),
     [registryProp]
   );
   const nodeEventsById = useMemo(() => collectNodeEvents(rootNode), [rootNode]);
