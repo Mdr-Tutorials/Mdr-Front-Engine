@@ -305,6 +305,8 @@ function EditorHome() {
   const { t } = useTranslation('editor');
   const navigate = useNavigate();
   const token = useAuthStore((state) => state.token);
+  const hasAuthHydrated = useAuthStore((state) => state.hasHydrated);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
   const [isResourceModalOpen, setResourceModalOpen] = useState(false);
   const [isExitModalOpen, setExitModalOpen] = useState(false);
   const [projects, setProjects] = useState<ProjectSummary[]>([]);
@@ -328,7 +330,10 @@ function EditorHome() {
   );
 
   useEffect(() => {
-    if (!token) {
+    if (!hasAuthHydrated) {
+      return;
+    }
+    if (!isAuthenticated || !token) {
       setProjects([]);
       setLoadError(null);
       return;
@@ -373,7 +378,7 @@ function EditorHome() {
       cancelled = true;
       controller?.abort();
     };
-  }, [token, setProjectsInStore]);
+  }, [hasAuthHydrated, isAuthenticated, token, setProjectsInStore]);
 
   const sortedProjects = useMemo(
     () =>
@@ -535,7 +540,7 @@ function EditorHome() {
             </span>
           </button>
 
-          {!token && (
+          {hasAuthHydrated && !isAuthenticated && (
             <div className="flex min-h-[280px] items-center justify-center rounded-[16px] border border-(--border-subtle) bg-(--bg-panel) p-[24px] text-(length:--font-size-sm) text-(--text-muted)">
               {t('auth.required', 'Please sign in to load your projects.')}
             </div>

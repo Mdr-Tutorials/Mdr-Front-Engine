@@ -29,6 +29,7 @@ function ProjectHome() {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const token = useAuthStore((state) => state.token);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
   const setProject = useEditorStore((state) => state.setProject);
   const resolvedProjectId = projectId ?? '-';
   const isValidProject = Boolean(projectId);
@@ -94,7 +95,14 @@ function ProjectHome() {
   );
 
   const handlePublish = async () => {
-    if (!token || !projectId || projectIsPublic || isPublishing) return;
+    if (
+      !isAuthenticated ||
+      !token ||
+      !projectId ||
+      projectIsPublic ||
+      isPublishing
+    )
+      return;
     setPublishing(true);
     setPublishError(null);
     try {
@@ -198,7 +206,11 @@ function ProjectHome() {
             type="button"
             onClick={handlePublish}
             disabled={
-              !isValidProject || projectIsPublic || !token || isPublishing
+              !isValidProject ||
+              projectIsPublic ||
+              !isAuthenticated ||
+              !token ||
+              isPublishing
             }
             className="inline-flex items-center gap-[4px] rounded-[8px] border border-[rgba(0,0,0,0.12)] bg-transparent px-[8px] py-[2px] text-[11px] text-[var(--color-8)] transition-colors duration-[150ms] ease-[ease] hover:text-[var(--color-10)] disabled:cursor-not-allowed disabled:opacity-[0.45]"
           >

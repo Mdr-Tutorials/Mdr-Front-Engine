@@ -14,7 +14,6 @@ import {
 import { Calendar, Copy, Mail, Pencil, UserRound } from 'lucide-react';
 import { authApi, ApiError } from './authApi';
 import { useAuthStore } from './useAuthStore';
-import { isAbortError } from '@/infra/api';
 
 type Flash = { type: 'Info' | 'Success' | 'Warning' | 'Danger'; text: string };
 
@@ -51,6 +50,8 @@ export const ProfilePage = () => {
   const { t } = useTranslation('profile');
   const navigate = useNavigate();
   const { token, user, setUser, clearSession } = useAuthStore();
+  const hasAuthHydrated = useAuthStore((state) => state.hasHydrated);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
 
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,35 +82,6 @@ export const ProfilePage = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (!token || user) return;
-    let cancelled = false;
-    const controller =
-      typeof AbortController === 'function' ? new AbortController() : null;
-    const requestOptions: RequestInit = controller
-      ? { signal: controller.signal }
-      : {};
-    setError(null);
-    setLoading(true);
-    authApi
-      .me(token, requestOptions)
-      .then((response) => {
-        if (cancelled) return;
-        setUser(response.user);
-      })
-      .catch((err) => {
-        if (cancelled || isAbortError(err)) return;
-        setError(formatError(err));
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-      controller?.abort();
-    };
-  }, [token, user, setUser]);
-
   const copyText = useCallback(
     async (value: string | undefined, message: string) => {
       if (!value) return;
@@ -133,7 +105,7 @@ export const ProfilePage = () => {
   };
 
   const saveEdit = async () => {
-    if (!token) return;
+    if (!isAuthenticated || !token) return;
     setError(null);
     setLoading(true);
     try {
@@ -151,7 +123,7 @@ export const ProfilePage = () => {
     }
   };
 
-  if (!token) {
+  if (!hasAuthHydrated || !isAuthenticated || !token) {
     return (
       <div className="min-h-screen bg-(--color-0) text-(--color-10)">
         <header className="flex items-center justify-between gap-4 bg-(--color-0) px-5 py-4 md:px-7 md:py-[18px]">

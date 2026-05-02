@@ -26,6 +26,7 @@ function NewResourceModal({
   const { t } = useTranslation('editor');
   const navigate = useNavigate();
   const token = useAuthStore((state) => state.token);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
   const setProject = useEditorStore((state) => state.setProject);
   const setMirDoc = useEditorStore((state) => state.setMirDoc);
 
@@ -41,7 +42,7 @@ function NewResourceModal({
   if (!open) return null;
 
   const handleCreate = async () => {
-    if (!token) {
+    if (!isAuthenticated || !token) {
       setError('Please sign in first.');
       return;
     }

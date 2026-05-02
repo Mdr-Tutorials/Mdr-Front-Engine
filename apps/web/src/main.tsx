@@ -7,6 +7,7 @@ import './index.css';
 import { createRoutes } from './App';
 import { initI18n } from './i18n';
 import { ThemeSync } from './components/ThemeSync';
+import { AuthSessionSync } from './auth/AuthSessionSync';
 
 initI18n().then((i18n) => {
   const router = createBrowserRouter(createRoutes(i18n.t.bind(i18n)));
@@ -14,6 +15,7 @@ initI18n().then((i18n) => {
     <StrictMode>
       <I18nextProvider i18n={i18n}>
         <ThemeSync />
+        <AuthSessionSync />
         <RouterProvider router={router} />
       </I18nextProvider>
     </StrictMode>

@@ -119,6 +119,7 @@ function Editor() {
   const location = useLocation();
   const navigate = useNavigate();
   const token = useAuthStore((state) => state.token);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
   const setProject = useEditorStore((state) => state.setProject);
   const setMirDoc = useEditorStore((state) => state.setMirDoc);
   const setWorkspaceSnapshot = useEditorStore(
@@ -135,7 +136,7 @@ function Editor() {
   );
 
   useEffect(() => {
-    if (!projectId || !token) return;
+    if (!projectId || !isAuthenticated || !token) return;
     let cancelled = false;
     const controller =
       typeof AbortController === 'function' ? new AbortController() : null;
@@ -197,6 +198,7 @@ function Editor() {
     };
   }, [
     projectId,
+    isAuthenticated,
     token,
     clearWorkspaceState,
     hydrateWorkspaceSettings,

@@ -28,8 +28,18 @@ vi.mock('../editorApi', () => ({
 }));
 
 vi.mock('@/auth/useAuthStore', () => ({
-  useAuthStore: (selector: (state: { token: string | null }) => unknown) =>
-    selector({ token: 'token-1' }),
+  useAuthStore: (
+    selector: (state: {
+      token: string | null;
+      hasHydrated: boolean;
+      isAuthenticated: () => boolean;
+    }) => unknown
+  ) =>
+    selector({
+      token: 'token-1',
+      hasHydrated: true,
+      isAuthenticated: () => true,
+    }),
 }));
 
 const renderEditorHome = () =>

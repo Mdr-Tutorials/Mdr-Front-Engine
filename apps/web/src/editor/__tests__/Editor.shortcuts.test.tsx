@@ -17,8 +17,15 @@ vi.mock('react-router', () => ({
 
 vi.mock('@/auth/useAuthStore', () => ({
   useAuthStore: (
-    selector: (state: { token: string | null }) => unknown
-  ): unknown => selector({ token: null }),
+    selector: (state: {
+      token: string | null;
+      isAuthenticated: () => boolean;
+    }) => unknown
+  ): unknown =>
+    selector({
+      token: null,
+      isAuthenticated: () => false,
+    }),
 }));
 
 vi.mock('../EditorBar/EditorBar', () => ({

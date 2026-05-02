@@ -13,6 +13,7 @@ function Home() {
   const setGlobalValue = useSettingsStore((state) => state.setGlobalValue);
 
   const user = useAuthStore((state) => state.user);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
   const toggleLanguage = () => {
     const nextLanguage = i18n.language?.startsWith('zh') ? 'en' : 'zh-CN';
     i18n.changeLanguage(nextLanguage);
@@ -94,7 +95,7 @@ function Home() {
             >
               {themeMode === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
-            {user ? (
+            {isAuthenticated && user ? (
               <MdrLink to="/profile" className={profileLinkClassName}>
                 <MdrAvatar size="Small" initials={initials} />
               </MdrLink>

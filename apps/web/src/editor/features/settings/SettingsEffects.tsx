@@ -27,6 +27,7 @@ export const SettingsEffects = () => {
   const { i18n } = useTranslation();
   const { projectId } = useParams();
   const token = useAuthStore((state) => state.token);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
   const workspaceId = useEditorStore((state) => state.workspaceId);
   const workspaceRev = useEditorStore((state) => state.workspaceRev);
   const routeRev = useEditorStore((state) => state.routeRev);
@@ -89,7 +90,7 @@ export const SettingsEffects = () => {
   }, [workspaceId, serializedSettingsPayload]);
 
   useEffect(() => {
-    if (!token) return;
+    if (!isAuthenticated || !token) return;
     if (!workspaceId) return;
     if (!workspaceCapabilitiesLoaded || !canUpdateWorkspaceSettings) return;
     if (typeof workspaceRev !== 'number' || workspaceRev <= 0) return;
@@ -139,6 +140,7 @@ export const SettingsEffects = () => {
     routeRev,
     serializedSettingsPayload,
     settingsPayload,
+    isAuthenticated,
     token,
     workspaceCapabilitiesLoaded,
     workspaceId,
