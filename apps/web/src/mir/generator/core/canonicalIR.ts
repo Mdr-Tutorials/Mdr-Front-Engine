@@ -5,6 +5,7 @@ import type {
   MIRDocument,
   ValueOrRef,
 } from '@/core/types/engine.types';
+import { materializeMirRoot } from '@/mir/graph';
 import type { DiagnosticBag } from './diagnostics';
 
 export type CanonicalText = ValueOrRef | undefined;
@@ -131,5 +132,5 @@ export const buildCanonicalIR = (
   version: mirDoc.version,
   metadata: mirDoc.metadata,
   logic: mirDoc.logic,
-  root: normalizeNode(mirDoc.ui.root, 'ui.root', bag),
+  root: normalizeNode(materializeMirRoot(mirDoc), 'ui.graph', bag),
 });

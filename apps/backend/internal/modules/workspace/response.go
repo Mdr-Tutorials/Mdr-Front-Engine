@@ -37,6 +37,15 @@ func MapStoreError(err error) *RequestFailure {
 	if errors.As(err, &syntaxErr) {
 		return NewRequestFailure(http.StatusUnprocessableEntity, ErrorMIRValidationFailed, "Invalid JSON document payload.", map[string]any{"offset": syntaxErr.Offset})
 	}
+	if errors.Is(err, ErrWorkspacePatchPathForbidden) {
+		return NewRequestFailure(http.StatusUnprocessableEntity, ErrorMIRGraphPatchPathForbidden, err.Error(), nil)
+	}
+	if errors.Is(err, ErrWorkspacePatchInvalid) || errors.Is(err, ErrWorkspacePatchPathMissing) || errors.Is(err, ErrWorkspacePatchTestFailed) {
+		return NewRequestFailure(http.StatusUnprocessableEntity, ErrorInvalidPayload, err.Error(), nil)
+	}
+	if errors.Is(err, ErrMIRV13ValidationFailed) {
+		return NewRequestFailure(http.StatusUnprocessableEntity, ErrorMIRValidationFailed, err.Error(), nil)
+	}
 	if IsWorkspaceEnvelopeError(err) {
 		return NewRequestFailure(http.StatusUnprocessableEntity, ErrorInvalidPayload, err.Error(), nil)
 	}
@@ -132,6 +141,7 @@ func IsWorkspaceEnvelopeError(err error) bool {
 func DefaultCapabilities() map[string]bool {
 	return map[string]bool{
 		"core.mir.document.update@1.0":             true,
+		"core.mir.graph.replace@1.0":               true,
 		"core.route.manifest.update@1.0":           true,
 		"core.settings.global.update@1.0":          true,
 		"core.nodegraph.node.move@1.0":             false,

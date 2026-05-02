@@ -1,10 +1,12 @@
 import type {
-  ComponentNode,
+  ComponentNodeData,
   MIRDocument,
   NodeDataScope,
+  NodeId,
   NodeListRender,
+  UiGraph,
 } from '@/core/types/engine.types';
-import { normalizeMirToV12 } from '@/mir/resolveMirDocument';
+import { normalizeMirToV13 } from '@/mir/resolveMirDocument';
 import {
   isDataReference,
   isItemReference,
@@ -33,6 +35,9 @@ const isScopeSourceReference = (value: unknown) =>
   isStateReference(value) ||
   isDataReference(value) ||
   isItemReference(value);
+
+const escapeJsonPointerSegment = (value: string) =>
+  value.replace(/~/g, '~0').replace(/\//g, '~1');
 
 const validateDataScope = (
   dataScope: NodeDataScope | undefined,
@@ -122,44 +127,216 @@ const validateListRender = (
   }
 };
 
-const collectNodeIds = (node: ComponentNode, bucket: Set<string>) => {
-  bucket.add(node.id);
-  (node.children ?? []).forEach((child) => collectNodeIds(child, bucket));
-};
-
-const walkNode = (
-  node: ComponentNode,
-  path: string,
-  allNodeIds: Set<string>,
+const validateNodeData = (
+  nodeId: NodeId,
+  node: ComponentNodeData,
+  allNodeIds: Set<NodeId>,
   issues: MirValidationIssue[]
 ) => {
+  const nodePath = `/ui/graph/nodesById/${escapeJsonPointerSegment(nodeId)}`;
+  if (node.id !== nodeId) {
+    issues.push({
+      code: 'MIR_GRAPH_NODE_KEY_MISMATCH',
+      path: `${nodePath}/id`,
+      message: 'nodesById key must match node.id.',
+    });
+  }
   if (!node.id.trim()) {
     issues.push({
       code: 'MIR_NODE_ID_REQUIRED',
-      path: `${path}/id`,
+      path: `${nodePath}/id`,
       message: 'node.id is required.',
     });
   }
   if (!node.type.trim()) {
     issues.push({
       code: 'MIR_NODE_TYPE_REQUIRED',
-      path: `${path}/type`,
+      path: `${nodePath}/type`,
       message: 'node.type is required.',
     });
   }
-  validateDataScope(node.data, path, issues);
-  validateListRender(node.list, path, allNodeIds, issues);
-  (node.children ?? []).forEach((child, index) =>
-    walkNode(child, `${path}/children/${index}`, allNodeIds, issues)
-  );
+  validateDataScope(node.data, nodePath, issues);
+  validateListRender(node.list, nodePath, allNodeIds, issues);
+};
+
+const addParentRef = (
+  parentRefs: Map<NodeId, string>,
+  childId: NodeId,
+  path: string,
+  issues: MirValidationIssue[]
+) => {
+  const previous = parentRefs.get(childId);
+  if (previous) {
+    issues.push({
+      code: 'MIR_GRAPH_MULTI_PARENT_NODE',
+      path,
+      message: `Node "${childId}" already has a parent at ${previous}.`,
+    });
+    return;
+  }
+  parentRefs.set(childId, path);
+};
+
+const validateGraphReferences = (
+  graph: UiGraph,
+  issues: MirValidationIssue[]
+) => {
+  const allNodeIds = new Set(Object.keys(graph.nodesById));
+  if (!allNodeIds.has(graph.rootId)) {
+    issues.push({
+      code: 'MIR_GRAPH_ROOT_NOT_FOUND',
+      path: '/ui/graph/rootId',
+      message: 'ui.graph.rootId must exist in nodesById.',
+    });
+  }
+
+  const parentRefs = new Map<NodeId, string>();
+  Object.entries(graph.childIdsById).forEach(([parentId, childIds]) => {
+    const parentPath = `/ui/graph/childIdsById/${escapeJsonPointerSegment(parentId)}`;
+    if (!allNodeIds.has(parentId)) {
+      issues.push({
+        code: 'MIR_GRAPH_PARENT_NOT_FOUND',
+        path: parentPath,
+        message: 'childIdsById owner must exist in nodesById.',
+      });
+    }
+    childIds.forEach((childId, index) => {
+      const childPath = `${parentPath}/${index}`;
+      if (!allNodeIds.has(childId)) {
+        issues.push({
+          code: 'MIR_GRAPH_CHILD_NOT_FOUND',
+          path: childPath,
+          message: 'Child node id does not exist in nodesById.',
+        });
+        return;
+      }
+      addParentRef(parentRefs, childId, childPath, issues);
+    });
+  });
+
+  Object.entries(graph.regionsById ?? {}).forEach(([parentId, regions]) => {
+    const parentPath = `/ui/graph/regionsById/${escapeJsonPointerSegment(parentId)}`;
+    if (!allNodeIds.has(parentId)) {
+      issues.push({
+        code: 'MIR_GRAPH_PARENT_NOT_FOUND',
+        path: parentPath,
+        message: 'regionsById owner must exist in nodesById.',
+      });
+    }
+    Object.entries(regions).forEach(([regionName, childIds]) => {
+      childIds.forEach((childId, index) => {
+        const childPath = `${parentPath}/${escapeJsonPointerSegment(regionName)}/${index}`;
+        if (!allNodeIds.has(childId)) {
+          issues.push({
+            code: 'MIR_GRAPH_CHILD_NOT_FOUND',
+            path: childPath,
+            message: 'Region child node id does not exist in nodesById.',
+          });
+          return;
+        }
+        addParentRef(parentRefs, childId, childPath, issues);
+      });
+    });
+  });
+
+  allNodeIds.forEach((nodeId) => {
+    if (nodeId === graph.rootId) return;
+    if (parentRefs.has(nodeId)) return;
+    issues.push({
+      code: 'MIR_GRAPH_ORPHAN_NODE',
+      path: `/ui/graph/nodesById/${escapeJsonPointerSegment(nodeId)}`,
+      message: 'Node is not reachable from root.',
+    });
+  });
+};
+
+const validateGraphAcyclic = (graph: UiGraph, issues: MirValidationIssue[]) => {
+  const visiting = new Set<NodeId>();
+  const visited = new Set<NodeId>();
+
+  const visit = (nodeId: NodeId, path: string) => {
+    if (visiting.has(nodeId)) {
+      issues.push({
+        code: 'MIR_GRAPH_CYCLE_DETECTED',
+        path,
+        message: `Cycle detected at node "${nodeId}".`,
+      });
+      return;
+    }
+    if (visited.has(nodeId)) return;
+    if (!graph.nodesById[nodeId]) return;
+    visiting.add(nodeId);
+    (graph.childIdsById[nodeId] ?? []).forEach((childId, index) =>
+      visit(
+        childId,
+        `/ui/graph/childIdsById/${escapeJsonPointerSegment(nodeId)}/${index}`
+      )
+    );
+    Object.entries(graph.regionsById?.[nodeId] ?? {}).forEach(
+      ([regionName, childIds]) => {
+        childIds.forEach((childId, index) =>
+          visit(
+            childId,
+            `/ui/graph/regionsById/${escapeJsonPointerSegment(nodeId)}/${escapeJsonPointerSegment(regionName)}/${index}`
+          )
+        );
+      }
+    );
+    visiting.delete(nodeId);
+    visited.add(nodeId);
+  };
+
+  visit(graph.rootId, '/ui/graph/rootId');
+};
+
+const validateAnimationReferences = (
+  document: MIRDocument,
+  allNodeIds: Set<NodeId>,
+  issues: MirValidationIssue[]
+) => {
+  document.animation?.timelines?.forEach((timeline, timelineIndex) => {
+    timeline.bindings.forEach((binding, bindingIndex) => {
+      if (!allNodeIds.has(binding.targetNodeId)) {
+        issues.push({
+          code: 'MIR_ANIMATION_TARGET_NOT_FOUND',
+          path: `/animation/timelines/${timelineIndex}/bindings/${bindingIndex}/targetNodeId`,
+          message: 'Animation binding targetNodeId was not found.',
+        });
+      }
+    });
+  });
 };
 
 export const validateMirDocument = (source: unknown): MirValidationResult => {
-  const document = normalizeMirToV12(source);
+  const document = normalizeMirToV13(source);
   const issues: MirValidationIssue[] = [];
-  const allNodeIds = new Set<string>();
-  collectNodeIds(document.ui.root, allNodeIds);
-  walkNode(document.ui.root, '/ui/root', allNodeIds, issues);
+  const original = isPlainObject(source) ? source : {};
+  const originalUi = isPlainObject(original.ui) ? original.ui : {};
+
+  if (originalUi.root !== undefined) {
+    issues.push({
+      code: 'MIR_GRAPH_ROOT_FORBIDDEN',
+      path: '/ui/root',
+      message: 'MIR v1.3 documents must not contain ui.root.',
+    });
+  }
+  if (document.version !== '1.3') {
+    issues.push({
+      code: 'MIR_VERSION_UNSUPPORTED',
+      path: '/version',
+      message: 'MIR document version must be 1.3.',
+    });
+  }
+
+  const graph = document.ui.graph;
+  const allNodeIds = new Set(Object.keys(graph.nodesById));
+  Object.entries(graph.nodesById).forEach(([nodeId, node]) =>
+    validateNodeData(nodeId, node, allNodeIds, issues)
+  );
+  validateGraphReferences(graph, issues);
+  validateGraphAcyclic(graph, issues);
+  validateAnimationReferences(document, allNodeIds, issues);
+
   return {
     document,
     issues,

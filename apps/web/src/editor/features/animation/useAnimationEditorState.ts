@@ -8,6 +8,7 @@ import type {
   SvgFilterDefinition,
 } from '@/core/types/engine.types';
 import { useEditorStore } from '@/editor/store/useEditorStore';
+import { materializeMirRoot } from '@/mir/graph';
 import {
   createAnimationStorageKey,
   createDefaultBinding,
@@ -173,8 +174,8 @@ export const useAnimationEditorState = () => {
   }, [activeTimelineId, animation.timelines]);
 
   const nodeTargetOptions = useMemo(
-    () => collectNodeTargets(mirDoc.ui.root),
-    [mirDoc.ui.root]
+    () => collectNodeTargets(materializeMirRoot(mirDoc)),
+    [mirDoc]
   );
   const svgFilters = animation.svgFilters ?? [];
   const expandedTrackIds =

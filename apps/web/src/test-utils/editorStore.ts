@@ -5,18 +5,21 @@ import {
 } from '@/editor/features/settings/SettingsDefaults';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
+import { normalizeMirDocument } from '@/mir/resolveMirDocument';
 
 type EditorState = ReturnType<typeof useEditorStore.getState>;
 
 export const createMirDoc = (children: ComponentNode[] = []): MIRDocument => ({
-  version: '1.0',
-  ui: {
-    root: {
-      id: 'root',
-      type: 'container',
-      ...(children.length ? { children } : {}),
+  ...normalizeMirDocument({
+    version: '1.0',
+    ui: {
+      root: {
+        id: 'root',
+        type: 'container',
+        ...(children.length ? { children } : {}),
+      },
     },
-  },
+  }),
 });
 
 export const resetEditorStore = (overrides: Partial<EditorState> = {}) => {

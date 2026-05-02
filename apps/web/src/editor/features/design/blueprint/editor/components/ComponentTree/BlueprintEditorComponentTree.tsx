@@ -5,6 +5,7 @@ import { ChevronDown, Layers, Trash2 } from 'lucide-react';
 import { useDroppable } from '@dnd-kit/core';
 import type { ComponentNode } from '@/core/types/engine.types';
 import { useEditorStore } from '@/editor/store/useEditorStore';
+import { materializeMirRoot } from '@/mir/graph';
 import { BlueprintTreeNode } from './BlueprintTreeNode';
 import {
   collectBranchExpandedKeys,
@@ -40,7 +41,7 @@ export function BlueprintEditorComponentTree({
 }: BlueprintEditorComponentTreeProps) {
   const { t } = useTranslation('blueprint');
   const mirDoc = useEditorStore((state) => state.mirDoc);
-  const rootNode = mirDoc?.ui?.root;
+  const rootNode = useMemo(() => materializeMirRoot(mirDoc), [mirDoc]);
   const isDeleteDisabled =
     !selectedId || !rootNode || selectedId === rootNode.id;
   const { setNodeRef: setRootDropRef, isOver: isOverRoot } = useDroppable({

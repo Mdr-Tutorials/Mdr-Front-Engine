@@ -10,11 +10,12 @@ import (
 )
 
 const (
-	ErrorUnsupportedIntent   = "UNSUPPORTED_INTENT"
-	ErrorReservedDomain      = "RESERVED_DOMAIN_DISABLED"
-	ErrorInvalidVersion      = "INVALID_ENVELOPE_VERSION"
-	ErrorInvalidPayload      = "INVALID_ENVELOPE_PAYLOAD"
-	ErrorMIRValidationFailed = "MIR_VALIDATION_FAILED"
+	ErrorUnsupportedIntent          = "UNSUPPORTED_INTENT"
+	ErrorReservedDomain             = "RESERVED_DOMAIN_DISABLED"
+	ErrorInvalidVersion             = "INVALID_ENVELOPE_VERSION"
+	ErrorInvalidPayload             = "INVALID_ENVELOPE_PAYLOAD"
+	ErrorMIRValidationFailed        = "MIR_VALIDATION_FAILED"
+	ErrorMIRGraphPatchPathForbidden = "MIR_GRAPH_PATCH_PATH_FORBIDDEN"
 )
 
 type IntentActor struct {

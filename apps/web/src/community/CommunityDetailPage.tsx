@@ -273,7 +273,6 @@ export function CommunityDetailPage() {
                 <div className="max-w-full overflow-auto rounded-2xl border border-black/10 bg-white p-3">
                   <MIRRenderer
                     key={`community-preview-${runtimeRegistryRevision}`}
-                    node={previewMirDoc.ui.root}
                     mirDoc={previewMirDoc}
                   />
                 </div>

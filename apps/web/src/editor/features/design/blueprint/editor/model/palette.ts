@@ -19,6 +19,7 @@
   TREE_SELECT_OPTIONS,
 } from '@/editor/features/design/BlueprintEditor.data';
 import type { ComponentNode, MIRDocument } from '@/core/types/engine.types';
+import { materializeMirRoot } from '@/mir/graph';
 import { createRadixNodeFromPaletteItem } from '@/editor/features/design/BlueprintEditor.radix';
 import { buildLayoutPatternNode } from '@/editor/features/design/blueprint/layoutPatterns';
 import { getComponentItemById } from '@/editor/features/design/blueprint/registry';
@@ -33,7 +34,7 @@ const collectTypeCounts = (
 
 export const createNodeIdFactory = (doc: MIRDocument) => {
   const counts: Record<string, number> = {};
-  collectTypeCounts(doc.ui.root, counts);
+  collectTypeCounts(materializeMirRoot(doc), counts);
   return (type: string) => {
     const next = (counts[type] ?? 0) + 1;
     counts[type] = next;

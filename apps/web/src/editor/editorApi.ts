@@ -104,12 +104,9 @@ export type WorkspaceCapabilitiesResponse = {
   capabilities: Record<string, boolean>;
 };
 
-export type SaveWorkspaceDocumentRequest = {
+export type PatchWorkspaceDocumentRequest = {
   expectedContentRev: number;
-  expectedWorkspaceRev?: number;
-  expectedRouteRev?: number;
-  content: MIRDocument;
-  command?: WorkspaceCommandEnvelope;
+  command: WorkspaceCommandEnvelope;
   clientMutationId?: string;
 };
 
@@ -197,17 +194,17 @@ export const editorApi = {
       options
     ),
 
-  saveWorkspaceDocument: async (
+  patchWorkspaceDocument: async (
     token: string,
     workspaceId: string,
     documentId: string,
-    data: SaveWorkspaceDocumentRequest
+    data: PatchWorkspaceDocumentRequest
   ) =>
     request<WorkspaceMutationResponse>(
       token,
       `/workspaces/${encodeURIComponent(workspaceId)}/documents/${encodeURIComponent(documentId)}`,
       {
-        method: 'PUT',
+        method: 'PATCH',
         body: JSON.stringify(data),
       }
     ),
@@ -239,11 +236,10 @@ export const editorApi = {
       expectedRouteRev?: number;
       operations: Array<
         | {
-            op: 'saveDocument';
+            op: 'patchDocument';
             documentId: string;
             expectedContentRev: number;
-            content: MIRDocument;
-            command?: WorkspaceCommandEnvelope;
+            command: WorkspaceCommandEnvelope;
           }
         | {
             op: 'intent';

@@ -12,6 +12,7 @@ import { useDroppable } from '@dnd-kit/core';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
 import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
+import { materializeMirRoot } from '@/mir/graph';
 import {
   createOrderedComponentRegistry,
   getRuntimeRegistryRevision,
@@ -77,10 +78,11 @@ export function BlueprintEditorCanvas({
     getRuntimeRegistryRevision()
   );
   const mirDoc = useEditorStore((state) => state.mirDoc);
+  const mirRoot = useMemo(() => materializeMirRoot(mirDoc), [mirDoc]);
   const { activeRouteNode, outletContentNode } = useActiveRoutePreview();
   const routeDiagnostics = useMemo(
-    () => createRouteCanvasDiagnostics(activeRouteNode, mirDoc.ui.root),
-    [activeRouteNode, mirDoc.ui.root]
+    () => createRouteCanvasDiagnostics(activeRouteNode, mirRoot),
+    [activeRouteNode, mirRoot]
   );
   const surfaceRef = useRef<HTMLDivElement | null>(null);
   const panState = useRef<PanState>({
@@ -385,7 +387,7 @@ export function BlueprintEditorCanvas({
     onSelectNode(nodeId);
   };
 
-  const hasChildren = Boolean(mirDoc?.ui?.root?.children?.length);
+  const hasChildren = Boolean(mirRoot.children?.length);
 
   return (
     <section
@@ -423,7 +425,6 @@ export function BlueprintEditorCanvas({
               <CanvasSvgFilters filters={animationPreview.svgFilters} />
               {hasChildren ? (
                 <MIRRenderer
-                  node={mirDoc.ui.root}
                   mirDoc={mirDoc}
                   runtimeState={runtimeState}
                   overrides={{ currentPath }}

@@ -8,6 +8,7 @@ import type {
   SvgFilterDefinition,
 } from '@/core/types/engine.types';
 import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
+import { materializeMirRoot } from '@/mir/graph';
 import { buildAnimationPreviewSnapshot } from '@/editor/features/animation/preview/animationPreview';
 
 type AnimationEditorPreviewCanvasProps = {
@@ -113,8 +114,8 @@ export const AnimationEditorPreviewCanvas = ({
   );
   const previewNode = useMemo(() => {
     if (!previewNodeId?.trim()) return undefined;
-    return findNodeById(mirDoc.ui.root, previewNodeId.trim());
-  }, [mirDoc.ui.root, previewNodeId]);
+    return findNodeById(materializeMirRoot(mirDoc), previewNodeId.trim());
+  }, [mirDoc, previewNodeId]);
 
   return (
     <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl bg-[radial-gradient(circle_at_30%_20%,rgb(var(--color-1-rgb)_/_0.9),transparent_55%),radial-gradient(circle_at_80%_30%,rgb(var(--color-2-rgb)_/_0.6),transparent_55%),linear-gradient(120deg,rgb(var(--color-0-rgb)_/_0.9),rgb(var(--color-1-rgb)_/_0.96))] shadow-[0_18px_38px_rgba(0,0,0,0.06)]">

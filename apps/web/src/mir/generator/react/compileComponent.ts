@@ -1,4 +1,5 @@
 import type { ComponentNode } from '@/core/types/engine.types';
+import { materializeMirRoot } from '@/mir/graph';
 import type { CanonicalNode } from '@/mir/generator/core/canonicalIR';
 import { buildCanonicalIR } from '@/mir/generator/core/canonicalIR';
 import type { AdapterImportSpec } from '@/mir/generator/core/adapter';
@@ -519,7 +520,7 @@ export const compileMirToReactComponent = (
 ): ReactComponentCompileResult => {
   const bag = createDiagnosticBag();
   const canonical = buildCanonicalIR(mirDoc, bag);
-  const mountedCssFiles = collectMountedCssFiles(mirDoc.ui.root);
+  const mountedCssFiles = collectMountedCssFiles(materializeMirRoot(mirDoc));
 
   const componentName =
     options?.componentName ||

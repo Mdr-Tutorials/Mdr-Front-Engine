@@ -145,7 +145,7 @@ export function ExportMirPage() {
   }, [validatedMirDoc]);
 
   const reactBundle = useMemo(() => {
-    if (!validatedMirDoc?.ui?.root) return null;
+    if (!validatedMirDoc?.ui?.graph) return null;
     if (hasMirValidationError) {
       return {
         entryFilePath: 'validation-error.ts',

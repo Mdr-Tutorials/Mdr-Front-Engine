@@ -1,5 +1,5 @@
 /**
- * MIR 核心类型定义 v1.2
+ * MIR 核心类型定义 v1.3
  */
 
 export type ParamReference = { $param: string };
@@ -154,6 +154,18 @@ export interface ComponentNode {
   >;
 }
 
+export type NodeId = string;
+
+export type ComponentNodeData = Omit<ComponentNode, 'children'>;
+
+export type UiGraph = {
+  version: 1;
+  rootId: NodeId;
+  nodesById: Record<NodeId, ComponentNodeData>;
+  childIdsById: Record<NodeId, NodeId[]>;
+  regionsById?: Record<NodeId, Record<string, NodeId[]>>;
+};
+
 // 3. 逻辑层定义 (State & Props)
 export interface LogicDefinition {
   props?: Record<
@@ -180,15 +192,16 @@ export interface LogicDefinition {
 
 // 4. 根文档结构
 export interface MIRDocument {
-  version: string;
+  version: '1.3';
   metadata?: {
     name?: string;
     description?: string;
     author?: string;
     createdAt?: string;
+    updatedAt?: string;
   };
   ui: {
-    root: ComponentNode;
+    graph: UiGraph;
   };
   logic?: LogicDefinition; // 👈 挂载逻辑定义
   animation?: AnimationDefinition;

@@ -2,6 +2,7 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import type { ComponentNode } from '@/core/types/engine.types';
+import { materializeMirRoot, normalizeTreeToUiGraph } from '@/mir/graph';
 import type { IconRef } from '@/mir/renderer/iconRegistry';
 import type { TriggerEntry } from '@/editor/features/design/inspector/InspectorContext.types';
 import { createDefaultActionParams } from '@/mir/actions/registry';
@@ -55,14 +56,15 @@ export const useBlueprintEditorInspectorController = () => {
   const selectedId = useEditorStore(
     (state) => state.blueprintStateByProject[blueprintKey]?.selectedId
   );
+  const mirRoot = useMemo(() => materializeMirRoot(mirDoc), [mirDoc]);
   const selectedNode = useMemo(
-    () => (selectedId ? findNodeById(mirDoc.ui.root, selectedId) : null),
-    [mirDoc.ui.root, selectedId]
+    () => (selectedId ? findNodeById(mirRoot, selectedId) : null),
+    [mirRoot, selectedId]
   );
   const selectedParentNode = useMemo(() => {
     if (!selectedId) return null;
-    return findParentNodeById(mirDoc.ui.root, selectedId);
-  }, [mirDoc.ui.root, selectedId]);
+    return findParentNodeById(mirRoot, selectedId);
+  }, [mirRoot, selectedId]);
   const routeOptions = useMemo(
     () => flattenRouteItems(routeManifest.root, '/'),
     [routeManifest.root]
@@ -97,10 +99,10 @@ export const useBlueprintEditorInspectorController = () => {
     () => ({ ...persistedExpandedPanels })
   );
   const [isIconPickerOpen, setIconPickerOpen] = useState(false);
-  const allIds = useMemo(() => collectIds(mirDoc.ui.root), [mirDoc.ui.root]);
+  const allIds = useMemo(() => collectIds(mirRoot), [mirRoot]);
   const dataModelFieldPaths = useMemo(() => {
     if (!selectedId) return [];
-    const nodePath = findNodePathById(mirDoc.ui.root, selectedId);
+    const nodePath = findNodePathById(mirRoot, selectedId);
     if (!nodePath.length) return [];
     for (let index = nodePath.length - 1; index >= 0; index -= 1) {
       const mountedDataModel = extractMountedDataModel(nodePath[index]);
@@ -109,7 +111,7 @@ export const useBlueprintEditorInspectorController = () => {
       }
     }
     return [];
-  }, [mirDoc.ui.root, selectedId]);
+  }, [mirRoot, selectedId]);
   const animationDefinition = useMemo(
     () =>
       normalizeAnimationDefinition(mirDoc.animation) ?? {
@@ -254,16 +256,18 @@ export const useBlueprintEditorInspectorController = () => {
     const currentSelectedId = selectedNode.id;
     const currentPatternId = getLayoutPatternId(selectedNode);
     updateMirDoc((doc) => {
-      const result = updateNodeById(doc.ui.root, selectedNode.id, updater);
+      const root = materializeMirRoot(doc);
+      const result = updateNodeById(root, selectedNode.id, updater);
       if (!result.updated) return doc;
-      const nextDoc = { ...doc, ui: { ...doc.ui, root: result.node } };
-      const keptSelection = findNodeById(nextDoc.ui.root, currentSelectedId);
+      const nextDoc = {
+        ...doc,
+        ui: { graph: normalizeTreeToUiGraph(result.node) },
+      };
+      const nextRoot = materializeMirRoot(nextDoc);
+      const keptSelection = findNodeById(nextRoot, currentSelectedId);
       if (keptSelection) return nextDoc;
       if (!currentPatternId) return nextDoc;
-      const patternRootId = findLayoutPatternRootId(
-        nextDoc.ui.root,
-        currentPatternId
-      );
+      const patternRootId = findLayoutPatternRootId(nextRoot, currentPatternId);
       if (patternRootId) {
         setBlueprintState(blueprintKey, { selectedId: patternRootId });
       }
@@ -274,13 +278,17 @@ export const useBlueprintEditorInspectorController = () => {
   const applyRename = () => {
     if (!selectedNode?.id || !canApply) return;
     const nextId = trimmedDraftId;
-    updateMirDoc((doc) => ({
-      ...doc,
-      ui: {
-        ...doc.ui,
-        root: renameNodeId(doc.ui.root, selectedNode.id, nextId),
-      },
-    }));
+    updateMirDoc((doc) => {
+      const nextRoot = renameNodeId(
+        materializeMirRoot(doc),
+        selectedNode.id,
+        nextId
+      );
+      return {
+        ...doc,
+        ui: { graph: normalizeTreeToUiGraph(nextRoot) },
+      };
+    });
     setBlueprintState(blueprintKey, { selectedId: nextId });
   };
 

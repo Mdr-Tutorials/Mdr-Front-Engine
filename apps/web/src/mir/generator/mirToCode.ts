@@ -4,6 +4,7 @@ import {
   componentToReact,
   componentToVue,
 } from '@builder.io/mitosis';
+import { materializeMirRoot } from '@/mir/graph';
 
 export const testSimpleGeneration = (target: 'react' | 'vue') => {
   // 这是一个最简单的、手写的 Mitosis 组件对象
@@ -96,6 +97,7 @@ const transformNode = (node: any): MitosisNode => {
 };
 
 export const convertMirToCode = (mirDoc: any, target: 'react' | 'vue') => {
+  const root = materializeMirRoot(mirDoc);
   // 2. 构建符合严格接口的 MitosisComponent
   const mitosisJson: MitosisComponent = {
     '@type': '@builder.io/mitosis/component',
@@ -118,10 +120,10 @@ export const convertMirToCode = (mirDoc: any, target: 'react' | 'vue') => {
       onEvent: [],
     },
     context: { get: {}, set: {} },
-    children: [transformNode(mirDoc.ui.root)],
+    children: [transformNode(root)],
     subComponents: [],
     meta: {},
-    style: JSON.stringify(mirDoc.ui.root.style || {}),
+    style: JSON.stringify(root.style || {}),
   };
 
   // 3. 调用转换函数

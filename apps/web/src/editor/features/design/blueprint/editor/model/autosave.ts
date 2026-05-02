@@ -11,7 +11,7 @@ export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 export type SaveIndicatorTone = 'error' | 'warning' | 'success' | 'neutral';
 
 type WorkspaceMutation = Awaited<
-  ReturnType<typeof editorApi.saveWorkspaceDocument>
+  ReturnType<typeof editorApi.patchWorkspaceDocument>
 >;
 
 type UseBlueprintAutosaveOptions = {
@@ -50,15 +50,17 @@ const createCommandId = () => {
 
 const createDocumentUpdateCommand = (
   workspaceId: string,
-  documentId: string
+  documentId: string,
+  nextGraph: MIRDocument['ui']['graph'],
+  previousGraph: MIRDocument['ui']['graph']
 ): WorkspaceCommandEnvelope => ({
   id: createCommandId(),
   namespace: 'core.mir',
-  type: 'document.update',
+  type: 'graph.replace',
   version: '1.0',
   issuedAt: new Date().toISOString(),
-  forwardOps: [],
-  reverseOps: [],
+  forwardOps: [{ op: 'replace', path: '/ui/graph', value: nextGraph }],
+  reverseOps: [{ op: 'replace', path: '/ui/graph', value: previousGraph }],
   target: { workspaceId, documentId },
 });
 
@@ -78,7 +80,7 @@ const resolveApiErrorMessage = (error: unknown): string | null => {
 
 export const useBlueprintAutosave = ({
   token,
-  projectId,
+  projectId: _projectId,
   mirDoc,
   mirDocRevision,
   autosaveMode,
@@ -93,6 +95,7 @@ export const useBlueprintAutosave = ({
   const { t } = useTranslation('blueprint');
   const saveRequestSeqRef = useRef(0);
   const isSavingRef = useRef(false);
+  const lastSavedGraphRef = useRef(mirDoc.ui.graph);
   const [lastSavedRevision, setLastSavedRevision] = useState(mirDocRevision);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [saveTransport, setSaveTransport] = useState<SaveTransport>(null);
@@ -170,18 +173,12 @@ export const useBlueprintAutosave = ({
   const workspaceRetryMessage = t('autosave.messages.workspaceRetry', {
     defaultValue: 'Workspace save failed. Retrying on next change.',
   });
-  const projectRetryMessage = t('autosave.messages.projectRetry', {
-    defaultValue: 'Project save failed. Retrying on next change.',
-  });
   const workspaceUnavailableMessage = t(
     'autosave.messages.workspaceUnavailableUsingProject',
     {
       defaultValue: 'Workspace document save unavailable. Using project save.',
     }
   );
-  const projectSavedMessage = t('autosave.status.projectSaved', {
-    defaultValue: 'Saved to project.',
-  });
   const mirValidationFailedMessageKey = 'autosave.messages.mirValidationFailed';
 
   const flushSave = useCallback(() => {
@@ -213,7 +210,9 @@ export const useBlueprintAutosave = ({
     ) {
       const command = createDocumentUpdateCommand(
         workspaceId,
-        activeDocumentId
+        activeDocumentId,
+        mirDoc.ui.graph,
+        lastSavedGraphRef.current
       );
       const requestSeq = saveRequestSeqRef.current + 1;
       saveRequestSeqRef.current = requestSeq;
@@ -222,9 +221,8 @@ export const useBlueprintAutosave = ({
       setSaveStatus('saving');
       setSaveMessage('');
       editorApi
-        .saveWorkspaceDocument(token, workspaceId, activeDocumentId, {
+        .patchWorkspaceDocument(token, workspaceId, activeDocumentId, {
           expectedContentRev: activeDocumentContentRev,
-          content: mirDoc,
           command,
         })
         .then((mutation) => {
@@ -232,6 +230,7 @@ export const useBlueprintAutosave = ({
             return;
           }
           applyWorkspaceMutation(mutation);
+          lastSavedGraphRef.current = mirDoc.ui.graph;
           setLastSavedRevision((previous) =>
             Math.max(previous, targetRevision)
           );
@@ -255,41 +254,9 @@ export const useBlueprintAutosave = ({
       return;
     }
 
-    if (projectId) {
-      const requestSeq = saveRequestSeqRef.current + 1;
-      saveRequestSeqRef.current = requestSeq;
-      isSavingRef.current = true;
-      const fallbackMessage = isWorkspaceSaveDisabled
-        ? workspaceUnavailableMessage
-        : '';
-      setSaveTransport('project');
-      setSaveStatus('saving');
-      setSaveMessage(fallbackMessage);
-      editorApi
-        .saveProjectMir(token, projectId, mirDoc)
-        .then(() => {
-          if (saveRequestSeqRef.current !== requestSeq) {
-            return;
-          }
-          setLastSavedRevision((previous) =>
-            Math.max(previous, targetRevision)
-          );
-          setSaveStatus('saved');
-          setSaveMessage(fallbackMessage || projectSavedMessage);
-        })
-        .catch((error: unknown) => {
-          if (saveRequestSeqRef.current !== requestSeq) {
-            return;
-          }
-          setSaveStatus('error');
-          setSaveMessage(resolveApiErrorMessage(error) || projectRetryMessage);
-        })
-        .finally(() => {
-          if (saveRequestSeqRef.current === requestSeq) {
-            isSavingRef.current = false;
-          }
-        });
-    }
+    setSaveTransport(null);
+    setSaveStatus('error');
+    setSaveMessage(workspaceUnavailableMessage);
   }, [
     activeDocumentContentRev,
     activeDocumentId,
@@ -300,9 +267,6 @@ export const useBlueprintAutosave = ({
     isWorkspaceSaveDisabled,
     mirDoc,
     mirDocRevision,
-    projectId,
-    projectRetryMessage,
-    projectSavedMessage,
     t,
     token,
     workspaceCapabilitiesLoaded,

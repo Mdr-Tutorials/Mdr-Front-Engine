@@ -13,6 +13,7 @@ import {
   isBuiltInActionName,
   type BuiltInActionContext,
 } from '@/mir/actions/registry';
+import { materializeUiTree } from '@/mir/graph/materialize';
 import { deepResolveValueOrRef, readValueByPath } from '@/mir/shared/valueRef';
 import { resolveLinkCapability } from './capabilities';
 import { renderRichTextValue } from './richText';
@@ -326,7 +327,7 @@ const emitSelectionDebug = (detail: Record<string, unknown>) => {
 };
 
 interface MIRRendererProps {
-  node: ComponentNode;
+  node?: ComponentNode;
   mirDoc: MIRDocument;
   overrides?: Record<string, any>;
   runtimeState?: Record<string, unknown>;
@@ -674,6 +675,10 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
   outletContentNode,
   outletTargetNodeId,
 }) => {
+  const rootNode = useMemo(
+    () => node ?? materializeUiTree(mirDoc.ui.graph),
+    [mirDoc.ui.graph, node]
+  );
   const effectiveParams = useMemo(() => {
     const result: RenderParams = {};
     const propsDef = mirDoc.logic?.props || {};
@@ -753,10 +758,10 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
     () => registryProp ?? createDefaultComponentRegistry(),
     [registryProp]
   );
-  const nodeEventsById = useMemo(() => collectNodeEvents(node), [node]);
-  const nodesById = useMemo(() => collectNodesById(node), [node]);
+  const nodeEventsById = useMemo(() => collectNodeEvents(rootNode), [rootNode]);
+  const nodesById = useMemo(() => collectNodesById(rootNode), [rootNode]);
   const mountedCssBlocks = useMemo(() => {
-    const blocks = collectMountedCssFromNode(node);
+    const blocks = collectMountedCssFromNode(rootNode);
     const seen = new Set<string>();
     return blocks.filter((block) => {
       const dedupeKey = block.content.trim();
@@ -764,7 +769,7 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
       seen.add(dedupeKey);
       return true;
     });
-  }, [node]);
+  }, [rootNode]);
 
   const dispatchBuiltInAction = useCallback(
     (
@@ -950,7 +955,7 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
           dangerouslySetInnerHTML={{ __html: block.content }}
         />
       ))}
-      <MIRNode node={node} context={context} registry={registry} />
+      <MIRNode node={rootNode} context={context} registry={registry} />
     </div>
   );
 };

@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-var defaultMIRDocument = json.RawMessage(`{"version":"1.0","ui":{"root":{"id":"root","type":"container"}}}`)
+var defaultMIRDocument = json.RawMessage(`{"version":"1.3","ui":{"graph":{"version":1,"rootId":"root","nodesById":{"root":{"id":"root","type":"container"}},"childIdsById":{"root":[]}}}}`)
 
 type ProjectStore struct {
 	db *sql.DB
@@ -397,6 +397,23 @@ func normalizeMIR(mir json.RawMessage) (json.RawMessage, error) {
 	var payload map[string]any
 	if err := json.Unmarshal(mir, &payload); err != nil {
 		return nil, err
+	}
+	if payload["version"] != "1.3" {
+		return nil, errors.New("MIR document version must be 1.3")
+	}
+	ui, ok := payload["ui"].(map[string]any)
+	if !ok {
+		return nil, errors.New("MIR document ui.graph is required")
+	}
+	if _, hasRoot := ui["root"]; hasRoot {
+		return nil, errors.New("MIR v1.3 must not contain ui.root")
+	}
+	graph, ok := ui["graph"].(map[string]any)
+	if !ok {
+		return nil, errors.New("MIR document ui.graph is required")
+	}
+	if _, ok := graph["nodesById"].(map[string]any); !ok {
+		return nil, errors.New("MIR document ui.graph.nodesById is required")
 	}
 	normalized, err := json.Marshal(payload)
 	if err != nil {

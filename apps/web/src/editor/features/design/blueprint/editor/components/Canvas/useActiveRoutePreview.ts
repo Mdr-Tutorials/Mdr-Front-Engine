@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import type { WorkspaceRouteNode } from '@/editor/store/useEditorStore';
 import { useEditorStore } from '@/editor/store/useEditorStore';
+import { materializeMirRoot } from '@/mir/graph';
 
 export function useActiveRoutePreview() {
   const routeManifest = useEditorStore((state) => state.routeManifest);
@@ -25,7 +26,7 @@ export function useActiveRoutePreview() {
     const pageDocId = activeRouteNode?.pageDocId;
     if (!pageDocId) return null;
     const pageDoc = workspaceDocumentsById[pageDocId];
-    return pageDoc?.content?.ui?.root ?? null;
+    return pageDoc?.content ? materializeMirRoot(pageDoc.content) : null;
   }, [activeRouteNode, workspaceDocumentsById]);
 
   return { activeRouteNode, outletContentNode };

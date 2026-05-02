@@ -33,7 +33,6 @@ func (handler *Handler) Routes(requireAuth gin.HandlerFunc) RouteHandlers {
 		GetProject:     handler.HandleGetProject,
 		UpdateProject:  handler.HandleUpdateProject,
 		GetProjectMIR:  handler.HandleGetProjectMIR,
-		SaveProjectMIR: handler.HandleSaveProjectMIR,
 		PublishProject: handler.HandlePublishProject,
 		DeleteProject:  handler.HandleDeleteProject,
 		ListCommunity:  handler.HandleCommunityListProjects,
@@ -113,6 +112,10 @@ func (handler *Handler) HandleGetProject(c *gin.Context) {
 		respondError(c, http.StatusInternalServerError, "project_get_failed", "Could not load project.")
 		return
 	}
+	if _, err := normalizeMIR(project.MIR); err != nil {
+		respondError(c, http.StatusUnprocessableEntity, "invalid_mir", "This project uses a legacy MIR document and cannot be opened in v1.3.")
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"project": project})
 }
 
@@ -162,37 +165,11 @@ func (handler *Handler) HandleGetProjectMIR(c *gin.Context) {
 		respondError(c, http.StatusInternalServerError, "project_get_failed", "Could not load project.")
 		return
 	}
+	if _, err := normalizeMIR(project.MIR); err != nil {
+		respondError(c, http.StatusUnprocessableEntity, "invalid_mir", "This project uses a legacy MIR document and cannot be opened in v1.3.")
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"id": project.ID, "mir": project.MIR, "updatedAt": project.UpdatedAt})
-}
-
-func (handler *Handler) HandleSaveProjectMIR(c *gin.Context) {
-	user, ok := backendauth.GetAuthUser[backendauth.User](c)
-	if !ok {
-		respondError(c, http.StatusUnauthorized, "unauthorized", "Authentication required.")
-		return
-	}
-	var request struct {
-		MIR json.RawMessage `json:"mir"`
-	}
-	if err := c.ShouldBindJSON(&request); err != nil {
-		respondError(c, http.StatusBadRequest, "invalid_payload", "Invalid request payload.")
-		return
-	}
-	project, err := handler.store.SaveMIR(user.ID, c.Param("id"), request.MIR)
-	if err != nil {
-		if errors.Is(err, ErrProjectNotFound) {
-			respondError(c, http.StatusNotFound, "not_found", "Project not found.")
-			return
-		}
-		var syntaxErr *json.SyntaxError
-		if errors.As(err, &syntaxErr) {
-			respondError(c, http.StatusBadRequest, "invalid_mir", "MIR document is invalid.")
-			return
-		}
-		respondError(c, http.StatusInternalServerError, "project_save_failed", "Could not save project.")
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"project": project})
 }
 
 func (handler *Handler) HandlePublishProject(c *gin.Context) {

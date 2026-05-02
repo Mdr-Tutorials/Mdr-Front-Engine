@@ -15,6 +15,7 @@ import { useBlueprintDragDrop } from '@/editor/features/design/BlueprintEditor.d
 import { executeBlueprintGraph } from '@/editor/features/design/BlueprintGraphExecutor';
 import { createNodeIdFactory } from '@/editor/features/design/BlueprintEditor.palette';
 import type { ComponentNode, MIRDocument } from '@/core/types/engine.types';
+import { materializeMirRoot, normalizeTreeToUiGraph } from '@/mir/graph';
 import {
   cloneNodeWithNewIds,
   findNodeById,
@@ -43,7 +44,7 @@ import {
 } from '@/editor/store/routeManifest';
 import type { AutosaveMode } from '@/editor/features/design/BlueprintEditor.autosave';
 
-const CAPABILITY_MIR_DOCUMENT_UPDATE = 'core.mir.document.update@1.0';
+const CAPABILITY_MIR_DOCUMENT_UPDATE = 'core.mir.graph.replace@1.0';
 const CAPABILITY_ROUTE_MANIFEST_UPDATE = 'core.route.manifest.update@1.0';
 
 const createRouteId = () => {
@@ -536,15 +537,16 @@ export const useBlueprintEditorController = () => {
     let nextSelectedId: string | undefined;
     let removed = false;
     updateMirDoc((doc) => {
-      if (selectedId === doc.ui.root.id) return doc;
-      const parentId = findParentId(doc.ui.root, selectedId);
-      const removal = removeNodeById(doc.ui.root, selectedId);
+      const root = materializeMirRoot(doc);
+      if (selectedId === root.id) return doc;
+      const parentId = findParentId(root, selectedId);
+      const removal = removeNodeById(root, selectedId);
       removed = removal.removed;
       if (!removal.removed) return doc;
       nextSelectedId = parentId ?? undefined;
       const nextDoc = {
         ...doc,
-        ui: { ...doc.ui, root: removal.node },
+        ui: { graph: normalizeTreeToUiGraph(removal.node) },
       };
       return cleanupDeletedNodeAnimationBindings(nextDoc);
     });
@@ -558,9 +560,10 @@ export const useBlueprintEditorController = () => {
     let nextSelectedId: string | undefined;
     let removed = false;
     updateMirDoc((doc) => {
-      if (nodeId === doc.ui.root.id) return doc;
-      const parentId = findParentId(doc.ui.root, nodeId);
-      const removal = removeNodeById(doc.ui.root, nodeId);
+      const root = materializeMirRoot(doc);
+      if (nodeId === root.id) return doc;
+      const parentId = findParentId(root, nodeId);
+      const removal = removeNodeById(root, nodeId);
       removed = removal.removed;
       if (!removal.removed) return doc;
       if (selectedId === nodeId) {
@@ -568,7 +571,7 @@ export const useBlueprintEditorController = () => {
       }
       const nextDoc = {
         ...doc,
-        ui: { ...doc.ui, root: removal.node },
+        ui: { graph: normalizeTreeToUiGraph(removal.node) },
       };
       return cleanupDeletedNodeAnimationBindings(nextDoc);
     });
@@ -581,20 +584,21 @@ export const useBlueprintEditorController = () => {
     if (!nodeId) return;
     let nextNodeId = '';
     updateMirDoc((doc) => {
-      if (nodeId === doc.ui.root.id) return doc;
-      const source = findNodeById(doc.ui.root, nodeId);
+      const root = materializeMirRoot(doc);
+      if (nodeId === root.id) return doc;
+      const source = findNodeById(root, nodeId);
       if (!source) return doc;
       const createId = createNodeIdFactory(doc);
       const cloned = cloneNodeWithNewIds(source, createId);
       nextNodeId = cloned.id;
-      const insertedSibling = insertAfterById(doc.ui.root, nodeId, cloned);
+      const insertedSibling = insertAfterById(root, nodeId, cloned);
       if (insertedSibling.inserted) {
         return {
           ...doc,
-          ui: { ...doc.ui, root: insertedSibling.node },
+          ui: { graph: normalizeTreeToUiGraph(insertedSibling.node) },
         };
       }
-      return insertIntoMirDoc(doc, doc.ui.root.id, cloned);
+      return insertIntoMirDoc(doc, root.id, cloned);
     });
     if (nextNodeId) {
       handleNodeSelect(nextNodeId);
@@ -605,13 +609,14 @@ export const useBlueprintEditorController = () => {
     if (!nodeId) return;
     let moved = false;
     updateMirDoc((doc) => {
-      if (nodeId === doc.ui.root.id) return doc;
-      const parentId = findParentId(doc.ui.root, nodeId);
+      const root = materializeMirRoot(doc);
+      if (nodeId === root.id) return doc;
+      const parentId = findParentId(root, nodeId);
       if (!parentId) return doc;
-      const result = moveChildById(doc.ui.root, parentId, nodeId, direction);
+      const result = moveChildById(root, parentId, nodeId, direction);
       moved = result.moved;
       return result.moved
-        ? { ...doc, ui: { ...doc.ui, root: result.node } }
+        ? { ...doc, ui: { graph: normalizeTreeToUiGraph(result.node) } }
         : doc;
     });
     if (moved) {
@@ -722,7 +727,7 @@ const cleanupDeletedNodeAnimationBindings = (doc: MIRDocument): MIRDocument => {
   if (!animation) return doc;
 
   const validNodeIds = new Set<string>();
-  collectNodeIds(doc.ui.root, validNodeIds);
+  collectNodeIds(materializeMirRoot(doc), validNodeIds);
 
   let changed = false;
   const nextTimelines = animation.timelines.map((timeline) => {

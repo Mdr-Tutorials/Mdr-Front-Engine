@@ -21,6 +21,7 @@ import {
   type TreeDropPlacement,
 } from '@/editor/features/design/BlueprintEditor.tree';
 import type { MIRDocument } from '@/core/types/engine.types';
+import { materializeMirRoot, normalizeTreeToUiGraph } from '@/mir/graph';
 import { normalizeRoutePath } from '@/editor/store/routeManifest';
 
 export type TreeDropHint = {
@@ -102,7 +103,7 @@ export const useBlueprintDragDrop = ({
       return;
     }
 
-    const root = mirDoc?.ui?.root;
+    const root = materializeMirRoot(mirDoc);
     if (!root) {
       setTreeDropHint(null);
       return;
@@ -168,7 +169,7 @@ export const useBlueprintDragDrop = ({
       if (!activeId || !activeParentId) return;
 
       updateMirDoc((doc) => {
-        const root = doc.ui.root;
+        const root = materializeMirRoot(doc);
         if (activeId === root.id) return doc;
 
         const overNodeIdRaw = getOverNodeId(overData, overId);
@@ -242,7 +243,7 @@ export const useBlueprintDragDrop = ({
           adjustedIndex
         );
         return insertion.inserted
-          ? { ...doc, ui: { ...doc.ui, root: insertion.node } }
+          ? { ...doc, ui: { graph: normalizeTreeToUiGraph(insertion.node) } }
           : doc;
       });
       return;
@@ -291,12 +292,13 @@ export const useBlueprintDragDrop = ({
       nextNodeId = newNode.id;
 
       if (dropNodeId) {
-        const dropNode = findNodeById(doc.ui.root, dropNodeId);
+        const root = materializeMirRoot(doc);
+        const dropNode = findNodeById(root, dropNodeId);
         if (dropNode?.type === 'MdrRoute') {
           newNode = toRoutedNode(newNode);
           nextNodeId = newNode.id;
           const insertedChild = insertChildAtIndex(
-            doc.ui.root,
+            root,
             dropNode.id,
             newNode,
             dropNode.children?.length ?? 0
@@ -304,14 +306,14 @@ export const useBlueprintDragDrop = ({
           if (insertedChild.inserted) {
             return {
               ...doc,
-              ui: { ...doc.ui, root: insertedChild.node },
+              ui: { graph: normalizeTreeToUiGraph(insertedChild.node) },
             };
           }
         }
       }
 
       if (dropKind === 'canvas' && selectedId) {
-        const root = doc.ui.root;
+        const root = materializeMirRoot(doc);
         const selectedNode = findNodeById(root, selectedId);
         if (selectedNode?.type === 'MdrRoute') {
           newNode = toRoutedNode(newNode);
@@ -325,7 +327,7 @@ export const useBlueprintDragDrop = ({
           if (insertedChild.inserted) {
             return {
               ...doc,
-              ui: { ...doc.ui, root: insertedChild.node },
+              ui: { graph: normalizeTreeToUiGraph(insertedChild.node) },
             };
           }
         }
@@ -345,7 +347,7 @@ export const useBlueprintDragDrop = ({
           if (insertedChild.inserted) {
             return {
               ...doc,
-              ui: { ...doc.ui, root: insertedChild.node },
+              ui: { graph: normalizeTreeToUiGraph(insertedChild.node) },
             };
           }
         }
@@ -359,7 +361,7 @@ export const useBlueprintDragDrop = ({
           if (insertedSibling.inserted) {
             return {
               ...doc,
-              ui: { ...doc.ui, root: insertedSibling.node },
+              ui: { graph: normalizeTreeToUiGraph(insertedSibling.node) },
             };
           }
         }

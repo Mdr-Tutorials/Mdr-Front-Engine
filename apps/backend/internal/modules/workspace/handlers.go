@@ -24,7 +24,7 @@ func (handler *Handler) Routes(requireAuth gin.HandlerFunc) RouteHandlers {
 		RequireAuth:              requireAuth,
 		GetWorkspace:             handler.HandleGetWorkspace,
 		GetWorkspaceCapabilities: handler.HandleGetWorkspaceCapabilities,
-		SaveWorkspaceDocument:    handler.HandleSaveWorkspaceDocument,
+		PatchWorkspaceDocument:   handler.HandlePatchWorkspaceDocument,
 		ApplyWorkspaceIntent:     handler.HandleApplyWorkspaceIntent,
 		ApplyWorkspaceBatch:      handler.HandleApplyWorkspaceBatch,
 	}
@@ -51,13 +51,10 @@ type snapshotResponse struct {
 	Settings      json.RawMessage    `json:"settings"`
 }
 
-type SaveDocumentRequest struct {
-	ExpectedContentRev   int64                     `json:"expectedContentRev"`
-	ExpectedWorkspaceRev int64                     `json:"expectedWorkspaceRev"`
-	ExpectedRouteRev     int64                     `json:"expectedRouteRev"`
-	Content              json.RawMessage           `json:"content"`
-	ClientMutationID     string                    `json:"clientMutationId"`
-	Command              *WorkspaceCommandEnvelope `json:"command,omitempty"`
+type PatchDocumentRequest struct {
+	ExpectedContentRev int64                    `json:"expectedContentRev"`
+	ClientMutationID   string                   `json:"clientMutationId"`
+	Command            WorkspaceCommandEnvelope `json:"command"`
 }
 
 type intentActor struct {
@@ -94,12 +91,11 @@ type batchOperationKind struct {
 	Op string `json:"op"`
 }
 
-type batchSaveDocumentOperation struct {
-	Op                 string                    `json:"op"`
-	DocumentID         string                    `json:"documentId"`
-	ExpectedContentRev int64                     `json:"expectedContentRev"`
-	Content            json.RawMessage           `json:"content"`
-	Command            *WorkspaceCommandEnvelope `json:"command,omitempty"`
+type batchPatchDocumentOperation struct {
+	Op                 string                   `json:"op"`
+	DocumentID         string                   `json:"documentId"`
+	ExpectedContentRev int64                    `json:"expectedContentRev"`
+	Command            WorkspaceCommandEnvelope `json:"command"`
 }
 
 type batchIntentOperation struct {
@@ -150,7 +146,7 @@ func (handler *Handler) HandleGetWorkspaceCapabilities(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]any{"workspaceId": workspaceID, "capabilities": DefaultCapabilities()})
 }
 
-func (handler *Handler) HandleSaveWorkspaceDocument(c *gin.Context) {
+func (handler *Handler) HandlePatchWorkspaceDocument(c *gin.Context) {
 	workspaceID := strings.TrimSpace(c.Param("workspaceId"))
 	documentID := strings.TrimSpace(c.Param("documentId"))
 	user, ok := backendauth.GetAuthUser[backendauth.User](c)
@@ -158,7 +154,7 @@ func (handler *Handler) HandleSaveWorkspaceDocument(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, map[string]any{"error": "unauthorized", "message": "Authentication required."})
 		return
 	}
-	var request SaveDocumentRequest
+	var request PatchDocumentRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		failure := NewRequestFailure(http.StatusBadRequest, ErrorInvalidPayload, "Invalid request payload.", nil)
 		c.JSON(failure.Status, failure.Payload)
@@ -169,21 +165,20 @@ func (handler *Handler) HandleSaveWorkspaceDocument(c *gin.Context) {
 		c.JSON(failure.Status, failure.Payload)
 		return
 	}
-	if len(request.Content) == 0 {
-		failure := NewRequestFailure(http.StatusUnprocessableEntity, ErrorMIRValidationFailed, "content is required.", nil)
-		c.JSON(failure.Status, failure.Payload)
-		return
-	}
-	command := ResolveDocumentCommand(workspaceID, documentID, request.Command)
-	result, err := handler.store.SaveDocumentContent(c.Request.Context(), SaveDocumentContentParams{WorkspaceID: workspaceID, DocumentID: documentID, ExpectedContentRev: request.ExpectedContentRev, Content: request.Content, Command: command})
+	result, err := handler.store.PatchDocumentContent(c.Request.Context(), PatchDocumentContentParams{WorkspaceID: workspaceID, DocumentID: documentID, ExpectedContentRev: request.ExpectedContentRev, Command: request.Command})
 	if err != nil {
 		failure := MapStoreError(err)
-		LogWorkspaceConflictFailure("saveDocument", c.Request.Method, c.FullPath(), workspaceID, documentID, request.ExpectedWorkspaceRev, request.ExpectedRouteRev, request.ExpectedContentRev, request.ClientMutationID, failure)
+		LogWorkspaceConflictFailure("patchDocument", c.Request.Method, c.FullPath(), workspaceID, documentID, 0, 0, request.ExpectedContentRev, request.ClientMutationID, failure)
 		c.JSON(failure.Status, failure.Payload)
 		return
 	}
 	handler.module.SyncProjectMirrorFromWorkspace(c.Request.Context(), user.ID, workspaceID)
 	c.JSON(http.StatusOK, BuildMutationSuccessPayload(result, strings.TrimSpace(request.ClientMutationID)))
+}
+
+func (handler *Handler) HandleSaveWorkspaceDocument(c *gin.Context) {
+	failure := NewRequestFailure(http.StatusMethodNotAllowed, ErrorInvalidPayload, "Full document save is disabled. Use command PATCH.", nil)
+	c.JSON(failure.Status, failure.Payload)
 }
 
 func (handler *Handler) HandleApplyWorkspaceIntent(c *gin.Context) {
@@ -237,34 +232,28 @@ func (handler *Handler) HandleApplyWorkspaceBatch(c *gin.Context) {
 			return
 		}
 		switch strings.TrimSpace(operationKind.Op) {
-		case "saveDocument":
-			var operation batchSaveDocumentOperation
+		case "patchDocument":
+			var operation batchPatchDocumentOperation
 			if err := json.Unmarshal(operationRaw, &operation); err != nil {
-				failure := NewRequestFailure(http.StatusUnprocessableEntity, ErrorInvalidPayload, "Invalid saveDocument operation payload.", map[string]any{"index": index})
+				failure := NewRequestFailure(http.StatusUnprocessableEntity, ErrorInvalidPayload, "Invalid patchDocument operation payload.", map[string]any{"index": index})
 				c.JSON(failure.Status, failure.Payload)
 				return
 			}
 			documentID := strings.TrimSpace(operation.DocumentID)
 			if documentID == "" {
-				failure := NewRequestFailure(http.StatusUnprocessableEntity, ErrorInvalidPayload, "saveDocument operation requires documentId.", map[string]any{"index": index})
+				failure := NewRequestFailure(http.StatusUnprocessableEntity, ErrorInvalidPayload, "patchDocument operation requires documentId.", map[string]any{"index": index})
 				c.JSON(failure.Status, failure.Payload)
 				return
 			}
 			if operation.ExpectedContentRev <= 0 {
-				failure := NewRequestFailure(http.StatusUnprocessableEntity, ErrorInvalidPayload, "saveDocument operation requires expectedContentRev > 0.", map[string]any{"index": index})
+				failure := NewRequestFailure(http.StatusUnprocessableEntity, ErrorInvalidPayload, "patchDocument operation requires expectedContentRev > 0.", map[string]any{"index": index})
 				c.JSON(failure.Status, failure.Payload)
 				return
 			}
-			if len(operation.Content) == 0 {
-				failure := NewRequestFailure(http.StatusUnprocessableEntity, ErrorMIRValidationFailed, "saveDocument operation requires content.", map[string]any{"index": index})
-				c.JSON(failure.Status, failure.Payload)
-				return
-			}
-			command := ResolveDocumentCommand(workspaceID, documentID, operation.Command)
-			result, err := handler.store.SaveDocumentContent(c.Request.Context(), SaveDocumentContentParams{WorkspaceID: workspaceID, DocumentID: documentID, ExpectedContentRev: operation.ExpectedContentRev, Content: operation.Content, Command: command})
+			result, err := handler.store.PatchDocumentContent(c.Request.Context(), PatchDocumentContentParams{WorkspaceID: workspaceID, DocumentID: documentID, ExpectedContentRev: operation.ExpectedContentRev, Command: operation.Command})
 			if err != nil {
 				failure := MapStoreError(err)
-				LogWorkspaceConflictFailure("batch.saveDocument", c.Request.Method, c.FullPath(), workspaceID, documentID, currentWorkspaceRev, currentRouteRev, operation.ExpectedContentRev, request.ClientBatchID, failure)
+				LogWorkspaceConflictFailure("batch.patchDocument", c.Request.Method, c.FullPath(), workspaceID, documentID, currentWorkspaceRev, currentRouteRev, operation.ExpectedContentRev, request.ClientBatchID, failure)
 				c.JSON(failure.Status, failure.Payload)
 				return
 			}

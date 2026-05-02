@@ -1,6 +1,7 @@
-﻿import { type MIRDocument } from '@/core/types/engine.types';
+import { type MIRDocument } from '@/core/types/engine.types';
+import { normalizeMirDocument } from '@/mir/resolveMirDocument';
 
-export const testDoc: MIRDocument = {
+export const testDoc: MIRDocument = normalizeMirDocument({
   version: '1.0',
   ui: {
     root: {
@@ -87,4 +88,4 @@ export const testDoc: MIRDocument = {
       buttonText: { type: 'string', default: 'Click Me' },
     },
   },
-};
+});

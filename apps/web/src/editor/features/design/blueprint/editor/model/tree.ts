@@ -1,5 +1,6 @@
 ﻿import { isNonNestableType } from '@/editor/features/design/blueprint/nesting';
 import type { ComponentNode, MIRDocument } from '@/core/types/engine.types';
+import { materializeUiTree, normalizeTreeToUiGraph } from '@/mir/graph';
 import { defaultComponentRegistry } from '@/mir/renderer/registry';
 
 export type TreeDropPlacement = 'before' | 'after' | 'child';
@@ -314,29 +315,27 @@ export const insertIntoMirDoc = (
   targetId: string,
   child: ComponentNode
 ) => {
-  const root = doc.ui.root;
+  const root = materializeUiTree(doc.ui.graph);
   const targetNode = findNodeById(root, targetId);
+  const withRoot = (nextRoot: ComponentNode): MIRDocument => ({
+    ...doc,
+    ui: { graph: normalizeTreeToUiGraph(nextRoot) },
+  });
   if (!targetNode) {
     const insertedAtRoot = insertChildById(root, root.id, child);
-    return insertedAtRoot.inserted
-      ? { ...doc, ui: { ...doc.ui, root: insertedAtRoot.node } }
-      : doc;
+    return insertedAtRoot.inserted ? withRoot(insertedAtRoot.node) : doc;
   }
 
   if (supportsChildrenForNode(targetNode)) {
     const insertedChild = insertChildById(root, targetId, child);
-    return insertedChild.inserted
-      ? { ...doc, ui: { ...doc.ui, root: insertedChild.node } }
-      : doc;
+    return insertedChild.inserted ? withRoot(insertedChild.node) : doc;
   }
 
   const insertedSibling = insertAfterById(root, targetId, child);
   if (insertedSibling.inserted) {
-    return { ...doc, ui: { ...doc.ui, root: insertedSibling.node } };
+    return withRoot(insertedSibling.node);
   }
 
   const insertedAtRoot = insertChildById(root, root.id, child);
-  return insertedAtRoot.inserted
-    ? { ...doc, ui: { ...doc.ui, root: insertedAtRoot.node } }
-    : doc;
+  return insertedAtRoot.inserted ? withRoot(insertedAtRoot.node) : doc;
 };

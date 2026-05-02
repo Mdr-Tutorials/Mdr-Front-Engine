@@ -9,7 +9,6 @@ type RouteHandlers struct {
 	GetProject     gin.HandlerFunc
 	UpdateProject  gin.HandlerFunc
 	GetProjectMIR  gin.HandlerFunc
-	SaveProjectMIR gin.HandlerFunc
 	PublishProject gin.HandlerFunc
 	DeleteProject  gin.HandlerFunc
 	ListCommunity  gin.HandlerFunc
@@ -25,7 +24,6 @@ func RegisterRoutes(api *gin.RouterGroup, handlers RouteHandlers) {
 	api.GET("/projects/:id", handlers.RequireAuth, handlers.GetProject)
 	api.PATCH("/projects/:id", handlers.RequireAuth, handlers.UpdateProject)
 	api.GET("/projects/:id/mir", handlers.RequireAuth, handlers.GetProjectMIR)
-	api.PUT("/projects/:id/mir", handlers.RequireAuth, handlers.SaveProjectMIR)
 	api.POST("/projects/:id/publish", handlers.RequireAuth, handlers.PublishProject)
 	api.DELETE("/projects/:id", handlers.RequireAuth, handlers.DeleteProject)
 }

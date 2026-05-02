@@ -44,9 +44,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetCapabilitiesResponse'
   /api/workspaces/{workspaceId}/documents/{documentId}:
-    put:
-      summary: Save one document
-      operationId: saveDocument
+    patch:
+      summary: Patch one document with a command
+      description: >
+        Apply one versioned CommandEnvelope to a MIR v1.3 graph-only document.
+        Document content changes are PATCH-only: the server applies
+        command.forwardOps, verifies command.reverseOps can restore the previous
+        document, validates the patched MIR, advances the document content
+        revision, and records the command in the operation log. Paths under
+        /ui/root and the document root path / are forbidden.
+      operationId: patchDocument
       parameters:
         - in: path
           name: workspaceId
@@ -63,16 +70,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SaveDocumentRequest'
+              $ref: '#/components/schemas/PatchDocumentRequest'
       responses:
         '200':
-          description: Saved
+          description: Patched
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/MutationSuccessResponse'
         '422':
-          description: Invalid document content or schema validation failure
+          description: Invalid command, forbidden patch path, or MIR validation failure
           content:
             application/json:
               schema:
@@ -120,7 +127,7 @@ paths:
                 $ref: '#/components/schemas/ConflictResponse'
   /api/workspaces/{workspaceId}/batch:
     post:
-      summary: Apply a batch of document saves and intents
+      summary: Apply a batch of document patches and intents
       operationId: applyWorkspaceBatch
       parameters:
         - in: path
@@ -253,22 +260,15 @@ components:
         updatedAt:
           type: string
           format: date-time
-    SaveDocumentRequest:
+    PatchDocumentRequest:
       type: object
-      required: [expectedContentRev, content]
+      required: [expectedContentRev, command]
       properties:
         expectedContentRev:
           type: integer
           minimum: 1
-        expectedWorkspaceRev:
-          type: integer
-          minimum: 1
-        expectedRouteRev:
-          type: integer
-          minimum: 1
-        content:
-          type: object
-          additionalProperties: true
+        command:
+          $ref: '#/components/schemas/CommandEnvelope'
         clientMutationId:
           type: string
     ApplyIntentRequest:
@@ -318,6 +318,10 @@ components:
     PatchOp:
       type: object
       required: [op, path]
+      description: >
+        Restricted JSON Patch operation. Document PATCH allows paths under
+        /ui/graph, /logic, /animation, /metadata, and /x-* only. /ui/root and /
+        are forbidden. Array "-" is only valid for add.
       properties:
         op:
           type: string
@@ -379,25 +383,24 @@ components:
           type: array
           items:
             oneOf:
-              - $ref: '#/components/schemas/BatchSaveDocumentOperation'
+              - $ref: '#/components/schemas/BatchPatchDocumentOperation'
               - $ref: '#/components/schemas/BatchIntentOperation'
         clientBatchId:
           type: string
-    BatchSaveDocumentOperation:
+    BatchPatchDocumentOperation:
       type: object
-      required: [op, documentId, expectedContentRev, content]
+      required: [op, documentId, expectedContentRev, command]
       properties:
         op:
           type: string
-          const: saveDocument
+          const: patchDocument
         documentId:
           type: string
         expectedContentRev:
           type: integer
           minimum: 1
-        content:
-          type: object
-          additionalProperties: true
+        command:
+          $ref: '#/components/schemas/CommandEnvelope'
     BatchIntentOperation:
       type: object
       required: [op, intent]
@@ -483,6 +486,7 @@ components:
             - RESERVED_DOMAIN_DISABLED
             - INVALID_ENVELOPE_VERSION
             - INVALID_ENVELOPE_PAYLOAD
+            - MIR_GRAPH_PATCH_PATH_FORBIDDEN
             - MIR_VALIDATION_FAILED
         message:
           type: string

@@ -1,4 +1,8 @@
 import type { MIRDocument } from '@/core/types/engine.types';
+import {
+  createDefaultMirDocV13,
+  normalizeMirDocumentToV13,
+} from '@/mir/graph/normalize';
 
 type WorkspaceLikeDocument = {
   id?: string;
@@ -10,57 +14,12 @@ type WorkspaceLikeDocument = {
 const isPlainObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
-export const createDefaultMirDoc = (): MIRDocument => ({
-  version: '1.2',
-  ui: {
-    root: {
-      id: 'root',
-      type: 'container',
-    },
-  },
-});
+export const createDefaultMirDoc = (): MIRDocument => createDefaultMirDocV13();
 
-const normalizeNodeTree = (node: unknown): MIRDocument['ui']['root'] | null => {
-  if (!isPlainObject(node)) return null;
-  const id =
-    typeof node.id === 'string' && node.id.trim() ? node.id.trim() : 'root';
-  const type =
-    typeof node.type === 'string' && node.type.trim()
-      ? node.type.trim()
-      : 'container';
-  const normalized: Record<string, unknown> = {
-    ...node,
-    id,
-    type,
-  };
-  if (Array.isArray(node.children)) {
-    normalized.children = node.children
-      .map((child) => normalizeNodeTree(child))
-      .filter((child): child is MIRDocument['ui']['root'] => Boolean(child));
-  }
-  return normalized as unknown as MIRDocument['ui']['root'];
-};
+export const normalizeMirToV13 = (source: unknown): MIRDocument =>
+  normalizeMirDocumentToV13(source);
 
-export const normalizeMirToV12 = (source: unknown): MIRDocument => {
-  if (!isPlainObject(source)) {
-    return createDefaultMirDoc();
-  }
-  const normalizedRoot = normalizeNodeTree(
-    (source as { ui?: { root?: unknown } }).ui?.root
-  );
-  if (!normalizedRoot) {
-    return createDefaultMirDoc();
-  }
-  const normalized = {
-    ...source,
-    version: '1.2',
-    ui: {
-      ...((source as { ui?: Record<string, unknown> }).ui ?? {}),
-      root: normalizedRoot,
-    },
-  } as MIRDocument;
-  return normalized;
-};
+export const normalizeMirToV12 = normalizeMirToV13;
 
 export const resolveCanonicalWorkspaceDocumentId = (
   documents: WorkspaceLikeDocument[]
@@ -82,7 +41,7 @@ export const resolveCanonicalWorkspaceDocumentId = (
 };
 
 export const normalizeMirDocument = (source: unknown): MIRDocument => {
-  return normalizeMirToV12(source);
+  return normalizeMirToV13(source);
 };
 
 const tryResolveFromWorkspaceShape = (source: unknown): MIRDocument | null => {
@@ -99,15 +58,18 @@ const tryResolveFromWorkspaceShape = (source: unknown): MIRDocument | null => {
   return normalizeMirDocument(activeDocument.content);
 };
 
+const hasDirectMirShape = (source: unknown): boolean => {
+  if (!isPlainObject(source)) return false;
+  const ui = source.ui;
+  if (!isPlainObject(ui)) return false;
+  return isPlainObject(ui.graph) || isPlainObject(ui.root);
+};
+
 export const resolveMirDocument = (source: unknown): MIRDocument => {
-  const direct = normalizeMirDocument(source);
-  const hasValidDirectShape =
-    isPlainObject(source) &&
-    isPlainObject((source as { ui?: { root?: unknown } }).ui?.root);
-  if (hasValidDirectShape) {
-    return direct;
+  if (hasDirectMirShape(source)) {
+    return normalizeMirDocument(source);
   }
   const resolved = tryResolveFromWorkspaceShape(source);
   if (resolved) return resolved;
-  return direct;
+  return normalizeMirDocument(source);
 };

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router';
 import EditorBar from './EditorBar/EditorBar';
 import { SettingsEffects } from './features/settings/SettingsEffects';
@@ -7,6 +7,7 @@ import { mountGraphExecutionBridge } from '@/core/executor/executor';
 import { mountDefaultNodeGraphExecutor } from '@/core/executor/nodeGraph/mountDefaultNodeGraphExecutor';
 import { editorApi } from './editorApi';
 import { EditorShortcutProvider, useEditorShortcut } from './shortcuts';
+import { ApiError } from '@/auth/authApi';
 import { isAbortError } from '@/infra/api';
 import { useEditorStore } from './store/useEditorStore';
 import { useSettingsStore } from './store/useSettingsStore';
@@ -118,6 +119,8 @@ function Editor() {
   const { projectId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const showLoadError = Boolean(projectId) && Boolean(loadError);
   const token = useAuthStore((state) => state.token);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
   const setProject = useEditorStore((state) => state.setProject);
@@ -143,6 +146,7 @@ function Editor() {
     const requestOptions: RequestInit = controller
       ? { signal: controller.signal }
       : {};
+    setLoadError(null);
 
     editorApi
       .getProject(token, projectId, requestOptions)
@@ -184,12 +188,29 @@ function Editor() {
           .catch((error: unknown) => {
             if (cancelled || isAbortError(error)) return;
             clearWorkspaceState();
+            if (error instanceof ApiError && error.status === 422) {
+              setLoadError(
+                error.message ||
+                  'This project uses a legacy MIR document and cannot be opened in v1.3.'
+              );
+              return;
+            }
             setMirDoc(project.mir);
           });
       })
       .catch((error: unknown) => {
         if (cancelled || isAbortError(error)) return;
         clearWorkspaceState();
+        if (error instanceof ApiError && error.status === 422) {
+          setLoadError(
+            error.message ||
+              'This project uses a legacy MIR document and cannot be opened in v1.3.'
+          );
+          return;
+        }
+        setLoadError(
+          error instanceof Error ? error.message : 'Could not load project.'
+        );
       });
 
     return () => {
@@ -209,6 +230,7 @@ function Editor() {
   ]);
 
   useEffect(() => {
+    if (showLoadError) return;
     const unmountBridge = mountGraphExecutionBridge();
     const unmountNodeGraphExecutor = mountDefaultNodeGraphExecutor({
       getMirDoc: () => useEditorStore.getState().mirDoc,
@@ -217,7 +239,7 @@ function Editor() {
       unmountNodeGraphExecutor();
       unmountBridge();
     };
-  }, []);
+  }, [showLoadError]);
 
   return (
     <EditorShortcutProvider>
@@ -225,13 +247,39 @@ function Editor() {
         projectId={projectId}
         pathname={location.pathname}
       />
-      <div className="flex max-h-screen min-h-screen flex-row bg-[linear-gradient(120deg,var(--bg-canvas)_20%,var(--bg-panel)_100%)]">
-        <SettingsEffects />
-        <EditorBar />
-        <div className="min-h-screen flex-1 overflow-auto">
-          <Outlet />
+      {showLoadError ? (
+        <div className="flex min-h-screen items-center justify-center bg-[var(--bg-canvas)] px-6 py-10">
+          <div className="max-w-xl space-y-4 text-left">
+            <p className="text-sm font-medium tracking-[0.18em] text-(--text-secondary) uppercase">
+              Project unavailable
+            </p>
+            <h1 className="text-2xl font-semibold text-(--text-primary)">
+              This project cannot be opened
+            </h1>
+            <p className="text-sm leading-6 text-(--text-secondary)">
+              {loadError}
+            </p>
+            <button
+              type="button"
+              className="rounded-md border border-(--border-subtle) bg-(--bg-panel) px-4 py-2 text-sm font-medium text-(--text-primary) transition hover:bg-(--bg-panel-hover)"
+              onClick={() => {
+                setLoadError(null);
+                navigate('/editor');
+              }}
+            >
+              Back to projects
+            </button>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex max-h-screen min-h-screen flex-row bg-[linear-gradient(120deg,var(--bg-canvas)_20%,var(--bg-panel)_100%)]">
+          <SettingsEffects />
+          <EditorBar />
+          <div className="min-h-screen flex-1 overflow-auto">
+            <Outlet />
+          </div>
+        </div>
+      )}
     </EditorShortcutProvider>
   );
 }

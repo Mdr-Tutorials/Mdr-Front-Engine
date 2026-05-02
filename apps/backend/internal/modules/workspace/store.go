@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -62,7 +63,7 @@ func NewWorkspaceStore(db *sql.DB) *WorkspaceStore {
 var defaultWorkspaceTree = json.RawMessage(`{"rootId":"root","nodes":[]}`)
 var defaultWorkspaceRouteManifest = json.RawMessage(`{"version":"1","root":{"id":"root"}}`)
 var defaultWorkspaceSettings = json.RawMessage(`{}`)
-var defaultMIRDocument = json.RawMessage(`{"version":"1.0","ui":{"root":{"id":"root","type":"container"}}}`)
+var defaultMIRDocument = json.RawMessage(`{"version":"1.3","ui":{"graph":{"version":1,"rootId":"root","nodesById":{"root":{"id":"root","type":"container"}},"childIdsById":{"root":[]}}}}`)
 
 type WorkspaceRecord struct {
 	ID           string          `json:"id"`
@@ -161,6 +162,13 @@ type SaveDocumentContentParams struct {
 	DocumentID         string
 	ExpectedContentRev int64
 	Content            json.RawMessage
+	Command            WorkspaceCommandEnvelope
+}
+
+type PatchDocumentContentParams struct {
+	WorkspaceID        string
+	DocumentID         string
+	ExpectedContentRev int64
 	Command            WorkspaceCommandEnvelope
 }
 
@@ -527,6 +535,155 @@ RETURNING workspace_rev, route_rev, op_seq`
 				ContentRev: nextContentRev,
 				MetaRev:    nextMetaRev,
 			},
+		},
+	}, nil
+}
+
+func (store *WorkspaceStore) PatchDocumentContent(ctx context.Context, params PatchDocumentContentParams) (*WorkspaceMutationResult, error) {
+	if store == nil || store.db == nil {
+		return nil, errors.New("workspace store is not initialized")
+	}
+	if strings.TrimSpace(params.WorkspaceID) == "" || strings.TrimSpace(params.DocumentID) == "" {
+		return nil, errors.New("workspaceID and documentID are required")
+	}
+	if params.ExpectedContentRev <= 0 {
+		return nil, errors.New("expectedContentRev must be positive")
+	}
+
+	command, err := normalizeWorkspaceCommand(params.Command)
+	if err != nil {
+		return nil, err
+	}
+	if err := validateWorkspaceCommand(command, params.WorkspaceID, &params.DocumentID); err != nil {
+		return nil, err
+	}
+	if len(command.ForwardOps) == 0 || len(command.ReverseOps) == 0 {
+		return nil, errors.New("command.forwardOps and command.reverseOps are required")
+	}
+
+	commandJSON, err := json.Marshal(command)
+	if err != nil {
+		return nil, err
+	}
+	payloadJSON := json.RawMessage(commandJSON)
+
+	ctx, cancel := withStoreTimeout(ctx)
+	defer cancel()
+
+	tx, err := store.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	const lockQuery = `SELECT d.content_json, d.content_rev, d.meta_rev, w.workspace_rev, w.route_rev, w.op_seq
+FROM workspace_documents d
+JOIN workspaces w ON w.id = d.workspace_id
+WHERE d.workspace_id = $1 AND d.id = $2
+FOR UPDATE OF d, w`
+
+	var currentContent json.RawMessage
+	var currentContentRev int64
+	var currentMetaRev int64
+	var currentWorkspaceRev int64
+	var currentRouteRev int64
+	var currentOpSeq int64
+
+	err = tx.QueryRowContext(ctx, lockQuery, params.WorkspaceID, params.DocumentID).Scan(
+		&currentContent,
+		&currentContentRev,
+		&currentMetaRev,
+		&currentWorkspaceRev,
+		&currentRouteRev,
+		&currentOpSeq,
+	)
+	if err != nil {
+		_ = tx.Rollback()
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, store.resolveDocumentLookupError(ctx, params.WorkspaceID)
+		}
+		return nil, err
+	}
+
+	if currentContentRev != params.ExpectedContentRev {
+		_ = tx.Rollback()
+		return nil, &WorkspaceRevisionConflictError{
+			ConflictType:       WorkspaceConflictDocument,
+			WorkspaceID:        params.WorkspaceID,
+			DocumentID:         params.DocumentID,
+			ServerWorkspaceRev: currentWorkspaceRev,
+			ServerRouteRev:     currentRouteRev,
+			ServerContentRev:   currentContentRev,
+			ServerMetaRev:      currentMetaRev,
+			ServerOpSeq:        currentOpSeq,
+		}
+	}
+
+	patchedContent, err := applyWorkspacePatch(currentContent, command.ForwardOps)
+	if err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+	if err := validateMIRV13Document(patchedContent); err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+	reversedContent, err := applyWorkspacePatch(patchedContent, command.ReverseOps)
+	if err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+	if !jsonBytesEqual(currentContent, reversedContent) {
+		_ = tx.Rollback()
+		return nil, errors.New("command.reverseOps do not restore original document")
+	}
+
+	const updateDocument = `UPDATE workspace_documents
+SET content_json = $3::jsonb, content_rev = content_rev + 1, updated_at = NOW()
+WHERE workspace_id = $1 AND id = $2
+RETURNING content_rev, meta_rev`
+
+	var nextContentRev int64
+	var nextMetaRev int64
+	if err := tx.QueryRowContext(
+		ctx,
+		updateDocument,
+		params.WorkspaceID,
+		params.DocumentID,
+		string(patchedContent),
+	).Scan(&nextContentRev, &nextMetaRev); err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+
+	const bumpSequenceOnly = `UPDATE workspaces
+SET op_seq = op_seq + 1, updated_at = NOW()
+WHERE id = $1
+RETURNING workspace_rev, route_rev, op_seq`
+
+	var workspaceRev int64
+	var routeRev int64
+	var opSeq int64
+	if err := tx.QueryRowContext(ctx, bumpSequenceOnly, params.WorkspaceID).Scan(&workspaceRev, &routeRev, &opSeq); err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+
+	if err := insertWorkspaceOperation(ctx, tx, params.WorkspaceID, opSeq, commandDomain(command), &params.DocumentID, payloadJSON, command.IssuedAt); err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return &WorkspaceMutationResult{
+		WorkspaceID:  params.WorkspaceID,
+		WorkspaceRev: workspaceRev,
+		RouteRev:     routeRev,
+		OpSeq:        opSeq,
+		UpdatedDocuments: []WorkspaceDocumentRevision{
+			{ID: params.DocumentID, ContentRev: nextContentRev, MetaRev: nextMetaRev},
 		},
 	}, nil
 }
@@ -965,6 +1122,18 @@ func normalizeJSONDocument(payload json.RawMessage, fallback json.RawMessage) (j
 		return nil, err
 	}
 	return normalized, nil
+}
+
+func jsonBytesEqual(left json.RawMessage, right json.RawMessage) bool {
+	var leftValue any
+	var rightValue any
+	if err := json.Unmarshal(left, &leftValue); err != nil {
+		return false
+	}
+	if err := json.Unmarshal(right, &rightValue); err != nil {
+		return false
+	}
+	return reflect.DeepEqual(leftValue, rightValue)
 }
 
 func withStoreTimeout(ctx context.Context) (context.Context, context.CancelFunc) {
