@@ -7,15 +7,21 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	backendresponse "github.com/Mdr-Tutorials/mdr-front-engine/apps/backend/internal/platform/http/response"
 )
 
 const (
-	ErrorUnsupportedIntent          = "UNSUPPORTED_INTENT"
-	ErrorReservedDomain             = "RESERVED_DOMAIN_DISABLED"
-	ErrorInvalidVersion             = "INVALID_ENVELOPE_VERSION"
-	ErrorInvalidPayload             = "INVALID_ENVELOPE_PAYLOAD"
-	ErrorMIRValidationFailed        = "MIR_VALIDATION_FAILED"
-	ErrorMIRGraphPatchPathForbidden = "MIR_GRAPH_PATCH_PATH_FORBIDDEN"
+	ErrorUnsupportedIntent          = "WKS-5001"
+	ErrorReservedDomain             = "WKS-2001"
+	ErrorInvalidVersion             = "API-1001"
+	ErrorInvalidPayload             = "API-1001"
+	ErrorMIRValidationFailed        = "MIR-4001"
+	ErrorMIRGraphPatchPathForbidden = "WKS-5002"
+	ErrorWorkspaceNotFound          = "WKS-1001"
+	ErrorWorkspaceDocumentNotFound  = "WKS-3001"
+	ErrorWorkspaceOperationFailed   = "API-9001"
+	ErrorWorkspacePatchFailed       = "WKS-5002"
 )
 
 type IntentActor struct {
@@ -46,15 +52,18 @@ type RequestFailure struct {
 }
 
 func NewRequestFailure(status int, code string, message string, details any) *RequestFailure {
-	payload := map[string]any{
-		"error":   "request_error",
-		"code":    code,
-		"message": message,
+	return &RequestFailure{
+		Status:  status,
+		Payload: BuildErrorEnvelopePayload(code, message, details),
 	}
+}
+
+func BuildErrorEnvelopePayload(code string, message string, details any, options ...backendresponse.ErrorOption) map[string]any {
 	if details != nil {
-		payload["details"] = details
+		options = append(options, backendresponse.WithDetails(details))
 	}
-	return &RequestFailure{Status: status, Payload: payload}
+	envelope := backendresponse.NewErrorEnvelope(code, message, options...)
+	return map[string]any{"error": envelope.Error}
 }
 
 func ResolveDocumentCommand(workspaceID, documentID string, provided *WorkspaceCommandEnvelope) WorkspaceCommandEnvelope {

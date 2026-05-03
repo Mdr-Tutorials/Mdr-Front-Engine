@@ -89,7 +89,7 @@ WHERE owner_id = $1 AND id = $2`)
 	if err := json.Unmarshal(response.Body.Bytes(), &payload); err != nil {
 		t.Fatalf("decode response: %v", err)
 	}
-	if payload["error"] != "not_found" {
+	if errorCode(payload) != ErrorWorkspaceNotFound {
 		t.Fatalf("unexpected error payload: %v", payload)
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {
@@ -304,7 +304,7 @@ func TestHandleApplyWorkspaceIntentRejectsUnsupportedIntent(t *testing.T) {
 	if err := json.Unmarshal(response.Body.Bytes(), &payload); err != nil {
 		t.Fatalf("decode response: %v", err)
 	}
-	if payload["code"] != ErrorUnsupportedIntent {
+	if errorCode(payload) != ErrorUnsupportedIntent {
 		t.Fatalf("unexpected error payload: %v", payload)
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {
@@ -356,7 +356,7 @@ FOR UPDATE`)
 	if err := json.Unmarshal(response.Body.Bytes(), &payload); err != nil {
 		t.Fatalf("decode response: %v", err)
 	}
-	if payload["error"] != "revision_conflict" || payload["conflictType"] != string(WorkspaceConflictRoute) {
+	if errorCode(payload) != "WKS-4002" {
 		t.Fatalf("unexpected conflict payload: %v", payload)
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {
@@ -462,12 +462,21 @@ func TestHandleApplyWorkspaceBatchRejectsUnsupportedOperation(t *testing.T) {
 	if err := json.Unmarshal(response.Body.Bytes(), &payload); err != nil {
 		t.Fatalf("decode response: %v", err)
 	}
-	if payload["code"] != ErrorInvalidPayload {
+	if errorCode(payload) != ErrorInvalidPayload {
 		t.Fatalf("unexpected error payload: %v", payload)
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Fatalf("sql expectations: %v", err)
 	}
+}
+
+func errorCode(payload map[string]any) string {
+	errorPayload, ok := payload["error"].(map[string]any)
+	if !ok {
+		return ""
+	}
+	code, _ := errorPayload["code"].(string)
+	return code
 }
 
 func newWorkspaceHandlerTestHandler(t *testing.T) (*Handler, sqlmock.Sqlmock, func()) {

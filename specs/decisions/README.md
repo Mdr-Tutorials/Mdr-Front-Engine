@@ -48,6 +48,21 @@
 
 - `specs/decisions/23.github-app-integration.md`
 
+13. **诊断码与错误体系**
+
+- `specs/diagnostics/README.md`
+- `specs/decisions/24.backend-diagnostic-envelope.md`
+- `specs/diagnostics/mir-diagnostic-codes.md`
+- `specs/diagnostics/workspace-diagnostic-codes.md`
+- `specs/diagnostics/editor-diagnostic-codes.md`
+- `specs/diagnostics/route-diagnostic-codes.md`
+- `specs/diagnostics/nodegraph-diagnostic-codes.md`
+- `specs/diagnostics/animation-diagnostic-codes.md`
+- `specs/diagnostics/external-library-diagnostic-codes.md`
+- `specs/diagnostics/codegen-diagnostic-codes.md`
+- `specs/diagnostics/api-diagnostic-codes.md`
+- `specs/diagnostics/ai-diagnostic-codes.md`
+
 ## 实施主计划
 
 - `specs/implementation/workspace-refactor-plan.md`

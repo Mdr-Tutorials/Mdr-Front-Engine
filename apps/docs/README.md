@@ -28,7 +28,8 @@ apps/docs
 ├── reference/           # 规范与参考
 │   ├── mir-spec.md
 │   ├── component-spec.md
-│   └── node-spec.md
+│   ├── node-spec.md
+│   └── diagnostic-codes.md
 ├── community/           # 社区与协作
 │   ├── changelog.md
 │   ├── contributing.md

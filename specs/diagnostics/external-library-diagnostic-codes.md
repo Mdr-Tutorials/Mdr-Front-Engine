@@ -6,12 +6,15 @@
 - 日期：2026-02-17
 - 阶段：Phase 0 / Gate A
 - 关联：
+  - `specs/diagnostics/README.md`
   - `specs/decisions/17.external-library-runtime-and-adapter.md`
   - `specs/implementation/external-library-task-backlog.md`
 
 ## 1. 目的
 
 统一 external library 链路的错误码与阶段映射，保障错误可观察、可定位、可重试。
+
+本文件是 MFE Diagnostics 体系下的 `ELIB-xxxx` 域码表。统一诊断结构、严重程度和跨域规则见 `specs/diagnostics/README.md`。
 
 ## 2. 统一结构
 

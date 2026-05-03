@@ -6,6 +6,11 @@ import type {
   NodeListRender,
   UiGraph,
 } from '@/core/types/engine.types';
+import {
+  createDiagnostic,
+  MIR_DIAGNOSTIC_REGISTRY,
+  type MdrDiagnostic,
+} from '@/diagnostics';
 import { normalizeMirToV13 } from '@/mir/resolveMirDocument';
 import {
   isDataReference,
@@ -14,10 +19,8 @@ import {
   isStateReference,
 } from '@/mir/shared/valueRef';
 
-export type MirValidationIssue = {
-  code: string;
+export type MirValidationIssue = MdrDiagnostic & {
   path: string;
-  message: string;
 };
 
 export type MirValidationResult = {
@@ -39,6 +42,40 @@ const isScopeSourceReference = (value: unknown) =>
 const escapeJsonPointerSegment = (value: string) =>
   value.replace(/~/g, '~0').replace(/\//g, '~1');
 
+type MirIssueInput = {
+  code: keyof typeof MIR_DIAGNOSTIC_REGISTRY;
+  path: string;
+  message: string;
+  hint?: string;
+  retryable?: boolean;
+  meta?: Record<string, unknown>;
+};
+
+const createMirIssue = ({
+  code,
+  path,
+  message,
+  hint,
+  retryable,
+  meta,
+}: MirIssueInput): MirValidationIssue => {
+  const registryEntry = MIR_DIAGNOSTIC_REGISTRY[code];
+  return {
+    ...createDiagnostic({
+      ...registryEntry,
+      message,
+      hint,
+      retryable,
+      meta,
+    }),
+    path,
+  };
+};
+
+const pushMirIssue = (issues: MirValidationIssue[], issue: MirIssueInput) => {
+  issues.push(createMirIssue(issue));
+};
+
 const validateDataScope = (
   dataScope: NodeDataScope | undefined,
   path: string,
@@ -49,8 +86,8 @@ const validateDataScope = (
     dataScope.pick !== undefined &&
     (typeof dataScope.pick !== 'string' || !dataScope.pick.trim())
   ) {
-    issues.push({
-      code: 'MIR_DATA_PICK_INVALID',
+    pushMirIssue(issues, {
+      code: 'MIR_3002',
       path: `${path}/data/pick`,
       message: 'data.pick must be a non-empty string when provided.',
     });
@@ -59,16 +96,16 @@ const validateDataScope = (
     dataScope.source !== undefined &&
     !isScopeSourceReference(dataScope.source)
   ) {
-    issues.push({
-      code: 'MIR_DATA_SOURCE_INVALID',
+    pushMirIssue(issues, {
+      code: 'MIR_3002',
       path: `${path}/data/source`,
       message:
         'data.source must be one of {$param}, {$state}, {$data}, {$item}.',
     });
   }
   if (dataScope.extend !== undefined && !isPlainObject(dataScope.extend)) {
-    issues.push({
-      code: 'MIR_DATA_EXTEND_INVALID',
+    pushMirIssue(issues, {
+      code: 'MIR_3002',
       path: `${path}/data/extend`,
       message: 'data.extend must be a JSON object.',
     });
@@ -83,44 +120,44 @@ const validateListRender = (
 ) => {
   if (!list) return;
   if (list.source !== undefined && !isScopeSourceReference(list.source)) {
-    issues.push({
-      code: 'MIR_LIST_SOURCE_INVALID',
+    pushMirIssue(issues, {
+      code: 'MIR_3010',
       path: `${path}/list/source`,
       message:
         'list.source must be one of {$param}, {$state}, {$data}, {$item}.',
     });
   }
   if (list.itemAs && !IDENTIFIER_PATTERN.test(list.itemAs)) {
-    issues.push({
-      code: 'MIR_LIST_ALIAS_INVALID',
+    pushMirIssue(issues, {
+      code: 'MIR_3010',
       path: `${path}/list/itemAs`,
       message: 'list.itemAs is not a valid identifier.',
     });
   }
   if (list.indexAs && !IDENTIFIER_PATTERN.test(list.indexAs)) {
-    issues.push({
-      code: 'MIR_LIST_ALIAS_INVALID',
+    pushMirIssue(issues, {
+      code: 'MIR_3010',
       path: `${path}/list/indexAs`,
       message: 'list.indexAs is not a valid identifier.',
     });
   }
   if (list.emptyNodeId && !allNodeIds.has(list.emptyNodeId)) {
-    issues.push({
-      code: 'MIR_LIST_EMPTY_NODE_NOT_FOUND',
+    pushMirIssue(issues, {
+      code: 'MIR_2007',
       path: `${path}/list/emptyNodeId`,
       message: 'list.emptyNodeId was not found in current document.',
     });
   }
   if (list.keyBy !== undefined && typeof list.keyBy !== 'string') {
-    issues.push({
-      code: 'MIR_LIST_KEYBY_INVALID',
+    pushMirIssue(issues, {
+      code: 'MIR_3010',
       path: `${path}/list/keyBy`,
       message: 'list.keyBy must be a string when provided.',
     });
   }
   if (list.arrayField !== undefined && typeof list.arrayField !== 'string') {
-    issues.push({
-      code: 'MIR_LIST_ARRAY_FIELD_INVALID',
+    pushMirIssue(issues, {
+      code: 'MIR_3010',
       path: `${path}/list/arrayField`,
       message: 'list.arrayField must be a string when provided.',
     });
@@ -135,22 +172,22 @@ const validateNodeData = (
 ) => {
   const nodePath = `/ui/graph/nodesById/${escapeJsonPointerSegment(nodeId)}`;
   if (node.id !== nodeId) {
-    issues.push({
-      code: 'MIR_GRAPH_NODE_KEY_MISMATCH',
+    pushMirIssue(issues, {
+      code: 'MIR_2002',
       path: `${nodePath}/id`,
       message: 'nodesById key must match node.id.',
     });
   }
   if (!node.id.trim()) {
-    issues.push({
-      code: 'MIR_NODE_ID_REQUIRED',
+    pushMirIssue(issues, {
+      code: 'MIR_1003',
       path: `${nodePath}/id`,
       message: 'node.id is required.',
     });
   }
   if (!node.type.trim()) {
-    issues.push({
-      code: 'MIR_NODE_TYPE_REQUIRED',
+    pushMirIssue(issues, {
+      code: 'MIR_1003',
       path: `${nodePath}/type`,
       message: 'node.type is required.',
     });
@@ -167,8 +204,8 @@ const addParentRef = (
 ) => {
   const previous = parentRefs.get(childId);
   if (previous) {
-    issues.push({
-      code: 'MIR_GRAPH_MULTI_PARENT_NODE',
+    pushMirIssue(issues, {
+      code: 'MIR_2005',
       path,
       message: `Node "${childId}" already has a parent at ${previous}.`,
     });
@@ -183,8 +220,8 @@ const validateGraphReferences = (
 ) => {
   const allNodeIds = new Set(Object.keys(graph.nodesById));
   if (!allNodeIds.has(graph.rootId)) {
-    issues.push({
-      code: 'MIR_GRAPH_ROOT_NOT_FOUND',
+    pushMirIssue(issues, {
+      code: 'MIR_2001',
       path: '/ui/graph/rootId',
       message: 'ui.graph.rootId must exist in nodesById.',
     });
@@ -194,8 +231,8 @@ const validateGraphReferences = (
   Object.entries(graph.childIdsById).forEach(([parentId, childIds]) => {
     const parentPath = `/ui/graph/childIdsById/${escapeJsonPointerSegment(parentId)}`;
     if (!allNodeIds.has(parentId)) {
-      issues.push({
-        code: 'MIR_GRAPH_PARENT_NOT_FOUND',
+      pushMirIssue(issues, {
+        code: 'MIR_2003',
         path: parentPath,
         message: 'childIdsById owner must exist in nodesById.',
       });
@@ -203,8 +240,8 @@ const validateGraphReferences = (
     childIds.forEach((childId, index) => {
       const childPath = `${parentPath}/${index}`;
       if (!allNodeIds.has(childId)) {
-        issues.push({
-          code: 'MIR_GRAPH_CHILD_NOT_FOUND',
+        pushMirIssue(issues, {
+          code: 'MIR_2003',
           path: childPath,
           message: 'Child node id does not exist in nodesById.',
         });
@@ -217,8 +254,8 @@ const validateGraphReferences = (
   Object.entries(graph.regionsById ?? {}).forEach(([parentId, regions]) => {
     const parentPath = `/ui/graph/regionsById/${escapeJsonPointerSegment(parentId)}`;
     if (!allNodeIds.has(parentId)) {
-      issues.push({
-        code: 'MIR_GRAPH_PARENT_NOT_FOUND',
+      pushMirIssue(issues, {
+        code: 'MIR_2003',
         path: parentPath,
         message: 'regionsById owner must exist in nodesById.',
       });
@@ -227,8 +264,8 @@ const validateGraphReferences = (
       childIds.forEach((childId, index) => {
         const childPath = `${parentPath}/${escapeJsonPointerSegment(regionName)}/${index}`;
         if (!allNodeIds.has(childId)) {
-          issues.push({
-            code: 'MIR_GRAPH_CHILD_NOT_FOUND',
+          pushMirIssue(issues, {
+            code: 'MIR_2003',
             path: childPath,
             message: 'Region child node id does not exist in nodesById.',
           });
@@ -242,8 +279,8 @@ const validateGraphReferences = (
   allNodeIds.forEach((nodeId) => {
     if (nodeId === graph.rootId) return;
     if (parentRefs.has(nodeId)) return;
-    issues.push({
-      code: 'MIR_GRAPH_ORPHAN_NODE',
+    pushMirIssue(issues, {
+      code: 'MIR_2006',
       path: `/ui/graph/nodesById/${escapeJsonPointerSegment(nodeId)}`,
       message: 'Node is not reachable from root.',
     });
@@ -256,8 +293,8 @@ const validateGraphAcyclic = (graph: UiGraph, issues: MirValidationIssue[]) => {
 
   const visit = (nodeId: NodeId, path: string) => {
     if (visiting.has(nodeId)) {
-      issues.push({
-        code: 'MIR_GRAPH_CYCLE_DETECTED',
+      pushMirIssue(issues, {
+        code: 'MIR_2004',
         path,
         message: `Cycle detected at node "${nodeId}".`,
       });
@@ -297,8 +334,8 @@ const validateAnimationReferences = (
   document.animation?.timelines?.forEach((timeline, timelineIndex) => {
     timeline.bindings.forEach((binding, bindingIndex) => {
       if (!allNodeIds.has(binding.targetNodeId)) {
-        issues.push({
-          code: 'MIR_ANIMATION_TARGET_NOT_FOUND',
+        pushMirIssue(issues, {
+          code: 'MIR_2007',
           path: `/animation/timelines/${timelineIndex}/bindings/${bindingIndex}/targetNodeId`,
           message: 'Animation binding targetNodeId was not found.',
         });
@@ -314,15 +351,15 @@ export const validateMirDocument = (source: unknown): MirValidationResult => {
   const originalUi = isPlainObject(original.ui) ? original.ui : {};
 
   if (originalUi.root !== undefined) {
-    issues.push({
-      code: 'MIR_GRAPH_ROOT_FORBIDDEN',
+    pushMirIssue(issues, {
+      code: 'MIR_1001',
       path: '/ui/root',
       message: 'MIR v1.3 documents must not contain ui.root.',
     });
   }
   if (document.version !== '1.3') {
-    issues.push({
-      code: 'MIR_VERSION_UNSUPPORTED',
+    pushMirIssue(issues, {
+      code: 'MIR_1002',
       path: '/version',
       message: 'MIR document version must be 1.3.',
     });

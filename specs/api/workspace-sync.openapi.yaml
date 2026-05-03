@@ -83,13 +83,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ErrorEnvelope'
         '409':
           description: Revision conflict
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConflictResponse'
+                $ref: '#/components/schemas/ErrorEnvelope'
   /api/workspaces/{workspaceId}/intents:
     post:
       summary: Apply one user intent
@@ -118,13 +118,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ErrorEnvelope'
         '409':
           description: Revision conflict
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConflictResponse'
+                $ref: '#/components/schemas/ErrorEnvelope'
   /api/workspaces/{workspaceId}/batch:
     post:
       summary: Apply a batch of document patches and intents
@@ -153,13 +153,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ErrorEnvelope'
         '409':
           description: Revision conflict
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConflictResponse'
+                $ref: '#/components/schemas/ErrorEnvelope'
 components:
   schemas:
     GetWorkspaceResponse:
@@ -437,75 +437,67 @@ components:
           type: integer
         acceptedMutationId:
           type: string
-    ConflictResponse:
+    ErrorEnvelope:
       type: object
-      required: [error, conflictType, workspaceId, serverWorkspaceRev]
+      required: [error]
       properties:
         error:
-          type: string
-          const: revision_conflict
-        conflictType:
-          type: string
-          enum:
-            - DOCUMENT_CONFLICT
-            - WORKSPACE_CONFLICT
-            - ROUTE_CONFLICT
-            - HYBRID_CONFLICT
-        workspaceId:
-          type: string
-        serverWorkspaceRev:
-          type: integer
-        serverRouteRev:
-          type: integer
-        serverDocument:
-          type: object
-          properties:
-            id:
-              type: string
-            contentRev:
-              type: integer
-            metaRev:
-              type: integer
-          additionalProperties: false
-        opSeq:
-          type: integer
-        latestWorkspace:
-          $ref: '#/components/schemas/WorkspaceSnapshot'
-    ErrorResponse:
+          $ref: '#/components/schemas/ErrorPayload'
+    ErrorPayload:
       type: object
-      required: [error, code, message]
+      required: [code, message]
       properties:
-        error:
-          type: string
-          const: request_error
         code:
           type: string
-          enum:
-            - UNSUPPORTED_INTENT
-            - UNSUPPORTED_COMMAND
-            - RESERVED_DOMAIN_DISABLED
-            - INVALID_ENVELOPE_VERSION
-            - INVALID_ENVELOPE_PAYLOAD
-            - MIR_GRAPH_PATCH_PATH_FORBIDDEN
-            - MIR_VALIDATION_FAILED
+          examples:
+            - WKS-4001
+            - WKS-4002
+            - WKS-4003
+            - WKS-5001
+            - WKS-5002
+            - MIR-4001
+            - API-1001
+        severity:
+          type: string
+          enum: [info, warning, error, fatal]
+        domain:
+          type: string
+        retryable:
+          type: boolean
+        requestId:
+          type: string
+        docsUrl:
+          type: string
         message:
           type: string
         details:
+          description: Safe machine-readable context. Revision conflict details include conflictType, workspaceId, serverWorkspaceRev, serverRouteRev, opSeq, and optionally serverDocument.
+        diagnostics:
           type: array
-          description: Field-level validation details. JSON Pointer is used in path.
           items:
-            $ref: '#/components/schemas/RequestErrorDetail'
-    RequestErrorDetail:
+            $ref: '#/components/schemas/BackendDiagnostic'
+    BackendDiagnostic:
       type: object
-      required: [code, path, message]
+      required: [code, message]
       properties:
         code:
           type: string
-          description: Stable machine-readable detail code.
-        path:
-          type: string
-          description: JSON Pointer path to the invalid field.
         message:
           type: string
-          description: Human-readable detail message.
+        severity:
+          type: string
+          enum: [info, warning, error, fatal]
+        domain:
+          type: string
+        retryable:
+          type: boolean
+        path:
+          type: string
+        targetRef:
+          type: object
+          additionalProperties: true
+        docsUrl:
+          type: string
+        details:
+          additionalProperties: true
       additionalProperties: true

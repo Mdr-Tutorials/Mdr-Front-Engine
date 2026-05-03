@@ -1,25 +1,63 @@
-export type ApiErrorPayload = {
-  error?: string;
-  code?: string;
-  message?: string;
+import type {
+  MdrDiagnostic,
+  MdrDiagnosticDomain,
+  MdrDiagnosticSeverity,
+} from '@/diagnostics';
+
+export type ApiErrorDiagnosticPayload = {
+  code: string;
+  message: string;
+  severity?: MdrDiagnosticSeverity;
+  domain?: MdrDiagnosticDomain | string;
+  retryable?: boolean;
+  path?: string;
+  targetRef?: unknown;
+  docsUrl?: string;
   details?: unknown;
+};
+
+export type ApiErrorEnvelopePayload = {
+  code: string;
+  message: string;
+  severity?: MdrDiagnosticSeverity;
+  domain?: MdrDiagnosticDomain | string;
+  retryable?: boolean;
+  requestId?: string;
+  docsUrl?: string;
+  details?: unknown;
+  diagnostics?: ApiErrorDiagnosticPayload[];
+};
+
+export type ApiErrorPayload = {
+  error?: ApiErrorEnvelopePayload;
 };
 
 export class ApiError extends Error {
   status: number;
-  code?: string;
+  code: string;
   details?: unknown;
+  requestId?: string;
+  retryable?: boolean;
+  diagnostics: MdrDiagnostic[];
 
   constructor(
     message: string,
     status: number,
-    code?: string,
-    details?: unknown
+    code: string,
+    details?: unknown,
+    options: {
+      requestId?: string;
+      retryable?: boolean;
+      diagnostics?: MdrDiagnostic[];
+    } = {}
   ) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
     this.code = code;
     this.details = details;
+    this.requestId = options.requestId;
+    this.retryable = options.retryable;
+    this.diagnostics = options.diagnostics ?? [];
   }
 }

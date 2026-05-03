@@ -48,10 +48,14 @@ X-Auth-Token: <token>
 
 ```json
 {
-  "code": "error_code",
-  "message": "错误描述"
+  "error": {
+    "code": "API-1001",
+    "message": "错误描述"
+  }
 }
 ```
+
+错误响应不保留旧顶层 `message`、字符串型 `error` 或 `legacyError` 字段。前端和文档都以 `error.code` 作为稳定定位入口。
 
 ## API 端点
 
@@ -119,13 +123,12 @@ POST /api/auth/register
 
 **错误响应**:
 
-| HTTP 状态码 | 错误码            | 描述           |
-| ----------- | ----------------- | -------------- |
-| 400         | `invalid_payload` | 请求体格式错误 |
-| 400         | `invalid_email`   | 邮箱格式无效   |
-| 400         | `weak_password`   | 密码少于 8 位  |
-| 409         | `email_exists`    | 邮箱已被注册   |
-| 500         | `create_failed`   | 服务器错误     |
+| HTTP 状态码 | 错误码                  | 描述               |
+| ----------- | ----------------------- | ------------------ |
+| 400         | `API-1001`              | 请求体格式错误     |
+| 400         | `API-4001`              | 邮箱或密码规则无效 |
+| 409         | `API-4009`              | 邮箱已被注册       |
+| 500         | `API-5001` / `API-9001` | 服务器错误         |
 
 ---
 
@@ -164,10 +167,10 @@ POST /api/auth/login
 
 **错误响应**:
 
-| HTTP 状态码 | 错误码                | 描述           |
-| ----------- | --------------------- | -------------- |
-| 400         | `invalid_payload`     | 请求体格式错误 |
-| 401         | `invalid_credentials` | 邮箱或密码错误 |
+| HTTP 状态码 | 错误码     | 描述           |
+| ----------- | ---------- | -------------- |
+| 400         | `API-1001` | 请求体格式错误 |
+| 401         | `API-2001` | 邮箱或密码错误 |
 
 ---
 
@@ -245,9 +248,9 @@ GET /api/users/:id
 
 **错误响应**:
 
-| HTTP 状态码 | 错误码      | 描述       |
-| ----------- | ----------- | ---------- |
-| 404         | `not_found` | 用户不存在 |
+| HTTP 状态码 | 错误码     | 描述       |
+| ----------- | ---------- | ---------- |
+| 404         | `API-4004` | 用户不存在 |
 
 ---
 
@@ -381,11 +384,11 @@ PATCH /api/users/me
 
 **错误响应**:
 
-| HTTP 状态码 | 错误码            | 描述           |
-| ----------- | ----------------- | -------------- |
-| 400         | `invalid_payload` | 请求体格式错误 |
-| 404         | `not_found`       | 用户不存在     |
-| 500         | `update_failed`   | 更新失败       |
+| HTTP 状态码 | 错误码     | 描述           |
+| ----------- | ---------- | -------------- |
+| 400         | `API-1001` | 请求体格式错误 |
+| 404         | `API-4004` | 用户不存在     |
+| 500         | `API-5001` | 更新失败       |
 
 ---
 
@@ -717,16 +720,24 @@ PUT /api/workspaces/:workspaceId/documents/:documentId
 
 ```json
 {
-  "error": "revision_conflict",
-  "conflictType": "content",
-  "workspaceId": "ws_xxx",
-  "serverWorkspaceRev": 3,
-  "serverRouteRev": 1,
-  "opSeq": 150,
-  "serverDocument": {
-    "id": "doc_root",
-    "contentRev": 10,
-    "metaRev": 2
+  "error": {
+    "code": "WKS-4003",
+    "message": "Revision conflict.",
+    "severity": "warning",
+    "domain": "workspace",
+    "retryable": true,
+    "details": {
+      "conflictType": "DOCUMENT_CONFLICT",
+      "workspaceId": "ws_xxx",
+      "serverWorkspaceRev": 3,
+      "serverRouteRev": 1,
+      "opSeq": 150,
+      "serverDocument": {
+        "id": "doc_root",
+        "contentRev": 10,
+        "metaRev": 2
+      }
+    }
   }
 }
 ```

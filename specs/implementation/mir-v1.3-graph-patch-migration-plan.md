@@ -387,10 +387,10 @@ COMMIT
 
 失败策略：
 
-1. revision 不匹配返回 `409 DOCUMENT_CONFLICT`。
-2. command 或 patch shape 错误返回 `422 INVALID_ENVELOPE_PAYLOAD`。
-3. path 禁止返回 `422 MIR_GRAPH_PATCH_PATH_FORBIDDEN`。
-4. MIR 语义错误返回 `422 MIR_VALIDATION_FAILED`。
+1. revision 不匹配返回 `409` + `WKS-4003`。
+2. command 或 patch shape 错误返回 `422` + `API-1001`。
+3. path 禁止返回 `422` + `WKS-5002`。
+4. MIR 语义错误返回 `422` + `MIR-4001`，并在 `error.diagnostics` 中返回具体 `MIR-xxxx`。
 5. reverseOps 无法回放必须拒绝本次 PATCH，避免不可撤销 command 入库。
 
 ### 5.3 JSON Patch Runtime
@@ -468,16 +468,17 @@ JSON Pointer 规则：
 
 ```json
 {
-  "error": "request_error",
-  "code": "MIR_VALIDATION_FAILED",
-  "message": "MIR validation failed.",
-  "details": [
-    {
-      "code": "MIR_GRAPH_CHILD_NOT_FOUND",
-      "path": "/ui/graph/childIdsById/root/0",
-      "message": "Child node id does not exist in nodesById."
-    }
-  ]
+  "error": {
+    "code": "MIR-4001",
+    "message": "MIR validation failed.",
+    "diagnostics": [
+      {
+        "code": "MIR-2003",
+        "path": "/ui/graph/childIdsById/root/0",
+        "message": "Child node id does not exist in nodesById."
+      }
+    ]
+  }
 }
 ```
 

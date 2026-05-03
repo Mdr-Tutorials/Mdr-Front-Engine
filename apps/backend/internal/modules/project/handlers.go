@@ -43,12 +43,12 @@ func (handler *Handler) Routes(requireAuth gin.HandlerFunc) RouteHandlers {
 func (handler *Handler) HandleListProjects(c *gin.Context) {
 	user, ok := backendauth.GetAuthUser[backendauth.User](c)
 	if !ok {
-		respondError(c, http.StatusUnauthorized, "unauthorized", "Authentication required.")
+		respondError(c, http.StatusUnauthorized, "API-2001", "Authentication required.")
 		return
 	}
 	projects, err := handler.store.ListByOwner(user.ID)
 	if err != nil {
-		respondError(c, http.StatusInternalServerError, "projects_list_failed", "Could not load projects.")
+		respondError(c, http.StatusInternalServerError, "API-5001", "Could not load projects.")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"projects": projects})
@@ -57,7 +57,7 @@ func (handler *Handler) HandleListProjects(c *gin.Context) {
 func (handler *Handler) HandleCreateProject(c *gin.Context) {
 	user, ok := backendauth.GetAuthUser[backendauth.User](c)
 	if !ok {
-		respondError(c, http.StatusUnauthorized, "unauthorized", "Authentication required.")
+		respondError(c, http.StatusUnauthorized, "API-2001", "Authentication required.")
 		return
 	}
 	var request struct {
@@ -68,7 +68,7 @@ func (handler *Handler) HandleCreateProject(c *gin.Context) {
 		MIR          json.RawMessage `json:"mir"`
 	}
 	if err := c.ShouldBindJSON(&request); err != nil {
-		respondError(c, http.StatusBadRequest, "invalid_payload", "Invalid request payload.")
+		respondError(c, http.StatusBadRequest, "API-1001", "Invalid request payload.")
 		return
 	}
 	resourceType := request.ResourceType
@@ -78,20 +78,20 @@ func (handler *Handler) HandleCreateProject(c *gin.Context) {
 	project, err := handler.store.Create(user.ID, request.Name, request.Description, resourceType, request.IsPublic, request.MIR)
 	if err != nil {
 		if errors.Is(err, ErrInvalidResourceType) {
-			respondError(c, http.StatusBadRequest, "invalid_resource_type", "Resource type is invalid.")
+			respondError(c, http.StatusBadRequest, "API-4001", "Resource type is invalid.")
 			return
 		}
 		var syntaxErr *json.SyntaxError
 		if errors.As(err, &syntaxErr) {
-			respondError(c, http.StatusBadRequest, "invalid_mir", "MIR document is invalid.")
+			respondError(c, http.StatusBadRequest, "MIR-4001", "MIR document is invalid.")
 			return
 		}
-		respondError(c, http.StatusInternalServerError, "project_create_failed", "Could not create project.")
+		respondError(c, http.StatusInternalServerError, "API-5001", "Could not create project.")
 		return
 	}
 	if err := handler.bootstrapProjectWorkspace(c.Request.Context(), project); err != nil {
 		_ = handler.store.Delete(user.ID, project.ID)
-		respondError(c, http.StatusInternalServerError, "project_create_failed", "Could not create project.")
+		respondError(c, http.StatusInternalServerError, "API-5001", "Could not create project.")
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{"project": toProjectSummary(project)})
@@ -100,20 +100,20 @@ func (handler *Handler) HandleCreateProject(c *gin.Context) {
 func (handler *Handler) HandleGetProject(c *gin.Context) {
 	user, ok := backendauth.GetAuthUser[backendauth.User](c)
 	if !ok {
-		respondError(c, http.StatusUnauthorized, "unauthorized", "Authentication required.")
+		respondError(c, http.StatusUnauthorized, "API-2001", "Authentication required.")
 		return
 	}
 	project, err := handler.store.GetByID(user.ID, c.Param("id"))
 	if err != nil {
 		if errors.Is(err, ErrProjectNotFound) {
-			respondError(c, http.StatusNotFound, "not_found", "Project not found.")
+			respondError(c, http.StatusNotFound, "API-4004", "Project not found.")
 			return
 		}
-		respondError(c, http.StatusInternalServerError, "project_get_failed", "Could not load project.")
+		respondError(c, http.StatusInternalServerError, "API-5001", "Could not load project.")
 		return
 	}
 	if _, err := normalizeMIR(project.MIR); err != nil {
-		respondError(c, http.StatusUnprocessableEntity, "invalid_mir", "This project uses a legacy MIR document and cannot be opened in v1.3.")
+		respondError(c, http.StatusUnprocessableEntity, "MIR-4001", "This project uses a legacy MIR document and cannot be opened in v1.3.")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"project": project})
@@ -122,7 +122,7 @@ func (handler *Handler) HandleGetProject(c *gin.Context) {
 func (handler *Handler) HandleUpdateProject(c *gin.Context) {
 	user, ok := backendauth.GetAuthUser[backendauth.User](c)
 	if !ok {
-		respondError(c, http.StatusUnauthorized, "unauthorized", "Authentication required.")
+		respondError(c, http.StatusUnauthorized, "API-2001", "Authentication required.")
 		return
 	}
 	var request struct {
@@ -130,21 +130,21 @@ func (handler *Handler) HandleUpdateProject(c *gin.Context) {
 		Description *string `json:"description"`
 	}
 	if err := c.ShouldBindJSON(&request); err != nil {
-		respondError(c, http.StatusBadRequest, "invalid_payload", "Invalid request payload.")
+		respondError(c, http.StatusBadRequest, "API-1001", "Invalid request payload.")
 		return
 	}
 	if request.Name == nil && request.Description == nil {
-		respondError(c, http.StatusBadRequest, "invalid_payload", "No fields to update.")
+		respondError(c, http.StatusBadRequest, "API-1001", "No fields to update.")
 		return
 	}
 
 	project, err := handler.store.UpdateProject(user.ID, c.Param("id"), request.Name, request.Description)
 	if err != nil {
 		if errors.Is(err, ErrProjectNotFound) {
-			respondError(c, http.StatusNotFound, "not_found", "Project not found.")
+			respondError(c, http.StatusNotFound, "API-4004", "Project not found.")
 			return
 		}
-		respondError(c, http.StatusInternalServerError, "project_update_failed", "Could not update project.")
+		respondError(c, http.StatusInternalServerError, "API-5001", "Could not update project.")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"project": project})
@@ -153,20 +153,20 @@ func (handler *Handler) HandleUpdateProject(c *gin.Context) {
 func (handler *Handler) HandleGetProjectMIR(c *gin.Context) {
 	user, ok := backendauth.GetAuthUser[backendauth.User](c)
 	if !ok {
-		respondError(c, http.StatusUnauthorized, "unauthorized", "Authentication required.")
+		respondError(c, http.StatusUnauthorized, "API-2001", "Authentication required.")
 		return
 	}
 	project, err := handler.store.GetByID(user.ID, c.Param("id"))
 	if err != nil {
 		if errors.Is(err, ErrProjectNotFound) {
-			respondError(c, http.StatusNotFound, "not_found", "Project not found.")
+			respondError(c, http.StatusNotFound, "API-4004", "Project not found.")
 			return
 		}
-		respondError(c, http.StatusInternalServerError, "project_get_failed", "Could not load project.")
+		respondError(c, http.StatusInternalServerError, "API-5001", "Could not load project.")
 		return
 	}
 	if _, err := normalizeMIR(project.MIR); err != nil {
-		respondError(c, http.StatusUnprocessableEntity, "invalid_mir", "This project uses a legacy MIR document and cannot be opened in v1.3.")
+		respondError(c, http.StatusUnprocessableEntity, "MIR-4001", "This project uses a legacy MIR document and cannot be opened in v1.3.")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"id": project.ID, "mir": project.MIR, "updatedAt": project.UpdatedAt})
@@ -175,16 +175,16 @@ func (handler *Handler) HandleGetProjectMIR(c *gin.Context) {
 func (handler *Handler) HandlePublishProject(c *gin.Context) {
 	user, ok := backendauth.GetAuthUser[backendauth.User](c)
 	if !ok {
-		respondError(c, http.StatusUnauthorized, "unauthorized", "Authentication required.")
+		respondError(c, http.StatusUnauthorized, "API-2001", "Authentication required.")
 		return
 	}
 	project, err := handler.store.SetPublic(user.ID, c.Param("id"), true)
 	if err != nil {
 		if errors.Is(err, ErrProjectNotFound) {
-			respondError(c, http.StatusNotFound, "not_found", "Project not found.")
+			respondError(c, http.StatusNotFound, "API-4004", "Project not found.")
 			return
 		}
-		respondError(c, http.StatusInternalServerError, "project_publish_failed", "Could not publish project.")
+		respondError(c, http.StatusInternalServerError, "API-5001", "Could not publish project.")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"project": project})
@@ -193,15 +193,15 @@ func (handler *Handler) HandlePublishProject(c *gin.Context) {
 func (handler *Handler) HandleDeleteProject(c *gin.Context) {
 	user, ok := backendauth.GetAuthUser[backendauth.User](c)
 	if !ok {
-		respondError(c, http.StatusUnauthorized, "unauthorized", "Authentication required.")
+		respondError(c, http.StatusUnauthorized, "API-2001", "Authentication required.")
 		return
 	}
 	if err := handler.store.Delete(user.ID, c.Param("id")); err != nil {
 		if errors.Is(err, ErrProjectNotFound) {
-			respondError(c, http.StatusNotFound, "not_found", "Project not found.")
+			respondError(c, http.StatusNotFound, "API-4004", "Project not found.")
 			return
 		}
-		respondError(c, http.StatusInternalServerError, "project_delete_failed", "Could not delete project.")
+		respondError(c, http.StatusInternalServerError, "API-5001", "Could not delete project.")
 		return
 	}
 	c.Status(http.StatusNoContent)
@@ -218,10 +218,10 @@ func (handler *Handler) HandleCommunityListProjects(c *gin.Context) {
 	projects, err := handler.store.ListPublic(options)
 	if err != nil {
 		if errors.Is(err, ErrInvalidResourceType) {
-			respondError(c, http.StatusBadRequest, "invalid_resource_type", "Resource type is invalid.")
+			respondError(c, http.StatusBadRequest, "API-4001", "Resource type is invalid.")
 			return
 		}
-		respondError(c, http.StatusInternalServerError, "community_list_failed", "Could not load community projects.")
+		respondError(c, http.StatusInternalServerError, "API-5001", "Could not load community projects.")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"projects": projects, "page": options.Page, "pageSize": options.PageSize, "sort": strings.ToLower(strings.TrimSpace(options.Sort))})
@@ -231,10 +231,10 @@ func (handler *Handler) HandleCommunityGetProject(c *gin.Context) {
 	project, err := handler.store.GetPublicByID(c.Param("id"))
 	if err != nil {
 		if errors.Is(err, ErrProjectNotFound) {
-			respondError(c, http.StatusNotFound, "not_found", "Project not found.")
+			respondError(c, http.StatusNotFound, "API-4004", "Project not found.")
 			return
 		}
-		respondError(c, http.StatusInternalServerError, "community_get_failed", "Could not load project.")
+		respondError(c, http.StatusInternalServerError, "API-5001", "Could not load project.")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"project": project})

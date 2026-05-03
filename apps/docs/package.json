@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"No tests for docs\" && exit 0",
     "dev": "vitepress dev",
-    "build": "vitepress build",
+    "build": "pnpm --dir ../.. docs:diagnostics:check && vitepress build",
     "preview": "vitepress preview"
   },
   "keywords": [],

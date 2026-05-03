@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	backendresponse "github.com/Mdr-Tutorials/mdr-front-engine/apps/backend/internal/platform/http/response"
 )
 
 func MapStoreError(err error) *RequestFailure {
@@ -28,10 +30,10 @@ func MapStoreError(err error) *RequestFailure {
 		return &RequestFailure{Status: http.StatusConflict, Payload: BuildConflictPayload(conflictErr)}
 	}
 	if errors.Is(err, ErrWorkspaceNotFound) {
-		return &RequestFailure{Status: http.StatusNotFound, Payload: map[string]any{"error": "not_found", "message": "Workspace not found."}}
+		return NewRequestFailure(http.StatusNotFound, ErrorWorkspaceNotFound, "Workspace not found.", nil)
 	}
 	if errors.Is(err, ErrWorkspaceDocumentNotFound) {
-		return &RequestFailure{Status: http.StatusNotFound, Payload: map[string]any{"error": "not_found", "message": "Workspace document not found."}}
+		return NewRequestFailure(http.StatusNotFound, ErrorWorkspaceDocumentNotFound, "Workspace document not found.", nil)
 	}
 	var syntaxErr *json.SyntaxError
 	if errors.As(err, &syntaxErr) {
@@ -41,7 +43,7 @@ func MapStoreError(err error) *RequestFailure {
 		return NewRequestFailure(http.StatusUnprocessableEntity, ErrorMIRGraphPatchPathForbidden, err.Error(), nil)
 	}
 	if errors.Is(err, ErrWorkspacePatchInvalid) || errors.Is(err, ErrWorkspacePatchPathMissing) || errors.Is(err, ErrWorkspacePatchTestFailed) {
-		return NewRequestFailure(http.StatusUnprocessableEntity, ErrorInvalidPayload, err.Error(), nil)
+		return NewRequestFailure(http.StatusUnprocessableEntity, ErrorWorkspacePatchFailed, err.Error(), nil)
 	}
 	if errors.Is(err, ErrMIRV13ValidationFailed) {
 		return NewRequestFailure(http.StatusUnprocessableEntity, ErrorMIRValidationFailed, err.Error(), nil)
@@ -49,12 +51,12 @@ func MapStoreError(err error) *RequestFailure {
 	if IsWorkspaceEnvelopeError(err) {
 		return NewRequestFailure(http.StatusUnprocessableEntity, ErrorInvalidPayload, err.Error(), nil)
 	}
-	return &RequestFailure{Status: http.StatusInternalServerError, Payload: map[string]any{"error": "workspace_operation_failed", "message": "Could not process workspace request."}}
+	return NewRequestFailure(http.StatusInternalServerError, ErrorWorkspaceOperationFailed, "Could not process workspace request.", nil)
 }
 
 func BuildConflictPayload(conflictErr *WorkspaceRevisionConflictError) map[string]any {
-	payload := map[string]any{
-		"error":              "revision_conflict",
+	code := ErrorWorkspaceConflictCode(conflictErr.ConflictType)
+	details := map[string]any{
 		"conflictType":       conflictErr.ConflictType,
 		"workspaceId":        conflictErr.WorkspaceID,
 		"serverWorkspaceRev": conflictErr.ServerWorkspaceRev,
@@ -62,13 +64,31 @@ func BuildConflictPayload(conflictErr *WorkspaceRevisionConflictError) map[strin
 		"opSeq":              conflictErr.ServerOpSeq,
 	}
 	if strings.TrimSpace(conflictErr.DocumentID) != "" {
-		payload["serverDocument"] = map[string]any{
+		details["serverDocument"] = map[string]any{
 			"id":         conflictErr.DocumentID,
 			"contentRev": conflictErr.ServerContentRev,
 			"metaRev":    conflictErr.ServerMetaRev,
 		}
 	}
-	return payload
+	return BuildErrorEnvelopePayload(
+		code,
+		"Revision conflict.",
+		details,
+		backendresponse.WithDomain("workspace"),
+		backendresponse.WithSeverity("warning"),
+		backendresponse.WithRetryable(true),
+	)
+}
+
+func ErrorWorkspaceConflictCode(conflictType WorkspaceConflictType) string {
+	switch conflictType {
+	case WorkspaceConflictRoute:
+		return "WKS-4002"
+	case WorkspaceConflictDocument:
+		return "WKS-4003"
+	default:
+		return "WKS-4001"
+	}
 }
 
 func BuildMutationSuccessPayload(result *WorkspaceMutationResult, acceptedMutationID string) map[string]any {
@@ -102,10 +122,11 @@ func LogWorkspaceConflictFailure(
 	if failure == nil || failure.Status != http.StatusConflict {
 		return
 	}
-	conflictType, _ := failure.Payload["conflictType"]
-	serverWorkspaceRev, _ := failure.Payload["serverWorkspaceRev"]
-	serverRouteRev, _ := failure.Payload["serverRouteRev"]
-	opSeq, _ := failure.Payload["opSeq"]
+	details := ExtractErrorDetails(failure.Payload)
+	conflictType, _ := details["conflictType"]
+	serverWorkspaceRev, _ := details["serverWorkspaceRev"]
+	serverRouteRev, _ := details["serverRouteRev"]
+	opSeq, _ := details["opSeq"]
 	log.Printf(
 		"[workspace] 409 action=%s method=%s path=%s workspace=%s document=%s clientMutationId=%s expectedWorkspaceRev=%d expectedRouteRev=%d expectedContentRev=%d conflictType=%v serverWorkspaceRev=%v serverRouteRev=%v serverOpSeq=%v",
 		action,
@@ -122,6 +143,20 @@ func LogWorkspaceConflictFailure(
 		serverRouteRev,
 		opSeq,
 	)
+}
+
+func ExtractErrorDetails(payload map[string]any) map[string]any {
+	errorPayload, ok := payload["error"].(backendresponse.ErrorPayload)
+	if ok {
+		details, _ := errorPayload.Details.(map[string]any)
+		return details
+	}
+	errorMap, ok := payload["error"].(map[string]any)
+	if !ok {
+		return nil
+	}
+	details, _ := errorMap["details"].(map[string]any)
+	return details
 }
 
 func IsWorkspaceEnvelopeError(err error) bool {

@@ -35,7 +35,7 @@ func (handler *Handler) RequireAuth() gin.HandlerFunc {
 			return handler.users.GetByID(userID)
 		},
 		func(c *gin.Context) {
-			respondError(c, http.StatusUnauthorized, "unauthorized", "Authentication required.")
+			respondError(c, http.StatusUnauthorized, "API-2001", "Authentication required.")
 		},
 	)
 }
@@ -60,36 +60,36 @@ func (handler *Handler) HandleRegister(c *gin.Context) {
 		Description string `json:"description"`
 	}
 	if err := c.ShouldBindJSON(&request); err != nil {
-		respondError(c, http.StatusBadRequest, "invalid_payload", "Invalid request payload.")
+		respondError(c, http.StatusBadRequest, "API-1001", "Invalid request payload.")
 		return
 	}
 	email := strings.TrimSpace(request.Email)
 	password := request.Password
 	if !isValidEmail(email) {
-		respondError(c, http.StatusBadRequest, "invalid_email", "Email is invalid.")
+		respondError(c, http.StatusBadRequest, "API-4001", "Email is invalid.")
 		return
 	}
 	if len(password) < 8 {
-		respondError(c, http.StatusBadRequest, "weak_password", "Password must be at least 8 characters.")
+		respondError(c, http.StatusBadRequest, "API-4001", "Password must be at least 8 characters.")
 		return
 	}
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		respondError(c, http.StatusInternalServerError, "hash_failed", "Could not secure password.")
+		respondError(c, http.StatusInternalServerError, "API-9001", "Could not secure password.")
 		return
 	}
 	user, err := handler.users.Create(email, request.Name, request.Description, passwordHash)
 	if err != nil {
 		if errors.Is(err, ErrEmailExists) {
-			respondError(c, http.StatusConflict, "email_exists", "Email already registered.")
+			respondError(c, http.StatusConflict, "API-4009", "Email already registered.")
 			return
 		}
-		respondError(c, http.StatusInternalServerError, "create_failed", "Could not create user.")
+		respondError(c, http.StatusInternalServerError, "API-5001", "Could not create user.")
 		return
 	}
 	session := handler.sessions.Create(user.ID, handler.tokenTTL)
 	if session == nil {
-		respondError(c, http.StatusInternalServerError, "session_failed", "Could not create session.")
+		respondError(c, http.StatusInternalServerError, "API-9001", "Could not create session.")
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{"user": NewPublicUser(user), "token": session.Token, "expiresAt": session.ExpiresAt})
@@ -101,21 +101,21 @@ func (handler *Handler) HandleLogin(c *gin.Context) {
 		Password string `json:"password"`
 	}
 	if err := c.ShouldBindJSON(&request); err != nil {
-		respondError(c, http.StatusBadRequest, "invalid_payload", "Invalid request payload.")
+		respondError(c, http.StatusBadRequest, "API-1001", "Invalid request payload.")
 		return
 	}
 	user, ok := handler.users.GetByEmail(request.Email)
 	if !ok {
-		respondError(c, http.StatusUnauthorized, "invalid_credentials", "Invalid email or password.")
+		respondError(c, http.StatusUnauthorized, "API-2001", "Invalid email or password.")
 		return
 	}
 	if bcrypt.CompareHashAndPassword(user.PasswordHash, []byte(request.Password)) != nil {
-		respondError(c, http.StatusUnauthorized, "invalid_credentials", "Invalid email or password.")
+		respondError(c, http.StatusUnauthorized, "API-2001", "Invalid email or password.")
 		return
 	}
 	session := handler.sessions.Create(user.ID, handler.tokenTTL)
 	if session == nil {
-		respondError(c, http.StatusInternalServerError, "session_failed", "Could not create session.")
+		respondError(c, http.StatusInternalServerError, "API-9001", "Could not create session.")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"user": NewPublicUser(user), "token": session.Token, "expiresAt": session.ExpiresAt})
@@ -132,7 +132,7 @@ func (handler *Handler) HandleLogout(c *gin.Context) {
 func (handler *Handler) HandleMe(c *gin.Context) {
 	user, ok := GetAuthUser[User](c)
 	if !ok {
-		respondError(c, http.StatusUnauthorized, "unauthorized", "Authentication required.")
+		respondError(c, http.StatusUnauthorized, "API-2001", "Authentication required.")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"user": NewPublicUser(user)})
@@ -142,7 +142,7 @@ func (handler *Handler) HandleGetUser(c *gin.Context) {
 	userID := c.Param("id")
 	user, ok := handler.users.GetByID(userID)
 	if !ok {
-		respondError(c, http.StatusNotFound, "not_found", "User not found.")
+		respondError(c, http.StatusNotFound, "API-4004", "User not found.")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"user": NewPublicUser(user)})
@@ -151,7 +151,7 @@ func (handler *Handler) HandleGetUser(c *gin.Context) {
 func (handler *Handler) HandleUpdateMe(c *gin.Context) {
 	user, ok := GetAuthUser[User](c)
 	if !ok {
-		respondError(c, http.StatusUnauthorized, "unauthorized", "Authentication required.")
+		respondError(c, http.StatusUnauthorized, "API-2001", "Authentication required.")
 		return
 	}
 	var request struct {
@@ -159,16 +159,16 @@ func (handler *Handler) HandleUpdateMe(c *gin.Context) {
 		Description *string `json:"description"`
 	}
 	if err := c.ShouldBindJSON(&request); err != nil {
-		respondError(c, http.StatusBadRequest, "invalid_payload", "Invalid request payload.")
+		respondError(c, http.StatusBadRequest, "API-1001", "Invalid request payload.")
 		return
 	}
 	updated, err := handler.users.Update(user.ID, request.Name, request.Description)
 	if err != nil {
 		if errors.Is(err, ErrUserNotFound) {
-			respondError(c, http.StatusNotFound, "not_found", "User not found.")
+			respondError(c, http.StatusNotFound, "API-4004", "User not found.")
 			return
 		}
-		respondError(c, http.StatusInternalServerError, "update_failed", "Could not update user.")
+		respondError(c, http.StatusInternalServerError, "API-5001", "Could not update user.")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"user": NewPublicUser(updated)})

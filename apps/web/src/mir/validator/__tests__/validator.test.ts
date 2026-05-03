@@ -28,19 +28,29 @@ describe('validateMirDocument', () => {
     });
 
     expect(result.hasError).toBe(true);
-    expect(
-      result.issues.some((item) => item.code === 'MIR_DATA_EXTEND_INVALID')
-    ).toBe(true);
-    expect(
-      result.issues.some((item) => item.code === 'MIR_LIST_SOURCE_INVALID')
-    ).toBe(true);
-    expect(
-      result.issues.some((item) => item.code === 'MIR_LIST_KEYBY_INVALID')
-    ).toBe(true);
-    expect(
-      result.issues.some(
-        (item) => item.code === 'MIR_LIST_EMPTY_NODE_NOT_FOUND'
-      )
-    ).toBe(true);
+    expect(result.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          code: 'MIR-3002',
+          domain: 'mir',
+          severity: 'warning',
+        }),
+        expect.objectContaining({
+          code: 'MIR-3010',
+          domain: 'mir',
+          severity: 'warning',
+        }),
+        expect.objectContaining({
+          code: 'MIR-3010',
+          domain: 'mir',
+          severity: 'warning',
+        }),
+        expect.objectContaining({
+          code: 'MIR-2007',
+          domain: 'mir',
+          severity: 'error',
+        }),
+      ])
+    );
   });
 });

@@ -122,14 +122,19 @@ read materialized tree -> LLM command -> dry-run on ui.graph -> validate -> appl
 ## 10. 错误码建议
 
 ```txt
-MIR_GRAPH_ROOT_NOT_FOUND
-MIR_GRAPH_NODE_KEY_MISMATCH
-MIR_GRAPH_CHILD_NOT_FOUND
-MIR_GRAPH_CYCLE_DETECTED
-MIR_GRAPH_MULTI_PARENT_NODE
-MIR_GRAPH_ORPHAN_NODE
-MIR_GRAPH_ROOT_FORBIDDEN
-MIR_GRAPH_PATCH_PATH_FORBIDDEN
+MIR-1001  保存态包含 ui.root
+MIR-1002  文档版本或 ui.graph 缺失
+MIR-1003  节点必需字段非法
+MIR-2001  rootId 不存在于 nodesById
+MIR-2002  nodesById key 与节点 id 不一致
+MIR-2003  childIdsById / regionsById 引用不存在节点
+MIR-2004  graph 存在环
+MIR-2005  节点存在多个结构父级
+MIR-2006  孤儿节点
+MIR-2007  跨域节点引用不存在
+MIR-3002  data 绑定结构非法
+MIR-3010  list 渲染结构非法
+MIR-4001  MIR materialize 或校验失败
 ```
 
 ## 11. 落地顺序

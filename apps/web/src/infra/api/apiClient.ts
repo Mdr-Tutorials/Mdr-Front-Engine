@@ -1,5 +1,10 @@
 import { API_ROOT } from './apiConfig';
-import { ApiError, type ApiErrorPayload } from './apiError';
+import {
+  ApiError,
+  type ApiErrorDiagnosticPayload,
+  type ApiErrorPayload,
+} from './apiError';
+import { createDiagnostic, type MdrDiagnosticDomain } from '@/diagnostics';
 
 type ApiRequestOptions = Omit<RequestInit, 'headers'> & {
   headers?: HeadersInit;
@@ -31,18 +36,75 @@ const parseResponsePayload = async (response: Response) => {
   return response.text();
 };
 
+const isDiagnosticDomain = (domain: string): domain is MdrDiagnosticDomain =>
+  [
+    'mir',
+    'workspace',
+    'route',
+    'editor',
+    'nodegraph',
+    'animation',
+    'elib',
+    'codegen',
+    'backend',
+    'ai',
+  ].includes(domain);
+
+const normalizeDomain = (domain: string | undefined): MdrDiagnosticDomain =>
+  domain && isDiagnosticDomain(domain) ? domain : 'backend';
+
+const normalizeDiagnostic = (diagnostic: ApiErrorDiagnosticPayload) =>
+  createDiagnostic({
+    code: diagnostic.code,
+    message: diagnostic.message,
+    severity: diagnostic.severity ?? 'error',
+    domain: normalizeDomain(diagnostic.domain),
+    docsUrl: diagnostic.docsUrl,
+    retryable: diagnostic.retryable,
+    meta: {
+      path: diagnostic.path,
+      targetRef: diagnostic.targetRef,
+      details: diagnostic.details,
+    },
+  });
+
 const toApiError = (payload: unknown, response: Response) => {
   const apiPayload =
     typeof payload === 'object' && payload
       ? (payload as ApiErrorPayload)
       : undefined;
+  const errorPayload =
+    apiPayload?.error &&
+    typeof apiPayload.error === 'object' &&
+    typeof apiPayload.error.code === 'string' &&
+    typeof apiPayload.error.message === 'string'
+      ? apiPayload.error
+      : undefined;
 
   const message =
-    apiPayload?.message || response.statusText || 'Request failed.';
-  const code = apiPayload?.code || apiPayload?.error;
-  const details = apiPayload?.details;
+    errorPayload?.message || response.statusText || 'Request failed.';
+  const code = errorPayload?.code ?? 'API-9001';
+  const diagnostics =
+    errorPayload?.diagnostics?.map(normalizeDiagnostic) ??
+    (errorPayload
+      ? [
+          normalizeDiagnostic({
+            code: errorPayload.code,
+            message: errorPayload.message,
+            severity: errorPayload.severity,
+            domain: errorPayload.domain,
+            retryable: errorPayload.retryable,
+            docsUrl: errorPayload.docsUrl,
+            details: errorPayload.details,
+          }),
+        ]
+      : []);
 
-  return new ApiError(message, response.status, code, details);
+  return new ApiError(message, response.status, code, errorPayload?.details, {
+    requestId: errorPayload?.requestId,
+    retryable: errorPayload?.retryable,
+    diagnostics,
+  });
 };
 
 export const apiRequest = async <T>(

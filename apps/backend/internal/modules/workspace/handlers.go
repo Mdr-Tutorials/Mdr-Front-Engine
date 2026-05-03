@@ -7,6 +7,7 @@ import (
 	"time"
 
 	backendauth "github.com/Mdr-Tutorials/mdr-front-engine/apps/backend/internal/modules/auth"
+	backendresponse "github.com/Mdr-Tutorials/mdr-front-engine/apps/backend/internal/platform/http/response"
 	"github.com/gin-gonic/gin"
 )
 
@@ -115,7 +116,7 @@ func (handler *Handler) HandleGetWorkspace(c *gin.Context) {
 	workspaceID := strings.TrimSpace(c.Param("workspaceId"))
 	user, ok := backendauth.GetAuthUser[backendauth.User](c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, map[string]any{"error": "unauthorized", "message": "Authentication required."})
+		backendresponse.Error(c, http.StatusUnauthorized, "API-2001", "Authentication required.")
 		return
 	}
 	snapshot, err := handler.module.GetSnapshotForUser(c.Request.Context(), user.ID, workspaceID)
@@ -135,7 +136,7 @@ func (handler *Handler) HandleGetWorkspaceCapabilities(c *gin.Context) {
 	workspaceID := strings.TrimSpace(c.Param("workspaceId"))
 	user, ok := backendauth.GetAuthUser[backendauth.User](c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, map[string]any{"error": "unauthorized", "message": "Authentication required."})
+		backendresponse.Error(c, http.StatusUnauthorized, "API-2001", "Authentication required.")
 		return
 	}
 	if _, err := handler.module.GetSnapshotForUser(c.Request.Context(), user.ID, workspaceID); err != nil {
@@ -151,7 +152,7 @@ func (handler *Handler) HandlePatchWorkspaceDocument(c *gin.Context) {
 	documentID := strings.TrimSpace(c.Param("documentId"))
 	user, ok := backendauth.GetAuthUser[backendauth.User](c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, map[string]any{"error": "unauthorized", "message": "Authentication required."})
+		backendresponse.Error(c, http.StatusUnauthorized, "API-2001", "Authentication required.")
 		return
 	}
 	var request PatchDocumentRequest
@@ -202,7 +203,7 @@ func (handler *Handler) HandleApplyWorkspaceBatch(c *gin.Context) {
 	workspaceID := strings.TrimSpace(c.Param("workspaceId"))
 	user, ok := backendauth.GetAuthUser[backendauth.User](c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, map[string]any{"error": "unauthorized", "message": "Authentication required."})
+		backendresponse.Error(c, http.StatusUnauthorized, "API-2001", "Authentication required.")
 		return
 	}
 	var request ApplyBatchRequest
