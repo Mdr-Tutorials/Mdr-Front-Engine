@@ -120,6 +120,36 @@ flowchart TD
     Tutorials[教程]
 ```
 
+## MIR 结构与读写链路
+
+```mermaid
+flowchart TD
+    %% 写入侧：编辑器与 AI 不直接覆盖树结构
+    Editors[蓝图 / 节点图 / 动画编辑器]
+    LLM[LLM 辅助开发]
+    Commands[Command / Intent / Patch]
+
+    %% MIR 保存态：规范化图结构是唯一真相源
+    Graph[MIR ui.graph<br>rootId / nodesById / childIdsById / regionsById]
+    Validator[MIR Validator<br>Schema + Graph 语义校验]
+    Workspace[Workspace VFS / Backend / Git]
+
+    %% 读取侧：需要树时只生成临时中间层
+    Materialize[materializeUiTree<br>临时树中间层]
+    Renderer[Renderer / Preview]
+    Codegen[Code Generator]
+
+    Editors --> Commands
+    LLM --> Commands
+    Commands --> Graph
+    Graph --> Validator
+    Validator --> Workspace
+    Workspace --> Graph
+    Graph --> Materialize
+    Materialize --> Renderer
+    Materialize --> Codegen
+```
+
 ## 代码规范
 
 1. 读写文档都要用 UTF-8 编码。
@@ -133,3 +163,4 @@ flowchart TD
 9. 当完整的功能写好后，先运行 `pnpm run format` 来格式化代码。
 10. 仅在有明确提示的时候提交并推送。commit msg 使用纯英文，按照业界规范写法：使用 `type(scope): description` 格式。
 11. 在保持 monochrome-ui 设计风格的前提下，样式和 UX 设计可以模仿 Figma 和 Dify。
+12. 扫描文件名时，优先使用 `git ls-files`、`git diff --name-only` 等 Git 相关命令限定仓库文件，避免递归扫到 `node_modules` 等依赖目录。
