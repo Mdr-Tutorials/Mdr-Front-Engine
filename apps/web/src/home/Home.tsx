@@ -5,6 +5,8 @@ import { IconMdr } from '@/components/icons/IconMdr';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
 import { useAuthStore } from '@/auth/useAuthStore';
 
+const docsSiteUrl = 'https://mdr-tutorials.github.io/Mdr-Front-Engine/';
+
 function Home() {
   const { t, i18n } = useTranslation('home');
 
@@ -58,10 +60,10 @@ function Home() {
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-8 pr-4">
               <MdrLink to="/community">{t('nav.community')}</MdrLink>
-              <MdrLink to="http://localhost:5174/guide/getting-started">
+              <MdrLink to={`${docsSiteUrl}guide/getting-started`}>
                 {t('nav.tutorials')}
               </MdrLink>
-              <MdrLink to="http://localhost:5174/guide/introduction">
+              <MdrLink to={`${docsSiteUrl}guide/introduction`}>
                 {t('nav.docs')}
               </MdrLink>
             </div>
@@ -151,7 +153,7 @@ function Home() {
             text={t('actions.viewDocs')}
             size="Big"
             category="Secondary"
-            to="http://localhost:5174"
+            to={docsSiteUrl}
           />
         </div>
       </div>

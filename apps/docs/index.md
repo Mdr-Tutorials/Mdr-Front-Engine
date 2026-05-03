@@ -17,7 +17,7 @@ hero:
       link: /guide/introduction
     - theme: alt
       text: GitHub
-      link: https://github.com/mdr-front-engine/mdr-front-engine
+      link: https://github.com/Mdr-Tutorials/Mdr-Front-Engine
 
 features:
   - icon: 🎨
@@ -92,7 +92,7 @@ MdrFrontEngine 基于现代 Web 技术构建：
   <p style="color: var(--vp-c-text-2);">
     准备好开始了吗？
   </p>
-  <a href="/guide/getting-started" style="display: inline-block; padding: 0.75rem 1.5rem; background: var(--vp-c-brand-1); color: white; border-radius: 8px; text-decoration: none; font-weight: 500;">
+  <a href="./guide/getting-started" style="display: inline-block; padding: 0.75rem 1.5rem; background: var(--vp-c-brand-1); color: white; border-radius: 8px; text-decoration: none; font-weight: 500;">
     开始使用
   </a>
 </div>

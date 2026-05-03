@@ -1,14 +1,17 @@
 import { defineConfig } from 'vitepress';
 
+const base = process.env.VITEPRESS_BASE ?? '/';
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  base,
   title: 'MdrFrontEngine',
   description: '可视化前端开发平台 - 从设计到部署的一站式解决方案',
   lang: 'zh-CN',
   lastUpdated: true,
 
   head: [
-    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}logo.svg` }],
     ['meta', { name: 'theme-color', content: '#5f67ee' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'MdrFrontEngine' }],
@@ -37,6 +40,7 @@ export default defineConfig({
           { text: '后端 API', link: '/api/backend' },
         ],
       },
+      { text: 'Storybook', link: '/storybook/' },
       { text: '社区', link: '/community/contributing' },
     ],
 
@@ -122,7 +126,7 @@ export default defineConfig({
     socialLinks: [
       {
         icon: 'github',
-        link: 'https://github.com/mdr-front-engine/mdr-front-engine',
+        link: 'https://github.com/Mdr-Tutorials/Mdr-Front-Engine',
       },
     ],
 

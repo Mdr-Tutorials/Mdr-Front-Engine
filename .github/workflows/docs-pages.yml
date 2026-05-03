@@ -1,0 +1,81 @@
+name: Docs Pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/docs/**'
+      - 'packages/shared/**'
+      - 'packages/themes/**'
+      - 'packages/ui/**'
+      - 'specs/diagnostics/**'
+      - 'scripts/generate-diagnostic-docs.mjs'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - 'turbo.json'
+      - '.github/workflows/docs-pages.yml'
+
+concurrency:
+  group: docs-pages-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build docs
+        env:
+          VITEPRESS_BASE: /Mdr-Front-Engine/
+        run: pnpm build:docs
+
+      - name: Build Storybook
+        run: pnpm build-storybook:ui
+
+      - name: Assemble Pages artifact
+        shell: bash
+        run: |
+          rm -rf .pages
+          mkdir -p .pages/storybook
+          cp -R apps/docs/.vitepress/dist/. .pages/
+          cp -R packages/ui/storybook-static/. .pages/storybook/
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .pages
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

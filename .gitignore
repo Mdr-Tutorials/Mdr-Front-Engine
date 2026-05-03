@@ -50,6 +50,7 @@ apps/docs/.vitepress/dist/
 apps/docs/.docusaurus/
 apps/docs/dist/
 apps/docs/build/
+.pages/
 
 # Package outputs
 packages/*/dist/
@@ -57,6 +58,7 @@ packages/*/build/
 packages/*/lib/
 packages/*/esm/
 packages/*/cjs/
+packages/*/storybook-static/
 
 # Local tool output
 .playwright-mcp/

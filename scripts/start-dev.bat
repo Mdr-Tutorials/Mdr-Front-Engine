@@ -26,7 +26,7 @@ start "dev-web" /d "%PROJECT_DIR%" "%PS_EXE%" -NoExit -Command "pnpm run dev:web
 
 start "dev-backend" /d "%PROJECT_DIR%" "%PS_EXE%" -NoExit -Command "pnpm run dev:backend"
 
-start "claude-code" /d "%PROJECT_DIR%" "%PS_EXE%" -NoExit -Command "claude"
+start "storybook-ui" /d "%PROJECT_DIR%" "%PS_EXE%" -NoExit -Command "pnpm run storybook:ui"
 
 echo [SUCCESS] 窗口已弹出。
 endlocal
