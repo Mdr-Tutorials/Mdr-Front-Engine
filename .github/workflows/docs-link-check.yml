@@ -54,3 +54,11 @@ jobs:
         env:
           VITEPRESS_BASE: /Mdr-Front-Engine/
         run: pnpm build:docs
+
+      - name: Verify docs base path
+        shell: bash
+        run: |
+          grep -q '\\"base\\":\\"/Mdr-Front-Engine/\\"' apps/docs/.vitepress/dist/index.html
+          grep -q 'href="/Mdr-Front-Engine/assets/' apps/docs/.vitepress/dist/index.html
+          grep -q 'src="/Mdr-Front-Engine/assets/' apps/docs/.vitepress/dist/index.html
+          grep -q 'href="/Mdr-Front-Engine/guide/introduction.html"' apps/docs/.vitepress/dist/index.html

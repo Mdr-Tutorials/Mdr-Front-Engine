@@ -3,6 +3,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      "env": ["VITEPRESS_BASE"],
       "outputs": ["dist/**", ".vitepress/dist/**"]
     },
     "lint": {
