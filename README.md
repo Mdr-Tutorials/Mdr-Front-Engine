@@ -5,6 +5,7 @@
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ![Version](https://img.shields.io/badge/version-0.1.0--alpha-orange.svg)
 ![Local First](https://img.shields.io/badge/Local%20First-Yes-brightgreen.svg)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Mdr-Tutorials/Mdr-Front-Engine)
 
 **口号**：**Mdr / 前端 _梭哈_ / 灵感顷刻 _炼化_**  
 **我们主张**：**"Visualize Beyond Design"** —— 可视化的不仅是设计，更是整个前端全生命周期。

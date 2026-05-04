@@ -1,8 +1,4 @@
-# Workspace Refactor 决策索引（Draft）
-
-## 目的
-
-为当前编辑器从单 `mirDoc` 迁移到 workspace 架构提供统一决策入口，避免规范分散。
+# MdrFrontEngine 决策索引（Draft）
 
 ## 核心决策（按主题）
 
@@ -37,36 +33,27 @@
 9. **布局范式与内置 Inspector Schema**
    - `specs/decisions/19.layout-pattern-and-builtin-inspector-schema.md`
 10. **NodeGraph Port 语义与连线约束**
-
-- `specs/decisions/20.node-graph-port-semantics.md`
-
+    - `specs/decisions/20.node-graph-port-semantics.md`
 11. **LLM 集成架构**
-
-- `specs/decisions/22.llm-integration-architecture.md`
-
+    - `specs/decisions/22.llm-integration-architecture.md`
 12. **作者态符号环境**
-
-- `specs/decisions/25.authoring-symbol-environment.md`
-
+    - `specs/decisions/25.authoring-symbol-environment.md`
 13. **GitHub App 与 Git 集成**
-
-- `specs/decisions/23.github-app-integration.md`
-
+    - `specs/decisions/23.github-app-integration.md`
 14. **诊断码与错误体系**
-
-- `specs/diagnostics/README.md`
-- `specs/decisions/24.backend-diagnostic-envelope.md`
-- `specs/diagnostics/mir-diagnostic-codes.md`
-- `specs/diagnostics/workspace-diagnostic-codes.md`
-- `specs/diagnostics/editor-diagnostic-codes.md`
-- `specs/diagnostics/code-diagnostic-codes.md`
-- `specs/diagnostics/route-diagnostic-codes.md`
-- `specs/diagnostics/nodegraph-diagnostic-codes.md`
-- `specs/diagnostics/animation-diagnostic-codes.md`
-- `specs/diagnostics/external-library-diagnostic-codes.md`
-- `specs/diagnostics/codegen-diagnostic-codes.md`
-- `specs/diagnostics/api-diagnostic-codes.md`
-- `specs/diagnostics/ai-diagnostic-codes.md`
+    - `specs/diagnostics/README.md`
+    - `specs/decisions/24.backend-diagnostic-envelope.md`
+    - `specs/diagnostics/mir-diagnostic-codes.md`
+    - `specs/diagnostics/workspace-diagnostic-codes.md`
+    - `specs/diagnostics/editor-diagnostic-codes.md`
+    - `specs/diagnostics/code-diagnostic-codes.md`
+    - `specs/diagnostics/route-diagnostic-codes.md`
+    - `specs/diagnostics/nodegraph-diagnostic-codes.md`
+    - `specs/diagnostics/animation-diagnostic-codes.md`
+    - `specs/diagnostics/external-library-diagnostic-codes.md`
+    - `specs/diagnostics/codegen-diagnostic-codes.md`
+    - `specs/diagnostics/api-diagnostic-codes.md`
+    - `specs/diagnostics/ai-diagnostic-codes.md`
 
 ## 实施主计划
 
@@ -81,10 +68,3 @@
 - `specs/codegen/react-production-policy-v1.md`
 - `specs/external/canonical-external-ir-v1.md`
 - `specs/diagnostics/external-library-diagnostic-codes.md`
-
-## 范围边界（必须遵守）
-
-1. 本期不实现 NodeGraph/动画编辑器 UI。
-2. 仅预留其协议能力（文档类型、capability、command namespace、错误码）。
-3. 用户只操作 Blueprint 可见对象，不暴露 VFS 文件级操作 UI。
-4. 目标是移除旧 `mirDoc` 兼容层；当前过渡期允许 capability 控制的回退写入，迁移完成后收敛为 workspace-only。

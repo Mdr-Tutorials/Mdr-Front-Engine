@@ -40,10 +40,8 @@ const formatUpdatedAt = (value: string) => value.replace('T', ' ').slice(0, 16);
 
 const normalizeSnippetBlock = (content: string) => content.trim();
 
-const hasGitignoreSnippet = (
-  value: string,
-  snippet: ProjectGitignoreSnippet
-) => value.includes(normalizeSnippetBlock(snippet.content));
+const hasGitignoreSnippet = (value: string, snippet: ProjectGitignoreSnippet) =>
+  value.includes(normalizeSnippetBlock(snippet.content));
 
 const appendGitignoreSnippet = (
   value: string,
@@ -69,7 +67,10 @@ const removeGitignoreSnippet = (
 const findCopyrightLineIndex = (lines: string[]) =>
   lines.findIndex((line) => /^copyright\b/i.test(line.trim()));
 
-const mergeLicenseEditableMetadata = (templateContent: string, value: string) => {
+const mergeLicenseEditableMetadata = (
+  templateContent: string,
+  value: string
+) => {
   const templateLines = templateContent.split('\n');
   const valueLines = value.split('\n');
   const templateCopyrightIndex = findCopyrightLineIndex(templateLines);
@@ -144,7 +145,9 @@ export function ProjectFileManager({
   const isEditingGitignore = selectedFile?.path === '.gitignore';
   const fileTemplateOptions = useMemo(
     () =>
-      templateOptions.filter((template) => template.targetPath !== '.gitignore'),
+      templateOptions.filter(
+        (template) => template.targetPath !== '.gitignore'
+      ),
     [templateOptions]
   );
   const selectedTemplateId = selectedFile
@@ -171,21 +174,19 @@ export function ProjectFileManager({
     setEditorValue(selectedFile.content);
     setSelectedTemplateByPath((current) => {
       if (current[selectedFile.path]) return current;
-      const matchingTemplate = fileTemplateOptions.find(
-        (template) => {
-          const templateContent = createProjectFileTemplateContent(template, {
-            projectName: project?.name,
-            projectDescription: project?.description,
-          });
-          if (isLicenseTemplate(template)) {
-            return (
-              normalizeLicenseForTemplateMatch(templateContent) ===
-              normalizeLicenseForTemplateMatch(selectedFile.content)
-            );
-          }
-          return templateContent.trim() === selectedFile.content.trim();
+      const matchingTemplate = fileTemplateOptions.find((template) => {
+        const templateContent = createProjectFileTemplateContent(template, {
+          projectName: project?.name,
+          projectDescription: project?.description,
+        });
+        if (isLicenseTemplate(template)) {
+          return (
+            normalizeLicenseForTemplateMatch(templateContent) ===
+            normalizeLicenseForTemplateMatch(selectedFile.content)
+          );
         }
-      );
+        return templateContent.trim() === selectedFile.content.trim();
+      });
       return {
         ...current,
         [selectedFile.path]: matchingTemplate?.id,
@@ -424,8 +425,7 @@ export function ProjectFileManager({
                           </label>
                         ))
                       : fileTemplateOptions.map((template) => {
-                          const isSelected =
-                            selectedTemplateId === template.id;
+                          const isSelected = selectedTemplateId === template.id;
                           return (
                             <button
                               key={template.id}
