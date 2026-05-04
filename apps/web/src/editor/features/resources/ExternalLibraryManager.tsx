@@ -3,13 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { ExternalLibraryAddModal } from './externalLibraryManager/ExternalLibraryAddModal';
 import { ExternalLibraryDetailsPanel } from './externalLibraryManager/ExternalLibraryDetailsPanel';
 import { ExternalLibraryListPanel } from './externalLibraryManager/ExternalLibraryListPanel';
-import {
-  ExternalLibraryToolbar,
-  type BuiltinLibraryCategory,
-} from './externalLibraryManager/ExternalLibraryToolbar';
+import { ExternalLibraryToolbar } from './externalLibraryManager/ExternalLibraryToolbar';
 import type {
   ActiveLibrary,
-  LibraryCatalog,
   LibraryEntry,
   LibraryMode,
   LibraryScope,
@@ -20,6 +16,16 @@ import {
   DEFAULT_PACKAGE_SIZE_THRESHOLDS,
   normalizePackageSizeThresholds,
 } from './externalLibraryManager/viewUtils';
+import {
+  BUILTIN_LIBRARY_CATEGORIES,
+  LIBRARY_CATALOG,
+  MODE_OPTIONS,
+} from './externalLibraryManager/libraryCatalog';
+import {
+  inferLibraryScopeFromPackageName,
+  normalizeExternalComponentLibraryIds,
+  normalizeLibraryIds,
+} from './externalLibraryManager/libraryScope';
 import { isAbortError } from '@/infra/api';
 
 type ExternalLibraryManagerProps = {
@@ -32,123 +38,8 @@ type NpmMetadata = {
   updatedAt: number;
 };
 
-const EXTERNAL_COMPONENT_LIBRARY_PRESET_IDS = ['antd', 'mui'];
-const ICON_LIBRARY_PRESET_IDS = [
-  'fontawesome',
-  'ant-design-icons',
-  'mui-icons',
-  'heroicons',
-];
-const LEGACY_ICON_LIBRARY_IDS = new Set(ICON_LIBRARY_PRESET_IDS);
 const PRE_RELEASE_PATTERN = /(alpha|beta|rc|next|canary|dev|broken)/i;
 const METADATA_CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
-
-const MODE_OPTIONS: Array<{ id: LibraryMode }> = [
-  { id: 'locked' },
-  { id: 'latest' },
-  { id: 'dev' },
-];
-
-const BUILTIN_LIBRARY_CATEGORIES: BuiltinLibraryCategory[] = [
-  {
-    id: 'component',
-    label: 'component',
-    libraryIds: ['antd', 'mui'],
-  },
-  {
-    id: 'icon',
-    label: 'icon',
-    libraryIds: ['fontawesome', 'ant-design-icons', 'mui-icons', 'heroicons'],
-  },
-  {
-    id: 'other',
-    label: 'other',
-    libraryIds: ['lodash', 'react'],
-  },
-];
-
-const LIBRARY_CATALOG: Record<string, LibraryCatalog> = {
-  antd: {
-    id: 'antd',
-    label: 'Ant Design',
-    scope: 'component',
-    description: 'Enterprise React component library for dashboard and forms.',
-    license: 'MIT',
-    packageSizeKb: 1218,
-    components: ['Button', 'Input', 'Form', 'Modal', 'Table', 'Tabs'],
-    versions: ['5.28.0', '5.27.6', '5.26.4', '5.29.0-beta.1'],
-  },
-  mui: {
-    id: 'mui',
-    label: 'Material UI',
-    scope: 'component',
-    description: 'Material design component system for shell and editor UIs.',
-    license: 'MIT',
-    packageSizeKb: 936,
-    components: ['Button', 'TextField', 'Card', 'Dialog', 'Grid'],
-    versions: ['7.3.2', '7.2.8', '7.1.1', '8.0.0-alpha.2'],
-  },
-  react: {
-    id: 'react',
-    label: 'React',
-    scope: 'utility',
-    description: 'Core rendering runtime and hooks APIs.',
-    license: 'MIT',
-    packageSizeKb: 132,
-    components: ['useState', 'useEffect', 'useMemo', 'useRef', 'createElement'],
-    versions: ['19.2.0', '19.1.1', '19.0.0', '19.0.0-rc.1'],
-  },
-  lodash: {
-    id: 'lodash',
-    label: 'Lodash',
-    scope: 'utility',
-    description: 'Utility helper set for object and collection transforms.',
-    license: 'MIT',
-    packageSizeKb: 72,
-    components: ['debounce', 'throttle', 'merge', 'cloneDeep', 'uniqBy'],
-    versions: ['4.17.21', '4.17.20', '4.17.15', '5.0.0-dev.2'],
-  },
-  fontawesome: {
-    id: 'fontawesome',
-    label: 'Font Awesome',
-    scope: 'icon',
-    description: 'Large icon pack for status and navigation.',
-    license: 'CC BY 4.0 + MIT',
-    packageSizeKb: 566,
-    components: ['faUser', 'faBell', 'faCloud', 'faCode'],
-    versions: ['6.7.2', '6.6.0', '6.5.1', '7.0.0-beta.1'],
-  },
-  'ant-design-icons': {
-    id: 'ant-design-icons',
-    label: 'Ant Design Icons',
-    scope: 'icon',
-    description: 'Icon set aligned with Ant Design visual language.',
-    license: 'MIT',
-    packageSizeKb: 502,
-    components: ['HomeOutlined', 'SearchOutlined', 'SettingOutlined'],
-    versions: ['5.6.1', '5.5.0', '5.4.2', '6.0.0-rc.0'],
-  },
-  'mui-icons': {
-    id: 'mui-icons',
-    label: 'Material Icons',
-    scope: 'icon',
-    description: 'Material icon provider for MUI ecosystem.',
-    license: 'MIT',
-    packageSizeKb: 548,
-    components: ['Add', 'Delete', 'Edit', 'ArrowForward'],
-    versions: ['7.3.2', '7.2.8', '7.1.1', '8.0.0-alpha.1'],
-  },
-  heroicons: {
-    id: 'heroicons',
-    label: 'Heroicons',
-    scope: 'icon',
-    description: 'Monochrome icon set for modern product UIs.',
-    license: 'MIT',
-    packageSizeKb: 436,
-    components: ['HomeIcon', 'BoltIcon', 'CodeBracketIcon', 'CubeIcon'],
-    versions: ['2.2.0', '2.1.5', '2.0.18', '3.0.0-beta.0'],
-  },
-};
 
 const getExternalSelectionStorageKey = (projectId?: string) =>
   `mdr.resourceManager.external.selection.${projectId?.trim() || 'default'}`;
@@ -167,16 +58,6 @@ const getManagerSizeThresholdsStorageKey = (projectId?: string) =>
 
 const getManagerMetadataStorageKey = (projectId?: string) =>
   `mdr.resourceManager.external.metadata.${projectId?.trim() || 'default'}`;
-
-const normalizeLibraryIds = (libraryIds: string[]) =>
-  [...new Set(libraryIds.map((libraryId) => libraryId.trim().toLowerCase()))]
-    .map((libraryId) => libraryId.trim())
-    .filter((libraryId) => libraryId.length > 0);
-
-const normalizeExternalComponentLibraryIds = (libraryIds: string[]) =>
-  normalizeLibraryIds(libraryIds).filter(
-    (libraryId) => !LEGACY_ICON_LIBRARY_IDS.has(libraryId)
-  );
 
 const parseStoredLibraryIds = (raw: string | null) => {
   if (!raw) return null;
@@ -397,9 +278,8 @@ export function ExternalLibraryManager({
     if (fromCatalog) return fromCatalog;
     if (componentConfiguredSet.has(libraryId)) return 'component';
     if (iconConfiguredSet.has(libraryId)) return 'icon';
-    if (EXTERNAL_COMPONENT_LIBRARY_PRESET_IDS.includes(libraryId))
-      return 'component';
-    if (ICON_LIBRARY_PRESET_IDS.includes(libraryId)) return 'icon';
+    const inferredScope = inferLibraryScopeFromPackageName(libraryId);
+    if (inferredScope) return inferredScope;
     return fallback;
   };
 
@@ -518,8 +398,9 @@ export function ExternalLibraryManager({
     libraryId: string,
     metadata: NpmMetadata
   ) => {
-    setActiveLibraries((current) =>
-      current.map((library) => {
+    setActiveLibraries((current) => {
+      let hasChanges = false;
+      const nextLibraries = current.map((library) => {
         if (library.id !== libraryId) return library;
         const nextDescription = metadata.description ?? library.description;
         const nextLicense = metadata.license ?? library.license;
@@ -529,14 +410,17 @@ export function ExternalLibraryManager({
         ) {
           return library;
         }
+        hasChanges = true;
         return {
           ...library,
           description: nextDescription,
           license: nextLicense,
           updatedAt: Date.now(),
         };
-      })
-    );
+      });
+
+      return hasChanges ? nextLibraries : current;
+    });
   };
 
   const requestNpmMetadata = async (libraryId: string) => {
@@ -720,17 +604,19 @@ export function ExternalLibraryManager({
         );
         setRegisteredIconLibraries(iconRegistry.getRegisteredIconLibraries());
 
+        const storedComponentIds = parseStoredLibraryIds(
+          window.localStorage.getItem(getExternalSelectionStorageKey(projectId))
+        );
+        const storedIconIds = parseStoredLibraryIds(
+          window.localStorage.getItem(getIconSelectionStorageKey(projectId))
+        );
         const componentIds = normalizeExternalComponentLibraryIds(
-          parseStoredLibraryIds(
-            window.localStorage.getItem(
-              getExternalSelectionStorageKey(projectId)
-            )
-          ) ?? externalRuntime.getConfiguredExternalLibraryIds()
+          storedComponentIds ??
+            (projectId ? [] : externalRuntime.getConfiguredExternalLibraryIds())
         );
         const iconIds = normalizeLibraryIds(
-          parseStoredLibraryIds(
-            window.localStorage.getItem(getIconSelectionStorageKey(projectId))
-          ) ?? iconRegistry.getConfiguredIconLibraryIds()
+          storedIconIds ??
+            (projectId ? [] : iconRegistry.getConfiguredIconLibraryIds())
         );
         setConfiguredComponentLibraryIds(componentIds);
         setConfiguredIconLibraryIds(iconIds);
@@ -767,6 +653,8 @@ export function ExternalLibraryManager({
         const stateById = new Map(
           storedManagerState.map((item) => [item.id, item])
         );
+        const inferredComponentIds: string[] = [];
+        const inferredIconIds: string[] = [];
         const nextLibraries = mergedIds.map((libraryId) => {
           const persisted = stateById.get(libraryId);
           const scope =
@@ -775,7 +663,13 @@ export function ExternalLibraryManager({
               ? 'component'
               : iconIds.includes(libraryId)
                 ? 'icon'
-                : 'utility');
+                : inferScope(libraryId));
+          if (!componentIds.includes(libraryId) && scope === 'component') {
+            inferredComponentIds.push(libraryId);
+          }
+          if (!iconIds.includes(libraryId) && scope === 'icon') {
+            inferredIconIds.push(libraryId);
+          }
           const library = createLibraryItem(libraryId, scope);
           return {
             ...library,
@@ -784,6 +678,15 @@ export function ExternalLibraryManager({
               persisted?.status ?? (scope === 'utility' ? 'idle' : 'success'),
           };
         });
+        if (storedManagerState.length > 0 && inferredComponentIds.length > 0) {
+          persistConfiguredComponentLibraryIds([
+            ...componentIds,
+            ...inferredComponentIds,
+          ]);
+        }
+        if (storedManagerState.length > 0 && inferredIconIds.length > 0) {
+          persistConfiguredIconLibraryIds([...iconIds, ...inferredIconIds]);
+        }
         setActiveLibraries(nextLibraries);
         hydrateNpmMetadata(mergedIds);
       })
@@ -925,12 +828,12 @@ export function ExternalLibraryManager({
   );
 
   return (
-    <article className="relative grid gap-4 rounded-2xl border border-black/8 bg-(--color-0) p-5">
+    <article className="relative grid gap-4 rounded-2xl border border-(--border-subtle) bg-(--bg-canvas) p-5">
       <header>
-        <h2 className="text-base font-semibold text-(--color-9)">
+        <h2 className="text-base font-semibold text-(--text-primary)">
           {t('resourceManager.external.header.title')}
         </h2>
-        <p className="mt-1 text-sm text-(--color-7)">
+        <p className="mt-1 text-sm text-(--text-secondary)">
           {t('resourceManager.external.header.description')}
         </p>
       </header>
@@ -973,7 +876,7 @@ export function ExternalLibraryManager({
         />
       </div>
       {isBootstrapping ? (
-        <div className="rounded-xl border border-black/8 bg-black/1.5 p-3 text-sm text-(--color-7)">
+        <div className="rounded-xl border border-(--border-subtle) bg-(--bg-panel) p-3 text-sm text-(--text-secondary)">
           {t('resourceManager.external.loading')}
         </div>
       ) : null}

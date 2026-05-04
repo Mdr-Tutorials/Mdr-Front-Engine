@@ -24,20 +24,20 @@ export function ExternalLibraryAddModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 p-4">
-      <div className="grid w-full max-w-md gap-3 rounded-2xl border border-black/10 bg-(--color-0) p-4 shadow-[0_18px_48px_rgba(0,0,0,0.18)]">
-        <h3 className="text-sm font-semibold text-(--color-9)">
+      <div className="grid w-full max-w-md gap-3 rounded-2xl border border-(--border-default) bg-(--bg-canvas) p-4 shadow-(--shadow-lg)">
+        <h3 className="text-sm font-semibold text-(--text-primary)">
           {t('resourceManager.external.modal.title')}
         </h3>
         <input
           data-testid="external-library-modal-name-input"
-          className="h-9 rounded-lg border border-black/10 bg-transparent px-3 text-sm text-(--color-9)"
+          className="h-9 rounded-lg border border-(--border-default) bg-transparent px-3 text-sm text-(--text-primary) outline-none focus:border-(--accent-color)"
           value={libraryId}
           onChange={(event) => onLibraryIdChange(event.target.value)}
           placeholder={t('resourceManager.external.modal.packageId')}
         />
         <input
           data-testid="external-library-modal-version-input"
-          className="h-9 rounded-lg border border-black/10 bg-transparent px-3 text-sm text-(--color-9)"
+          className="h-9 rounded-lg border border-(--border-default) bg-transparent px-3 text-sm text-(--text-primary) outline-none focus:border-(--accent-color)"
           value={libraryVersion}
           onChange={(event) => onLibraryVersionChange(event.target.value)}
           placeholder={t('resourceManager.external.modal.versionOptional')}
@@ -45,7 +45,7 @@ export function ExternalLibraryAddModal({
         <div className="flex items-center justify-end gap-2">
           <button
             type="button"
-            className="rounded-lg border border-black/10 px-3 py-1.5 text-xs text-(--color-8)"
+            className="rounded-lg border border-(--border-default) px-3 py-1.5 text-xs text-(--text-secondary) hover:text-(--text-primary)"
             onClick={onClose}
           >
             {t('resourceManager.external.actions.cancel')}
@@ -53,7 +53,7 @@ export function ExternalLibraryAddModal({
           <button
             type="button"
             data-testid="external-library-modal-submit"
-            className="rounded-lg border border-black/12 bg-black px-3 py-1.5 text-xs text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg border border-(--text-primary) bg-(--text-primary) px-3 py-1.5 text-xs text-(--text-inverse) disabled:cursor-not-allowed disabled:opacity-50"
             disabled={!libraryId.trim()}
             onClick={onSubmit}
           >

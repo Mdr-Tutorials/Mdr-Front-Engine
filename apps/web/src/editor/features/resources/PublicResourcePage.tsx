@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { Download, FileWarning } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -302,16 +302,16 @@ export function PublicResourcePage({
     >
       {!embedded ? (
         <header className="rounded-2xl border border-black/8 bg-white/92 p-5 shadow-[0_10px_28px_rgba(0,0,0,0.06)]">
-          <h1 className="text-2xl font-semibold text-(--color-10)">
+          <h1 className="text-2xl font-semibold text-(--text-primary)">
             {t('resourceManager.public.header.title')}
           </h1>
-          <p className="mt-2 text-sm text-(--color-7)">
+          <p className="mt-2 text-sm text-(--text-secondary)">
             {t('resourceManager.public.header.description')}
           </p>
         </header>
       ) : null}
       <div className="grid min-h-[72vh] grid-cols-1 gap-4 xl:grid-cols-[minmax(320px,0.9fr)_minmax(0,1.4fr)]">
-        <aside className="rounded-2xl border border-black/8 bg-(--color-0) p-3">
+        <aside className="rounded-2xl border border-black/8 bg-(--bg-canvas) p-3">
           <ResourceFileTree
             tree={tree}
             mode="editable"
@@ -330,19 +330,19 @@ export function PublicResourcePage({
             onDelete={handleDeleteNode}
           />
         </aside>
-        <article className="rounded-2xl border border-black/8 bg-(--color-0) p-4">
+        <article className="rounded-2xl border border-black/8 bg-(--bg-canvas) p-4">
           <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h2 className="text-lg font-semibold text-(--color-9)">
+              <h2 className="text-lg font-semibold text-(--text-primary)">
                 {selectedNode.name}
               </h2>
-              <p className="text-xs text-(--color-6)">{selectedNode.path}</p>
+              <p className="text-xs text-(--text-muted)">{selectedNode.path}</p>
             </div>
             {selectedNode.type === 'file' && selectedNode.contentRef ? (
               <a
                 href={selectedNode.contentRef}
                 download={selectedNode.name}
-                className="inline-flex items-center gap-1 rounded-lg border border-black/12 px-2.5 py-1.5 text-xs text-(--color-8)"
+                className="inline-flex items-center gap-1 rounded-lg border border-black/12 px-2.5 py-1.5 text-xs text-(--text-secondary)"
               >
                 <Download size={12} />
                 {t('resourceManager.public.actions.download')}
@@ -376,7 +376,7 @@ export function PublicResourcePage({
                       className={`rounded px-2 py-1 ${
                         svgPreviewMode === 'preview'
                           ? 'bg-black text-white'
-                          : 'text-(--color-7)'
+                          : 'text-(--text-secondary)'
                       }`}
                       onClick={() => setSvgPreviewMode('preview')}
                     >
@@ -387,7 +387,7 @@ export function PublicResourcePage({
                       className={`rounded px-2 py-1 ${
                         svgPreviewMode === 'source'
                           ? 'bg-black text-white'
-                          : 'text-(--color-7)'
+                          : 'text-(--text-secondary)'
                       }`}
                       onClick={() => setSvgPreviewMode('source')}
                     >
@@ -421,7 +421,7 @@ export function PublicResourcePage({
               {selectedNode.category === 'font' && selectedNode.contentRef ? (
                 <div className="rounded-xl border border-black/8 p-3">
                   <style>{`@font-face{font-family:${fontFamilyName};src:url(${selectedNode.contentRef});}`}</style>
-                  <p className="text-xs text-(--color-6)">
+                  <p className="text-xs text-(--text-muted)">
                     {t('resourceManager.public.preview.fontSample')}
                   </p>
                   <p
@@ -456,7 +456,7 @@ export function PublicResourcePage({
               !isTextLikeNode(selectedNode) &&
               selectedNode.category !== 'image' &&
               selectedNode.category !== 'font' ? (
-                <div className="rounded-xl border border-black/8 bg-black/[0.02] p-4 text-sm text-(--color-7)">
+                <div className="rounded-xl border border-black/8 bg-black/[0.02] p-4 text-sm text-(--text-secondary)">
                   {t('resourceManager.public.preview.noInline')}
                 </div>
               ) : null}
@@ -477,13 +477,13 @@ export function PublicResourcePage({
               ) : null}
             </div>
           ) : (
-            <div className="rounded-xl border border-black/8 bg-black/[0.02] p-4 text-sm text-(--color-7)">
+            <div className="rounded-xl border border-black/8 bg-black/[0.02] p-4 text-sm text-(--text-secondary)">
               {t('resourceManager.public.preview.selectFile')}
             </div>
           )}
         </article>
       </div>
-      <footer className="rounded-xl border border-black/8 bg-(--color-0) px-4 py-3 text-xs text-(--color-7)">
+      <footer className="rounded-xl border border-black/8 bg-(--bg-canvas) px-4 py-3 text-xs text-(--text-secondary)">
         <strong>{t('resourceManager.public.hints.pageHintsLabel')}</strong>{' '}
         {t('resourceManager.public.hints.pageHints', {
           warnings: hintSummary.warnings,

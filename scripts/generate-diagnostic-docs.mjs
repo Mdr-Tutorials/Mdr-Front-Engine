@@ -16,6 +16,7 @@ const domainOrder = [
   'MIR',
   'WKS',
   'EDT',
+  'COD',
   'ELIB',
   'GEN',
   'API',
@@ -43,6 +44,12 @@ const domainInfo = {
     title: 'Editor',
     area: '编辑器',
     description: '选择、拖拽、Inspector、画布、命令和 autosave',
+  },
+  COD: {
+    file: 'code-diagnostic-codes.md',
+    title: 'Code',
+    area: '用户代码',
+    description: '代码片段、符号解析、类型、宿主绑定、运行时和转译编译',
   },
   ELIB: {
     file: 'external-library-diagnostic-codes.md',

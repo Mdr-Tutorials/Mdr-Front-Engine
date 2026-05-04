@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+﻿import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ChevronDown,
   ChevronRight,
@@ -248,21 +248,36 @@ export function ResourceFileTree({
           >
             {isFolder ? (
               isExpanded ? (
-                <ChevronDown size={12} className="shrink-0 text-(--color-6)" />
+                <ChevronDown
+                  size={12}
+                  className="shrink-0 text-(--text-muted)"
+                />
               ) : (
-                <ChevronRight size={12} className="shrink-0 text-(--color-6)" />
+                <ChevronRight
+                  size={12}
+                  className="shrink-0 text-(--text-muted)"
+                />
               )
             ) : (
               <span className="inline-block w-3 shrink-0" />
             )}
             {isFolder ? (
               isExpanded ? (
-                <FolderOpen size={13} className="shrink-0 text-(--color-7)" />
+                <FolderOpen
+                  size={13}
+                  className="shrink-0 text-(--text-secondary)"
+                />
               ) : (
-                <Folder size={13} className="shrink-0 text-(--color-7)" />
+                <Folder
+                  size={13}
+                  className="shrink-0 text-(--text-secondary)"
+                />
               )
             ) : (
-              <FileText size={13} className="shrink-0 text-(--color-7)" />
+              <FileText
+                size={13}
+                className="shrink-0 text-(--text-secondary)"
+              />
             )}
             {isRenaming ? (
               <input
@@ -283,7 +298,9 @@ export function ResourceFileTree({
                 className="h-6 min-w-0 flex-1 rounded border border-black/20 bg-white px-1.5 text-xs outline-none"
               />
             ) : (
-              <span className="truncate text-(--color-9)">{node.name}</span>
+              <span className="truncate text-(--text-primary)">
+                {node.name}
+              </span>
             )}
           </button>
           {editable ? (
@@ -292,7 +309,7 @@ export function ResourceFileTree({
                 <>
                   <button
                     type="button"
-                    className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--color-7) hover:border-black/12 hover:text-(--color-9)"
+                    className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--text-secondary) hover:border-black/12 hover:text-(--text-primary)"
                     aria-label={`create-folder-${node.id}`}
                     title={t('resourceManager.tree.actions.newFolder')}
                     onClick={() => onCreateFolder?.(node.id)}
@@ -301,7 +318,7 @@ export function ResourceFileTree({
                   </button>
                   <button
                     type="button"
-                    className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--color-7) hover:border-black/12 hover:text-(--color-9)"
+                    className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--text-secondary) hover:border-black/12 hover:text-(--text-primary)"
                     aria-label={`create-file-${node.id}`}
                     title={t('resourceManager.tree.actions.newFile')}
                     onClick={() => onCreateFile?.(node.id)}
@@ -310,7 +327,7 @@ export function ResourceFileTree({
                   </button>
                   <button
                     type="button"
-                    className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--color-7) hover:border-black/12 hover:text-(--color-9)"
+                    className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--text-secondary) hover:border-black/12 hover:text-(--text-primary)"
                     aria-label={`import-${node.id}`}
                     title={t('resourceManager.tree.actions.importFiles')}
                     onClick={() => triggerImport(node.id)}
@@ -323,7 +340,7 @@ export function ResourceFileTree({
                 <>
                   <button
                     type="button"
-                    className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--color-7) hover:border-black/12 hover:text-(--color-9)"
+                    className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--text-secondary) hover:border-black/12 hover:text-(--text-primary)"
                     aria-label={`rename-${node.id}`}
                     title={t('resourceManager.tree.actions.renameF2')}
                     onClick={() => startRenaming(node)}
@@ -332,7 +349,7 @@ export function ResourceFileTree({
                   </button>
                   <button
                     type="button"
-                    className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--color-7) hover:border-black/12 hover:text-(--color-9)"
+                    className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--text-secondary) hover:border-black/12 hover:text-(--text-primary)"
                     aria-label={`delete-${node.id}`}
                     title={t('resourceManager.tree.actions.delete')}
                     onClick={() => onDelete?.(node.id)}
@@ -354,7 +371,7 @@ export function ResourceFileTree({
   return (
     <div className="rounded-xl border border-black/10 bg-white/90 p-2">
       <div className="mb-2 flex items-center justify-between px-1">
-        <p className="text-[11px] font-semibold tracking-[0.08em] text-(--color-6) uppercase">
+        <p className="text-[11px] font-semibold tracking-[0.08em] text-(--text-muted) uppercase">
           {mode === 'editable'
             ? t('resourceManager.tree.publicEditable')
             : t('resourceManager.tree.fileReadonly')}
@@ -363,7 +380,7 @@ export function ResourceFileTree({
           <div className="inline-flex items-center gap-1">
             <button
               type="button"
-              className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--color-7) hover:border-black/12 hover:text-(--color-9)"
+              className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--text-secondary) hover:border-black/12 hover:text-(--text-primary)"
               aria-label="toolbar-create-folder"
               title={t('resourceManager.tree.actions.newFolder')}
               onClick={() => onCreateFolder?.(toolbarParentId)}
@@ -372,7 +389,7 @@ export function ResourceFileTree({
             </button>
             <button
               type="button"
-              className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--color-7) hover:border-black/12 hover:text-(--color-9)"
+              className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--text-secondary) hover:border-black/12 hover:text-(--text-primary)"
               aria-label="toolbar-create-file"
               title={t('resourceManager.tree.actions.newFile')}
               onClick={() => onCreateFile?.(toolbarParentId)}
@@ -381,7 +398,7 @@ export function ResourceFileTree({
             </button>
             <button
               type="button"
-              className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--color-7) hover:border-black/12 hover:text-(--color-9)"
+              className="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-(--text-secondary) hover:border-black/12 hover:text-(--text-primary)"
               aria-label="toolbar-import"
               title={t('resourceManager.tree.actions.importFiles')}
               onClick={() => triggerImport(toolbarParentId)}

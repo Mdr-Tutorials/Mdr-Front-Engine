@@ -3,6 +3,8 @@ import type {
   ExternalLibraryDiagnostic,
   ExternalLibraryRuntimeState,
 } from '@/editor/features/design/blueprint/external';
+import { useCallback } from 'react';
+import { useParams } from 'react-router';
 import { externalLibraryConfigUpdatedEvent } from '@/editor/features/design/blueprint/external';
 import { isAbortError } from '@/infra/api';
 
@@ -10,7 +12,22 @@ type RetryExternalLibrary = (libraryId: string) => Promise<void>;
 type ExternalModule =
   typeof import('@/editor/features/design/blueprint/external');
 
+const getProjectExternalSelectionStorageKey = (projectId?: string) =>
+  `mdr.resourceManager.external.selection.${projectId?.trim() || 'default'}`;
+
+const parseStoredLibraryIds = (raw: string | null) => {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((item): item is string => typeof item === 'string');
+  } catch {
+    return [];
+  }
+};
+
 export const useExternalLibraryRuntime = () => {
+  const { projectId } = useParams();
   const [externalDiagnostics, setExternalDiagnostics] = useState<
     ExternalLibraryDiagnostic[]
   >([]);
@@ -31,16 +48,38 @@ export const useExternalLibraryRuntime = () => {
     typeof AbortController === 'function' ? new AbortController() : null;
   const isOffline = () =>
     typeof navigator !== 'undefined' && navigator.onLine === false;
+  const getConfiguredLibraryIds = useCallback(
+    (mod: ExternalModule) => {
+      if (!projectId || typeof window === 'undefined') {
+        return mod.getConfiguredExternalLibraryIds();
+      }
+      return parseStoredLibraryIds(
+        window.localStorage.getItem(
+          getProjectExternalSelectionStorageKey(projectId)
+        )
+      );
+    },
+    [projectId]
+  );
+  const getConfiguredLibraryOptions = useCallback(
+    (mod: ExternalModule) =>
+      getConfiguredLibraryIds(mod).map((libraryId) => ({
+        id: libraryId,
+        label: mod.getExternalLibraryDisplayName(libraryId),
+      })),
+    [getConfiguredLibraryIds]
+  );
   const reloadExternalLibraries = async () => {
     if (isOffline()) return;
     const ensureWithModule = async (mod: ExternalModule) => {
-      setExternalLibraryOptions(mod.getConfiguredExternalLibraries());
+      const libraryIds = getConfiguredLibraryIds(mod);
+      setExternalLibraryOptions(getConfiguredLibraryOptions(mod));
       reloadControllerRef.current?.abort();
       const controller = createAbortController();
       reloadControllerRef.current = controller;
       try {
         await mod.ensureConfiguredExternalLibraries(
-          undefined,
+          libraryIds,
           controller ? { signal: controller.signal } : {}
         );
       } finally {
@@ -94,7 +133,8 @@ export const useExternalLibraryRuntime = () => {
         setRetryExternalLibrary(() => async (libraryId: string) => {
           await mod.retryExternalLibraryById(libraryId);
         });
-        setExternalLibraryOptions(mod.getConfiguredExternalLibraries());
+        const libraryIds = getConfiguredLibraryIds(mod);
+        setExternalLibraryOptions(getConfiguredLibraryOptions(mod));
         setExternalDiagnostics(mod.getExternalLibraryDiagnostics());
         setExternalLibraryLoading(mod.getExternalLibraryLoadingState());
         setExternalLibraryStates(mod.getExternalLibraryStates());
@@ -103,7 +143,7 @@ export const useExternalLibraryRuntime = () => {
         }
         void mod
           .ensureConfiguredExternalLibraries(
-            undefined,
+            libraryIds,
             controller ? { signal: controller.signal } : {}
           )
           .catch((error) => {
@@ -130,7 +170,7 @@ export const useExternalLibraryRuntime = () => {
       unsubscribeLoading?.();
       unsubscribeStates?.();
     };
-  }, []);
+  }, [getConfiguredLibraryIds, getConfiguredLibraryOptions]);
 
   useEffect(() => {
     const handleConfigUpdated = (event: Event) => {
@@ -138,7 +178,13 @@ export const useExternalLibraryRuntime = () => {
       const nextIds = customEvent.detail?.libraryIds ?? [];
       if (externalModuleRef.current) {
         setExternalLibraryOptions(
-          externalModuleRef.current.getConfiguredExternalLibraries()
+          nextIds.map((libraryId) => ({
+            id: libraryId,
+            label:
+              externalModuleRef.current?.getExternalLibraryDisplayName(
+                libraryId
+              ) ?? libraryId,
+          }))
         );
         if (isOffline()) {
           return;
@@ -182,7 +228,7 @@ export const useExternalLibraryRuntime = () => {
         handleConfigUpdated
       );
     };
-  }, []);
+  }, [getConfiguredLibraryOptions]);
 
   return {
     externalDiagnostics,

@@ -44,17 +44,22 @@
 
 - `specs/decisions/22.llm-integration-architecture.md`
 
-12. **GitHub App 与 Git 集成**
+12. **作者态符号环境**
+
+- `specs/decisions/25.authoring-symbol-environment.md`
+
+13. **GitHub App 与 Git 集成**
 
 - `specs/decisions/23.github-app-integration.md`
 
-13. **诊断码与错误体系**
+14. **诊断码与错误体系**
 
 - `specs/diagnostics/README.md`
 - `specs/decisions/24.backend-diagnostic-envelope.md`
 - `specs/diagnostics/mir-diagnostic-codes.md`
 - `specs/diagnostics/workspace-diagnostic-codes.md`
 - `specs/diagnostics/editor-diagnostic-codes.md`
+- `specs/diagnostics/code-diagnostic-codes.md`
 - `specs/diagnostics/route-diagnostic-codes.md`
 - `specs/diagnostics/nodegraph-diagnostic-codes.md`
 - `specs/diagnostics/animation-diagnostic-codes.md`
@@ -71,6 +76,8 @@
 - `specs/implementation/external-library-task-backlog.md`
 - `specs/implementation/layout-pattern-and-builtin-inspector-task-backlog.md`
 - `specs/implementation/node-graph-control-flow-ui-spec.md`
+- `specs/implementation/authoring-symbol-environment-phase1.md`
+- `specs/implementation/authoring-environment-stable-structures.md`
 - `specs/codegen/react-production-policy-v1.md`
 - `specs/external/canonical-external-ir-v1.md`
 - `specs/diagnostics/external-library-diagnostic-codes.md`

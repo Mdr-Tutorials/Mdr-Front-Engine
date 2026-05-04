@@ -85,7 +85,7 @@ const renderLicenseWithLinks = (licenseText: string) => {
         href={link}
         target="_blank"
         rel="noreferrer"
-        className="font-semibold underline decoration-black/35 underline-offset-2 hover:text-(--color-9)"
+        className="font-semibold underline decoration-(--border-strong) underline-offset-2 hover:text-(--text-primary)"
       >
         {part.trim()}
       </a>
@@ -111,26 +111,26 @@ export function ExternalLibraryDetailsPanel({
     : '';
 
   return (
-    <aside className="grid gap-3 self-start rounded-xl border border-black/8 bg-black/[0.015] p-3">
+    <aside className="grid gap-3 self-start rounded-xl border border-(--border-subtle) bg-(--bg-panel) p-3">
       <header>
-        <h3 className="text-sm font-semibold text-(--color-9)">
+        <h3 className="text-sm font-semibold text-(--text-primary)">
           {t('resourceManager.external.details.title')}
         </h3>
       </header>
       {!selectedLibrary ? (
-        <div className="rounded-lg border border-dashed border-black/12 bg-(--color-0) p-4 text-sm text-(--color-7)">
+        <div className="rounded-lg border border-dashed border-(--border-default) bg-(--bg-canvas) p-4 text-sm text-(--text-secondary)">
           {t('resourceManager.external.details.empty')}
         </div>
       ) : (
         <div className="grid gap-3">
-          <div className="rounded-lg border border-black/8 bg-(--color-0) p-3">
-            <p className="text-sm font-semibold text-(--color-9)">
+          <div className="rounded-lg border border-(--border-subtle) bg-(--bg-canvas) p-3">
+            <p className="text-sm font-semibold text-(--text-primary)">
               {selectedLibrary.label}
             </p>
-            <p className="mt-2 text-xs text-(--color-7)">
+            <p className="mt-2 text-xs text-(--text-secondary)">
               {selectedLibrary.description}
             </p>
-            <p className="mt-2 text-xs text-(--color-6)">
+            <p className="mt-2 text-xs text-(--text-muted)">
               {t('resourceManager.external.details.license')}:{' '}
               {renderLicenseWithLinks(selectedLibrary.license)}
             </p>
@@ -150,23 +150,23 @@ export function ExternalLibraryDetailsPanel({
                   })}
             </p>
           ) : null}
-          <div className="rounded-lg border border-black/8 bg-(--color-0) p-3">
-            <p className="text-xs font-medium text-(--color-7)">
+          <div className="rounded-lg border border-(--border-subtle) bg-(--bg-canvas) p-3">
+            <p className="text-xs font-medium text-(--text-secondary)">
               {t('resourceManager.external.details.providedComponents')}
             </p>
             <ul className="mt-2 grid max-h-44 gap-1 overflow-auto">
               {selectedLibrary.components.map((componentName) => (
                 <li
                   key={`${selectedLibrary.id}-${componentName}`}
-                  className="rounded-md border border-black/8 px-2 py-1 text-xs text-(--color-7)"
+                  className="rounded-md border border-(--border-subtle) px-2 py-1 text-xs text-(--text-secondary)"
                 >
                   {componentName}
                 </li>
               ))}
             </ul>
           </div>
-          <div className="rounded-lg border border-black/8 bg-(--color-0) p-3">
-            <p className="text-xs font-medium text-(--color-7)">
+          <div className="rounded-lg border border-(--border-subtle) bg-(--bg-canvas) p-3">
+            <p className="text-xs font-medium text-(--text-secondary)">
               {t('resourceManager.external.details.versionSwitcher')}
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
@@ -176,8 +176,8 @@ export function ExternalLibraryDetailsPanel({
                   type="button"
                   className={`rounded-md border px-2 py-1 text-xs ${
                     version === selectedLibrary.version
-                      ? 'border-black/16 bg-black text-white'
-                      : 'border-black/10 text-(--color-8)'
+                      ? 'border-(--text-primary) bg-(--text-primary) text-(--text-inverse)'
+                      : 'border-(--border-default) text-(--text-secondary) hover:text-(--text-primary)'
                   }`}
                   onClick={() =>
                     onVersionQuickSwitch(selectedLibrary.id, version)

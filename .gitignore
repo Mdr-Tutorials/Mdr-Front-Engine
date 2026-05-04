@@ -47,6 +47,7 @@ apps/backend/dist/
 apps/backend/build/
 apps/docs/.vitepress/cache/
 apps/docs/.vitepress/dist/
+apps/docs/.vitepress/.temp/
 apps/docs/.docusaurus/
 apps/docs/dist/
 apps/docs/build/

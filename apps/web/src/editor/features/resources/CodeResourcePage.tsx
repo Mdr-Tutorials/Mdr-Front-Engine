@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { css } from '@codemirror/lang-css';
 import { javascript } from '@codemirror/lang-javascript';
@@ -265,11 +265,11 @@ export function CodeResourcePage({ embedded = false }: CodeResourcePageProps) {
 
   return (
     <section className={shellClassName}>
-      <article className="rounded-2xl border border-black/8 bg-(--color-0) p-5">
-        <h2 className="text-base font-semibold text-(--color-9)">
+      <article className="rounded-2xl border border-black/8 bg-(--bg-canvas) p-5">
+        <h2 className="text-base font-semibold text-(--text-primary)">
           {t('resourceManager.code.header.title')}
         </h2>
-        <p className="mt-1 text-sm text-(--color-7)">
+        <p className="mt-1 text-sm text-(--text-secondary)">
           {t('resourceManager.code.header.description')}
         </p>
       </article>
@@ -297,20 +297,22 @@ export function CodeResourcePage({ embedded = false }: CodeResourcePageProps) {
           }}
         />
 
-        <article className="grid gap-3 rounded-xl border border-black/10 bg-(--color-0) p-4">
+        <article className="grid gap-3 rounded-xl border border-black/10 bg-(--bg-canvas) p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <p className="text-[11px] tracking-[0.08em] text-(--color-6) uppercase">
+              <p className="text-[11px] tracking-[0.08em] text-(--text-muted) uppercase">
                 {t('resourceManager.code.labels.selected')}
               </p>
-              <h3 className="text-sm font-semibold text-(--color-9)">
+              <h3 className="text-sm font-semibold text-(--text-primary)">
                 {selectedNode.type === 'file'
                   ? selectedNode.name
                   : t('resourceManager.code.labels.folder')}
               </h3>
-              <p className="text-xs text-(--color-7)">{selectedNode.path}</p>
+              <p className="text-xs text-(--text-secondary)">
+                {selectedNode.path}
+              </p>
             </div>
-            <div className="text-xs text-(--color-7)">
+            <div className="text-xs text-(--text-secondary)">
               {t('resourceManager.code.labels.files')}:{' '}
               <strong>{allFiles.length}</strong>
             </div>
@@ -319,7 +321,7 @@ export function CodeResourcePage({ embedded = false }: CodeResourcePageProps) {
           {selectedFile ? (
             <>
               <div className="flex items-center justify-between gap-2">
-                <p className="text-xs text-(--color-7)">
+                <p className="text-xs text-(--text-secondary)">
                   {t('resourceManager.code.labels.mime')}:{' '}
                   {selectedFile.mime || inferMimeByName(selectedFile.name)} |
                   {t('resourceManager.code.labels.size')}: {selectedFileSize}{' '}
@@ -348,7 +350,7 @@ export function CodeResourcePage({ embedded = false }: CodeResourcePageProps) {
               />
             </>
           ) : (
-            <div className="rounded-lg border border-black/10 bg-black/[0.02] p-4 text-sm text-(--color-7)">
+            <div className="rounded-lg border border-black/10 bg-black/[0.02] p-4 text-sm text-(--text-secondary)">
               {t('resourceManager.code.empty')}
             </div>
           )}

@@ -28,6 +28,7 @@ requestId
 | `MIR-xxxx`  | MIR 文档 | 文档形状、UI graph、ValueRef、materialize 和运行前校验   |
 | `WKS-xxxx`  | 工作区   | 工作区加载、文档保存、同步冲突、capability 和 patch 应用 |
 | `EDT-xxxx`  | 编辑器   | 选择、拖拽、Inspector、画布、命令和 autosave             |
+| `COD-xxxx`  | 用户代码 | 代码片段、符号解析、类型、宿主绑定、运行时和转译编译     |
 | `ELIB-xxxx` | 外部库   | 外部库加载、扫描、注册、渲染和代码生成                   |
 | `GEN-xxxx`  | 代码生成 | Canonical IR、adapter、依赖解析、代码发射和导出产物      |
 | `API-xxxx`  | 后端/API | 请求、鉴权、权限、业务校验、持久化和第三方集成           |
@@ -41,6 +42,7 @@ requestId
 - [MIR](/reference/diagnostics/mir)
 - [Workspace](/reference/diagnostics/wks)
 - [Editor](/reference/diagnostics/edt)
+- [Code](/reference/diagnostics/cod)
 - [External Library](/reference/diagnostics/elib)
 - [Codegen](/reference/diagnostics/gen)
 - [Backend/API](/reference/diagnostics/api)
@@ -100,6 +102,24 @@ requestId
 | [`EDT-5001`](/reference/diagnostics/edt-5001) | 命令无法进入历史栈           | `warning` |
 | [`EDT-5002`](/reference/diagnostics/edt-5002) | Autosave 队列存在过期任务    | `warning` |
 | [`EDT-9001`](/reference/diagnostics/edt-9001) | 编辑器未知异常               | `error`   |
+
+### Code
+
+| Code                                          | 名称                             | 严重程度  |
+| --------------------------------------------- | -------------------------------- | --------- |
+| [`COD-1001`](/reference/diagnostics/cod-1001) | 代码解析失败                     | `error`   |
+| [`COD-1002`](/reference/diagnostics/cod-1002) | 不支持的语言模式                 | `error`   |
+| [`COD-2001`](/reference/diagnostics/cod-2001) | 符号无法解析                     | `warning` |
+| [`COD-2002`](/reference/diagnostics/cod-2002) | import 无法解析                  | `error`   |
+| [`COD-2003`](/reference/diagnostics/cod-2003) | 类型不兼容                       | `warning` |
+| [`COD-2004`](/reference/diagnostics/cod-2004) | 共享符号环境过期                 | `warning` |
+| [`COD-3001`](/reference/diagnostics/cod-3001) | 代码片段绑定目标不存在           | `error`   |
+| [`COD-3002`](/reference/diagnostics/cod-3002) | 代码片段返回值不满足宿主契约     | `error`   |
+| [`COD-3003`](/reference/diagnostics/cod-3003) | 代码访问了当前上下文不可用的能力 | `warning` |
+| [`COD-4001`](/reference/diagnostics/cod-4001) | 用户代码运行时抛错               | `error`   |
+| [`COD-5001`](/reference/diagnostics/cod-5001) | 转译失败                         | `error`   |
+| [`COD-5002`](/reference/diagnostics/cod-5002) | Shader 编译失败                  | `error`   |
+| [`COD-9001`](/reference/diagnostics/cod-9001) | 代码环境未知异常                 | `error`   |
 
 ### External Library
 

@@ -16,6 +16,7 @@ const DIAGNOSTIC_DOMAINS: ReadonlySet<MdrDiagnosticDomain> = new Set([
   'workspace',
   'route',
   'editor',
+  'code',
   'nodegraph',
   'animation',
   'elib',

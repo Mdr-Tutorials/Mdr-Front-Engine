@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { css } from '@codemirror/lang-css';
 import { javascript } from '@codemirror/lang-javascript';
@@ -119,22 +119,22 @@ export function ProjectFileManager({
 
   return (
     <section className={shellClassName}>
-      <article className="rounded-2xl border border-black/8 bg-(--color-0) p-5">
-        <h2 className="text-base font-semibold text-(--color-9)">
+      <article className="rounded-2xl border border-black/8 bg-(--bg-canvas) p-5">
+        <h2 className="text-base font-semibold text-(--text-primary)">
           {t('resourceManager.projectFiles.header.title')}
         </h2>
-        <p className="mt-1 text-sm text-(--color-7)">
+        <p className="mt-1 text-sm text-(--text-secondary)">
           {t('resourceManager.projectFiles.header.description')}
         </p>
       </article>
 
       <div className="grid gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
-        <aside className="grid content-start gap-3 rounded-xl border border-black/10 bg-(--color-0) p-3">
+        <aside className="grid content-start gap-3 rounded-xl border border-black/10 bg-(--bg-canvas) p-3">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-[11px] font-semibold tracking-[0.08em] text-(--color-6) uppercase">
+            <p className="text-[11px] font-semibold tracking-[0.08em] text-(--text-muted) uppercase">
               {t('resourceManager.projectFiles.labels.rootFiles')}
             </p>
-            <span className="rounded-full bg-black/[0.04] px-2 py-1 text-[11px] text-(--color-7)">
+            <span className="rounded-full bg-black/[0.04] px-2 py-1 text-[11px] text-(--text-secondary)">
               {enabledFiles.length}/{files.length}
             </span>
           </div>
@@ -152,19 +152,25 @@ export function ProjectFileManager({
                   }`}
                   onClick={() => setSelectedPath(file.path)}
                 >
-                  <FileText size={14} className="shrink-0 text-(--color-7)" />
+                  <FileText
+                    size={14}
+                    className="shrink-0 text-(--text-secondary)"
+                  />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-semibold text-(--color-9)">
+                    <span className="block truncate font-semibold text-(--text-primary)">
                       {file.path}
                     </span>
-                    <span className="block truncate text-(--color-6)">
+                    <span className="block truncate text-(--text-muted)">
                       {file.enabled
                         ? t('resourceManager.projectFiles.labels.enabled')
                         : t('resourceManager.projectFiles.labels.disabled')}
                     </span>
                   </span>
                   {file.enabled ? (
-                    <Check size={13} className="shrink-0 text-(--color-8)" />
+                    <Check
+                      size={13}
+                      className="shrink-0 text-(--text-secondary)"
+                    />
                   ) : null}
                 </button>
               );
@@ -172,18 +178,18 @@ export function ProjectFileManager({
           </div>
         </aside>
 
-        <article className="grid gap-3 rounded-xl border border-black/10 bg-(--color-0) p-4">
+        <article className="grid gap-3 rounded-xl border border-black/10 bg-(--bg-canvas) p-4">
           {selectedFile ? (
             <>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="text-[11px] tracking-[0.08em] text-(--color-6) uppercase">
+                  <p className="text-[11px] tracking-[0.08em] text-(--text-muted) uppercase">
                     {t('resourceManager.projectFiles.labels.selected')}
                   </p>
-                  <h3 className="text-sm font-semibold text-(--color-9)">
+                  <h3 className="text-sm font-semibold text-(--text-primary)">
                     {selectedFile.path}
                   </h3>
-                  <p className="text-xs text-(--color-7)">
+                  <p className="text-xs text-(--text-secondary)">
                     {selectedFile.mime} |{' '}
                     {t('resourceManager.projectFiles.labels.updated')}:{' '}
                     {formatUpdatedAt(selectedFile.updatedAt)}
@@ -195,7 +201,7 @@ export function ProjectFileManager({
                     className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition-colors ${
                       selectedFile.enabled
                         ? 'border-black/14 bg-black text-white'
-                        : 'border-black/12 bg-transparent text-(--color-8) hover:border-black/20'
+                        : 'border-black/12 bg-transparent text-(--text-secondary) hover:border-black/20'
                     }`}
                     onClick={() =>
                       persistFiles(
@@ -223,14 +229,14 @@ export function ProjectFileManager({
 
               {templateOptions.length ? (
                 <div className="flex flex-wrap items-center gap-2 rounded-xl border border-black/8 bg-black/[0.015] p-2">
-                  <span className="px-1 text-[11px] font-semibold tracking-[0.08em] text-(--color-6) uppercase">
+                  <span className="px-1 text-[11px] font-semibold tracking-[0.08em] text-(--text-muted) uppercase">
                     {t('resourceManager.projectFiles.labels.templates')}
                   </span>
                   {templateOptions.map((template) => (
                     <button
                       key={template.id}
                       type="button"
-                      className="rounded-lg border border-black/10 bg-white px-2.5 py-1.5 text-xs text-(--color-8) hover:border-black/20 hover:text-(--color-10)"
+                      className="rounded-lg border border-black/10 bg-white px-2.5 py-1.5 text-xs text-(--text-secondary) hover:border-black/20 hover:text-(--text-primary)"
                       onClick={() =>
                         persistFiles(
                           applyProjectFileTemplate(
@@ -259,7 +265,7 @@ export function ProjectFileManager({
               />
             </>
           ) : (
-            <div className="rounded-lg border border-black/10 bg-black/[0.02] p-4 text-sm text-(--color-7)">
+            <div className="rounded-lg border border-black/10 bg-black/[0.02] p-4 text-sm text-(--text-secondary)">
               {t('resourceManager.projectFiles.empty')}
             </div>
           )}

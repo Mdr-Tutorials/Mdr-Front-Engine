@@ -1,4 +1,5 @@
 import type { ActiveLibrary, PackageSizeThresholds } from './types';
+import { Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {
   formatPackageSize,
@@ -45,13 +46,13 @@ export function ExternalLibraryListPanel({
     t(`resourceManager.external.package.hint.${level}`);
 
   return (
-    <section className="grid gap-3 rounded-xl border border-black/8 bg-black/[0.015] p-3">
+    <section className="grid gap-3 rounded-xl border border-(--border-subtle) bg-(--bg-panel) p-3">
       <div className="flex items-center justify-between gap-2">
         <div>
-          <h3 className="text-sm font-semibold text-(--color-9)">
+          <h3 className="text-sm font-semibold text-(--text-primary)">
             {t('resourceManager.external.activeLibraries')}
           </h3>
-          <p className="mt-1 text-xs text-(--color-7)">
+          <p className="mt-1 text-xs text-(--text-secondary)">
             {t('resourceManager.external.libraryCount', {
               count: activeLibraries.length,
             })}{' '}
@@ -64,15 +65,17 @@ export function ExternalLibraryListPanel({
         <button
           type="button"
           data-testid="external-library-open-add-modal"
-          className="rounded-lg border border-black/12 bg-(--color-0) px-3 py-1.5 text-xs text-(--color-8)"
+          aria-label={t('resourceManager.external.actions.addNewLibrary')}
+          title={t('resourceManager.external.actions.addNewLibrary')}
+          className="inline-flex size-8 items-center justify-center rounded-lg border border-(--border-default) bg-(--bg-canvas) text-(--text-secondary) hover:border-(--border-strong) hover:text-(--text-primary)"
           onClick={onOpenAddModal}
         >
-          + {t('resourceManager.external.actions.addNewLibrary')}
+          <Plus size={16} />
         </button>
       </div>
 
       {filteredLibraries.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-black/12 bg-(--color-0) p-4 text-sm text-(--color-7)">
+        <div className="rounded-lg border border-dashed border-(--border-default) bg-(--bg-canvas) p-4 text-sm text-(--text-secondary)">
           {t('resourceManager.external.noMatch')}
         </div>
       ) : (
@@ -90,8 +93,8 @@ export function ExternalLibraryListPanel({
                 data-testid={`external-library-card-${library.id}`}
                 className={`grid gap-2 rounded-xl border p-3 ${
                   isSelected
-                    ? 'border-black/20 bg-white'
-                    : 'border-black/8 bg-(--color-0)'
+                    ? 'border-(--border-strong) bg-(--bg-canvas)'
+                    : 'border-(--border-subtle) bg-(--bg-canvas)'
                 }`}
               >
                 <button
@@ -100,14 +103,14 @@ export function ExternalLibraryListPanel({
                   onClick={() => onSelectLibrary(library.id)}
                 >
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-sm font-semibold text-(--color-9)">
+                    <p className="text-sm font-semibold text-(--text-primary)">
                       {library.label}
                     </p>
-                    <span className="rounded-md border border-black/10 bg-black/[0.02] px-2 py-0.5 text-[11px] text-(--color-7)">
+                    <span className="rounded-md border border-(--border-default) bg-(--bg-panel) px-2 py-0.5 text-[11px] text-(--text-secondary)">
                       {library.version}
                     </span>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-(--color-7)">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-(--text-secondary)">
                     <span
                       className={`h-2.5 w-2.5 rounded-full ${statusMeta.dot}`}
                     />
@@ -134,8 +137,8 @@ export function ExternalLibraryListPanel({
                 </button>
                 {library.status === 'loading' ? (
                   <div className="grid gap-1">
-                    <div className="h-2 w-2/3 animate-pulse rounded bg-black/10" />
-                    <div className="h-2 w-1/2 animate-pulse rounded bg-black/10" />
+                    <div className="h-2 w-2/3 animate-pulse rounded bg-(--border-default)" />
+                    <div className="h-2 w-1/2 animate-pulse rounded bg-(--border-default)" />
                   </div>
                 ) : null}
                 {library.status === 'error' ? (
@@ -156,7 +159,7 @@ export function ExternalLibraryListPanel({
                 <div className="flex flex-wrap items-center gap-2">
                   <select
                     data-testid={`external-library-version-select-${library.id}`}
-                    className="h-8 min-w-[140px] rounded-lg border border-black/10 bg-transparent px-2 text-xs text-(--color-8)"
+                    className="h-8 min-w-[140px] rounded-lg border border-(--border-default) bg-transparent px-2 text-xs text-(--text-secondary)"
                     value={library.version}
                     onChange={(event) =>
                       onVersionChange(library.id, event.target.value)
@@ -171,7 +174,7 @@ export function ExternalLibraryListPanel({
                   <button
                     type="button"
                     data-testid={`external-library-remove-${library.id}`}
-                    className="rounded-lg border border-black/10 px-2.5 py-1 text-xs text-(--color-8)"
+                    className="rounded-lg border border-(--border-default) px-2.5 py-1 text-xs text-(--text-secondary) hover:text-(--text-primary)"
                     onClick={() => onRemoveLibrary(library.id)}
                   >
                     {t('resourceManager.external.actions.remove')}
@@ -197,10 +200,12 @@ export function ExternalLibraryListPanel({
 
       <button
         type="button"
-        className="rounded-lg border border-dashed border-black/18 bg-(--color-0) px-3 py-2 text-sm text-(--color-8)"
+        aria-label={t('resourceManager.external.actions.addNewLibrary')}
+        title={t('resourceManager.external.actions.addNewLibrary')}
+        className="inline-flex size-9 items-center justify-center justify-self-start rounded-lg border border-dashed border-(--border-default) bg-(--bg-canvas) text-(--text-secondary) hover:border-(--border-strong) hover:text-(--text-primary)"
         onClick={onOpenAddModal}
       >
-        + {t('resourceManager.external.actions.addNewLibrary')}
+        <Plus size={17} />
       </button>
     </section>
   );

@@ -95,7 +95,7 @@
     },
     "text": {
       "primary": "{palette.gray.13}",
-      "secondary": "{palette.gray.9}",
+      "secondary": "{palette.gray.10}",
       "muted": "{palette.gray.7}",
       "inverse": "{palette.gray.0}"
     },

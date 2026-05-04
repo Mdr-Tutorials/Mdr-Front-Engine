@@ -64,6 +64,10 @@ export default defineConfig({
           text: '规范',
           items: [
             { text: 'MIR 语法规范', link: '/reference/mir-spec' },
+            {
+              text: '作者态符号环境',
+              link: '/reference/authoring-symbol-environment',
+            },
             { text: '错误码与诊断', link: '/reference/diagnostic-codes' },
           ],
         },
@@ -125,6 +129,26 @@ export default defineConfig({
                 { text: 'EDT-5001', link: '/reference/diagnostics/edt-5001' },
                 { text: 'EDT-5002', link: '/reference/diagnostics/edt-5002' },
                 { text: 'EDT-9001', link: '/reference/diagnostics/edt-9001' },
+              ],
+            },
+            {
+              text: 'Code',
+              link: '/reference/diagnostics/cod',
+              collapsed: true,
+              items: [
+                { text: 'COD-1001', link: '/reference/diagnostics/cod-1001' },
+                { text: 'COD-1002', link: '/reference/diagnostics/cod-1002' },
+                { text: 'COD-2001', link: '/reference/diagnostics/cod-2001' },
+                { text: 'COD-2002', link: '/reference/diagnostics/cod-2002' },
+                { text: 'COD-2003', link: '/reference/diagnostics/cod-2003' },
+                { text: 'COD-2004', link: '/reference/diagnostics/cod-2004' },
+                { text: 'COD-3001', link: '/reference/diagnostics/cod-3001' },
+                { text: 'COD-3002', link: '/reference/diagnostics/cod-3002' },
+                { text: 'COD-3003', link: '/reference/diagnostics/cod-3003' },
+                { text: 'COD-4001', link: '/reference/diagnostics/cod-4001' },
+                { text: 'COD-5001', link: '/reference/diagnostics/cod-5001' },
+                { text: 'COD-5002', link: '/reference/diagnostics/cod-5002' },
+                { text: 'COD-9001', link: '/reference/diagnostics/cod-9001' },
               ],
             },
             {

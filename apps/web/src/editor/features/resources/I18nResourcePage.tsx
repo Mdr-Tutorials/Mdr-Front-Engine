@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { MdrButton, MdrInput, MdrSearch } from '@mdr/ui';
 import { Download, Upload } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -442,17 +442,17 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
 
   return (
     <section className={shellClassName}>
-      <article className="rounded-2xl border border-black/8 bg-(--color-0) p-5">
-        <h2 className="text-base font-semibold text-(--color-9)">
+      <article className="rounded-2xl border border-black/8 bg-(--bg-canvas) p-5">
+        <h2 className="text-base font-semibold text-(--text-primary)">
           {t('resourceManager.i18n.header.title')}
         </h2>
-        <p className="mt-1 text-sm text-(--color-7)">
+        <p className="mt-1 text-sm text-(--text-secondary)">
           {t('resourceManager.i18n.header.description')}
         </p>
       </article>
 
       <div className="grid gap-4 xl:grid-cols-[280px_minmax(0,1fr)_320px]">
-        <aside className="grid gap-3 rounded-xl border border-black/10 bg-(--color-0) p-3">
+        <aside className="grid gap-3 rounded-xl border border-black/10 bg-(--bg-canvas) p-3">
           <MdrSearch
             size="Small"
             value={searchKeyword}
@@ -480,7 +480,7 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
           </div>
 
           <div className="grid gap-2">
-            <p className="text-[11px] font-semibold tracking-[0.08em] text-(--color-6) uppercase">
+            <p className="text-[11px] font-semibold tracking-[0.08em] text-(--text-muted) uppercase">
               {t('resourceManager.i18n.modules')}
             </p>
             <div className="grid gap-1">
@@ -515,10 +515,10 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
           </div>
 
           <div className="grid gap-2 rounded-lg border border-black/8 bg-black/[0.02] p-2">
-            <p className="text-[11px] tracking-[0.08em] text-(--color-6) uppercase">
+            <p className="text-[11px] tracking-[0.08em] text-(--text-muted) uppercase">
               {t('resourceManager.i18n.progress')}
             </p>
-            <p className="text-xs text-(--color-8)">
+            <p className="text-xs text-(--text-secondary)">
               {selection.targetLocale}:{' '}
               {t('resourceManager.i18n.progressComplete', {
                 rate: currentNamespaceStats?.completionRate ?? 100,
@@ -532,7 +532,7 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
                 }}
               />
             </div>
-            <p className="text-[11px] text-(--color-7)">
+            <p className="text-[11px] text-(--text-secondary)">
               {t('resourceManager.i18n.missingKeys', {
                 count: missingStats[selection.targetLocale] ?? 0,
               })}
@@ -569,9 +569,9 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
           </div>
         </aside>
 
-        <article className="grid gap-3 rounded-xl border border-black/10 bg-(--color-0) p-3">
+        <article className="grid gap-3 rounded-xl border border-black/10 bg-(--bg-canvas) p-3">
           <header className="flex flex-wrap items-center justify-between gap-2">
-            <h3 className="text-sm font-semibold text-(--color-9)">
+            <h3 className="text-sm font-semibold text-(--text-primary)">
               {selection.namespace}
             </h3>
             <div className="flex items-center gap-1">
@@ -632,7 +632,7 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
 
           <div className="overflow-x-auto rounded-lg border border-black/8">
             <table className="min-w-full border-collapse text-xs">
-              <thead className="bg-black/[0.04] text-(--color-7)">
+              <thead className="bg-black/[0.04] text-(--text-secondary)">
                 <tr>
                   <th className="min-w-[220px] px-2 py-2 text-left font-semibold">
                     {t('resourceManager.i18n.table.key')}
@@ -667,7 +667,7 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
                     <td className="max-w-[220px] px-2 py-2 align-top">
                       <button
                         type="button"
-                        className="truncate text-left font-mono text-[11px] text-(--color-9)"
+                        className="truncate text-left font-mono text-[11px] text-(--text-primary)"
                         onClick={() =>
                           setSelection((current) => ({
                             ...current,
@@ -697,8 +697,8 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
                                 : 'border-black/12 bg-white focus:border-black/30'
                             } ${
                               isSourceLocale
-                                ? 'font-medium text-(--color-9)'
-                                : 'text-(--color-8)'
+                                ? 'font-medium text-(--text-primary)'
+                                : 'text-(--text-secondary)'
                             }`}
                             onFocus={() =>
                               setSelection((current) => ({
@@ -748,7 +748,7 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        className="inline-flex h-5 w-5 items-center justify-center border-0 bg-transparent p-0 text-[14px] leading-none text-(--color-8) hover:text-(--color-9)"
+                        className="inline-flex h-5 w-5 items-center justify-center border-0 bg-transparent p-0 text-[14px] leading-none text-(--text-secondary) hover:text-(--text-primary)"
                         aria-label="Add key"
                         onClick={addKey}
                       >
@@ -784,7 +784,7 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
                           )}
                         />
                       ) : (
-                        <div className="inline-flex h-8 w-full items-center rounded border border-dashed border-black/12 px-2 text-[11px] text-(--color-6)">
+                        <div className="inline-flex h-8 w-full items-center rounded border border-dashed border-black/12 px-2 text-[11px] text-(--text-muted)">
                           {t('resourceManager.i18n.empty')}
                         </div>
                       )}
@@ -809,32 +809,32 @@ export function I18nResourcePage({ embedded = false }: I18nResourcePageProps) {
           </div>
         </article>
 
-        <aside className="grid gap-3 rounded-xl border border-black/10 bg-(--color-0) p-3">
+        <aside className="grid gap-3 rounded-xl border border-black/10 bg-(--bg-canvas) p-3">
           <div>
-            <p className="text-[11px] font-semibold tracking-[0.08em] text-(--color-6) uppercase">
+            <p className="text-[11px] font-semibold tracking-[0.08em] text-(--text-muted) uppercase">
               {t('resourceManager.i18n.livePreview')}
             </p>
-            <h4 className="mt-1 text-sm font-semibold text-(--color-9)">
+            <h4 className="mt-1 text-sm font-semibold text-(--text-primary)">
               {selectedRow.key}
             </h4>
           </div>
 
           <article className="grid gap-2 rounded-lg border border-black/10 bg-black/[0.02] p-3">
-            <p className="text-[11px] tracking-[0.08em] text-(--color-6) uppercase">
+            <p className="text-[11px] tracking-[0.08em] text-(--text-muted) uppercase">
               {t('resourceManager.i18n.componentPreview')}
             </p>
             <button
               type="button"
-              className="inline-flex h-9 w-full items-center justify-center overflow-hidden rounded-md border border-black/14 bg-white px-3 text-sm text-ellipsis whitespace-nowrap text-(--color-9)"
+              className="inline-flex h-9 w-full items-center justify-center overflow-hidden rounded-md border border-black/14 bg-white px-3 text-sm text-ellipsis whitespace-nowrap text-(--text-primary)"
             >
               {selectedRow.target || selectedRow.source || '...'}
             </button>
-            <div className="rounded-md border border-black/10 bg-white p-2 text-xs text-(--color-8)">
+            <div className="rounded-md border border-black/10 bg-white p-2 text-xs text-(--text-secondary)">
               {highlightVariables(selectedRow.target || selectedRow.source)}
             </div>
           </article>
 
-          <div className="grid gap-2 rounded-lg border border-black/10 bg-black/[0.02] p-3 text-xs text-(--color-7)">
+          <div className="grid gap-2 rounded-lg border border-black/10 bg-black/[0.02] p-3 text-xs text-(--text-secondary)">
             <p>
               {t('resourceManager.i18n.baseLength')}:{' '}
               <strong>{selectedRow.source.length}</strong>
