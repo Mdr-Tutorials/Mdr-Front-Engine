@@ -8,7 +8,7 @@
 
 | 依赖    | 版本要求  | 检查命令         |
 | ------- | --------- | ---------------- |
-| Node.js | >= 20.0.0 | `node --version` |
+| Node.js | >= 22.0.0 | `node --version` |
 | pnpm    | >= 10.0.0 | `pnpm --version` |
 | Git     | 任意版本  | `git --version`  |
 
@@ -24,7 +24,7 @@ npm install -g pnpm
 ## 克隆仓库
 
 ```bash
-git clone https://github.com/mdr-front-engine/mdr-front-engine.git
+git clone https://github.com/Mdr-Tutorials/Mdr-Front-Engine.git
 cd mdr-front-engine
 ```
 
@@ -40,147 +40,53 @@ pnpm install
 
 ## 启动开发服务器
 
-### 启动 Web 编辑器
+### 推荐启动顺序
+
+1. 启动后端：
+
+```bash
+pnpm dev:backend
+```
+
+2. 启动 Web 编辑器：
 
 ```bash
 pnpm dev:web
 ```
 
-Web 编辑器将在 `http://localhost:5173` 启动。
-
-### 启动所有服务
-
-如果你需要同时运行 Web 编辑器、后端服务和文档站点：
+3. 如需查看文档：
 
 ```bash
-pnpm dev
+pnpm dev:docs
 ```
 
-### 可用的开发命令
+Web 编辑器默认运行在 `http://localhost:5173`，文档站点默认运行在 VitePress 的本地地址。
 
-| 命令                | 描述               |
-| ------------------- | ------------------ |
-| `pnpm dev`          | 启动所有开发服务器 |
-| `pnpm dev:web`      | 仅启动 Web 编辑器  |
-| `pnpm dev:docs`     | 启动文档站点       |
-| `pnpm dev:cli`      | 启动 CLI 开发模式  |
-| `pnpm build`        | 构建所有包         |
-| `pnpm test`         | 运行所有测试       |
-| `pnpm lint`         | 代码检查           |
-| `pnpm storybook:ui` | 启动 UI 组件库文档 |
+### 常用开发命令
 
-## 创建第一个项目
-
-### 1. 打开编辑器
-
-访问 `http://localhost:5173`，你将看到 MdrFrontEngine 的主界面。
-
-### 2. 创建新项目
-
-1. 点击 **"新建项目"** 按钮
-2. 输入项目名称（例如 "My First App"）
-3. 选择项目模板（推荐 "空白项目" 开始）
-4. 点击 **"创建"**
-
-### 3. 添加组件
-
-1. 在左侧 **组件面板** 中找到 "Button" 组件
-2. 将其拖拽到中央画布
-3. 在右侧 **属性检查器** 中修改按钮文本
-
-### 4. 预览效果
-
-点击顶部工具栏的 **"预览"** 按钮，查看实时效果。
-
-### 5. 导出代码
-
-1. 点击 **"导出"** 按钮
-2. 选择目标框架（如 React）
-3. 预览生成的代码
-4. 下载或复制代码
-
-## 项目结构
-
-一个典型的 MdrFrontEngine 项目结构如下：
-
-```
-my-project/
-├── pages/                  # 页面目录
-│   ├── index.mir.json     # 首页
-│   └── about.mir.json     # 关于页
-├── components/             # 自定义组件
-│   └── MyButton.mir.json
-├── assets/                 # 静态资源
-│   └── logo.png
-├── graphs/                 # 节点图逻辑
-│   └── click-handler.json
-└── project.json           # 项目配置
-```
-
-## 编辑器界面概览
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  [Logo]  项目名称      [预览] [导出] [设置]      [用户]      │
-├──────────┬────────────────────────────────┬────────────────┤
-│          │                                │                │
-│  组件    │                                │    属性        │
-│  面板    │         画布 / 预览区          │    检查器      │
-│          │                                │                │
-│          │                                │                │
-├──────────┤                                ├────────────────┤
-│  组件树  │                                │    样式        │
-│          │                                │    编辑器      │
-└──────────┴────────────────────────────────┴────────────────┘
-```
-
-### 主要区域
-
-- **顶部工具栏** - 项目操作、预览、导出等功能
-- **组件面板** - 可拖拽的组件列表
-- **组件树** - 页面组件层级结构
-- **画布** - 可视化设计区域
-- **属性检查器** - 编辑选中组件的属性
-- **样式编辑器** - 调整组件样式
-
-## 快捷键
-
-| 快捷键                 | 功能         |
-| ---------------------- | ------------ |
-| `Ctrl/Cmd + S`         | 保存项目     |
-| `Ctrl/Cmd + Z`         | 撤销         |
-| `Ctrl/Cmd + Shift + Z` | 重做         |
-| `Delete`               | 删除选中组件 |
-| `Ctrl/Cmd + D`         | 复制组件     |
-| `Ctrl/Cmd + G`         | 组合组件     |
-| `Space + 拖拽`         | 平移画布     |
-| `Ctrl/Cmd + 滚轮`      | 缩放画布     |
-
-## 常见问题
-
-### 端口被占用
-
-如果 5173 端口被占用，Vite 会自动尝试下一个可用端口（5174, 5175 等）。
-
-### 依赖安装失败
-
-尝试清理缓存后重新安装：
-
-```bash
-pnpm store prune
-rm -rf node_modules
-pnpm install
-```
-
-### 热更新不工作
-
-确保你的编辑器没有锁定文件，或尝试重启开发服务器。
+| 命令                          | 描述                      |
+| ----------------------------- | ------------------------- |
+| `pnpm dev`                    | 启动所有可用开发任务      |
+| `pnpm dev:web`                | 启动 Web 编辑器           |
+| `pnpm dev:backend`            | 启动后端服务              |
+| `pnpm dev:backend:hot`        | 以热重载方式启动后端      |
+| `pnpm dev:docs`               | 启动文档站点              |
+| `pnpm dev:cli`                | 启动 CLI 开发模式         |
+| `pnpm dev:vscode`             | 启动 VS Code 扩展开发任务 |
+| `pnpm storybook:ui`           | 启动 UI 组件库 Storybook  |
+| `pnpm build`                  | 构建全部包                |
+| `pnpm build:web`              | 构建 Web 编辑器           |
+| `pnpm build:backend`          | 构建后端                  |
+| `pnpm build:docs`             | 构建文档站点              |
+| `pnpm test`                   | 运行全部测试              |
+| `pnpm test:e2e:smoke`         | 运行最小冒烟 E2E 测试     |
+| `pnpm lint`                   | 代码检查                  |
+| `pnpm format`                 | 格式化代码                |
+| `pnpm docs:diagnostics`       | 生成诊断文档              |
+| `pnpm docs:diagnostics:check` | 检查诊断文档是否同步      |
 
 ## 下一步
 
-恭喜你完成了第一个 MdrFrontEngine 项目！接下来，你可以：
-
-- [深入了解蓝图编辑器](/guide/blueprint-editor)
-- [学习节点图编程](/guide/node-graph)
-- [探索组件系统](/guide/components)
-- [了解代码导出](/guide/export)
+- [简介](/guide/introduction)
+- [项目结构](/guide/project-structure)
+- [MIR 规范](/reference/mir-spec)

@@ -33,15 +33,6 @@ MFE 的 AI 能力采用重前端、轻后端的设计。当前版本在蓝图编
 - **结构化计划** - 根据当前路由和选中节点上下文生成可审阅计划
 - **调试可见** - Hover 查看真实 Prompt 和模型原始返回文本，便于排查解析问题
 
-### 节点图系统
-
-节点图是 MFE 独特的可视化编程系统，让业务逻辑编写变得直观：
-
-- **触发器节点** - 响应组件事件（点击、输入、加载等）
-- **操作节点** - 执行具体操作（API 调用、状态更新、页面跳转）
-- **逻辑节点** - 条件分支、循环、数据转换
-- **调试功能** - 断点、单步执行、状态监控
-
 ### MIR 中间表示
 
 MIR（Modular Intermediate Representation）是 MFE 的核心创新：
@@ -90,7 +81,7 @@ MFE 内置多种部署选项：
 └──────┴──────────────┴────────┴────────┴──────┴──────┴───────────────┘
 ```
 
-前端三个编辑器（蓝图 / 节点图 / 动画）统一收敛到 **MIR**，由后端 **Workspace VFS** 持久化；
+前端编辑器统一收敛到 **MIR**，由后端 **Workspace VFS** 持久化；
 前后端共用同一份 **MIR v1.3** 校验逻辑（`apps/web/src/mir/validator` ↔ `apps/backend/internal/modules/workspace/mir_v13_validator.go`）。
 
 ## 与同类工具对比
@@ -150,7 +141,5 @@ MFE 内置多种部署选项：
 ## 下一步
 
 - [快速开始](/guide/getting-started) - 5 分钟内创建你的第一个项目
-- [蓝图编辑器](/guide/blueprint-editor) - 深入了解可视化设计功能
 - [AI 助手](/guide/ai-assistant) - 配置 LLM Provider 并查看调试输出
-- [节点图系统](/guide/node-graph) - 学习可视化编程
 - [MIR 规范](/reference/mir-spec) - 了解中间表示格式

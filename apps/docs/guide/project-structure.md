@@ -1,475 +1,236 @@
 # 项目结构
 
-MdrFrontEngine 采用 **Monorepo** 架构，使用 pnpm workspace 和 Turborepo 进行管理。本文档将详细介绍项目的目录结构和各模块的职责。
+MdrFrontEngine 采用 Monorepo 架构，使用 pnpm workspace 和 Turborepo 管理。本文档只保留当前仓库里真实存在、并且对理解系统边界最有用的结构说明。
 
 ## 整体结构
 
-```
+```text
 mdr-front-engine/
-├── apps/                      # 独立可部署的应用
-│   ├── web/                   # Web 编辑器（主应用）
-│   ├── backend/               # Go 后端服务
-│   ├── cli/                   # 命令行工具
-│   ├── docs/                  # 文档站点（VitePress）
-│   └── vscode/                # VS Code 扩展
-│
-├── packages/                  # 共享的库和包
-│   ├── mir-compiler/          # MIR 编译器
-│   ├── ai/                    # 跨端 AI Provider 与设置协议
-│   ├── ui/                    # UI 组件库
-│   ├── shared/                # 共享类型和工具
-│   ├── themes/                # 主题系统
-│   ├── i18n/                  # 国际化
-│   ├── eslint-plugin-mdr/     # ESLint 插件
-│   └── vscode-debugger/       # VS Code 调试适配器
-│
-├── specs/                     # 规范文档
-│   ├── mir/                   # MIR 语言规范
-│   └── rfc/                   # RFC 提案模板
-│
-├── tests/                     # E2E 测试（Playwright）
-│
-├── package.json               # 根配置
-├── pnpm-workspace.yaml        # pnpm workspace 配置
-├── turbo.json                 # Turborepo 配置
-└── tsconfig.json              # TypeScript 根配置
-```
-
-## 应用 (apps/)
-
-### apps/web - Web 编辑器
-
-Web 编辑器是 MdrFrontEngine 的核心应用，提供完整的可视化开发体验。
-
-```
-apps/web/
-├── src/
-│   ├── App.tsx               # 应用入口和路由配置
-│   ├── main.tsx              # 渲染入口
-│   │
-│   ├── core/                 # 核心引擎
-│   │   ├── executor/         # 节点图执行器（待实现）
-│   │   ├── nodes/            # 内置节点定义
-│   │   │   └── http/         # HTTP 请求节点
-│   │   ├── worker/           # Web Worker 执行环境
-│   │   └── types/            # 核心类型定义
-│   │       └── engine.types.ts
-│   │
-│   ├── editor/               # 编辑器模块
-│   │   ├── Editor.tsx        # 编辑器主组件
-│   │   ├── EditorBar/        # 顶部工具栏
-│   │   ├── EditorHome.tsx    # 编辑器首页
-│   │   ├── ProjectHome.tsx   # 项目首页
-│   │   ├── editorApi.ts      # API 接口
-│   │   │
-│   │   └── features/         # 功能模块
-│   │       ├── design/       # 蓝图编辑器
-│   │       │   ├── BlueprintEditor.tsx
-│   │       │   ├── BlueprintEditorComponentTree.tsx
-│   │       │   ├── BlueprintEditorInspector.tsx
-│   │       │   ├── BlueprintEditorSidebar.tsx
-│   │       │   ├── BlueprintEditorCanvas.tsx
-│   │       │   ├── BlueprintEditorViewportBar.tsx
-│   │       │   └── blueprint/
-│   │       │       ├── data/         # 组件数据
-│   │       │       │   ├── groups/   # 组件分组
-│   │       │       │   └── external/ # 外部库集成
-│   │       │       └── inspector/    # 属性检查器
-│   │       │
-│   │       ├── development/  # 节点图编辑器（待完善）
-│   │       │   └── NodeGraph.tsx
-│   │       │
-│   │       ├── export/       # 导出功能
-│   │       ├── resources/    # 资源管理
-│   │       └── settings/     # 设置页面
-│   │
-│   ├── mir/                  # MIR 相关
-│   │   ├── ast/              # AST 解析
-│   │   ├── converter/        # AST ↔ MIR 转换
-│   │   ├── generator/        # 代码生成器
-│   │   │   ├── mirToReact.ts
-│   │   │   └── react/
-│   │   │       ├── compileComponent.ts
-│   │   │       └── projectScaffold.ts
-│   │   ├── renderer/         # MIR 渲染器
-│   │   │   ├── MIRRenderer.tsx
-│   │   │   └── registry.ts
-│   │   ├── actions/          # 内置动作
-│   │   │   └── registry.ts
-│   │   └── validator/        # 校验器
-│   │
-│   ├── debug/                # 调试系统（待实现）
-│   │   ├── breakpoints/      # 断点管理
-│   │   ├── stateMonitor/     # 状态监控
-│   │   └── timeline/         # 时间线
-│   │
-│   ├── store/                # 状态管理
-│   │   ├── useEditorStore.ts
-│   │   └── useSettingsStore.ts
-│   │
-│   ├── ai/                   # Web 端 AI 设置持久化
-│   │   └── aiSettingsStore.ts
-│   │
-│   ├── auth/                 # 认证模块
-│   ├── community/            # 社区模块
-│   ├── home/                 # 首页
-│   └── i18n/                 # 国际化资源
-│       └── resources/
-│           ├── en.json
-│           └── zh-CN.json
-│
-├── public/                   # 静态资源
-├── vite.config.ts            # Vite 配置
-├── tailwind.config.ts        # Tailwind 配置
-├── vitest.config.ts          # 测试配置
-└── tsconfig.json             # TypeScript 配置
-```
-
-**技术栈**：
-
-- React 19
-- TypeScript 5.9
-- Vite (rolldown-vite)
-- Tailwind CSS 4
-- Zustand（状态管理）
-- React Router 7
-- Monaco Editor
-- @dnd-kit（拖拽）
-- @xyflow/react（节点图）
-
-**AI 相关目录**：
-
-| 目录                                                                        | 职责                                            |
-| --------------------------------------------------------------------------- | ----------------------------------------------- |
-| `apps/web/src/ai`                                                           | Web 端 AI 设置持久化                            |
-| `apps/web/src/editor/features/design/blueprint/editor/components/Assistant` | Blueprint 右下角 AI 助手和设置弹窗              |
-| `packages/ai`                                                               | Provider 创建、OpenAI-compatible 请求、模型发现 |
-| `packages/shared/src/llm`                                                   | LLM 协议、gateway、trace、mock provider         |
-
-### apps/backend - Go 后端
-
-```
-apps/backend/
-├── main.go                   # 入口
-├── server.go                 # HTTP 服务器和路由
-├── store.go                  # 数据存储基类
-├── config.go                 # 配置管理
-├── database.go               # 数据库连接
-├── types.go                  # 类型定义
-├── project_store.go          # 项目存储
-├── workspace_store.go        # 工作区存储
-├── workspace_handlers.go     # 工作区 API 处理
-├── go.mod                    # Go 模块定义
-├── go.sum                    # 依赖锁定
-├── Makefile                  # 构建脚本
-├── Dockerfile                # Docker 构建
-├── docker-compose.yml        # 本地开发环境
-└── .air.toml                 # 热重载配置
-```
-
-**技术栈**：
-
-- Go 1.24
-- Gin Web 框架
-- PostgreSQL
-- bcrypt（密码哈希）
-
-**职责**：
-
-- 用户认证（注册、登录、会话管理）
-- 项目存储和管理
-- 工作区协作编辑
-- 版本控制和冲突检测
-- 社区功能（公开项目）
-- API 服务
-
-### apps/cli - 命令行工具
-
-```
-apps/cli/
-├── src/
-│   ├── index.ts              # CLI 入口
-│   ├── commands/             # 命令定义
-│   │   ├── build.ts
-│   │   ├── export.ts
-│   │   └── deploy.ts
-│   └── utils/                # 工具函数
-│       └── logger.ts
+├── apps/
+│   ├── web/            # Web 编辑器主应用
+│   ├── backend/        # Go 后端服务
+│   ├── cli/            # 命令行工具
+│   ├── docs/           # 文档站点
+│   └── vscode/         # VS Code 扩展
+├── packages/
+│   ├── ai/             # AI provider 与任务工具
+│   ├── eslint-plugin-mdr/
+│   ├── i18n/
+│   ├── mir-compiler/
+│   ├── shared/         # 共享 LLM、类型和脚本
+│   ├── themes/         # 主题与设计令牌
+│   ├── ui/             # 组件库
+│   └── vscode-debugger/
+├── specs/              # 规范、诊断码、设计决策、实现记录
+├── tests/              # E2E 测试
 ├── package.json
+├── pnpm-workspace.yaml
+├── turbo.json
 └── tsconfig.json
 ```
 
-**技术栈**：
+## 应用层
 
-- Node.js
-- Commander.js
-- TypeScript
+### `apps/web`
 
-**命令**：
+Web 编辑器是主应用，核心代码集中在 `src/`：
 
-- `mdr build` - 构建项目
-- `mdr export` - 导出静态站点
-- `mdr deploy` - 部署项目
-
-### apps/docs - 文档站点
-
+```text
+apps/web/src/
+├── App.tsx
+├── main.tsx
+├── auth/                 # 登录、会话、个人资料
+├── community/            # 社区页
+├── core/                 # 执行器、节点、Worker、类型
+├── debug/                # 断点、状态、时间线
+├── diagnostics/          # 诊断模型与注册表
+├── editor/               # 编辑器主流程与功能区
+│   ├── features/
+│   │   ├── animation/
+│   │   ├── design/
+│   │   │   └── blueprint/
+│   │   ├── development/
+│   │   │   └── reactflow/
+│   │   ├── export/
+│   │   ├── newfile/
+│   │   ├── resources/
+│   │   └── settings/
+│   ├── shortcuts/
+│   └── store/
+├── esm-bridge/           # React / React DOM 兼容桥接
+├── home/
+├── i18n/
+├── infra/api/            # API 客户端与错误处理
+├── mir/                  # AST / 转换 / 图 / 生成 / 渲染 / 校验
+├── mock/
+├── shortcuts/
+├── test-utils/
+├── theme/
+└── utils/
 ```
+
+这里有几处比较关键的分层：
+
+- `src/mir` 是 MIR 数据与读写链路的核心。
+- `src/editor/features/design/blueprint` 是蓝图编辑器的主实现。
+- `src/editor/features/development/reactflow` 是节点图编辑器相关实现。
+- `src/diagnostics` 是前端诊断域的统一入口。
+- `src/esm-bridge` 负责浏览器端对 React 运行时的桥接。
+
+### `apps/backend`
+
+后端已经改成标准 Go 项目布局，不再是扁平文件结构：
+
+```text
+apps/backend/
+├── cmd/
+│   └── server/
+├── internal/
+│   ├── app/
+│   ├── config/
+│   ├── modules/
+│   │   ├── auth/
+│   │   ├── integrations/github/
+│   │   ├── project/
+│   │   └── workspace/
+│   └── platform/
+│       ├── database/
+│       └── http/
+├── Dockerfile
+├── README.md
+├── server.go
+├── docker-compose.yml
+├── go.mod
+└── go.sum
+```
+
+这里的重点是：
+
+- `cmd/server` 是启动入口。
+- `internal/modules/workspace` 承担 workspace、intent、patch、MIR 校验等核心逻辑。
+- `internal/modules/auth`、`project`、`integrations/github` 分别负责认证、项目与第三方集成。
+- `internal/platform` 放公共基础设施层。
+
+### `apps/cli`
+
+```text
+apps/cli/
+├── bin/mdr.js
+├── src/
+│   ├── cli.ts
+│   ├── commands/
+│   └── utils/
+├── test/
+└── package.json
+```
+
+### `apps/docs`
+
+```text
 apps/docs/
 ├── .vitepress/
-│   └── config.mts            # VitePress 配置
-├── guide/                    # 用户指南
-├── reference/                # 参考文档
-├── api/                      # API 文档
-├── community/                # 社区相关
-├── index.md                  # 首页
+├── api/
+├── community/
+├── guide/
+├── reference/
+├── public/
+├── index.md
 └── package.json
 ```
 
-**技术栈**：VitePress 1.6
+### `apps/vscode`
 
-### apps/vscode - VS Code 扩展
-
-```
+```text
 apps/vscode/
 ├── src/
-│   ├── extension.ts          # 扩展入口
-│   └── providers/            # 功能提供者
-├── syntaxes/                 # 语法高亮
-├── package.json              # 扩展清单
-└── tsconfig.json
+│   ├── commands/
+│   ├── debugger/
+│   ├── extension.ts
+│   ├── index.ts
+│   ├── language/
+│   └── test/
+└── package.json
 ```
 
-**功能**：
+## 共享包
 
-- `.mir.json` 语法高亮
-- 符号导航
-- 调试支持
-- 实时预览
+### `packages/ui`
 
-## 共享包 (packages/)
+UI 组件库按组件类别分组，样式主要跟随组件文件放置：
 
-### packages/ui - 组件库
-
-```
+```text
 packages/ui/
+├── .storybook/
 ├── src/
-│   ├── button/               # 按钮组件
-│   │   ├── MdrButton.tsx
-│   │   ├── MdrButton.scss
-│   │   ├── MdrButton.stories.tsx
-│   │   └── MdrButtonLink.tsx
-│   ├── link/                 # 链接组件
-│   ├── nav/                  # 导航组件
-│   │   ├── MdrNav.tsx
-│   │   ├── MdrNavbar.tsx
-│   │   ├── MdrSidebar.tsx
-│   │   └── ...
-│   ├── container/            # 容器组件
-│   │   ├── MdrDiv.tsx
-│   │   ├── MdrCard.tsx
-│   │   ├── MdrPanel.tsx
-│   │   └── MdrSection.tsx
-│   ├── data/                 # 数据组件
-│   │   ├── MdrTable.tsx
-│   │   ├── MdrDataGrid.tsx
-│   │   ├── MdrList.tsx
-│   │   └── ...
-│   ├── form/                 # 表单组件
-│   │   ├── MdrInput.tsx
-│   │   ├── MdrSelect.tsx
-│   │   ├── MdrDatePicker.tsx
-│   │   └── ...
-│   ├── media/                # 媒体组件
-│   ├── feedback/             # 反馈组件
-│   │   ├── MdrModal.tsx
-│   │   ├── MdrDrawer.tsx
-│   │   └── ...
-│   ├── text/                 # 文本组件
-│   ├── icon/                 # 图标组件
-│   ├── input/                # 输入组件
-│   ├── embed/                # 嵌入组件
-│   └── index.ts              # 导出入口
-│
-├── .storybook/               # Storybook 配置
-├── package.json
-└── tsconfig.json
+│   ├── button/
+│   ├── container/
+│   ├── data/
+│   ├── embed/
+│   ├── feedback/
+│   ├── form/
+│   ├── icon/
+│   ├── image/
+│   ├── input/
+│   ├── link/
+│   ├── nav/
+│   ├── text/
+│   ├── video/
+│   └── index.ts
+└── package.json
 ```
 
-**特点**：
+### `packages/ai`
 
-- 75+ 组件
-- 10 级灰度设计系统
-- 自动深色/浅色模式
-- WCAG 2.1 AA 无障碍
-- Storybook 文档
-
-### packages/mir-compiler - MIR 编译器
-
-```
-packages/mir-compiler/
-├── package.json
-└── tsconfig.json
-```
-
-**说明**：当前 MIR 编译逻辑位于 `apps/web/src/mir/generator/` 中。
-
-### packages/ai - AI 运行时
-
-```
+```text
 packages/ai/
 ├── src/
-│   ├── providers/            # Provider 创建、模型发现、OpenAI-compatible 请求
-│   ├── settings/             # AI 设置类型
-│   ├── tasks/                # LLM task 创建工具
-│   └── validation/           # 结构化输出校验
-├── package.json
-└── tsconfig.json
+│   ├── providers/
+│   ├── settings/
+│   ├── tasks/
+│   └── validation/
+└── package.json
 ```
 
-**职责**：
+### `packages/shared`
 
-- 创建 mock 或 OpenAI-compatible provider
-- 发送 Chat Completions 请求
-- 从 `{baseURL}/models` 发现模型基础信息
-- 构造可调试的 OpenAI-compatible messages
-- 校验 LLM 返回的结构化输出
-
-### packages/shared - 共享工具
-
-```
+```text
 packages/shared/
-├── src/
-│   ├── llm/                  # LLM 协议、gateway、tool registry、trace store
-│   ├── types/                # 类型定义
-│   │   ├── MdrComponent.ts
-│   │   └── mir.ts
-│   ├── index.ts
-│   └── scripts/              # 工具脚本
-│       ├── generate-types.js
-│       └── validate-mir.js
-├── package.json
-└── tsconfig.json
-```
-
-### packages/themes - 主题系统
-
-```
-packages/themes/
-├── src/
-│   └── variables.scss        # CSS 变量定义
-├── base/
-│   └── base.scss             # 基础样式
-├── semantic/
-│   └── semantic.scss         # 语义化样式
-├── presets/
-│   └── presets.ts            # 预设主题
-├── utils/
-│   └── themeUtils.ts         # 主题工具
-├── index.ts
-└── package.json
-```
-
-### packages/i18n - 国际化
-
-```
-packages/i18n/
-├── src/
-│   ├── index.ts              # 配置入口
-│   └── resources/            # 语言资源
-│       ├── en.json
-│       └── zh-CN.json
 ├── scripts/
-│   └── translate.ts          # 翻译工具
+├── src/
+│   ├── llm/
+│   └── types/
 └── package.json
 ```
 
-### packages/eslint-plugin-mdr - ESLint 插件
+### `packages/themes`
 
-```
-packages/eslint-plugin-mdr/
+```text
+packages/themes/
+├── base/
+├── manifests/
+├── presets/
+├── semantic/
 ├── src/
-│   ├── index.ts              # 插件入口
-│   └── rules/                # 自定义规则
-│       ├── no-circular.ts    # 禁止循环依赖
-│       ├── no-type-error.ts  # 类型错误检查
-│       └── no-unused-var.ts  # 未使用变量检查
-├── package.json
-├── tsconfig.json
-└── vitest.config.ts
+└── utils/
 ```
 
-### packages/vscode-debugger - VS Code 调试适配器
+### 其他包
 
-```
-packages/vscode-debugger/
-├── package.json
-└── tsconfig.json
-```
+- `packages/i18n`：公共国际化资源与转换脚本。
+- `packages/mir-compiler`：MIR 编译入口包。
+- `packages/eslint-plugin-mdr`：仓库自定义 ESLint 规则。
+- `packages/vscode-debugger`：VS Code 调试适配器。
 
-**说明**：提供 VS Code 调试适配器协议实现。
+## 规范文档
 
-## 规范文档 (specs/)
+`specs/` 现在主要分成几类：
 
-```
-specs/
-├── package.json
-└── mir/                      # MIR 规范
-    ├── MIR-v1.0.json
-    ├── MIR-v1.1.json
-    └── MIR-v1.2.json
-```
+- `specs/mir/`：MIR contract 与 schema。
+- `specs/diagnostics/`：诊断码文档。
+- `specs/decisions/`：设计决策。
+- `specs/implementation/`：实现方案和任务拆分。
+- `specs/api/`、`specs/router/`、`specs/workspace/`：协议与领域文档。
 
-**说明**：包含 MIR 规范的 JSON Schema 定义，用于版本化管理和验证。
+## 说明
 
-## 测试 (tests/)
-
-```
-tests/
-├── e2e/                      # E2E 测试
-│   ├── fixtures/             # 测试数据
-│   │   └── todo-app.mir.json
-│   ├── pages/                # Page Object
-│   │   └── EditorPage.ts
-│   ├── specs/                # 测试用例
-│   │   ├── debug-breakpoint.spec.ts
-│   │   ├── node-diff.spec.ts
-│   │   ├── node-state.spec.ts
-│   │   └── performance.spec.ts
-│   └── playwright.config.ts
-```
-
-**说明**：使用 Playwright 进行端到端测试。
-
-### Turborepo 配置 (turbo.json)
-
-```json
-{
-  "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "test": {},
-    "lint": {}
-  }
-}
-```
-
-### pnpm Workspace (pnpm-workspace.yaml)
-
-```yaml
-packages:
-  - 'apps/*'
-  - 'packages/*'
-```
-
-## 下一步
-
-- [蓝图编辑器](/guide/blueprint-editor) - 了解可视化设计功能
-- [AI 助手](/guide/ai-assistant) - 了解 LLM Provider 和 Blueprint AI UI
-- [MIR 规范](/reference/mir-spec) - 深入理解组件描述格式
-- [开发指南](/community/development) - 参与项目开发
+这份结构文档的目标是帮你快速判断“代码应该放哪里、职责边界在哪里”。如果某个目录已经被拆分或收敛，优先相信这里的说明和真实文件树。

@@ -36,6 +36,19 @@ requestId
 | `NGR-xxxx`  | 节点图   | 节点图结构、端口、连线、执行和调试                       |
 | `ANI-xxxx`  | 动画     | Timeline、binding、track、keyframe、filter 和预览运行时  |
 
+## 命名空间索引
+
+- [MIR](/reference/diagnostics/mir)
+- [Workspace](/reference/diagnostics/wks)
+- [Editor](/reference/diagnostics/edt)
+- [External Library](/reference/diagnostics/elib)
+- [Codegen](/reference/diagnostics/gen)
+- [Backend/API](/reference/diagnostics/api)
+- [AI](/reference/diagnostics/ai)
+- [Route](/reference/diagnostics/rte)
+- [NodeGraph](/reference/diagnostics/ngr)
+- [Animation](/reference/diagnostics/ani)
+
 ## 所有错误码
 
 ### MIR

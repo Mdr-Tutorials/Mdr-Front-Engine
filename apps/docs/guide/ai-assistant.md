@@ -95,6 +95,5 @@ AI 能力拆在共享协议、跨端运行时和 Web UI 三层：
 
 ## 下一步
 
-- [蓝图编辑器](/guide/blueprint-editor) - 查看 AI 助手所在的编辑器界面
-- [MIR 中间表示](/guide/mir) - 理解后续 AI 命令会修改的核心数据结构
 - [项目结构](/guide/project-structure) - 了解 AI 相关包和应用目录
+- [MIR 语法规范](/reference/mir-spec) - 理解后续 AI 命令会修改的核心数据结构

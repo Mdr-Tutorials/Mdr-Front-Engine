@@ -134,6 +134,10 @@ function slugForCode(code) {
   return code.toLowerCase();
 }
 
+function slugForDomain(domain) {
+  return domain.toLowerCase();
+}
+
 function readUtf8(filePath) {
   return fs.readFileSync(filePath, 'utf8');
 }
@@ -319,6 +323,32 @@ ${diagnostic.action}
 `;
 }
 
+function renderDomainIndex(domain, diagnostics) {
+  const info = domainInfo[domain];
+  const lines = [
+    '---',
+    'lastUpdated: false',
+    '---',
+    '',
+    `# ${info.title} 错误码`,
+    '',
+    `${info.title} 命名空间覆盖${info.description}。`,
+    '',
+    '| Code | 名称 | 严重程度 |',
+    '| --- | --- | --- |',
+  ];
+
+  for (const diagnostic of diagnostics) {
+    lines.push(
+      `| [\`${diagnostic.code}\`](/reference/diagnostics/${slugForCode(diagnostic.code)}) | ${diagnostic.title} | \`${diagnostic.severity}\` |`,
+    );
+  }
+
+  lines.push('', '[返回错误码索引](/reference/diagnostic-codes)', '');
+
+  return lines.join('\n');
+}
+
 function renderIndex(groupedDiagnostics) {
   const lines = [
     '# 错误码索引',
@@ -353,6 +383,14 @@ function renderIndex(groupedDiagnostics) {
   for (const domain of domainOrder) {
     const info = domainInfo[domain];
     lines.push(`| \`${domain}-xxxx\` | ${info.area} | ${info.description} |`);
+  }
+
+  lines.push('', '## 命名空间索引', '');
+
+  for (const domain of domainOrder) {
+    lines.push(
+      `- [${domainInfo[domain].title}](/reference/diagnostics/${slugForDomain(domain)})`,
+    );
   }
 
   lines.push('', '## 所有错误码');
@@ -409,6 +447,14 @@ async function buildExpectedFiles() {
   expected.set(indexPath, await formatMarkdown(renderIndex(groupedDiagnostics)));
 
   for (const diagnostics of groupedDiagnostics.values()) {
+    if (diagnostics.length > 0) {
+      const domain = diagnostics[0].domain;
+      expected.set(
+        path.join(diagnosticPagesDir, `${slugForDomain(domain)}.md`),
+        await formatMarkdown(renderDomainIndex(domain, diagnostics)),
+      );
+    }
+
     for (const diagnostic of diagnostics) {
       expected.set(
         path.join(diagnosticPagesDir, `${slugForCode(diagnostic.code)}.md`),
