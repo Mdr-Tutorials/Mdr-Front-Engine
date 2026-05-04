@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdrIcon, MdrIconLink } from '@mdr/ui';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useEditorShortcut } from '@/editor/shortcuts';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
 import {
@@ -22,7 +22,6 @@ import { EditorBarExitModal } from './EditorBarExitModal';
 function EditorBar() {
   const { t } = useTranslation(['editor', 'routes']);
   const { projectId } = useParams();
-  const location = useLocation();
   const navigate = useNavigate();
   const [isExitOpen, setExitOpen] = useState(false);
   const confirmPrompts = useSettingsStore(
@@ -38,14 +37,13 @@ function EditorBar() {
     'flex flex-col items-center gap-[14px] [--icon-link-color:var(--editor-bar-icon)] [--icon-link-hover-color:var(--editor-bar-icon-hover)]';
   const barEdgeGroupClassName =
     'flex flex-col items-center gap-[12px] [--icon-link-color:var(--editor-bar-icon)] [--icon-link-hover-color:var(--editor-bar-icon-hover)]';
-  const isBlueprintRoute = location.pathname.includes('/blueprint');
 
   useEditorShortcut(
     'Escape',
     () => {
       setExitOpen(true);
     },
-    { enabled: isBlueprintRoute }
+    { enabled: Boolean(projectId) }
   );
 
   return (

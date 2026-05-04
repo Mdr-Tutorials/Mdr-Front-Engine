@@ -38,13 +38,13 @@ export const AnimationEditorSvgFilterLibrarySection = ({
   return (
     <section className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-xs font-semibold tracking-[0.08em] text-(--color-8)">
+        <h3 className="text-xs font-semibold tracking-[0.08em] text-(--text-secondary)">
           {t('animationEditor.svgFilters.title')}
         </h3>
         <button
           type="button"
           onClick={onAddSvgFilter}
-          className="inline-flex items-center gap-1 rounded-full border border-black/10 bg-white px-2.5 py-1 text-[11px] text-(--color-8) hover:bg-black/[0.03]"
+          className="inline-flex items-center gap-1 rounded-full border border-black/10 bg-white px-2.5 py-1 text-[11px] text-(--text-secondary) hover:bg-black/[0.03]"
           aria-label={t('animationEditor.svgFilters.add')}
           title={t('animationEditor.svgFilters.add')}
         >
@@ -54,7 +54,7 @@ export const AnimationEditorSvgFilterLibrarySection = ({
       </div>
 
       {svgFilters.length === 0 ? (
-        <div className="rounded-xl bg-black/[0.03] p-3 text-xs text-(--color-6)">
+        <div className="rounded-xl bg-black/[0.03] p-3 text-xs text-(--text-muted)">
           {t('animationEditor.svgFilters.empty')}
         </div>
       ) : (
@@ -62,14 +62,14 @@ export const AnimationEditorSvgFilterLibrarySection = ({
           {svgFilters.map((filter) => (
             <div key={filter.id} className="rounded-xl bg-black/[0.03] p-3">
               <div className="flex items-center justify-between gap-2">
-                <p className="min-w-0 flex-1 truncate text-xs font-semibold text-(--color-9)">
+                <p className="min-w-0 flex-1 truncate text-xs font-semibold text-(--text-primary)">
                   {filter.id}
                 </p>
                 <button
                   type="button"
                   onClick={() => onDeleteSvgFilter(filter.id)}
                   disabled={!canRemoveSvgFilter}
-                  className="rounded-full border border-black/10 bg-white px-2 py-1 text-[10px] text-(--color-7) disabled:opacity-50"
+                  className="rounded-full border border-black/10 bg-white px-2 py-1 text-[10px] text-(--text-secondary) disabled:opacity-50"
                 >
                   {t('animationEditor.common.delete')}
                 </button>
@@ -87,7 +87,7 @@ export const AnimationEditorSvgFilterLibrarySection = ({
                       : undefined
                   )
                 }
-                className="mt-2 w-full rounded-lg border border-black/10 bg-white px-2 py-1 text-xs text-(--color-8) outline-none"
+                className="mt-2 w-full rounded-lg border border-black/10 bg-white px-2 py-1 text-xs text-(--text-secondary) outline-none"
                 title={t('animationEditor.svgFilters.units')}
                 aria-label={t('animationEditor.svgFilters.units')}
               >
@@ -105,7 +105,7 @@ export const AnimationEditorSvgFilterLibrarySection = ({
                 {filter.primitives.map((primitive) => (
                   <div key={primitive.id} className="rounded-lg bg-white p-2">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="min-w-0 flex-1 truncate text-[11px] text-(--color-7)">
+                      <p className="min-w-0 flex-1 truncate text-[11px] text-(--text-secondary)">
                         {primitive.id}
                       </p>
                       <button
@@ -114,7 +114,7 @@ export const AnimationEditorSvgFilterLibrarySection = ({
                           onDeleteSvgPrimitive(filter.id, primitive.id)
                         }
                         disabled={filter.primitives.length <= 1}
-                        className="rounded-full border border-black/10 px-2 py-0.5 text-[10px] text-(--color-7) disabled:opacity-50"
+                        className="rounded-full border border-black/10 px-2 py-0.5 text-[10px] text-(--text-secondary) disabled:opacity-50"
                       >
                         {t('animationEditor.common.remove')}
                       </button>
@@ -128,7 +128,7 @@ export const AnimationEditorSvgFilterLibrarySection = ({
                           event.target.value as (typeof SVG_TYPES)[number]
                         )
                       }
-                      className="mt-1 w-full rounded-lg border border-black/10 bg-white px-2 py-1 text-xs text-(--color-8) outline-none"
+                      className="mt-1 w-full rounded-lg border border-black/10 bg-white px-2 py-1 text-xs text-(--text-secondary) outline-none"
                     >
                       {SVG_TYPES.map((type) => (
                         <option key={type} value={type}>
@@ -142,7 +142,7 @@ export const AnimationEditorSvgFilterLibrarySection = ({
                 <button
                   type="button"
                   onClick={() => onAddSvgPrimitive(filter.id)}
-                  className="inline-flex items-center gap-1 rounded-full border border-black/10 bg-white px-2.5 py-1 text-[11px] text-(--color-8) hover:bg-black/[0.03]"
+                  className="inline-flex items-center gap-1 rounded-full border border-black/10 bg-white px-2.5 py-1 text-[11px] text-(--text-secondary) hover:bg-black/[0.03]"
                 >
                   <Plus size={11} />
                   {t('animationEditor.svgFilters.addPrimitive')}

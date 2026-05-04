@@ -20,8 +20,8 @@ export const AnimationEditorTopBar = ({
   const { t } = useTranslation('editor');
 
   return (
-    <header className="flex h-11 shrink-0 items-center gap-3 border-b border-black/8 bg-[rgb(var(--color-0-rgb)_/_0.92)] px-3 backdrop-blur-sm">
-      <div className="shrink-0 text-xs font-semibold tracking-[0.02em] text-(--color-9)">
+    <header className="flex h-11 shrink-0 items-center gap-3 border-b border-black/8 bg-[rgb(var(--bg-canvas-rgb)_/_0.92)] px-3 backdrop-blur-sm">
+      <div className="shrink-0 text-xs font-semibold tracking-[0.02em] text-(--text-primary)">
         {t('animationEditor.topBar.title')}
       </div>
 
@@ -36,7 +36,7 @@ export const AnimationEditorTopBar = ({
               className={`inline-flex shrink-0 items-center gap-2 rounded-full px-3 py-1 text-xs transition-colors ${
                 active
                   ? 'bg-black text-white'
-                  : 'bg-black/[0.04] text-(--color-8) hover:bg-black/[0.07]'
+                  : 'bg-black/[0.04] text-(--text-secondary) hover:bg-black/[0.07]'
               }`}
             >
               <span className="max-w-[160px] truncate">
@@ -68,7 +68,7 @@ export const AnimationEditorTopBar = ({
         <button
           type="button"
           onClick={onAddTimeline}
-          className="inline-flex shrink-0 items-center gap-1 rounded-full border border-black/10 bg-white px-3 py-1 text-xs text-(--color-8) transition-colors hover:border-black/15 hover:bg-black/[0.03]"
+          className="inline-flex shrink-0 items-center gap-1 rounded-full border border-black/10 bg-white px-3 py-1 text-xs text-(--text-secondary) transition-colors hover:border-black/15 hover:bg-black/[0.03]"
         >
           <Plus size={12} />
           {t('animationEditor.topBar.new')}

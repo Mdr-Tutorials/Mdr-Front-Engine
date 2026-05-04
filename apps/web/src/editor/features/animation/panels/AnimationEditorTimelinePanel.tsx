@@ -90,9 +90,9 @@ export const AnimationEditorTimelinePanel = ({
   const ticks = 8;
 
   return (
-    <section className="flex h-[var(--anim-timeline-height)] shrink-0 flex-col border-t border-black/8 bg-[rgb(var(--color-0-rgb)_/_0.92)] backdrop-blur-sm">
+    <section className="flex h-[var(--anim-timeline-height)] shrink-0 flex-col border-t border-black/8 bg-[rgb(var(--bg-canvas-rgb)_/_0.92)] backdrop-blur-sm">
       <div className="grid h-8 grid-cols-[260px_1fr] items-center border-b border-black/8">
-        <div className="px-3 text-[11px] font-medium tracking-[0.14em] text-(--color-6) uppercase">
+        <div className="px-3 text-[11px] font-medium tracking-[0.14em] text-(--text-muted) uppercase">
           {t('animationEditor.timelinePanel.lanes')}
         </div>
         <div className="relative h-full">
@@ -106,7 +106,7 @@ export const AnimationEditorTimelinePanel = ({
                 style={{ left: `${percent}%` }}
               >
                 <div className="h-2 w-px bg-black/12" />
-                <div className="mt-1 -translate-x-1/2 text-[10px] text-(--color-6)">
+                <div className="mt-1 -translate-x-1/2 text-[10px] text-(--text-muted)">
                   {ms}ms
                 </div>
               </div>
@@ -122,7 +122,7 @@ export const AnimationEditorTimelinePanel = ({
 
       <div className="min-h-0 flex-1 overflow-auto">
         {timelines.length === 0 ? (
-          <div className="p-6 text-sm text-(--color-6)">
+          <div className="p-6 text-sm text-(--text-muted)">
             {t('animationEditor.timelinePanel.noTimeline')}
           </div>
         ) : (
@@ -156,12 +156,12 @@ export const AnimationEditorTimelinePanel = ({
                         onSelectTrack?.(row.ref);
                       }
                     }}
-                    className="flex min-w-0 items-center gap-2 px-3 text-left text-xs text-(--color-8)"
+                    className="flex min-w-0 items-center gap-2 px-3 text-left text-xs text-(--text-secondary)"
                   >
-                    <span className="max-w-[82px] truncate text-(--color-6)">
+                    <span className="max-w-[82px] truncate text-(--text-muted)">
                       {row.timelineName}
                     </span>
-                    <span className="max-w-[72px] truncate text-(--color-5)">
+                    <span className="max-w-[72px] truncate text-(--text-muted)">
                       {row.bindingLabel}
                     </span>
                     <span className="min-w-0 flex-1 truncate font-medium">

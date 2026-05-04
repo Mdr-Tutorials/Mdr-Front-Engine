@@ -99,14 +99,14 @@ const DebugHoverButton = ({
   <div className="group relative">
     <button
       type="button"
-      className="inline-flex size-7 items-center justify-center bg-transparent text-(--text-tertiary) hover:bg-(--bg-panel) hover:text-(--text-primary)"
+      className="inline-flex size-7 items-center justify-center bg-transparent text-(--text-muted) hover:bg-(--bg-panel) hover:text-(--text-primary)"
       aria-label={label}
       title={label}
     >
       {icon}
     </button>
     <div className="absolute right-0 bottom-8 z-20 hidden w-[320px] border border-(--border-default) bg-(--bg-canvas) p-2 shadow-(--shadow-md) group-hover:block">
-      <div className="mb-1 text-[10px] font-semibold text-(--text-tertiary) uppercase">
+      <div className="mb-1 text-[10px] font-semibold text-(--text-muted) uppercase">
         {label}
       </div>
       <pre className="max-h-56 overflow-auto text-[11px] whitespace-pre-wrap text-(--text-secondary) select-text">
@@ -276,7 +276,7 @@ export function BlueprintAssistantPanel({
                   key={item.label}
                   className="min-w-0 border border-(--border-default) bg-(--bg-panel) px-2 py-1.5"
                 >
-                  <div className="text-[10px] text-(--text-tertiary) uppercase">
+                  <div className="text-[10px] text-(--text-muted) uppercase">
                     {item.label}
                   </div>
                   <div className="truncate text-xs text-(--text-primary)">
@@ -327,7 +327,7 @@ export function BlueprintAssistantPanel({
                   ))}
                 </div>
                 {traceId ? (
-                  <div className="truncate text-[10px] text-(--text-tertiary)">
+                  <div className="truncate text-[10px] text-(--text-muted)">
                     {t('assistant.trace', { traceId })}
                   </div>
                 ) : null}

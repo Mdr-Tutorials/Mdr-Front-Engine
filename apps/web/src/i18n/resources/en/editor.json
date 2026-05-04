@@ -1128,13 +1128,18 @@
         "disabled": "Not included",
         "selected": "Selected",
         "updated": "Updated",
-        "templates": "Templates"
+        "templates": "Templates",
+        "selectedTemplate": "Current: {{template}}"
       },
       "actions": {
+        "cancel": "Cancel",
         "include": "Include in export",
         "included": "Included in export",
-        "save": "Save"
+        "save": "Save",
+        "switchTemplate": "Switch template"
       },
+      "templateSwitchTitle": "Switch template?",
+      "templateSwitchConfirm": "Switching to {{template}} will replace the current editor content. If you are editing LICENSE, license bodies usually should not be edited freely; only adjust allowed metadata such as year and copyright holder. Continue?",
       "empty": "Select a project file to edit."
     },
     "i18n": {

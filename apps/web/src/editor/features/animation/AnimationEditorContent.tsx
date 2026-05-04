@@ -135,7 +135,7 @@ export const AnimationEditorContent = () => {
   }, [activeTimeline, selection.bindingId]);
 
   return (
-    <div className="relative flex h-full min-h-screen flex-col overflow-hidden text-(--color-10) [--anim-inspector-width:400px] [--anim-timeline-height:300px] max-[1100px]:[--anim-inspector-width:100%]">
+    <div className="relative flex h-full min-h-screen flex-col overflow-hidden text-(--text-primary) [--anim-inspector-width:400px] [--anim-timeline-height:300px] max-[1100px]:[--anim-inspector-width:100%]">
       <AnimationEditorTopBar
         timelines={animation.timelines}
         activeTimelineId={activeTimelineId}

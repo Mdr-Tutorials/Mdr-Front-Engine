@@ -20,9 +20,9 @@ export const AnimationEditorTimelinesPanel = ({
   const { t } = useTranslation('editor');
 
   return (
-    <aside className="w-[260px] shrink-0 rounded-2xl border border-black/8 bg-(--color-0) p-3 max-[1280px]:w-full">
+    <aside className="w-[260px] shrink-0 rounded-2xl border border-black/8 bg-(--bg-canvas) p-3 max-[1280px]:w-full">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-(--color-9)">
+        <h2 className="text-sm font-semibold text-(--text-primary)">
           {t('animationEditor.timelines.title')}
         </h2>
         <button
@@ -67,7 +67,7 @@ export const AnimationEditorTimelinesPanel = ({
               <button
                 type="button"
                 onClick={() => onDeleteTimeline(timeline.id)}
-                className={isActive ? 'text-white/80' : 'text-(--color-6)'}
+                className={isActive ? 'text-white/80' : 'text-(--text-muted)'}
                 aria-label={t('animationEditor.timelines.deleteTimeline')}
                 title={t('animationEditor.timelines.deleteTimeline')}
               >

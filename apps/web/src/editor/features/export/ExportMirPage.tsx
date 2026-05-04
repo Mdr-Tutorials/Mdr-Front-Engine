@@ -367,21 +367,35 @@ export function ExportMirPage() {
           >
             {isFolder ? (
               isExpanded ? (
-                <ChevronDown size={12} className="shrink-0 text-(--color-6)" />
+                <ChevronDown
+                  size={12}
+                  className="shrink-0 text-(--text-muted)"
+                />
               ) : (
-                <ChevronRight size={12} className="shrink-0 text-(--color-6)" />
+                <ChevronRight
+                  size={12}
+                  className="shrink-0 text-(--text-muted)"
+                />
               )
             ) : (
               <span className="inline-block w-3 shrink-0" />
             )}
             {isFolder ? (
               isExpanded ? (
-                <FolderOpen size={13} className="shrink-0 text-(--color-7)" />
+                <FolderOpen
+                  size={13}
+                  className="shrink-0 text-(--text-secondary)"
+                />
               ) : (
-                <Folder size={13} className="shrink-0 text-(--color-7)" />
+                <Folder
+                  size={13}
+                  className="shrink-0 text-(--text-secondary)"
+                />
               )
             ) : (
-              <span className="shrink-0 text-(--color-7)">{fileIcon}</span>
+              <span className="shrink-0 text-(--text-secondary)">
+                {fileIcon}
+              </span>
             )}
             <span className="truncate">{node.name}</span>
           </button>

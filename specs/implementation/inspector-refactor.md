@@ -140,7 +140,7 @@ export const useInspectorSectionContext = (): InspectorSectionContextValue => { 
 
 - 四个图标按钮（Info / Paintbrush / Database / Code2），无文字
 - 文字通过 i18n 写在 `title` 属性中
-- active tab 用 `text-(--color-9)`，inactive 用 `text-(--color-5)`
+- active tab 用 `text-(--text-primary)`，inactive 用 `text-(--text-muted)`
 - 数据属性 `data-testid="inspector-tab-{key}"`
 
 ### 1.4 四个 Tab 内容组件
@@ -325,12 +325,12 @@ export const useInspectorSectionContext = (): InspectorSectionContextValue => { 
 
 ### 6.1 Sticky group headers
 
-各 section/panel header 添加 `sticky top-0 z-1 bg-(--color-0)`。
+各 section/panel header 添加 `sticky top-0 z-1 bg-(--bg-canvas)`。
 
 ### 6.2 样式统一
 
-section header: `text-[11px] font-semibold text-(--color-7)`
-panel group header: `text-[10px] font-medium text-(--color-6)`
+section header: `text-[11px] font-semibold text-(--text-secondary)`
+panel group header: `text-[10px] font-medium text-(--text-muted)`
 hover: `hover:bg-black/3 rounded-md`
 
 ### 6.3 LayoutPanel 视觉层级

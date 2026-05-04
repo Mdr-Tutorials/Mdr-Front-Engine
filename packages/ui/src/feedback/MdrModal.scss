@@ -20,7 +20,6 @@
 
 .MdrModalHeader {
   padding: var(--spacing-md);
-  border-bottom: 1px solid var(--border-subtle);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -29,6 +28,7 @@
   h3 {
     margin: 0;
     font-size: 18px;
+    font-weight: 600;
     line-height: var(--line-height-compact);
   }
 }
@@ -41,7 +41,6 @@
 
 .MdrModalFooter {
   padding: var(--spacing-md);
-  border-top: 1px solid var(--border-subtle);
   display: flex;
   justify-content: flex-end;
   gap: var(--spacing-sm);

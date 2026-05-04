@@ -125,8 +125,8 @@ export const ProfilePage = () => {
 
   if (!hasAuthHydrated || !isAuthenticated || !token) {
     return (
-      <div className="min-h-screen bg-(--color-0) text-(--color-10)">
-        <header className="flex items-center justify-between gap-4 bg-(--color-0) px-5 py-4 md:px-7 md:py-[18px]">
+      <div className="min-h-screen bg-(--bg-canvas) text-(--text-primary)">
+        <header className="flex items-center justify-between gap-4 bg-(--bg-canvas) px-5 py-4 md:px-7 md:py-[18px]">
           <MdrButton
             text={t('actions.backHome')}
             size="Small"
@@ -141,7 +141,7 @@ export const ProfilePage = () => {
           />
         </header>
         <main className="mx-auto grid max-w-[980px] gap-[18px] px-5 pb-10 md:px-7 md:pb-12">
-          <div className="grid min-h-[calc(100vh-140px)] place-content-center gap-2.5 text-center text-(--color-8)">
+          <div className="grid min-h-[calc(100vh-140px)] place-content-center gap-2.5 text-center text-(--text-secondary)">
             <MdrIcon icon={<UserRound />} size={34} />
             <MdrHeading level={2} className="m-0 text-[88px]">
               {t('empty.title')}
@@ -154,8 +154,8 @@ export const ProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-(--color-0) text-(--color-10)">
-      <header className="flex items-center justify-between gap-4 bg-(--color-0) px-5 py-4 md:px-7 md:py-[18px]">
+    <div className="min-h-screen bg-(--bg-canvas) text-(--text-primary)">
+      <header className="flex items-center justify-between gap-4 bg-(--bg-canvas) px-5 py-4 md:px-7 md:py-[18px]">
         <MdrButton
           text={t('actions.backHome')}
           size="Small"
@@ -217,12 +217,12 @@ export const ProfilePage = () => {
             >
               {displayName}
             </MdrHeading>
-            <MdrParagraph className="m-0 max-w-[58ch] text-[13px] leading-[1.5] text-(--color-7)">
+            <MdrParagraph className="m-0 max-w-[58ch] text-[13px] leading-[1.5] text-(--text-secondary)">
               {displayBio}
             </MdrParagraph>
             <button
               type="button"
-              className="inline-flex max-w-full -translate-x-2.5 cursor-pointer items-center gap-3 rounded-2xl border-0 bg-(--color-0) px-3 py-2.5 transition-colors duration-150 hover:bg-(--color-1)"
+              className="inline-flex max-w-full -translate-x-2.5 cursor-pointer items-center gap-3 rounded-2xl border-0 bg-(--bg-canvas) px-3 py-2.5 transition-colors duration-150 hover:bg-(--bg-panel)"
               onClick={() => copyText(user?.id, t('messages.copiedId'))}
               aria-label={t('actions.copyId')}
               title={t('actions.copyId')}
@@ -240,14 +240,14 @@ export const ProfilePage = () => {
                       {bits.map((bit, bitIndex) => (
                         <span
                           key={`${columnIndex}-${bitIndex}`}
-                          className={`h-0.5 w-0.5 rounded-full ${bit ? 'bg-(--color-9)' : 'invisible'}`}
+                          className={`h-0.5 w-0.5 rounded-full ${bit ? 'bg-(--text-primary)' : 'invisible'}`}
                         />
                       ))}
                     </div>
                   ))}
                 </div>
               ) : (
-                <span className="[font-family:'JetBrains_Mono','SFMono-Regular','Menlo',monospace] text-xs tracking-[0.12em] break-all text-(--color-9)">
+                <span className="[font-family:'JetBrains_Mono','SFMono-Regular','Menlo',monospace] text-xs tracking-[0.12em] break-all text-(--text-primary)">
                   {user?.id}
                 </span>
               )}
@@ -261,7 +261,7 @@ export const ProfilePage = () => {
         <section className="mt-0.5 flex flex-wrap items-center gap-2.5">
           <button
             type="button"
-            className="inline-flex cursor-pointer items-center gap-2 rounded-full border-0 bg-(--color-1) px-3 py-2 text-xs text-(--color-9) transition-colors duration-150 hover:bg-(--color-2)"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-full border-0 bg-(--bg-panel) px-3 py-2 text-xs text-(--text-primary) transition-colors duration-150 hover:bg-(--bg-raised)"
             onClick={() => copyText(user?.email, t('messages.copiedEmail'))}
           >
             <MdrIcon icon={<Mail />} size={16} />
@@ -270,7 +270,7 @@ export const ProfilePage = () => {
               <MdrIcon icon={<Copy />} size={14} />
             </span>
           </button>
-          <div className="inline-flex cursor-default items-center gap-2 rounded-full border-0 bg-(--color-1) px-3 py-2 text-xs text-(--color-9)">
+          <div className="inline-flex cursor-default items-center gap-2 rounded-full border-0 bg-(--bg-panel) px-3 py-2 text-xs text-(--text-primary)">
             <MdrIcon icon={<Calendar />} size={16} />
             <span>{formatDate(user?.createdAt)}</span>
           </div>
@@ -310,7 +310,7 @@ export const ProfilePage = () => {
           />
         )}
         <div className="grid gap-3.5">
-          <label className="grid gap-1.5 text-xs text-(--color-7)">
+          <label className="grid gap-1.5 text-xs text-(--text-secondary)">
             <span>{t('labels.name')}</span>
             <MdrInput
               size="Small"
@@ -318,7 +318,7 @@ export const ProfilePage = () => {
               onChange={(value) => setDraft((p) => ({ ...p, name: value }))}
             />
           </label>
-          <label className="grid gap-1.5 text-xs text-(--color-7)">
+          <label className="grid gap-1.5 text-xs text-(--text-secondary)">
             <span>{t('labels.description')}</span>
             <MdrTextarea
               size="Small"

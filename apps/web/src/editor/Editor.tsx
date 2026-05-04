@@ -248,7 +248,7 @@ function Editor() {
         pathname={location.pathname}
       />
       {showLoadError ? (
-        <div className="flex min-h-screen items-center justify-center bg-[var(--bg-canvas)] px-6 py-10">
+        <div className="flex min-h-screen items-center justify-center bg-(--bg-canvas) px-6 py-10">
           <div className="max-w-xl space-y-4 text-left">
             <p className="text-sm font-medium tracking-[0.18em] text-(--text-secondary) uppercase">
               Project unavailable
@@ -261,7 +261,7 @@ function Editor() {
             </p>
             <button
               type="button"
-              className="rounded-md border border-(--border-subtle) bg-(--bg-panel) px-4 py-2 text-sm font-medium text-(--text-primary) transition hover:bg-(--bg-panel-hover)"
+              className="rounded-md border border-(--border-subtle) bg-(--bg-panel) px-4 py-2 text-sm font-medium text-(--text-primary) transition hover:bg-(--bg-raised)"
               onClick={() => {
                 setLoadError(null);
                 navigate('/editor');

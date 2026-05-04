@@ -192,14 +192,14 @@ export const AnimationEditorInspectorPanel = ({
     tracks.find((item) => item.id === selection.trackId) ?? tracks[0];
 
   return (
-    <aside className="flex h-full w-[var(--anim-inspector-width)] shrink-0 flex-col border-l border-black/8 bg-[rgb(var(--color-0-rgb)_/_0.92)] backdrop-blur-sm">
+    <aside className="flex h-full w-[var(--anim-inspector-width)] shrink-0 flex-col border-l border-black/8 bg-[rgb(var(--bg-canvas-rgb)_/_0.92)] backdrop-blur-sm">
       <div className="min-h-0 flex-1 space-y-5 overflow-auto p-4">
         <section className="space-y-2">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-semibold tracking-[0.08em] text-(--color-8)">
+            <h2 className="text-xs font-semibold tracking-[0.08em] text-(--text-secondary)">
               {t('animationEditor.inspector.timeline.title')}
             </h2>
-            <div className="text-[11px] text-(--color-6) tabular-nums">
+            <div className="text-[11px] text-(--text-muted) tabular-nums">
               {cursorMs}ms
             </div>
           </div>
@@ -209,7 +209,7 @@ export const AnimationEditorInspectorPanel = ({
             placeholder={t('animationEditor.inspector.timeline.name')}
             aria-label={t('animationEditor.inspector.timeline.name')}
             title={t('animationEditor.inspector.timeline.name')}
-            className="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-sm text-(--color-9) outline-none"
+            className="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-sm text-(--text-primary) outline-none"
             disabled={!timeline}
           />
           <div className="grid grid-cols-2 gap-2">
@@ -218,7 +218,7 @@ export const AnimationEditorInspectorPanel = ({
               min={1}
               value={timeline?.durationMs ?? 0}
               onChange={(event) => onUpdateTimelineDuration(event.target.value)}
-              className="rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-(--color-9) outline-none"
+              className="rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-(--text-primary) outline-none"
               disabled={!timeline}
               placeholder={t('animationEditor.inspector.timeline.durationMs')}
               aria-label={t('animationEditor.inspector.timeline.durationMs')}
@@ -229,7 +229,7 @@ export const AnimationEditorInspectorPanel = ({
               min={0}
               value={timeline?.delayMs ?? 0}
               onChange={(event) => onUpdateTimelineDelayMs(event.target.value)}
-              className="rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-(--color-9) outline-none"
+              className="rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-(--text-primary) outline-none"
               disabled={!timeline}
               placeholder={t('animationEditor.inspector.timeline.delayMs')}
               aria-label={t('animationEditor.inspector.timeline.delayMs')}
@@ -250,7 +250,7 @@ export const AnimationEditorInspectorPanel = ({
                     : undefined
                 )
               }
-              className="rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-(--color-9) outline-none"
+              className="rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-(--text-primary) outline-none"
               disabled={!timeline}
               aria-label={t('animationEditor.inspector.timeline.direction')}
               title={t('animationEditor.inspector.timeline.direction')}
@@ -279,7 +279,7 @@ export const AnimationEditorInspectorPanel = ({
                     : undefined
                 )
               }
-              className="rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-(--color-9) outline-none"
+              className="rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-(--text-primary) outline-none"
               disabled={!timeline}
               aria-label={t('animationEditor.inspector.timeline.fillMode')}
               title={t('animationEditor.inspector.timeline.fillMode')}
@@ -308,7 +308,7 @@ export const AnimationEditorInspectorPanel = ({
               onChange={(event) =>
                 onUpdateTimelineIterations(event.target.value)
               }
-              className="rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-(--color-9) outline-none"
+              className="rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-(--text-primary) outline-none"
               disabled={!timeline}
               aria-label={t('animationEditor.inspector.timeline.iterations')}
               title={t('animationEditor.inspector.timeline.iterations')}
@@ -331,7 +331,7 @@ export const AnimationEditorInspectorPanel = ({
               placeholder={t('animationEditor.inspector.timeline.easing')}
               aria-label={t('animationEditor.inspector.timeline.easing')}
               title={t('animationEditor.inspector.timeline.easing')}
-              className="rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-(--color-9) outline-none"
+              className="rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-(--text-primary) outline-none"
               disabled={!timeline}
             />
           </div>
@@ -339,10 +339,10 @@ export const AnimationEditorInspectorPanel = ({
 
         <section className="space-y-2">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-semibold tracking-[0.08em] text-(--color-8)">
+            <h2 className="text-xs font-semibold tracking-[0.08em] text-(--text-secondary)">
               {t('animationEditor.inspector.binding.title')}
             </h2>
-            <span className="text-[11px] text-(--color-6) tabular-nums">
+            <span className="text-[11px] text-(--text-muted) tabular-nums">
               {bindings.length}
             </span>
           </div>
@@ -355,7 +355,7 @@ export const AnimationEditorInspectorPanel = ({
                 trackId: undefined,
               })
             }
-            className="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-(--color-9) outline-none"
+            className="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-(--text-primary) outline-none"
             disabled={!timeline || bindings.length === 0}
             aria-label={t('animationEditor.inspector.binding.select')}
             title={t('animationEditor.inspector.binding.select')}
@@ -369,18 +369,18 @@ export const AnimationEditorInspectorPanel = ({
 
           {binding ? (
             <div className="space-y-1.5 rounded-xl bg-black/[0.03] p-3">
-              <div className="text-[10px] tracking-[0.08em] text-(--color-6) uppercase">
+              <div className="text-[10px] tracking-[0.08em] text-(--text-muted) uppercase">
                 {t('animationEditor.inspector.binding.targetNode')}
               </div>
-              <div className="rounded-lg border border-black/10 bg-white px-2 py-1.5 text-xs text-(--color-9)">
+              <div className="rounded-lg border border-black/10 bg-white px-2 py-1.5 text-xs text-(--text-primary)">
                 {binding.targetNodeId}
               </div>
-              <p className="m-0 text-[10px] text-(--color-6)">
+              <p className="m-0 text-[10px] text-(--text-muted)">
                 {t('animationEditor.inspector.binding.targetHint')}
               </p>
             </div>
           ) : (
-            <div className="rounded-xl bg-black/[0.03] px-3 py-2 text-[11px] text-(--color-6)">
+            <div className="rounded-xl bg-black/[0.03] px-3 py-2 text-[11px] text-(--text-muted)">
               {t('animationEditor.inspector.binding.empty')}
             </div>
           )}
@@ -388,7 +388,7 @@ export const AnimationEditorInspectorPanel = ({
 
         <section className="space-y-2">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-semibold tracking-[0.08em] text-(--color-8)">
+            <h2 className="text-xs font-semibold tracking-[0.08em] text-(--text-secondary)">
               {t('animationEditor.inspector.track.title')}
             </h2>
             <div className="flex items-center gap-1">
@@ -452,7 +452,7 @@ export const AnimationEditorInspectorPanel = ({
                 trackId: event.target.value || undefined,
               })
             }
-            className="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-(--color-9) outline-none"
+            className="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-(--text-primary) outline-none"
             disabled={!binding || tracks.length === 0}
             aria-label={t('animationEditor.inspector.track.select')}
             title={t('animationEditor.inspector.track.select')}
@@ -475,7 +475,7 @@ export const AnimationEditorInspectorPanel = ({
                     event.target.value as AnimationTrack['kind']
                   )
                 }
-                className="w-full rounded-lg border border-black/10 bg-white px-2 py-1.5 text-xs text-(--color-9) outline-none"
+                className="w-full rounded-lg border border-black/10 bg-white px-2 py-1.5 text-xs text-(--text-primary) outline-none"
                 aria-label={t('animationEditor.inspector.track.kind')}
                 title={t('animationEditor.inspector.track.kind')}
               >
@@ -499,7 +499,7 @@ export const AnimationEditorInspectorPanel = ({
                       >['property']
                     )
                   }
-                  className="w-full rounded-lg border border-black/10 bg-white px-2 py-1.5 text-xs text-(--color-9) outline-none"
+                  className="w-full rounded-lg border border-black/10 bg-white px-2 py-1.5 text-xs text-(--text-primary) outline-none"
                   aria-label={t('animationEditor.inspector.track.styleProp')}
                   title={t('animationEditor.inspector.track.styleProp')}
                 >
@@ -527,7 +527,7 @@ export const AnimationEditorInspectorPanel = ({
                         >['fn']
                       )
                     }
-                    className="rounded-lg border border-black/10 bg-white px-2 py-1.5 text-xs text-(--color-9) outline-none"
+                    className="rounded-lg border border-black/10 bg-white px-2 py-1.5 text-xs text-(--text-primary) outline-none"
                     aria-label={t('animationEditor.inspector.track.filterFn')}
                     title={t('animationEditor.inspector.track.filterFn')}
                   >
@@ -553,7 +553,7 @@ export const AnimationEditorInspectorPanel = ({
                         >
                       )
                     }
-                    className="rounded-lg border border-black/10 bg-white px-2 py-1.5 text-xs text-(--color-9) outline-none"
+                    className="rounded-lg border border-black/10 bg-white px-2 py-1.5 text-xs text-(--text-primary) outline-none"
                     aria-label={t('animationEditor.inspector.track.unit')}
                     title={t('animationEditor.inspector.track.unit')}
                   >
@@ -579,7 +579,7 @@ export const AnimationEditorInspectorPanel = ({
                         event.target.value
                       )
                     }
-                    className="rounded-lg border border-black/10 bg-white px-2 py-1.5 text-xs text-(--color-9) outline-none"
+                    className="rounded-lg border border-black/10 bg-white px-2 py-1.5 text-xs text-(--text-primary) outline-none"
                     aria-label={t('animationEditor.inspector.track.svgFilter')}
                     title={t('animationEditor.inspector.track.svgFilter')}
                   >
@@ -600,7 +600,7 @@ export const AnimationEditorInspectorPanel = ({
                         event.target.value
                       )
                     }
-                    className="rounded-lg border border-black/10 bg-white px-2 py-1.5 text-xs text-(--color-9) outline-none"
+                    className="rounded-lg border border-black/10 bg-white px-2 py-1.5 text-xs text-(--text-primary) outline-none"
                     aria-label={t(
                       'animationEditor.inspector.track.svgPrimitive'
                     )}
@@ -629,7 +629,7 @@ export const AnimationEditorInspectorPanel = ({
                         event.target.value
                       )
                     }
-                    className="col-span-2 rounded-lg border border-black/10 bg-white px-2 py-1.5 text-xs text-(--color-9) outline-none"
+                    className="col-span-2 rounded-lg border border-black/10 bg-white px-2 py-1.5 text-xs text-(--text-primary) outline-none"
                     placeholder={t('animationEditor.inspector.track.attr')}
                     aria-label={t('animationEditor.inspector.track.attr')}
                     title={t('animationEditor.inspector.track.attr')}
@@ -640,7 +640,7 @@ export const AnimationEditorInspectorPanel = ({
               <button
                 type="button"
                 onClick={() => onDeleteTrack(binding.id, track.id)}
-                className="inline-flex items-center gap-1 rounded-full border border-black/10 bg-white px-2.5 py-1 text-[11px] text-(--color-7) hover:bg-black/[0.03]"
+                className="inline-flex items-center gap-1 rounded-full border border-black/10 bg-white px-2.5 py-1 text-[11px] text-(--text-secondary) hover:bg-black/[0.03]"
               >
                 <Trash2 size={12} />
                 {t('animationEditor.inspector.track.delete')}

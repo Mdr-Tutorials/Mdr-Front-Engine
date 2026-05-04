@@ -2,13 +2,13 @@
 
 ## Context
 
-MdrFrontEngine 当前主题体系主要依赖 `packages/themes/src/variables.scss` 直接注入 CSS custom properties，例如 `--color-0`、`--color-10`、`--spacing-sm`、`--radius-md`。这套实现只适合作为早期占位，不能支撑后续的官方主题、自定义主题、社区主题和设计工具级主题编辑能力。
+MdrFrontEngine 旧主题体系曾主要依赖 `packages/themes/src/variables.scss` 直接注入 CSS custom properties，例如 `--bg-canvas`、`--text-primary`、`--spacing-sm`、`--radius-md`。这套实现只适合作为早期占位，不能支撑后续的官方主题、自定义主题、社区主题和设计工具级主题编辑能力。
 
-本计划按“推倒重建”处理主题系统。现有 `variables.scss`、空的 `presets` / `utils` / `semantic` 目录不作为新架构约束；它们只提供迁移时的视觉参考。
+本计划按“推倒重建”处理主题系统。旧 `variables.scss` 已删除，空的 `presets` / `utils` / `semantic` 目录不作为新架构约束；它们只提供迁移时的视觉参考。
 
 当前缺失：
 
-1. 底层色阶 palette，例如 `--color-gray-1`
+1. 底层色阶 palette，例如 `--palette-gray-1`
 2. 语义化 token，例如 `--bg-color`
 3. 官方主题 / 自定义主题 / 社区主题
 4. 字体、圆角、阴影、密度等非颜色主题属性
@@ -22,17 +22,17 @@ MdrFrontEngine 当前主题体系主要依赖 `packages/themes/src/variables.scs
 2. 官方主题使用 JSON manifest 描述，可生成 CSS variables。
 3. 用户可以自定义主题，社区可以分享主题。
 4. 颜色之外的字体、字号、圆角、阴影、密度、动效等也可以被主题 manifest 管理。
-5. 允许提供短期 legacy shim，但新设计不以 `--color-0` / `--color-10` 为中心。
+5. 不再提供匿名色阶 legacy shim；新设计以 semantic/product token 为中心。
 6. 为 Tailwind 4 的 `text-(--token)` / `bg-(--token)` 写法提供稳定 token。
 
 ## Rebuild Stance
 
-新主题系统以 JSON manifest、schema validation、token resolver、runtime CSS emitter 为核心。旧 `packages/themes/src/variables.scss` 可以被删除、生成化，或降级为 legacy shim。
+新主题系统以 JSON manifest、schema validation、token resolver、runtime CSS emitter 为核心。旧 `packages/themes/src/variables.scss` 已删除。
 
 原则：
 
 - 不继续把 `variables.scss` 当单一真源。
-- 不继续以 `--color-0` 到 `--color-10` 这种匿名色阶作为业务语义。
+- 不继续以 `--bg-canvas` 到 `--text-primary` 这种匿名色阶作为业务语义。
 - 不继续把 light / dark 写死为唯一主题维度。
 - 新主题数据必须可序列化、可验证、可导入、可导出、可分享。
 - 旧变量只服务迁移，不服务新功能设计。
@@ -94,9 +94,9 @@ Runtime CSS Variables
 输出变量：
 
 ```css
---color-gray-0: #ffffff;
---color-gray-1: #f8f8f8;
---color-red-6: #dc3e42;
+--palette-gray-0: #ffffff;
+--palette-gray-1: #f8f8f8;
+--palette-red-6: #dc3e42;
 ```
 
 规则：
@@ -146,12 +146,12 @@ Runtime CSS Variables
 输出变量：
 
 ```css
---bg-canvas: var(--color-gray-0);
---bg-panel: var(--color-gray-1);
---text-primary: var(--color-gray-10);
---text-muted: var(--color-gray-5);
---border-default: var(--color-gray-3);
---danger-color: var(--color-red-6);
+--bg-canvas: var(--palette-gray-0);
+--bg-panel: var(--palette-gray-1);
+--text-primary: var(--palette-gray-10);
+--text-muted: var(--palette-gray-5);
+--border-default: var(--palette-gray-3);
+--danger-color: var(--palette-red-6);
 ```
 
 规则：
@@ -193,14 +193,14 @@ Runtime CSS Variables
 ```css
 --editor-canvas-bg: var(--bg-canvas);
 --editor-selection-outline: var(--accent-color);
---inspector-row-hover: var(--color-gray-2);
+--inspector-row-hover: var(--palette-gray-2);
 --node-bg: var(--bg-panel);
 ```
 
 规则：
 
 - 产品 token 允许更贴近 MFE 业务语义。
-- 组件内部不应反复硬编码 `--color-0` / `--color-9`，应逐步迁移到 semantic/product token。
+- 组件内部不应反复硬编码 `--bg-canvas` / `--text-primary`，应逐步迁移到 semantic/product token。
 
 ### 4. Runtime CSS Variables
 
@@ -217,9 +217,9 @@ Runtime target:
 ```css
 :root,
 [data-theme-id='official.monochrome.light'] {
-  --color-gray-0: #ffffff;
-  --bg-canvas: var(--color-gray-0);
-  --text-primary: var(--color-gray-10);
+  --palette-gray-0: #ffffff;
+  --bg-canvas: var(--palette-gray-0);
+  --text-primary: var(--palette-gray-10);
 }
 ```
 
@@ -480,18 +480,18 @@ Responsibilities:
 
 ## Legacy Shim Plan
 
-Because the app already references `--color-*` tokens in many places, a short-lived compatibility shim is allowed. This is not the foundation of the new design.
+Because older app surfaces used anonymous palette tokens in many places, a short-lived compatibility shim was allowed during migration. This is not the foundation of the new design.
 
 Existing variables may remain available during migration:
 
 ```css
---color-0
---color-1
---color-2
+--bg-canvas
+--bg-panel
+--bg-raised
 ...
---color-10
---color-success
---color-danger
+--text-primary
+--success-color
+--danger-color
 --spacing-sm
 --radius-md
 --font-size-sm
@@ -513,10 +513,10 @@ Possible compatibility mapping:
 Output:
 
 ```css
---color-0: var(--bg-canvas);
---color-1: var(--bg-panel);
---color-9: var(--text-primary);
---color-10: var(--text-primary);
+--bg-canvas: var(--bg-canvas);
+--bg-panel: var(--bg-panel);
+--text-primary: var(--text-primary);
+--text-primary: var(--text-primary);
 ```
 
 Rules:
@@ -545,8 +545,8 @@ className = 'text-[var(--text-primary)]';
 
 ### Phase 0: Remove Old Assumptions
 
-- Mark `variables.scss` as legacy.
-- Stop treating `--color-0..10` as the target API.
+- Delete the legacy `variables.scss` entry point.
+- Stop treating anonymous numbered palette tokens as the target API.
 - Define the new source-of-truth files under `packages/themes/src`.
 - Decide which existing visual values are kept as official monochrome presets.
 
@@ -572,8 +572,8 @@ className = 'text-[var(--text-primary)]';
 
 ### Phase 4: Legacy Shim
 
-- Emit legacy `--color-*` and existing spacing/radius/font tokens where still needed.
-- Delete `variables.scss` or make it generated / compatibility-only output.
+- Emit only semantic/product tokens and existing spacing/radius/font tokens needed by runtime surfaces.
+- Delete `variables.scss`.
 - Document new preferred semantic tokens.
 
 ### Phase 5: Theme Editing and Import
@@ -596,7 +596,7 @@ className = 'text-[var(--text-primary)]';
 - Theme manifests can define palette, semantic color tokens, typography, radius, shadow, density, and motion.
 - Theme resolver can generate CSS variables from manifest data.
 - Runtime can switch themes without rebuilding SCSS.
-- Existing `--color-*` variables are supported only through an explicit legacy shim during migration.
+- Anonymous legacy color variables are removed after migration.
 - New code has a documented path to use semantic/product tokens.
 - Custom/community themes are validated before use.
-- `packages/themes/src/variables.scss` is no longer the source of truth.
+- Theme manifests and runtime CSS emitter are the source of truth.

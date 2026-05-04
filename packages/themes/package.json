@@ -5,7 +5,6 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./legacy.scss": "./src/variables.scss",
     "./schema": "./src/schema/themeManifest.schema.json",
     "./manifests/official/monochrome-light.json": "./manifests/official/monochrome-light.json",
     "./manifests/official/monochrome-dark.json": "./manifests/official/monochrome-dark.json"

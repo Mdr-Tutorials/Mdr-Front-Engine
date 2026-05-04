@@ -45,7 +45,7 @@ export const ProjectSettingsPage = () => {
   const basePath = projectId ? `/editor/project/${projectId}` : '/editor';
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-350 flex-col px-6 text-(--color-10)">
+    <div className="mx-auto flex min-h-screen max-w-350 flex-col px-6 text-(--text-primary)">
       <header className="flex items-center justify-between gap-4 border-b border-b-[rgba(0,0,0,0.06)] px-6 py-4 backdrop-blur-[10px] in-data-[theme='dark']:border-b-[rgba(255,255,255,0.08)]">
         <div>
           <MdrHeading level={2}>{t('settings.projectPage.title')}</MdrHeading>
@@ -65,11 +65,11 @@ export const ProjectSettingsPage = () => {
       <main className="flex flex-col gap-4.5 px-6 pt-4 pb-8 max-[1100px]:px-4.5 max-[1100px]:pt-3.5 max-[1100px]:pb-6">
         <ProjectSettingsContent />
         <section className="grid gap-3">
-          <div className="flex items-center gap-2.5 rounded-xl bg-[rgba(0,0,0,0.04)] px-3 py-2 text-[12px] text-(--color-7) in-data-[theme='dark']:bg-[rgba(255,255,255,0.08)]">
-            <span className="font-semibold text-(--color-9)">
+          <div className="flex items-center gap-2.5 rounded-xl bg-[rgba(0,0,0,0.04)] px-3 py-2 text-[12px] text-(--text-secondary) in-data-[theme='dark']:bg-[rgba(255,255,255,0.08)]">
+            <span className="font-semibold text-(--text-primary)">
               {t('settings.projectPage.overrides.title')}
             </span>
-            <span className="text-(--color-6)">
+            <span className="text-(--text-muted)">
               {t('settings.projectPage.overrides.body')}
             </span>
           </div>

@@ -214,7 +214,7 @@
         "relPlaceholder": "noopener noreferrer"
       },
       "colorInput": {
-        "placeholder": "#RRGGBB / var(--color-x)",
+        "placeholder": "#RRGGBB / var(--text-primary)",
         "pickerAria": "Color picker"
       },
       "presetInput": {
@@ -353,7 +353,7 @@
         },
         "placeholders": {
           "auto": "auto",
-          "backgroundColor": "var(--color-2)",
+          "backgroundColor": "var(--bg-raised)",
           "gridRows": "repeat(2, minmax(0, 1fr))"
         },
         "patternControlled": "Layout structure is controlled by pattern params.",
@@ -501,7 +501,7 @@
           "borderRadius": "Radius"
         },
         "placeholders": {
-          "border": "1px solid var(--color-3)",
+          "border": "1px solid var(--border-default)",
           "borderWidth": "1",
           "borderRadius": "0"
         }

@@ -20,7 +20,11 @@ export const SettingsRow = ({
   return (
     <div className={className}>
       <div className="grid gap-1">
-        <MdrText size="Small" weight="SemiBold" className="text-(--color-9)">
+        <MdrText
+          size="Small"
+          weight="SemiBold"
+          className="text-(--text-primary)"
+        >
           {label}
         </MdrText>
         {description && (
@@ -37,7 +41,7 @@ export const SettingsRow = ({
         {control}
       </div>
       {meta && (
-        <div className="ml-6 flex flex-col items-start gap-1.5 text-[11px] text-(--color-6) max-[1100px]:ml-0">
+        <div className="ml-6 flex flex-col items-start gap-1.5 text-[11px] text-(--text-muted) max-[1100px]:ml-0">
           {meta}
         </div>
       )}
@@ -60,10 +64,10 @@ export const SettingsPanel = ({
     title={title}
     variant="Default"
     padding="Large"
-    className="rounded-2xl border border-[rgba(0,0,0,0.06)] bg-(--color-0) shadow-[0_14px_32px_rgba(0,0,0,0.08)] in-data-[theme='dark']:border-[rgba(255,255,255,0.08)] in-data-[theme='dark']:shadow-[0_18px_36px_rgba(0,0,0,0.45)]"
+    className="rounded-2xl border border-[rgba(0,0,0,0.06)] bg-(--bg-canvas) shadow-[0_14px_32px_rgba(0,0,0,0.08)] in-data-[theme='dark']:border-[rgba(255,255,255,0.08)] in-data-[theme='dark']:shadow-[0_18px_36px_rgba(0,0,0,0.45)]"
   >
     {description && (
-      <p className="mb-3 -translate-x-2 -translate-y-4 text-[12px] text-(--color-6)">
+      <p className="mb-3 -translate-x-2 -translate-y-4 text-[12px] text-(--text-muted)">
         {description}
       </p>
     )}

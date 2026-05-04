@@ -145,7 +145,7 @@ Vite uses `rolldown-vite@7.1.14` (Rust-based bundler) as an override.
 
 1. Use `@/...` imports within `apps/web`, not relative paths.
 2. CSS class naming: PascalCase with `Mdr` prefix for components (e.g. `.MdrButton`, `.MdrSmall`). Nested classes use full words.
-3. `@mdr/ui` components use SCSS; everything else uses **Tailwind CSS 4** syntax. Use `text-(--color-0)` not `text-[var(--color-0)]`.
+3. `@mdr/ui` components use SCSS; everything else uses **Tailwind CSS 4** syntax. Use `text-(--bg-canvas)` not `text-[var(--bg-canvas)]`.
 4. Keep monochrome UI design style. UX can reference Figma and Dify.
 5. Document comments only on core methods/components of important modules — explain the call chain logic, not what the code does.
 6. Split files that get too long.

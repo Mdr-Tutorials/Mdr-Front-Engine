@@ -121,12 +121,12 @@ export const AnimationEditorBindingsPanel = ({
   const { t } = useTranslation('editor');
 
   return (
-    <main className="flex min-h-0 min-w-0 flex-1 flex-col rounded-2xl border border-black/8 bg-(--color-0) p-4">
+    <main className="flex min-h-0 min-w-0 flex-1 flex-col rounded-2xl border border-black/8 bg-(--bg-canvas) p-4">
       <div className="border-b border-black/8 pb-3">
-        <p className="text-sm font-semibold text-(--color-9)">
+        <p className="text-sm font-semibold text-(--text-primary)">
           {activeTimelineDisplayName}
         </p>
-        <p className="mt-1 text-xs text-(--color-6)">
+        <p className="mt-1 text-xs text-(--text-muted)">
           {activeTimeline
             ? t('animationEditor.bindings.summary', {
                 count: activeTimeline.bindings.length,

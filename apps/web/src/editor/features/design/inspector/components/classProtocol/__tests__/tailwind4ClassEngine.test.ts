@@ -61,11 +61,11 @@ describe('tailwind4ClassEngine', () => {
 
   it('includes runtime snapshot classes from project tailwind config', () => {
     const suggestions = tailwind4ClassEngine.suggest({
-      query: 'text-color-',
+      query: 'text-pri',
       tokens: [],
       limit: 12,
     });
-    expect(suggestions.some((item) => item.token === 'text-color-0')).toBe(
+    expect(suggestions.some((item) => item.token === 'text-primary')).toBe(
       true
     );
   });

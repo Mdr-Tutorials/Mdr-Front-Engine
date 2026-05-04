@@ -64,6 +64,9 @@ packages/*/storybook-static/
 # Local tool output
 .playwright-mcp/
 .claude/
+.codex/
+.agents/
+.trellis/
 .tmp*
 
 # Editor and OS files

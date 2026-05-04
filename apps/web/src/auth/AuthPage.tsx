@@ -98,7 +98,7 @@ export const AuthPage = () => {
               void submitLogin();
             }}
           >
-            <label className="grid gap-1.5 text-xs text-(--color-7)">
+            <label className="grid gap-1.5 text-xs text-(--text-secondary)">
               <span>{t('fields.email')}</span>
               <MdrInput
                 size="Small"
@@ -114,7 +114,7 @@ export const AuthPage = () => {
                 }
               />
             </label>
-            <label className="grid gap-1.5 text-xs text-(--color-7)">
+            <label className="grid gap-1.5 text-xs text-(--text-secondary)">
               <span>{t('fields.password')}</span>
               <MdrInput
                 size="Small"
@@ -151,7 +151,7 @@ export const AuthPage = () => {
               void submitRegister();
             }}
           >
-            <label className="grid gap-1.5 text-xs text-(--color-7)">
+            <label className="grid gap-1.5 text-xs text-(--text-secondary)">
               <span>{t('fields.name')}</span>
               <MdrInput
                 size="Small"
@@ -166,7 +166,7 @@ export const AuthPage = () => {
                 }
               />
             </label>
-            <label className="grid gap-1.5 text-xs text-(--color-7)">
+            <label className="grid gap-1.5 text-xs text-(--text-secondary)">
               <span>{t('fields.description')}</span>
               <MdrInput
                 size="Small"
@@ -180,7 +180,7 @@ export const AuthPage = () => {
                 }
               />
             </label>
-            <label className="grid gap-1.5 text-xs text-(--color-7)">
+            <label className="grid gap-1.5 text-xs text-(--text-secondary)">
               <span>{t('fields.email')}</span>
               <MdrInput
                 size="Small"
@@ -196,7 +196,7 @@ export const AuthPage = () => {
                 }
               />
             </label>
-            <label className="grid gap-1.5 text-xs text-(--color-7)">
+            <label className="grid gap-1.5 text-xs text-(--text-secondary)">
               <span>{t('fields.password')}</span>
               <MdrInput
                 size="Small"
@@ -211,7 +211,7 @@ export const AuthPage = () => {
                   }))
                 }
               />
-              <em className="text-[11px] text-(--color-6) not-italic">
+              <em className="text-[11px] text-(--text-muted) not-italic">
                 {t('hints.password')}
               </em>
             </label>
@@ -237,26 +237,26 @@ export const AuthPage = () => {
   );
 
   return (
-    <div className="grid min-h-screen items-center gap-8 bg-(--color-0) px-6 py-6 text-(--color-10) md:px-8 lg:grid-cols-[minmax(260px,1fr)_minmax(320px,460px)] lg:gap-12 lg:px-12 dark:bg-[radial-gradient(circle_at_top_left,rgba(110,140,255,0.15),transparent_60%),radial-gradient(circle_at_bottom_right,rgba(84,190,142,0.15),transparent_55%),var(--color-0)]">
+    <div className="grid min-h-screen items-center gap-8 bg-(--bg-canvas) px-6 py-6 text-(--text-primary) md:px-8 lg:grid-cols-[minmax(260px,1fr)_minmax(320px,460px)] lg:gap-12 lg:px-12 dark:bg-[radial-gradient(circle_at_top_left,rgba(110,140,255,0.15),transparent_60%),radial-gradient(circle_at_bottom_right,rgba(84,190,142,0.15),transparent_55%),var(--bg-canvas)]">
       <section className="grid max-w-[520px] gap-3.5">
         <MdrHeading level={2} className="m-0">
           {t('title')}
         </MdrHeading>
         <MdrParagraph color="Muted">{t('subtitle')}</MdrParagraph>
         <div className="grid gap-3">
-          <div className="rounded-2xl border border-(--color-2) bg-(--color-1) px-4 py-3.5 shadow-(--shadow-md) dark:border-(--color-3) dark:shadow-[0_18px_38px_rgba(0,0,0,0.45)]">
-            <span className="text-xs font-semibold text-(--color-9) dark:text-(--color-10)">
+          <div className="rounded-2xl border border-(--bg-raised) bg-(--bg-panel) px-4 py-3.5 shadow-(--shadow-md) dark:border-(--border-default) dark:shadow-[0_18px_38px_rgba(0,0,0,0.45)]">
+            <span className="text-xs font-semibold text-(--text-primary) dark:text-(--text-primary)">
               {t('highlights.speedTitle')}
             </span>
-            <p className="mt-1.5 text-[13px] text-(--color-6) dark:text-(--color-8)">
+            <p className="mt-1.5 text-[13px] text-(--text-muted) dark:text-(--text-secondary)">
               {t('highlights.speedBody')}
             </p>
           </div>
-          <div className="rounded-2xl border border-(--color-2) bg-(--color-1) px-4 py-3.5 shadow-(--shadow-md) dark:border-(--color-3) dark:shadow-[0_18px_38px_rgba(0,0,0,0.45)]">
-            <span className="text-xs font-semibold text-(--color-9) dark:text-(--color-10)">
+          <div className="rounded-2xl border border-(--bg-raised) bg-(--bg-panel) px-4 py-3.5 shadow-(--shadow-md) dark:border-(--border-default) dark:shadow-[0_18px_38px_rgba(0,0,0,0.45)]">
+            <span className="text-xs font-semibold text-(--text-primary) dark:text-(--text-primary)">
               {t('highlights.workspaceTitle')}
             </span>
-            <p className="mt-1.5 text-[13px] text-(--color-6) dark:text-(--color-8)">
+            <p className="mt-1.5 text-[13px] text-(--text-muted) dark:text-(--text-secondary)">
               {t('highlights.workspaceBody')}
             </p>
           </div>
@@ -266,7 +266,7 @@ export const AuthPage = () => {
         <MdrPanel
           title={t('panel.title')}
           padding="Large"
-          className="grid gap-3.5 rounded-[18px] border border-black/8 bg-(--color-0) shadow-[0_18px_36px_rgba(0,0,0,0.12)] dark:border-(--color-3) dark:bg-(--color-1) dark:shadow-[0_24px_44px_rgba(0,0,0,0.55)]"
+          className="grid gap-3.5 rounded-[18px] border border-black/8 bg-(--bg-canvas) shadow-[0_18px_36px_rgba(0,0,0,0.12)] dark:border-(--border-default) dark:bg-(--bg-panel) dark:shadow-[0_24px_44px_rgba(0,0,0,0.55)]"
         >
           {error && <MdrMessage type="Danger" text={error} />}
           <MdrTabs
@@ -277,7 +277,7 @@ export const AuthPage = () => {
               setError(null);
             }}
           />
-          <div className="mt-1 flex items-center justify-between gap-3 text-xs text-(--color-6)">
+          <div className="mt-1 flex items-center justify-between gap-3 text-xs text-(--text-muted)">
             <span>{t('footer.hint')}</span>
             <MdrButton
               text={t('footer.backHome')}

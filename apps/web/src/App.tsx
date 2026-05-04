@@ -41,7 +41,9 @@ const ExportMirPage = lazy(() =>
 );
 
 const editorRouteFallback = (
-  <div className="px-4 py-3 text-xs text-(--color-7)">Loading editor...</div>
+  <div className="px-4 py-3 text-xs text-(--text-secondary)">
+    Loading editor...
+  </div>
 );
 
 const withEditorSuspense = (node: ReactNode) => (

@@ -1128,13 +1128,18 @@
         "disabled": "未包含",
         "selected": "当前选中",
         "updated": "更新时间",
-        "templates": "模板"
+        "templates": "模板",
+        "selectedTemplate": "当前：{{template}}"
       },
       "actions": {
+        "cancel": "取消",
         "include": "包含到导出",
         "included": "已包含到导出",
-        "save": "保存"
+        "save": "保存",
+        "switchTemplate": "切换模板"
       },
+      "templateSwitchTitle": "切换模板？",
+      "templateSwitchConfirm": "切换到 {{template}} 会替换当前编辑器内容。若正在编辑 LICENSE，许可证正文通常不应随意改动；只调整年份和版权主体等允许替换的信息。是否继续？",
       "empty": "请选择一个项目文件进行编辑。"
     },
     "i18n": {

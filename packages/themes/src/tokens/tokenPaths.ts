@@ -107,7 +107,7 @@ export const tokenPathToCssVariable = (
   path: ThemeTokenPath | string
 ): string => {
   if (path.startsWith('palette.')) {
-    return `--color-${kebabCase(path.replace(/^palette\./, ''))}`;
+    return `--palette-${kebabCase(path.replace(/^palette\./, ''))}`;
   }
 
   const knownSemanticVariable = SEMANTIC_CSS_VARIABLES[path];

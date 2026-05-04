@@ -128,20 +128,20 @@ function ProjectHome() {
   };
 
   return (
-    <div className="flex flex-col gap-[16px] p-[18px_20px] text-[var(--color-10)]">
+    <div className="flex flex-col gap-[16px] p-[18px_20px] text-(--text-primary)">
       <header className="flex items-center justify-between gap-[12px]">
         <div className="flex flex-col gap-[4px]">
           <h1 className="m-0 text-[18px] font-bold">
             {t('projectHome.title', { name: projectName })}
           </h1>
-          <p className="m-0 text-[12px] text-[var(--color-6)]">
+          <p className="m-0 text-[12px] text-(--text-muted)">
             {t('projectHome.subtitle')}
           </p>
         </div>
         <div className="inline-flex items-center gap-[6px]">
           <button
             type="button"
-            className="inline-flex items-center justify-center rounded-[10px] border-0 bg-transparent p-[4px] text-[var(--color-6)] hover:text-[var(--color-9)] disabled:cursor-not-allowed disabled:opacity-[0.45]"
+            className="inline-flex items-center justify-center rounded-[10px] border-0 bg-transparent p-[4px] text-(--text-muted) hover:text-(--text-primary) disabled:cursor-not-allowed disabled:opacity-[0.45]"
             aria-label={t('projectHome.actions.settings.label')}
             title={t('projectHome.actions.settings.label')}
             onClick={() =>
@@ -153,7 +153,7 @@ function ProjectHome() {
           </button>
           <button
             type="button"
-            className="inline-flex items-center justify-center rounded-[10px] border-0 bg-transparent p-[4px] text-[var(--color-6)] hover:text-[var(--color-9)] disabled:cursor-not-allowed disabled:opacity-[0.45]"
+            className="inline-flex items-center justify-center rounded-[10px] border-0 bg-transparent p-[4px] text-(--text-muted) hover:text-(--text-primary) disabled:cursor-not-allowed disabled:opacity-[0.45]"
             aria-label={t('projectHome.actions.projectInfo')}
             title={t('projectHome.actions.projectInfo')}
             onClick={() =>
@@ -168,26 +168,26 @@ function ProjectHome() {
 
       <section className="flex flex-col gap-[8px]">
         <div className="inline-flex items-center gap-[8px] text-[12px]">
-          <span className="text-[var(--color-6)]">
+          <span className="text-(--text-muted)">
             {t('projectHome.fields.id')}
           </span>
-          <span className="font-mono font-semibold text-[var(--color-9)]">
+          <span className="font-mono font-semibold text-(--text-primary)">
             {resolvedProjectId}
           </span>
         </div>
         <div className="inline-flex items-center gap-[8px] text-[12px]">
-          <span className="text-[var(--color-6)]">
+          <span className="text-(--text-muted)">
             {t('projectHome.fields.name')}
           </span>
-          <span className="font-mono font-semibold text-[var(--color-9)]">
+          <span className="font-mono font-semibold text-(--text-primary)">
             {projectName}
           </span>
         </div>
         <div className="inline-flex items-center gap-[8px] text-[12px]">
-          <span className="text-[var(--color-6)]">
+          <span className="text-(--text-muted)">
             {t('projectHome.fields.visibility', 'Visibility')}
           </span>
-          <span className="font-semibold text-[var(--color-9)]">
+          <span className="font-semibold text-(--text-primary)">
             {projectIsPublic
               ? t('projectHome.visibility.public', 'Public')
               : t('projectHome.visibility.private', 'Private')}
@@ -197,7 +197,7 @@ function ProjectHome() {
               href="/community"
               target="_blank"
               rel="noreferrer"
-              className="rounded-[8px] border border-[rgba(0,0,0,0.12)] px-[8px] py-[2px] text-[11px] text-[var(--color-8)] transition-colors duration-[150ms] ease-[ease] hover:text-[var(--color-10)]"
+              className="rounded-[8px] border border-[rgba(0,0,0,0.12)] px-[8px] py-[2px] text-[11px] text-(--text-secondary) transition-colors duration-[150ms] ease-[ease] hover:text-(--text-primary)"
             >
               {t('projectHome.visibility.openCommunity', 'Open Community')}
             </a>
@@ -212,7 +212,7 @@ function ProjectHome() {
               !token ||
               isPublishing
             }
-            className="inline-flex items-center gap-[4px] rounded-[8px] border border-[rgba(0,0,0,0.12)] bg-transparent px-[8px] py-[2px] text-[11px] text-[var(--color-8)] transition-colors duration-[150ms] ease-[ease] hover:text-[var(--color-10)] disabled:cursor-not-allowed disabled:opacity-[0.45]"
+            className="inline-flex items-center gap-[4px] rounded-[8px] border border-[rgba(0,0,0,0.12)] bg-transparent px-[8px] py-[2px] text-[11px] text-(--text-secondary) transition-colors duration-[150ms] ease-[ease] hover:text-(--text-primary) disabled:cursor-not-allowed disabled:opacity-[0.45]"
           >
             <Globe size={12} />
             {projectIsPublic
@@ -221,9 +221,7 @@ function ProjectHome() {
           </button>
         </div>
         {publishError && (
-          <p className="m-0 text-[11px] text-[var(--color-6)]">
-            {publishError}
-          </p>
+          <p className="m-0 text-[11px] text-(--text-muted)">{publishError}</p>
         )}
       </section>
 
@@ -232,18 +230,18 @@ function ProjectHome() {
           <button
             key={action.key}
             type="button"
-            className="group flex cursor-pointer items-center gap-[10px] rounded-[12px] border-0 bg-transparent p-[10px] text-left text-[var(--color-9)] transition-colors duration-[150ms] ease-[ease] hover:text-[var(--color-10)] disabled:cursor-not-allowed disabled:opacity-[0.45]"
+            className="group flex cursor-pointer items-center gap-[10px] rounded-[12px] border-0 bg-transparent p-[10px] text-left text-(--text-primary) transition-colors duration-[150ms] ease-[ease] hover:text-(--text-primary) disabled:cursor-not-allowed disabled:opacity-[0.45]"
             onClick={() => navigate(action.path)}
             disabled={!isValidProject}
           >
-            <span className="inline-flex h-[28px] w-[28px] flex-none items-center justify-center rounded-[10px] bg-[rgba(0,0,0,0.04)] text-[var(--color-7)] transition-colors duration-[150ms] ease-[ease] group-hover:bg-[rgba(0,0,0,0.08)] group-hover:text-[var(--color-9)] dark:bg-[rgba(255,255,255,0.06)] dark:group-hover:bg-[rgba(255,255,255,0.1)]">
+            <span className="inline-flex h-[28px] w-[28px] flex-none items-center justify-center rounded-[10px] bg-[rgba(0,0,0,0.04)] text-(--text-secondary) transition-colors duration-[150ms] ease-[ease] group-hover:bg-[rgba(0,0,0,0.08)] group-hover:text-(--text-primary) dark:bg-[rgba(255,255,255,0.06)] dark:group-hover:bg-[rgba(255,255,255,0.1)]">
               {action.icon}
             </span>
             <span className="flex min-w-0 flex-col gap-[2px]">
               <span className="text-[13px] font-semibold">
                 {t(`projectHome.actions.${action.key}.label`)}
               </span>
-              <span className="text-[11px] text-[var(--color-6)]">
+              <span className="text-[11px] text-(--text-muted)">
                 {t(`projectHome.actions.${action.key}.description`)}
               </span>
             </span>

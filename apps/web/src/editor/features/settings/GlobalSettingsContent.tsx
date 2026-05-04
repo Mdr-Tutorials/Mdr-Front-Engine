@@ -84,7 +84,7 @@ export const GlobalSettingsContent = ({
     if (!isProjectMode) return undefined;
     if (!canOverrideInProject(key)) {
       return (
-        <span className="rounded-full border border-[rgba(0,0,0,0.12)] bg-(--color-1) px-2.5 py-1 text-[11px] leading-[1.2] text-(--color-7) in-data-[theme='dark']:border-[rgba(255,255,255,0.16)] in-data-[theme='dark']:bg-[rgba(255,255,255,0.08)]">
+        <span className="rounded-full border border-[rgba(0,0,0,0.12)] bg-(--bg-panel) px-2.5 py-1 text-[11px] leading-[1.2] text-(--text-secondary) in-data-[theme='dark']:border-[rgba(255,255,255,0.16)] in-data-[theme='dark']:bg-[rgba(255,255,255,0.08)]">
           {t('settings.overrides.labels.globalOnly')}
         </span>
       );
@@ -98,8 +98,8 @@ export const GlobalSettingsContent = ({
           type="button"
           className={`rounded-full border px-2.5 py-1 text-[11px] transition-all duration-150 ease-[ease] ${
             enabled
-              ? 'border-transparent bg-(--color-9) text-(--color-0)'
-              : "border-[rgba(0,0,0,0.12)] bg-(--color-1) text-(--color-7) hover:border-[rgba(0,0,0,0.2)] hover:text-(--color-9) in-data-[theme='dark']:border-[rgba(255,255,255,0.16)] in-data-[theme='dark']:bg-[rgba(255,255,255,0.08)]"
+              ? 'border-transparent bg-(--text-primary) text-(--bg-canvas)'
+              : "border-[rgba(0,0,0,0.12)] bg-(--bg-panel) text-(--text-secondary) hover:border-[rgba(0,0,0,0.2)] hover:text-(--text-primary) in-data-[theme='dark']:border-[rgba(255,255,255,0.16)] in-data-[theme='dark']:bg-[rgba(255,255,255,0.08)]"
           }`}
           aria-pressed={enabled}
           onClick={() => onToggleOverride?.(key)}
@@ -394,7 +394,7 @@ export const GlobalSettingsContent = ({
                 onChange={(value) => updateValue('viewportWidth', value)}
                 disabled={!canEditValue('viewportWidth')}
               />
-              <span className="text-[12px] text-(--color-6)">×</span>
+              <span className="text-[12px] text-(--text-muted)">×</span>
               <MdrInput
                 size="Small"
                 value={String(resolveValue('viewportHeight'))}

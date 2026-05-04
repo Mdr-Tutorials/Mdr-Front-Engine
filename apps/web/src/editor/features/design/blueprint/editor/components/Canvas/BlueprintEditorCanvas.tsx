@@ -416,7 +416,7 @@ export function BlueprintEditorCanvas({
             style={{ transform: `scale(${scale})` }}
           >
             <div
-              className="BlueprintEditorCanvasArtboard relative overflow-auto overscroll-contain border border-(--border-default) bg-(--bg-canvas) shadow-(--shadow-lg) [scrollbar-gutter:stable_both-edges] **:data-[mir-missing=true]:outline **:data-[mir-missing=true]:outline-offset-2 **:data-[mir-missing=true]:outline-(--danger-color) **:data-[mir-missing=true]:outline-dashed **:data-[mir-selected=true]:outline-2 **:data-[mir-selected=true]:outline-offset-2 **:data-[mir-selected=true]:outline-(--accent-color)"
+              className="BlueprintEditorCanvasArtboard relative overflow-auto overscroll-contain border border-(--border-default) bg-(--bg-canvas) shadow-(--shadow-lg) **:data-[mir-missing=true]:outline **:data-[mir-missing=true]:outline-offset-2 **:data-[mir-missing=true]:outline-(--danger-color) **:data-[mir-missing=true]:outline-dashed **:data-[mir-selected=true]:outline-2 **:data-[mir-selected=true]:outline-offset-2 **:data-[mir-selected=true]:outline-(--accent-color)"
               style={{ width: canvasWidth, height: canvasHeight }}
             >
               {animationPreview.cssText ? (

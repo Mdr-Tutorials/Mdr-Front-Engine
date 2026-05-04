@@ -134,7 +134,7 @@ export const WithSearchAction: Story = {
             style={{
               marginTop: '12px',
               padding: '12px',
-              border: '1px solid var(--color-6)',
+              border: '1px solid var(--text-muted)',
               borderRadius: '6px',
             }}
           >
@@ -145,7 +145,7 @@ export const WithSearchAction: Story = {
                   padding: '8px 0',
                   borderBottom:
                     index < searchResults.length - 1
-                      ? '1px solid var(--color-6)'
+                      ? '1px solid var(--text-muted)'
                       : 'none',
                 }}
               >

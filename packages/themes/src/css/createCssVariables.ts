@@ -54,7 +54,7 @@ const addRgbChannelVariable = (
   tokens: ThemeTokenIndex,
   variables: Partial<ThemeCssVariableMap>
 ) => {
-  if (!cssVariable.startsWith('--color-')) {
+  if (!supportsRgbChannelVariable(cssVariable)) {
     return;
   }
 
@@ -65,6 +65,24 @@ const addRgbChannelVariable = (
   }
 
   variables[`${cssVariable}-rgb`] = colorValue;
+};
+
+const supportsRgbChannelVariable = (cssVariable: `--${string}`) => {
+  return (
+    cssVariable.startsWith('--palette-') ||
+    cssVariable.startsWith('--bg-') ||
+    cssVariable.startsWith('--text-') ||
+    cssVariable.startsWith('--border-') ||
+    cssVariable.startsWith('--accent-') ||
+    cssVariable.startsWith('--success-') ||
+    cssVariable.startsWith('--danger-') ||
+    cssVariable.startsWith('--warning-') ||
+    cssVariable.startsWith('--info-') ||
+    cssVariable.startsWith('--editor-') ||
+    cssVariable.startsWith('--inspector-') ||
+    cssVariable.startsWith('--node-') ||
+    cssVariable.startsWith('--home-')
+  );
 };
 
 const resolveColorValue = (

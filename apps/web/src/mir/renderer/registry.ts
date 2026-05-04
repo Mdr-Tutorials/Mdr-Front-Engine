@@ -89,7 +89,7 @@ class RuntimeComponentBoundary extends React.Component<
             border: '1px dashed rgba(0,0,0,0.25)',
             borderRadius: 8,
             fontSize: 11,
-            color: 'var(--color-7)',
+            color: 'var(--text-secondary)',
           },
         },
         `${this.props.typeName} (runtime fallback)`

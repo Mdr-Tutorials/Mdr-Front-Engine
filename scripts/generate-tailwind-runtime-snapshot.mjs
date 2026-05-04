@@ -14,6 +14,7 @@ const outputPath = path.join(
   'features',
   'design',
   'inspector',
+  'components',
   'classProtocol',
   'tailwind.runtime.snapshot.json'
 );

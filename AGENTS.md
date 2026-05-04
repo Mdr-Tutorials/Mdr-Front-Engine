@@ -154,7 +154,7 @@ flowchart TD
 
 1. 读写文档都要用 UTF-8 编码。
 2. 所有代码必须考虑可扩展性和健壮性。
-3. `@mdr/ui` 包下组件库使用 SCSS 进行样式编写，其他样式则用 Tailwind。要用最新的 Tailwind 4 写法，摒弃旧写法；尤其注意 Tailwind 当中关于 var 的写法，比如用 `text-(--color-0)` 而不是 `text-[var(color-0)]`。
+3. `@mdr/ui` 包下组件库使用 SCSS 进行样式编写，其他样式则用 Tailwind。要用最新的 Tailwind 4 写法，摒弃旧写法；尤其注意 Tailwind 当中关于 var 的写法，比如用 `text-(--text-primary)` 而不是 `text-[var(--text-primary)]`。
 4. 优先使用 `@/...` 导入同一个包下的代码，而不是使用相对路径。
 5. 为方便开发者看懂代码，当且仅当在重要模块的核心方法或核心组件前编写规范的文档注释，写明白模块的调用链路的逻辑。不要写无用注释。
 6. 如果文件过长，拆分。

@@ -37,7 +37,7 @@ export const AnimationEditorSvgFilterLibraryPanel = ({
   const { t } = useTranslation('editor');
 
   return (
-    <aside className="w-[340px] shrink-0 rounded-2xl border border-black/8 bg-(--color-0) p-4 max-[1280px]:w-full">
+    <aside className="w-[340px] shrink-0 rounded-2xl border border-black/8 bg-(--bg-canvas) p-4 max-[1280px]:w-full">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-sm font-semibold">
           {t('animationEditor.svgFilters.title')}
@@ -156,7 +156,7 @@ export const AnimationEditorSvgFilterLibraryPanel = ({
           </article>
         ))}
         {svgFilters.length === 0 ? (
-          <div className="rounded border border-dashed border-black/15 px-3 py-6 text-center text-sm text-(--color-6)">
+          <div className="rounded border border-dashed border-black/15 px-3 py-6 text-center text-sm text-(--text-muted)">
             {t('animationEditor.svgFilters.empty')}
           </div>
         ) : null}
