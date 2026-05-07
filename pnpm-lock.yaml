@@ -197,9 +197,6 @@ importers:
       react-dom:
         specifier: ^19.2.0
         version: 19.2.0(react@19.2.0)
-      react-flow:
-        specifier: ^1.0.3
-        version: 1.0.3
       react-hook-form:
         specifier: ^7.66.0
         version: 7.66.0(react@19.2.0)
@@ -249,24 +246,12 @@ importers:
       '@types/react-syntax-highlighter':
         specifier: ^15.5.13
         version: 15.5.13
-      '@typescript-eslint/eslint-plugin':
-        specifier: ^8.46.3
-        version: 8.46.3(@typescript-eslint/parser@8.46.3(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)
-      '@typescript-eslint/parser':
-        specifier: ^8.46.3
-        version: 8.46.3(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)
-      '@vitejs/plugin-react':
-        specifier: ^5.1.0
-        version: 5.1.0(rolldown-vite@7.1.14(@types/node@24.10.0)(esbuild@0.25.12)(jiti@2.6.1)(sass@1.93.3)(tsx@4.20.6))
       '@vitejs/plugin-react-swc':
         specifier: ^4.2.1
         version: 4.2.1(rolldown-vite@7.1.14(@types/node@24.10.0)(esbuild@0.25.12)(jiti@2.6.1)(sass@1.93.3)(tsx@4.20.6))
       '@vitest/coverage-v8':
         specifier: 3.2.4
         version: 3.2.4(vitest@3.2.4(@types/node@24.10.0)(jiti@2.6.1)(jsdom@27.1.0)(lightningcss@1.30.2)(sass@1.93.3)(tsx@4.20.6))
-      autoprefixer:
-        specifier: ^10.4.24
-        version: 10.4.24(postcss@8.5.6)
       eslint:
         specifier: ^9.39.1
         version: 9.39.1(jiti@2.6.1)
@@ -294,9 +279,6 @@ importers:
       sass:
         specifier: ^1.93.3
         version: 1.93.3
-      storybook:
-        specifier: ^9.1.16
-        version: 9.1.16(@testing-library/dom@10.4.1)(prettier@3.6.2)(rolldown-vite@7.1.14(@types/node@24.10.0)(esbuild@0.25.12)(jiti@2.6.1)(sass@1.93.3)(tsx@4.20.6))
       tailwindcss:
         specifier: ^4.1.18
         version: 4.1.18
@@ -2831,12 +2813,6 @@ packages:
         integrity: sha512-ycMEPrS3StOIeb87BT3/+bu+blEtyvwQ4zmo2IcJQy0Rd1DAAhKksA0iUZ3MYSpJtjlPhg0Eo6mvVS6ggPhRbw==,
       }
 
-  '@rolldown/pluginutils@1.0.0-beta.43':
-    resolution:
-      {
-        integrity: sha512-5Uxg7fQUCmfhax7FJke2+8B6cqgeUJUD9o2uXIKXhD+mG0mL6NObmVoi9wXEU1tY89mZKgAYA6fTbftx3q2ZPQ==,
-      }
-
   '@rolldown/pluginutils@1.0.0-beta.46':
     resolution:
       {
@@ -4180,15 +4156,6 @@ packages:
     peerDependencies:
       vite: ^4 || ^5 || ^6 || ^7
 
-  '@vitejs/plugin-react@5.1.0':
-    resolution:
-      {
-        integrity: sha512-4LuWrg7EKWgQaMJfnN+wcmbAW+VSsCmqGohftWjuct47bv8uE4n/nPpq4XjJPsxgq00GGG5J8dvBczp8uxScew==,
-      }
-    engines: { node: ^20.19.0 || >=22.12.0 }
-    peerDependencies:
-      vite: ^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
-
   '@vitejs/plugin-react@5.1.2':
     resolution:
       {
@@ -4722,16 +4689,6 @@ packages:
       }
     engines: { node: '>= 0.4' }
 
-  autoprefixer@10.4.24:
-    resolution:
-      {
-        integrity: sha512-uHZg7N9ULTVbutaIsDRoUkoS8/h3bdsmVJYZ5l3wv8Cp/6UIIoRDm90hZ+BwxUj/hGBEzLxdHNSKuFpn8WOyZw==,
-      }
-    engines: { node: ^10 || ^12 || >=14 }
-    hasBin: true
-    peerDependencies:
-      postcss: ^8.1.0
-
   available-typed-arrays@1.0.7:
     resolution:
       {
@@ -4764,13 +4721,6 @@ packages:
         integrity: sha512-Sg0xJUNDU1sJNGdfGWhVHX0kkZ+HWcvmVymJbj6NSgZZmW/8S9Y2HQ5euytnIgakgxN6papOAWiwDo1ctFDcoQ==,
       }
     hasBin: true
-
-  better-opn@3.0.2:
-    resolution:
-      {
-        integrity: sha512-aVNobHnJqLiUelTaHat9DZ1qM2w0C0Eym4LPI/3JxOnSokGVdsl1T1kN7TFvsEAD8G47A6VKQ0TVHqbBnYMJlQ==,
-      }
-    engines: { node: '>=12.0.0' }
 
   bidi-js@1.0.3:
     resolution:
@@ -5536,13 +5486,6 @@ packages:
       }
     engines: { node: '>= 0.4' }
 
-  define-lazy-prop@2.0.0:
-    resolution:
-      {
-        integrity: sha512-Ds09qNh8yw3khSjiJjiUInaGX9xlqZDY7JVryGxdxV7NPeuqQfplOpQ66yJFZut3jLa5zOwkXw1g9EI2uKh4Og==,
-      }
-    engines: { node: '>=8' }
-
   define-lazy-prop@3.0.0:
     resolution:
       {
@@ -5819,14 +5762,6 @@ packages:
       {
         integrity: sha512-SOp9Phqvqn7jtEUxPWdWfWoLmyt2VaJ6MpvP9Comy1MceMXqE6bxvaTu4iaxpYYPzhny28Lc+M87/c2cPK6lDg==,
       }
-
-  esbuild-register@3.6.0:
-    resolution:
-      {
-        integrity: sha512-H2/S7Pm8a9CL1uhp9OvjwrBh5Pvx0H8qVOxNu8Wed9Y7qv56MPtq+GGM8RJpq6glYJn9Wspr8uw7l55uyinNeg==,
-      }
-    peerDependencies:
-      esbuild: '>=0.12 <1'
 
   esbuild@0.21.5:
     resolution:
@@ -6148,12 +6083,6 @@ packages:
     resolution:
       {
         integrity: sha512-LaI+KaX2NFkfn1ZGHoKCmcfv7yrZsC3b8NtWsTVQeHkq4F27vI5igUuO53sxqDEa2gNQMHFPmpojDw/1zmUK7w==,
-      }
-
-  fraction.js@5.3.4:
-    resolution:
-      {
-        integrity: sha512-1X1NTtiJphryn/uLQz3whtY6jK3fTqoE3ohKs0tT+Ujr1W59oopxmoEh7Lu5p6vBaPbgoM0bzveAW4Qi5RyWDQ==,
       }
 
   fs.realpath@1.0.0:
@@ -6761,14 +6690,6 @@ packages:
         integrity: sha512-AAB9hiomQs5DXWcRB1rqsxGUstbRroFOPPVAomNk/3XHR5JyEZChOyTWe2oayKnsSsr/kcGqF+z6yuH6HHpN0A==,
       }
 
-  is-docker@2.2.1:
-    resolution:
-      {
-        integrity: sha512-F+i2BKsFrH66iaUFc0woD8sLy8getkwTwtOBjvs56Cx4CgJDeKQeqfz8wAYiSb8JOprWhHH5p77PbmYCvvUuXQ==,
-      }
-    engines: { node: '>=8' }
-    hasBin: true
-
   is-docker@3.0.0:
     resolution:
       {
@@ -6985,13 +6906,6 @@ packages:
         integrity: sha512-oG7cgbmg5kLYae2N5IVd3jm2s+vldjxJzK1pcu9LfpGuQ93MQSzo0okvRna+7y5ifrD+20FE8FvjusyGaz14fw==,
       }
     engines: { node: '>=18' }
-
-  is-wsl@2.2.0:
-    resolution:
-      {
-        integrity: sha512-fKzAra0rGJUUBwGBgNkHZuToZcn+TtXHpeCgmkMJMMYx1sQDYaCSyjJBSCa2nH1DGm7s3n1oBnohoVTBaN7Lww==,
-      }
-    engines: { node: '>=8' }
 
   is-wsl@3.1.0:
     resolution:
@@ -7868,13 +7782,6 @@ packages:
       }
     engines: { node: '>=18' }
 
-  open@8.4.2:
-    resolution:
-      {
-        integrity: sha512-7x81NCL719oNbsq/3mh+hVrAWmFuEYUqrq/Iw3kUzH8ReypT9QQ0BLoJS7/G9k6N81XjW4qHWtjWwe/9eLy1EQ==,
-      }
-    engines: { node: '>=12' }
-
   optionator@0.9.4:
     resolution:
       {
@@ -8145,12 +8052,6 @@ packages:
       }
     engines: { node: '>= 0.4' }
 
-  postcss-value-parser@4.2.0:
-    resolution:
-      {
-        integrity: sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==,
-      }
-
   postcss@8.5.6:
     resolution:
       {
@@ -8397,12 +8298,6 @@ packages:
       }
     peerDependencies:
       react: ^19.2.3
-
-  react-flow@1.0.3:
-    resolution:
-      {
-        integrity: sha512-Rx4Oqqbe9y7NyrUGzCrmtNvuGuMJBVjfIeMFuwbtbMc9f22sUSmxMjIA0c8r6Z7iMtB1zOWoGkTgfpmmpH9ReQ==,
-      }
 
   react-hook-form@7.66.0:
     resolution:
@@ -9177,18 +9072,6 @@ packages:
     resolution:
       {
         integrity: sha512-oK0t0jEogiKKfv5Z1ao4Of99+xWw1TMUGuGRYDQS4kp2yyBsJQEgu7NI7OLYsCDI6gzt5p3RPtl1lqdeVLUi8A==,
-      }
-    hasBin: true
-    peerDependencies:
-      prettier: ^2 || ^3
-    peerDependenciesMeta:
-      prettier:
-        optional: true
-
-  storybook@9.1.16:
-    resolution:
-      {
-        integrity: sha512-339U14K6l46EFyRvaPS2ZlL7v7Pb+LlcXT8KAETrGPxq8v1sAjj2HAOB6zrlAK3M+0+ricssfAwsLCwt7Eg8TQ==,
       }
     hasBin: true
     peerDependencies:
@@ -11930,8 +11813,6 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.0-beta.41': {}
 
-  '@rolldown/pluginutils@1.0.0-beta.43': {}
-
   '@rolldown/pluginutils@1.0.0-beta.46': {}
 
   '@rolldown/pluginutils@1.0.0-beta.53': {}
@@ -12707,18 +12588,6 @@ snapshots:
     transitivePeerDependencies:
       - '@swc/helpers'
 
-  '@vitejs/plugin-react@5.1.0(rolldown-vite@7.1.14(@types/node@24.10.0)(esbuild@0.25.12)(jiti@2.6.1)(sass@1.93.3)(tsx@4.20.6))':
-    dependencies:
-      '@babel/core': 7.28.5
-      '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.28.5)
-      '@babel/plugin-transform-react-jsx-source': 7.27.1(@babel/core@7.28.5)
-      '@rolldown/pluginutils': 1.0.0-beta.43
-      '@types/babel__core': 7.20.5
-      react-refresh: 0.18.0
-      vite: rolldown-vite@7.1.14(@types/node@24.10.0)(esbuild@0.25.12)(jiti@2.6.1)(sass@1.93.3)(tsx@4.20.6)
-    transitivePeerDependencies:
-      - supports-color
-
   '@vitejs/plugin-react@5.1.2(vite@7.3.0(@types/node@24.10.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.20.6))':
     dependencies:
       '@babel/core': 7.28.5
@@ -12768,14 +12637,6 @@ snapshots:
       '@vitest/utils': 3.2.4
       chai: 5.3.3
       tinyrainbow: 2.0.0
-
-  '@vitest/mocker@3.2.4(rolldown-vite@7.1.14(@types/node@24.10.0)(esbuild@0.25.12)(jiti@2.6.1)(sass@1.93.3)(tsx@4.20.6))':
-    dependencies:
-      '@vitest/spy': 3.2.4
-      estree-walker: 3.0.3
-      magic-string: 0.30.21
-    optionalDependencies:
-      vite: rolldown-vite@7.1.14(@types/node@24.10.0)(esbuild@0.25.12)(jiti@2.6.1)(sass@1.93.3)(tsx@4.20.6)
 
   '@vitest/mocker@3.2.4(vite@7.2.2(@types/node@24.10.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.93.3)(tsx@4.20.6))':
     dependencies:
@@ -13172,15 +13033,6 @@ snapshots:
 
   async-function@1.0.0: {}
 
-  autoprefixer@10.4.24(postcss@8.5.6):
-    dependencies:
-      browserslist: 4.28.1
-      caniuse-lite: 1.0.30001766
-      fraction.js: 5.3.4
-      picocolors: 1.1.1
-      postcss: 8.5.6
-      postcss-value-parser: 4.2.0
-
   available-typed-arrays@1.0.7:
     dependencies:
       possible-typed-array-names: 1.1.0
@@ -13192,10 +13044,6 @@ snapshots:
   base64-js@1.5.1: {}
 
   baseline-browser-mapping@2.9.11: {}
-
-  better-opn@3.0.2:
-    dependencies:
-      open: 8.4.2
 
   bidi-js@1.0.3:
     dependencies:
@@ -13678,8 +13526,6 @@ snapshots:
       es-errors: 1.3.0
       gopd: 1.2.0
 
-  define-lazy-prop@2.0.0: {}
-
   define-lazy-prop@3.0.0: {}
 
   define-properties@1.2.1:
@@ -13883,13 +13729,6 @@ snapshots:
   es-toolkit@1.41.0: {}
 
   es6-promise@3.3.1: {}
-
-  esbuild-register@3.6.0(esbuild@0.25.12):
-    dependencies:
-      debug: 4.4.3(supports-color@8.1.1)
-      esbuild: 0.25.12
-    transitivePeerDependencies:
-      - supports-color
 
   esbuild@0.21.5:
     optionalDependencies:
@@ -14183,8 +14022,6 @@ snapshots:
   format@0.2.2: {}
 
   fp-ts@2.16.11: {}
-
-  fraction.js@5.3.4: {}
 
   fs.realpath@1.0.0: {}
 
@@ -14534,8 +14371,6 @@ snapshots:
 
   is-decimal@2.0.1: {}
 
-  is-docker@2.2.1: {}
-
   is-docker@3.0.0: {}
 
   is-extglob@2.1.1: {}
@@ -14636,10 +14471,6 @@ snapshots:
       get-intrinsic: 1.3.0
 
   is-what@5.5.0: {}
-
-  is-wsl@2.2.0:
-    dependencies:
-      is-docker: 2.2.1
 
   is-wsl@3.1.0:
     dependencies:
@@ -15197,12 +15028,6 @@ snapshots:
       is-inside-container: 1.0.0
       wsl-utils: 0.1.0
 
-  open@8.4.2:
-    dependencies:
-      define-lazy-prop: 2.0.0
-      is-docker: 2.2.1
-      is-wsl: 2.2.0
-
   optionator@0.9.4:
     dependencies:
       deep-is: 0.1.4
@@ -15356,8 +15181,6 @@ snapshots:
 
   possible-typed-array-names@1.1.0: {}
 
-  postcss-value-parser@4.2.0: {}
-
   postcss@8.5.6:
     dependencies:
       nanoid: 3.3.11
@@ -15485,8 +15308,6 @@ snapshots:
     dependencies:
       react: 19.2.3
       scheduler: 0.27.0
-
-  react-flow@1.0.3: {}
 
   react-hook-form@7.66.0(react@19.2.0):
     dependencies:
@@ -16053,30 +15874,6 @@ snapshots:
       - react
       - react-dom
       - utf-8-validate
-
-  storybook@9.1.16(@testing-library/dom@10.4.1)(prettier@3.6.2)(rolldown-vite@7.1.14(@types/node@24.10.0)(esbuild@0.25.12)(jiti@2.6.1)(sass@1.93.3)(tsx@4.20.6)):
-    dependencies:
-      '@storybook/global': 5.0.0
-      '@testing-library/jest-dom': 6.9.1
-      '@testing-library/user-event': 14.6.1(@testing-library/dom@10.4.1)
-      '@vitest/expect': 3.2.4
-      '@vitest/mocker': 3.2.4(rolldown-vite@7.1.14(@types/node@24.10.0)(esbuild@0.25.12)(jiti@2.6.1)(sass@1.93.3)(tsx@4.20.6))
-      '@vitest/spy': 3.2.4
-      better-opn: 3.0.2
-      esbuild: 0.25.12
-      esbuild-register: 3.6.0(esbuild@0.25.12)
-      recast: 0.23.11
-      semver: 7.7.3
-      ws: 8.18.3
-    optionalDependencies:
-      prettier: 3.6.2
-    transitivePeerDependencies:
-      - '@testing-library/dom'
-      - bufferutil
-      - msw
-      - supports-color
-      - utf-8-validate
-      - vite
 
   stream-browserify@3.0.0:
     dependencies:
