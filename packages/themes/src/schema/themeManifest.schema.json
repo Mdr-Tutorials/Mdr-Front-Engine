@@ -4,15 +4,7 @@
   "title": "MdrFrontEngine Theme Manifest",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "schemaVersion",
-    "id",
-    "name",
-    "source",
-    "mode",
-    "palette",
-    "semantic"
-  ],
+  "required": ["schemaVersion", "id", "name", "source", "mode", "semantic"],
   "properties": {
     "schemaVersion": {
       "const": "1.0"
@@ -33,9 +25,6 @@
     },
     "mode": {
       "enum": ["light", "dark", "adaptive"]
-    },
-    "palette": {
-      "$ref": "#/$defs/palette"
     },
     "semantic": {
       "$ref": "#/$defs/tokenTree"
@@ -81,90 +70,6 @@
     }
   },
   "$defs": {
-    "palette": {
-      "type": "object",
-      "additionalProperties": {
-        "$ref": "#/$defs/colorScale"
-      }
-    },
-    "colorScale": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "0",
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10",
-        "11",
-        "12",
-        "13"
-      ],
-      "properties": {
-        "0": {
-          "type": "string",
-          "minLength": 1
-        },
-        "1": {
-          "type": "string",
-          "minLength": 1
-        },
-        "2": {
-          "type": "string",
-          "minLength": 1
-        },
-        "3": {
-          "type": "string",
-          "minLength": 1
-        },
-        "4": {
-          "type": "string",
-          "minLength": 1
-        },
-        "5": {
-          "type": "string",
-          "minLength": 1
-        },
-        "6": {
-          "type": "string",
-          "minLength": 1
-        },
-        "7": {
-          "type": "string",
-          "minLength": 1
-        },
-        "8": {
-          "type": "string",
-          "minLength": 1
-        },
-        "9": {
-          "type": "string",
-          "minLength": 1
-        },
-        "10": {
-          "type": "string",
-          "minLength": 1
-        },
-        "11": {
-          "type": "string",
-          "minLength": 1
-        },
-        "12": {
-          "type": "string",
-          "minLength": 1
-        },
-        "13": {
-          "type": "string",
-          "minLength": 1
-        }
-      }
-    },
     "stringMap": {
       "type": "object",
       "additionalProperties": {

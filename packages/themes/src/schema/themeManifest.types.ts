@@ -51,7 +51,6 @@ export type ThemeManifest = {
   author?: string;
   source: ThemeSource;
   mode: ThemeMode;
-  palette: ThemePalette;
   semantic: ThemeSemanticTokens;
   product?: ThemeProductTokens;
   typography?: ThemeTypographyTokens;

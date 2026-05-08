@@ -14,22 +14,6 @@ import {
 import { defaultFallbackTheme } from '../tokens/defaultFallback';
 
 const THEME_ID_PATTERN = /^[a-z][a-z0-9]*(\.[a-z0-9][a-z0-9-]*)+$/;
-const THEME_SCALE_STEPS = [
-  '0',
-  '1',
-  '2',
-  '3',
-  '4',
-  '5',
-  '6',
-  '7',
-  '8',
-  '9',
-  '10',
-  '11',
-  '12',
-  '13',
-] as const;
 
 export type ValidateThemeManifestOptions = {
   fallbackManifest?: ThemeManifest;
@@ -82,7 +66,14 @@ export const validateThemeManifest = (
     });
   }
 
-  validatePalette(input.palette, '$.palette', errors);
+  if (input.palette !== undefined) {
+    errors.push({
+      path: '$.palette',
+      message:
+        'Theme manifests must not define palette; the palette is fixed and shared.',
+    });
+  }
+
   validateTokenTree(input.semantic, '$.semantic', errors);
 
   for (const optionalSection of [
@@ -183,52 +174,6 @@ const validateTokenTree = (
       path: childPath,
       message: 'Theme token value must be a string, number, or nested object.',
     });
-  }
-};
-
-const validatePalette = (
-  value: unknown,
-  path: string,
-  errors: ThemeValidationIssue[]
-) => {
-  if (!isThemeTokenTree(value)) {
-    errors.push({
-      path,
-      message: 'Theme palette must be an object.',
-    });
-    return;
-  }
-
-  for (const [scaleName, scaleValue] of Object.entries(value)) {
-    const scalePath = `${path}.${scaleName}`;
-
-    if (!isThemeTokenTree(scaleValue)) {
-      errors.push({
-        path: scalePath,
-        message: 'Theme palette scale must be an object.',
-      });
-      continue;
-    }
-
-    for (const step of THEME_SCALE_STEPS) {
-      if (typeof scaleValue[step] !== 'string' || scaleValue[step] === '') {
-        errors.push({
-          path: `${scalePath}.${step}`,
-          message: `Palette scale "${scaleName}" must define color step ${step}.`,
-        });
-      }
-    }
-
-    for (const step of Object.keys(scaleValue)) {
-      if (
-        !THEME_SCALE_STEPS.includes(step as (typeof THEME_SCALE_STEPS)[number])
-      ) {
-        errors.push({
-          path: `${scalePath}.${step}`,
-          message: `Palette scale "${scaleName}" can only define steps 0 through 13.`,
-        });
-      }
-    }
   }
 };
 

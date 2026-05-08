@@ -6,9 +6,9 @@ import type {
   ThemeTokenSection,
   ThemeTokenTree,
 } from '../schema/themeManifest.types';
+import { DEFAULT_PALETTE } from '../palette/defaultPalette';
 
 export const THEME_TOKEN_SECTIONS = [
-  'palette',
   'semantic',
   'product',
   'typography',
@@ -16,7 +16,7 @@ export const THEME_TOKEN_SECTIONS = [
   'shadow',
   'density',
   'motion',
-] as const satisfies readonly ThemeTokenSection[];
+] as const satisfies readonly Exclude<ThemeTokenSection, 'palette'>[];
 
 const SEMANTIC_CSS_VARIABLES: Record<string, string> = {
   'semantic.surface.canvas': '--bg-canvas',
@@ -89,6 +89,8 @@ export const flattenThemeTokens = (
   manifest: ThemeManifest
 ): ThemeTokenIndex => {
   const tokens: Partial<ThemeTokenIndex> = {};
+
+  flattenTokenTree('palette', DEFAULT_PALETTE as ThemeTokenTree, tokens);
 
   for (const section of THEME_TOKEN_SECTIONS) {
     const sectionValue = manifest[section];

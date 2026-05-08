@@ -29,6 +29,10 @@ export {
   officialThemes,
 } from './tokens/defaultFallback';
 export {
+  DEFAULT_PALETTE,
+  DEFAULT_PALETTE_SCALES,
+} from './palette/defaultPalette';
+export {
   THEME_TOKEN_SECTIONS,
   extractReferencePath,
   flattenThemeTokens,
