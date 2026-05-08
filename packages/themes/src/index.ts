@@ -24,7 +24,9 @@ export type {
 } from './schema/themeManifest.types';
 export {
   defaultFallbackTheme,
+  officialMonochromeDarkHighContrastTheme,
   officialMonochromeDarkTheme,
+  officialMonochromeLightHighContrastTheme,
   officialMonochromeLightTheme,
   officialThemes,
 } from './tokens/defaultFallback';

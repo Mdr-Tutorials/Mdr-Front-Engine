@@ -1,0 +1,166 @@
+{
+  "schemaVersion": "1.0",
+  "id": "official.monochrome.dark-high-contrast",
+  "name": "Monochrome Dark High Contrast",
+  "author": "MdrFrontEngine",
+  "source": "official",
+  "mode": "dark",
+  "semantic": {
+    "surface": {
+      "canvas": "{palette.gray.13}",
+      "panel": "{palette.gray.13}",
+      "raised": "{palette.gray.13}"
+    },
+    "text": {
+      "primary": "{palette.gray.0}",
+      "secondary": "{palette.gray.0}",
+      "muted": "{palette.gray.2}",
+      "inverse": "{palette.gray.13}"
+    },
+    "border": {
+      "subtle": "{palette.gray.0}",
+      "default": "{palette.gray.0}",
+      "strong": "{palette.gray.0}"
+    },
+    "accent": {
+      "default": "{palette.gray.0}",
+      "hover": "{palette.gray.2}"
+    },
+    "success": {
+      "default": "{palette.green.4}",
+      "hover": "{palette.green.2}",
+      "subtle": "{palette.green.12}",
+      "subtleHover": "{palette.green.11}"
+    },
+    "danger": {
+      "default": "{palette.red.4}",
+      "hover": "{palette.red.2}",
+      "subtle": "{palette.red.12}",
+      "subtleHover": "{palette.red.11}"
+    },
+    "warning": {
+      "default": "{palette.yellow.4}",
+      "hover": "{palette.yellow.2}",
+      "subtle": "{palette.yellow.12}",
+      "subtleHover": "{palette.yellow.11}"
+    },
+    "info": {
+      "default": "{palette.blue.4}",
+      "hover": "{palette.blue.2}",
+      "subtle": "{palette.blue.12}",
+      "subtleHover": "{palette.blue.11}"
+    }
+  },
+  "product": {
+    "editor": {
+      "canvasBackground": "{semantic.surface.canvas}",
+      "selectionOutline": "{semantic.accent.default}",
+      "dropIndicator": "{semantic.accent.default}"
+    },
+    "editorBar": {
+      "background": "{palette.gray.0}",
+      "icon": "{palette.gray.13}",
+      "iconHover": "{palette.gray.13}",
+      "iconHoverBackground": "rgb(0 0 0 / 0.18)"
+    },
+    "inspector": {
+      "rowHover": "{palette.gray.11}",
+      "fieldLabel": "{semantic.text.primary}",
+      "fieldControl": "{semantic.text.primary}"
+    },
+    "nodeGraph": {
+      "nodeBackground": "{semantic.surface.panel}",
+      "nodeBorder": "{semantic.border.strong}",
+      "portColor": "{semantic.text.primary}"
+    },
+    "home": {
+      "logo": "{palette.gray.0}",
+      "heroText": "{palette.gray.0}",
+      "heroHighlight": "{palette.gray.0}",
+      "subtitle": "{palette.gray.2}",
+      "navIcon": "{palette.gray.0}",
+      "navIconHoverBg": "{palette.gray.11}",
+      "navIconHoverText": "{palette.gray.0}",
+      "profileBg": "{palette.gray.13}",
+      "profileHoverShadow": "0 0 0 2px rgb(255 255 255 / 1)",
+      "footerText": "{palette.gray.0}"
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "ui": "Inter, 'HarmonyOS Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      "mono": "JetBrains Mono, Consolas, monospace",
+      "canvas": "{typography.fontFamily.ui}"
+    },
+    "fontSize": {
+      "micro": "10px",
+      "caption": "11px",
+      "2xs": "10px",
+      "xs": "12px",
+      "sm": "13px",
+      "md": "14px",
+      "lg": "16px",
+      "xl": "18px",
+      "2xl": "20px",
+      "3xl": "24px",
+      "4xl": "30px",
+      "5xl": "36px",
+      "hero": "64px"
+    },
+    "fontWeight": {
+      "regular": "500",
+      "medium": "600",
+      "semibold": "700",
+      "bold": "800",
+      "extrabold": "900"
+    },
+    "lineHeight": {
+      "tight": "1",
+      "compact": "1.3",
+      "editor": "1.45",
+      "normal": "1.5"
+    }
+  },
+  "radius": {
+    "none": "0",
+    "sm": "4px",
+    "md": "8px",
+    "lg": "12px",
+    "full": "9999px"
+  },
+  "shadow": {
+    "sm": "0 0 0 1px rgb(255 255 255 / 1)",
+    "md": "0 0 0 2px rgb(255 255 255 / 1)",
+    "lg": "0 0 0 3px rgb(255 255 255 / 1)"
+  },
+  "density": {
+    "spacing": {
+      "none": "0",
+      "xs": "4px",
+      "sm": "8px",
+      "md": "16px",
+      "lg": "24px",
+      "xl": "32px",
+      "2xl": "48px"
+    },
+    "controlHeight": {
+      "sm": "24px",
+      "md": "28px",
+      "lg": "32px"
+    }
+  },
+  "motion": {
+    "duration": {
+      "fast": "150ms",
+      "normal": "300ms"
+    },
+    "easing": {
+      "standard": "ease"
+    }
+  },
+  "metadata": {
+    "description": "High contrast dark theme with maximum text and border contrast for accessibility.",
+    "tags": ["official", "monochrome", "dark", "high-contrast", "a11y"],
+    "license": "MIT"
+  }
+}
