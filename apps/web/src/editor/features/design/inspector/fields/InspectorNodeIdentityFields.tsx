@@ -9,12 +9,12 @@ import {
 import { MdrInput, MdrRichTextEditor } from '@mdr/ui';
 import { useState } from 'react';
 import { InspectorRow } from '@/editor/features/design/inspector/components/InspectorRow';
-import { getTextFieldLabel } from '@/editor/features/design/BlueprintEditorInspector.utils';
+import { getTextFieldLabel } from '@/editor/features/design/blueprint/editor/controller/inspectorUtils';
 import {
   getNodeTextFieldMode,
   updateNodeTextField,
   updateNodeTextFieldMode,
-} from '@/editor/features/design/blueprintText';
+} from '@/editor/features/design/blueprint/editor/model/blueprintText';
 import { useInspectorContext } from '@/editor/features/design/inspector/InspectorContext';
 
 const INSPECTOR_ACTION_ICON_BUTTON_CLASS =

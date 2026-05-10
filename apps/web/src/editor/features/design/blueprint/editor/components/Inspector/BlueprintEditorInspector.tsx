@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { ChevronRight, SlidersHorizontal } from 'lucide-react';
 import { IconPickerModal } from '@/editor/features/design/inspector/components/IconPickerModal';
 import { MountedCssEditorModal } from '@/editor/features/design/inspector/components/classProtocol/MountedCssEditorModal';
@@ -8,7 +8,7 @@ import { InspectorBasicTab } from '@/editor/features/design/inspector/tabs/Inspe
 import { InspectorStyleTab } from '@/editor/features/design/inspector/tabs/InspectorStyleTab';
 import { InspectorDataTab } from '@/editor/features/design/inspector/tabs/InspectorDataTab';
 import { InspectorCodeTab } from '@/editor/features/design/inspector/tabs/InspectorCodeTab';
-import { useBlueprintEditorInspectorController } from '@/editor/features/design/BlueprintEditorInspector.controller';
+import { useBlueprintEditorInspectorController } from '@/editor/features/design/blueprint/editor/controller';
 import type { InspectorTab } from '@/editor/features/design/inspector/InspectorContext.types';
 import {
   headerCollapseButtonClassName,

@@ -1,5 +1,5 @@
-﻿import { MdrCard, MdrDiv, MdrPanel, MdrSection, MdrText } from '@mdr/ui';
-import type { ComponentGroup } from '@/editor/features/design/BlueprintEditor.types';
+import { MdrCard, MdrDiv, MdrPanel, MdrSection, MdrText } from '@mdr/ui';
+import type { ComponentGroup } from '@/editor/features/design/blueprint/editor/model/types';
 import { buildVariants } from '@/editor/features/design/blueprint/data/helpers';
 import {
   CARD_VARIANTS,

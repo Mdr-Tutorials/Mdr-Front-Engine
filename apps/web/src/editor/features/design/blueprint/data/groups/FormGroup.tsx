@@ -1,4 +1,4 @@
-﻿import {
+import {
   MdrColorPicker,
   MdrDatePicker,
   MdrDateRangePicker,
@@ -17,7 +17,7 @@
   MdrTimePicker,
   MdrVerificationCode,
 } from '@mdr/ui';
-import type { ComponentGroup } from '@/editor/features/design/BlueprintEditor.types';
+import type { ComponentGroup } from '@/editor/features/design/blueprint/editor/model/types';
 import { SIZE_OPTIONS } from '@/editor/features/design/blueprint/data/options';
 import { REGION_OPTIONS } from '@/editor/features/design/blueprint/data/sampleData';
 

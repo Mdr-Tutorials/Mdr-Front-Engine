@@ -6,7 +6,7 @@ import type {
   InspectorUpdateNode,
 } from '@/editor/features/design/inspector/panels/types';
 import type { MountedCssEntry } from '@/editor/features/design/inspector/components/classProtocol/mountedCss';
-import type { EditableTextField } from '@/editor/features/design/blueprintText';
+import type { EditableTextField } from '@/editor/features/design/blueprint/editor/model/blueprintText';
 
 export type InspectorTab = 'basic' | 'style' | 'data' | 'code';
 

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { executeBlueprintGraph } from '@/editor/features/design/BlueprintGraphExecutor';
+import { executeBlueprintGraph } from '@/editor/features/design/blueprint/editor/model/graphExecutor';
 
 describe('executeBlueprintGraph', () => {
   afterEach(() => {

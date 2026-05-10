@@ -1,14 +1,14 @@
 import {
   createNodeFromPaletteItem,
   createNodeIdFactory,
-} from '@/editor/features/design/BlueprintEditor.palette';
+} from '@/editor/features/design/blueprint/editor/model/palette';
 import {
   findNodeById,
   insertAfterById,
   insertChildAtIndex,
   insertIntoMirDoc,
   supportsChildrenForNode,
-} from '@/editor/features/design/BlueprintEditor.tree';
+} from '@/editor/features/design/blueprint/editor/model/tree';
 import type { ComponentNode, MIRDocument } from '@/core/types/engine.types';
 import { materializeMirRoot, normalizeTreeToUiGraph } from '@/mir/graph';
 import { normalizeRoutePath } from '@/editor/store/routeManifest';

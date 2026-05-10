@@ -1,6 +1,6 @@
 import React from 'react';
 import type { ComponentAdapter } from '@/mir/renderer/registry';
-import type { ComponentPreviewItem } from '@/editor/features/design/BlueprintEditor.types';
+import type { ComponentPreviewItem } from '@/editor/features/design/blueprint/editor/model/types';
 import type {
   CanonicalExternalComponent,
   ExternalCanonicalGroup,

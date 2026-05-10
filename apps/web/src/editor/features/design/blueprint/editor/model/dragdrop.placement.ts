@@ -1,7 +1,7 @@
 import {
   getTreeDropPlacement,
   type TreeDropPlacement,
-} from '@/editor/features/design/BlueprintEditor.tree';
+} from '@/editor/features/design/blueprint/editor/model/tree';
 import type { DragOverData } from './dragdrop.types';
 
 export const getOverNodeId = (

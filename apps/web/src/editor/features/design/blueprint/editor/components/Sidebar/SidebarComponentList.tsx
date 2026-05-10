@@ -6,8 +6,8 @@ import {
   getDefaultStatusIndex,
   getPreviewScale,
   isWideComponent,
-} from '@/editor/features/design/BlueprintEditor.data';
-import type { ComponentGroup } from '@/editor/features/design/BlueprintEditor.types';
+} from '@/editor/features/design/blueprint/editor/model/data';
+import type { ComponentGroup } from '@/editor/features/design/blueprint/editor/model/types';
 import {
   DraggablePreviewCard,
   DraggableVariantCard,

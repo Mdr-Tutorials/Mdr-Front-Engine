@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { DEFAULT_PREVIEW_SCALE } from '@/editor/features/design/BlueprintEditor.data';
+import { DEFAULT_PREVIEW_SCALE } from '@/editor/features/design/blueprint/editor/model/data';
 
 type SidebarPreviewFrameProps = {
   scale?: number;

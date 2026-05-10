@@ -6,7 +6,7 @@ import {
 import { IconButtonGroup } from '@/editor/features/design/inspector/components/IconButtonGroup';
 import { ColorInput } from '@/editor/features/design/inspector/components/ColorInput';
 import { UnitInput } from '@/editor/features/design/inspector/components/UnitInput';
-import { getPrimaryTextField } from '@/editor/features/design/blueprintText';
+import { getPrimaryTextField } from '@/editor/features/design/blueprint/editor/model/blueprintText';
 import { useInspectorContext } from '@/editor/features/design/inspector/InspectorContext';
 import type {
   InspectorPanelDefinition,

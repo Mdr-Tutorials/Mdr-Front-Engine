@@ -1,4 +1,4 @@
-﻿import {
+import {
   type KeyboardEvent,
   type PointerEvent,
   useCallback,
@@ -21,7 +21,7 @@ import {
 } from '@/mir/renderer/registry';
 import { normalizeAnimationDefinition } from '@/editor/features/animation/animationEditorModel';
 import { buildAnimationPreviewSnapshotFromTimelines } from '@/editor/features/animation/preview/animationPreview';
-import { VIEWPORT_ZOOM_RANGE } from '@/editor/features/design/BlueprintEditor.data';
+import { VIEWPORT_ZOOM_RANGE } from '@/editor/features/design/blueprint/editor/model/data';
 import { CanvasPlaceholder } from './CanvasPlaceholder';
 import { CanvasRouteDiagnostics } from './CanvasRouteDiagnostics';
 import {

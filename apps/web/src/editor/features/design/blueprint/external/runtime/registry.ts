@@ -13,7 +13,7 @@ import {
 import type {
   ComponentGroup,
   ComponentPreviewItem,
-} from '@/editor/features/design/BlueprintEditor.types';
+} from '@/editor/features/design/blueprint/editor/model/types';
 import type {
   CanonicalExternalComponent,
   ExternalCanonicalGroup,

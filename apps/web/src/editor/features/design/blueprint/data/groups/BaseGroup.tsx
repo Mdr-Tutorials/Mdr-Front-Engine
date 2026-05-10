@@ -1,4 +1,4 @@
-﻿import {
+import {
   MdrButton,
   MdrButtonLink,
   MdrHeading,
@@ -9,7 +9,7 @@
   MdrText,
 } from '@mdr/ui';
 import { Sparkles } from 'lucide-react';
-import type { ComponentGroup } from '@/editor/features/design/BlueprintEditor.types';
+import type { ComponentGroup } from '@/editor/features/design/blueprint/editor/model/types';
 import { buildVariants } from '@/editor/features/design/blueprint/data/helpers';
 import {
   BUTTON_CATEGORIES,

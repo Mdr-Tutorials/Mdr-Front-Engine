@@ -1,4 +1,4 @@
-﻿import type { ComponentPreviewOption } from '@/editor/features/design/BlueprintEditor.types';
+import type { ComponentPreviewOption } from '@/editor/features/design/blueprint/editor/model/types';
 
 export const HEADING_LEVELS = [1, 2, 3, 4, 5, 6] as const;
 export const BUTTON_CATEGORIES = [

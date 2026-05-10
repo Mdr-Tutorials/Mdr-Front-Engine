@@ -6,7 +6,7 @@ import {
   isAncestorOf,
   removeNodeByIdWithNode,
   supportsChildrenForNode,
-} from '@/editor/features/design/BlueprintEditor.tree';
+} from '@/editor/features/design/blueprint/editor/model/tree';
 import type { MIRDocument } from '@/core/types/engine.types';
 import { materializeMirRoot, normalizeTreeToUiGraph } from '@/mir/graph';
 import { getOverNodeId, resolveTreePlacement } from './dragdrop.placement';

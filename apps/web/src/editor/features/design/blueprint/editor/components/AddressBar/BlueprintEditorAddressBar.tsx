@@ -1,9 +1,9 @@
-﻿import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { MdrButton, MdrInput } from '@mdr/ui';
 import { Link2, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { RouteItem } from '@/editor/features/design/BlueprintEditor.types';
+import type { RouteItem } from '@/editor/features/design/blueprint/editor/model/types';
 
 type BlueprintEditorAddressBarProps = {
   currentPath: string;

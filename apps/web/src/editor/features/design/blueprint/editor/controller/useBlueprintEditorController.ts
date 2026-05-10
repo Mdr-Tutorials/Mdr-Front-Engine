@@ -1,4 +1,4 @@
-﻿import {
+import {
   type KeyboardEvent,
   useCallback,
   useEffect,
@@ -9,11 +9,11 @@
 import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
-import { VIEWPORT_ZOOM_RANGE } from '@/editor/features/design/BlueprintEditor.data';
-import { useBlueprintAutosave } from '@/editor/features/design/BlueprintEditor.autosave';
-import { useBlueprintDragDrop } from '@/editor/features/design/BlueprintEditor.dragdrop';
-import { executeBlueprintGraph } from '@/editor/features/design/BlueprintGraphExecutor';
-import { createNodeIdFactory } from '@/editor/features/design/BlueprintEditor.palette';
+import { VIEWPORT_ZOOM_RANGE } from '@/editor/features/design/blueprint/editor/model/data';
+import { useBlueprintAutosave } from '@/editor/features/design/blueprint/editor/model/autosave';
+import { useBlueprintDragDrop } from '@/editor/features/design/blueprint/editor/model/dragdrop';
+import { executeBlueprintGraph } from '@/editor/features/design/blueprint/editor/model/graphExecutor';
+import { createNodeIdFactory } from '@/editor/features/design/blueprint/editor/model/palette';
 import type { ComponentNode, MIRDocument } from '@/core/types/engine.types';
 import { materializeMirRoot, normalizeTreeToUiGraph } from '@/mir/graph';
 import {
@@ -24,7 +24,7 @@ import {
   insertIntoMirDoc,
   moveChildById,
   removeNodeById,
-} from '@/editor/features/design/BlueprintEditor.tree';
+} from '@/editor/features/design/blueprint/editor/model/tree';
 import { normalizeAnimationDefinition } from '@/editor/features/animation/animationEditorModel';
 import {
   getNavigateLinkKind,
@@ -42,7 +42,7 @@ import {
   flattenRouteItems,
   normalizeRoutePath,
 } from '@/editor/store/routeManifest';
-import type { AutosaveMode } from '@/editor/features/design/BlueprintEditor.autosave';
+import type { AutosaveMode } from '@/editor/features/design/blueprint/editor/model/autosave';
 
 const CAPABILITY_MIR_DOCUMENT_UPDATE = 'core.mir.graph.replace@1.0';
 const CAPABILITY_ROUTE_MANIFEST_UPDATE = 'core.route.manifest.update@1.0';

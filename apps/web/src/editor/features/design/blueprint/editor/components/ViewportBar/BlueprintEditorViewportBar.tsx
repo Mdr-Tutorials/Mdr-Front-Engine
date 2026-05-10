@@ -1,11 +1,11 @@
-﻿import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { MdrInput, MdrPopover, MdrSlider } from '@mdr/ui';
 import { ChevronDown, RotateCcw } from 'lucide-react';
 import {
   VIEWPORT_DEVICE_PRESETS,
   VIEWPORT_QUICK_PRESETS,
   VIEWPORT_ZOOM_RANGE,
-} from '@/editor/features/design/BlueprintEditor.data';
+} from '@/editor/features/design/blueprint/editor/model/data';
 
 type BlueprintEditorViewportBarProps = {
   viewportWidth: string;

@@ -1,11 +1,11 @@
-﻿import type { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type {
   ComponentGroup,
   ComponentPreviewItem,
   ComponentPreviewOption,
   ComponentPreviewStatus,
   ComponentPreviewVariant,
-} from '@/editor/features/design/BlueprintEditor.types';
+} from '@/editor/features/design/blueprint/editor/model/types';
 import { DEFAULT_PREVIEW_SCALE } from './viewport';
 
 const WIDE_PREVIEW_SCALE_BOOST = 1.18;

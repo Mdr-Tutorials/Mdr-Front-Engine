@@ -1,4 +1,4 @@
-﻿import {
+import {
   MdrAnchorNavigation,
   MdrBreadcrumb,
   MdrButton,
@@ -12,7 +12,7 @@
   MdrTabs,
   MdrText,
 } from '@mdr/ui';
-import type { ComponentGroup } from '@/editor/features/design/BlueprintEditor.types';
+import type { ComponentGroup } from '@/editor/features/design/blueprint/editor/model/types';
 import { buildVariants } from '@/editor/features/design/blueprint/data/helpers';
 import {
   NAV_COLUMNS,

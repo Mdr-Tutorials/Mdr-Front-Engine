@@ -1,5 +1,5 @@
 import type { MIRDocument } from '@/core/types/engine.types';
-import type { TreeDropPlacement } from '@/editor/features/design/BlueprintEditor.tree';
+import type { TreeDropPlacement } from '@/editor/features/design/blueprint/editor/model/tree';
 
 export type TreeDropHint = {
   overNodeId: string;

@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import type { ComponentNode } from '@/core/types/engine.types';
@@ -24,13 +24,13 @@ import { getExternalRuntimeMetaByType } from '@/editor/features/design/blueprint
 import { resolveInspectorPanels } from '@/editor/features/design/inspector/panels/registry';
 import { resolveMountedCssEntries } from '@/editor/features/design/inspector/components/classProtocol/mountedCss';
 import { useMountedCssEditorState } from '@/editor/features/design/inspector/components/classProtocol/useMountedCssEditorState';
-import { getPrimaryTextField } from '@/editor/features/design/blueprintText';
+import { getPrimaryTextField } from '@/editor/features/design/blueprint/editor/model/blueprintText';
 import {
   collectIds,
   findNodeById,
   renameNodeId,
   updateNodeById,
-} from '@/editor/features/design/BlueprintEditorInspector.utils';
+} from '@/editor/features/design/blueprint/editor/controller/inspectorUtils';
 
 let persistedExpandedPanels: Record<string, boolean> = {};
 

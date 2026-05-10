@@ -1,5 +1,5 @@
-﻿import type { ComponentNode } from '@/core/types/engine.types';
-import type { TextFieldKey } from '@/editor/features/design/blueprintText';
+import type { ComponentNode } from '@/core/types/engine.types';
+import type { TextFieldKey } from '@/editor/features/design/blueprint/editor/model/blueprintText';
 
 export const findNodeById = (
   node: ComponentNode,

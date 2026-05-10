@@ -1,4 +1,4 @@
-﻿import {
+import {
   ANCHOR_ITEMS,
   BREADCRUMB_ITEMS,
   CHECKLIST_ITEMS,
@@ -17,10 +17,10 @@
   TIMELINE_ITEMS,
   TREE_DATA,
   TREE_SELECT_OPTIONS,
-} from '@/editor/features/design/BlueprintEditor.data';
+} from '@/editor/features/design/blueprint/editor/model/data';
 import type { ComponentNode, MIRDocument } from '@/core/types/engine.types';
 import { materializeMirRoot } from '@/mir/graph';
-import { createRadixNodeFromPaletteItem } from '@/editor/features/design/BlueprintEditor.radix';
+import { createRadixNodeFromPaletteItem } from '@/editor/features/design/blueprint/editor/model/radix';
 import { buildLayoutPatternNode } from '@/editor/features/design/blueprint/layoutPatterns';
 import { getComponentItemById } from '@/editor/features/design/blueprint/registry';
 

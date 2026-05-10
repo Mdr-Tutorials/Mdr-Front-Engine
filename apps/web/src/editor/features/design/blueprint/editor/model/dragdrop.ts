@@ -8,7 +8,7 @@ import {
   findNodeById,
   isAncestorOf,
   supportsChildrenForNode,
-} from '@/editor/features/design/BlueprintEditor.tree';
+} from '@/editor/features/design/blueprint/editor/model/tree';
 import { materializeMirRoot } from '@/mir/graph';
 import { getOverNodeId, resolveTreePlacement } from './dragdrop.placement';
 import { applyTreeSortDragEnd } from './dragdrop.treeMove';

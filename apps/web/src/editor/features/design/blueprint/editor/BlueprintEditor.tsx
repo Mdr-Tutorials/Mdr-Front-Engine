@@ -1,18 +1,15 @@
 import { DndContext, DragOverlay } from '@dnd-kit/core';
-import { BlueprintEditorAddressBar } from './BlueprintEditorAddressBar';
-import { BlueprintAssistantPanel } from './blueprint/editor/components/Assistant';
-import { BlueprintEditorCanvas } from './BlueprintEditorCanvas';
-import { BlueprintEditorComponentTree } from './BlueprintEditorComponentTree';
-import { useBlueprintEditorController } from './BlueprintEditor.controller';
-import { BlueprintEditorInspector } from './BlueprintEditorInspector';
-import { BlueprintEditorSaveIndicator } from './BlueprintEditorSaveIndicator';
-import { BlueprintEditorSidebar } from './BlueprintEditorSidebar';
-import { useExternalLibraryRuntime } from './useExternalLibraryRuntime';
-import { BlueprintEditorViewportBar } from './BlueprintEditorViewportBar';
 import { useEditorShortcut } from '@/editor/shortcuts';
-
-export { createNodeFromPaletteItem } from './BlueprintEditor.palette';
-export { getTreeDropPlacement } from './BlueprintEditor.tree';
+import { BlueprintAssistantPanel } from './components/Assistant';
+import { BlueprintEditorAddressBar } from './components/AddressBar';
+import { BlueprintEditorCanvas } from './components/Canvas';
+import { BlueprintEditorComponentTree } from './components/ComponentTree';
+import { BlueprintEditorInspector } from './components/Inspector';
+import { BlueprintEditorSaveIndicator } from './components/SaveIndicator';
+import { BlueprintEditorSidebar } from './components/Sidebar';
+import { BlueprintEditorViewportBar } from './components/ViewportBar';
+import { useBlueprintEditorController } from './controller';
+import { useExternalLibraryRuntime } from './runtime';
 
 function BlueprintEditor() {
   const {
