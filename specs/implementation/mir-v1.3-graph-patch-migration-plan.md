@@ -27,7 +27,7 @@
 5. 前端本地 apply、undo/redo、autosave 和 AI apply 使用同一套受限 JSON Patch 语义。
 6. 后端废弃整文档 `PUT` 保存；新建文档由 create/init 流程写入默认 v1.3 模板。
 7. 后端 `PATCH` 是文档内容变更的唯一入口，真正执行 command 的 `forwardOps`，校验 revision、path 白名单和 MIR v1.3 graph 语义后落库。
-8. 旧项目可以作废；不保留短期 `ui.root` 兼容运行态。
+8. 旧项目作废；不保留 `ui.root` 运行态或自动转换入口。
 
 ## 2. 非目标
 
@@ -94,19 +94,18 @@ export interface MIRDocument {
 ```ts
 createDefaultMirDocV13(): MIRDocument
 materializeUiTree(graph: UiGraph): ComponentNode
-normalizeTreeToUiGraph(root: ComponentNode): UiGraph
-normalizeMirDocument(source: unknown): MIRDocument
+parseMirDocumentV13(source: unknown): MirParseResult<MIRDocument>
 validateUiGraph(graph: UiGraph): MirDiagnostic[]
 applyMirPatch(doc: MIRDocument, ops: PatchOp[]): PatchApplyResult<MIRDocument>
 invertGraphMutation(...): PatchOp[]
 ```
 
-迁移规则：
+Hard cutover 规则：
 
-1. `resolveMirDocument` 和 `normalizeMirDocument` 输出必须是 v1.3 graph-only。
-2. 输入中发现旧 `ui.root` 时，只允许一次性转换为 `ui.graph`；输出不得保留 `ui.root`。
+1. `resolveMirDocument` 和 `parseMirDocumentV13` 只接受 v1.3 graph-only。
+2. 输入中发现旧 `ui.root` 时返回 retired/invalid MIR 结构化错误，不自动转换为 `ui.graph`。
 3. 前端类型层面移除 `MIRDocument.ui.root`。
-4. 需要树形结构的旧函数，优先改为 graph-native；短期必须保留时，只能接收显式 `ComponentNode` 参数，不能从 `doc.ui.root` 读取。
+4. 需要树形结构的函数必须改为 graph-native；仅允许纯函数接收显式 `ComponentNode` 作为渲染输入，不得从保存态 `doc.ui.root` 读取。
 
 ### 4.2 Graph Helper 能力
 
@@ -144,11 +143,10 @@ cloneSubtree(graph, rootId, idFactory)
 
 目标：
 
-1. `mirDoc` 永远是 v1.3 graph-only。
-2. `setMirDoc` 对任意输入执行 normalize 到 v1.3。
-3. `updateMirDoc` 不再作为长期业务 API；保留期间也必须 normalize 输出。
-4. 新增 `dispatchCommand(command)`，本地先 dry-run patch，再 apply，再入历史栈和 outbox。
-5. undo/redo 读取 command history 的 `reverseOps/forwardOps`，不直接调用树编辑函数。
+1. Store 不暴露 `mirDoc`、`setMirDoc`、`updateMirDoc`。
+2. Active MIR 只能从 workspace document 派生。
+3. 新增 `dispatchCommand(command)`，本地先 dry-run patch，再 apply，再入历史栈和 outbox。
+4. undo/redo 读取 command history 的 `reverseOps/forwardOps`，不直接调用树编辑函数。
 
 推荐 store API：
 
@@ -204,7 +202,7 @@ const canonical = buildCanonicalIRFromRoot(root, mirDoc, bag);
 - `apps/web/src/editor/features/design/blueprint/editor/components/ComponentTree/*`
 - `apps/web/src/editor/features/design/inspector/**/*`
 
-迁移方式：
+改造方式：
 
 1. 查节点：`graph.nodesById[nodeId]`。
 2. 查 children：`graph.childIdsById[parentId]`。
@@ -495,7 +493,7 @@ JSON Pointer 规则：
 2. 后端 `SaveDocumentContent` 不再作为 API 写入口；若内部测试仍需要初始化文档，改为专用 seed/create helper。
 3. 后端 `SaveProjectMIR` 不再接受编辑器 autosave 调用。
 4. 带整份 MIR 的保存请求返回结构化错误，提示使用 command PATCH。
-5. legacy project mir 读取时返回“需要迁移/作废”的结构化错误，或在开发期重建为默认 v1.3 文档。
+5. legacy project mir 读取时返回 retired single-MIR 结构化错误；不在运行态自动重建为默认 v1.3 文档。
 
 ### 5.6 Operation Log 与 Undo/Redo
 
@@ -555,7 +553,7 @@ core.mir.animation.binding.cleanup@1.0
 需要覆盖：
 
 1. 默认文档是 v1.3 graph-only。
-2. 旧 `ui.root` 输入只会被一次性转换，输出不含 `ui.root`。
+2. 旧 `ui.root` 输入返回 retired/invalid MIR 结构化错误。
 3. `materializeUiTree` 输出与预期树一致。
 4. graph helper 的 insert/remove/move/rename/update 保持 graph 一致。
 5. validator 能发现 root 缺失、child 缺失、环、孤儿、重复父级。
@@ -563,7 +561,7 @@ core.mir.animation.binding.cleanup@1.0
 7. autosave 只发送 PATCH command，不发送整份 MIR。
 8. AI command dry-run 禁止 `/ui/root`。
 
-旧断言迁移：
+旧断言替换：
 
 ```ts
 // old
@@ -607,7 +605,7 @@ const firstNode = firstId ? mirDoc.ui.graph.nodesById[firstId] : undefined;
 ### Gate B：前端 graph-only 基础
 
 1. 类型切到 v1.3。
-2. 实现 graph normalize/materialize/mutations/jsonPatch。
+2. 实现 graph parse/materialize/mutations/jsonPatch。
 3. store 保存 graph-only。
 4. renderer/generator 入口 materialize。
 
@@ -617,7 +615,7 @@ const firstNode = firstId ? mirDoc.ui.graph.nodesById[firstId] : undefined;
 - 默认新建文档不含 `ui.root`。
 - validator 拒绝 `ui.root`。
 
-### Gate C：Blueprint/Inspector 完整迁移
+### Gate C：Blueprint/Inspector 完整改造
 
 1. Blueprint 增删改移全部写 graph helper。
 2. Inspector 字段编辑产生 command。
@@ -667,9 +665,9 @@ mirDoc.ui.root
 
 允许出现的位置仅限：
 
-1. 一次性旧输入导入测试。
-2. 文档中说明旧格式。
-3. validator 中的拒绝逻辑。
+1. 文档中说明旧格式。
+2. validator 中的拒绝逻辑。
+3. retired single-MIR 错误测试。
 
 最终检查：
 

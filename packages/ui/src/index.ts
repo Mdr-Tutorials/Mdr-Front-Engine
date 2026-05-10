@@ -17,6 +17,7 @@ export { default as MdrIcon } from './icon/MdrIcon';
 export { default as MdrText } from './text/MdrText';
 export { default as MdrHeading } from './text/MdrHeading';
 export { default as MdrParagraph } from './text/MdrParagraph';
+export { default as MdrKbd } from './text/MdrKbd';
 
 export { default as MdrInput } from './input/MdrInput';
 export { default as MdrTextarea } from './input/MdrTextarea';

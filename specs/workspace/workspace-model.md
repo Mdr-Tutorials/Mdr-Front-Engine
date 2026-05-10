@@ -134,10 +134,10 @@ interface WorkspaceStore {
 3. 每条命令记录 `documentId`（若适用）
 4. Command 必须可序列化，支持离线队列与重放
 
-## 7. 迁移清单（Draft）
+## 7. Hard Cutover 清单（Draft）
 
 1. 抽离 `mirDoc` 访问点
-2. Blueprint/Inspector/Export 迁移到 workspace 模型
+2. Blueprint/Inspector/Export 切换到 workspace 模型
 3. NodeGraph/动画仅完成协议接线（capability + envelope 校验），不落地编辑器 UI
 4. 删除所有 `mirDoc` 状态字段与调用点
 5. CI 增加检查，阻止单文档模型回流

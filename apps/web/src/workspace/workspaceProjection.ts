@@ -1,0 +1,360 @@
+import type {
+  StableWorkspaceDocument,
+  StableWorkspaceSnapshot,
+  WorkspaceDocumentId,
+  WorkspaceValidationIssue,
+} from './types';
+import { validateStableWorkspaceSnapshot } from './validateWorkspaceVfs';
+
+export type WorkspaceSourceFileRole =
+  | 'workspace-manifest'
+  | 'route-manifest'
+  | 'document'
+  | 'asset'
+  | 'generated-index';
+
+export type WorkspaceSourceFile = {
+  path: string;
+  content: string;
+  mime: string;
+  role: WorkspaceSourceFileRole;
+  documentId?: WorkspaceDocumentId;
+};
+
+export type WorkspaceProjectionIssueCode =
+  | 'WKS_PROJECTION_INVALID_WORKSPACE'
+  | 'WKS_PROJECTION_FILE_MISSING'
+  | 'WKS_PROJECTION_JSON_INVALID'
+  | 'WKS_PROJECTION_MANIFEST_INVALID'
+  | 'WKS_PROJECTION_DOCUMENT_MISSING';
+
+export type WorkspaceProjectionIssue = {
+  code: WorkspaceProjectionIssueCode;
+  path: string;
+  message: string;
+  documentId?: WorkspaceDocumentId;
+  cause?: unknown;
+  validationIssues?: WorkspaceValidationIssue[];
+};
+
+export type WorkspaceProjectionWriteResult =
+  | {
+      ok: true;
+      files: WorkspaceSourceFile[];
+    }
+  | {
+      ok: false;
+      issues: WorkspaceProjectionIssue[];
+    };
+
+export type WorkspaceProjectionReadResult =
+  | {
+      ok: true;
+      snapshot: StableWorkspaceSnapshot;
+    }
+  | {
+      ok: false;
+      issues: WorkspaceProjectionIssue[];
+    };
+
+type WorkspaceDocumentManifestEntry = Omit<
+  StableWorkspaceDocument,
+  'content'
+> & {
+  contentPath: string;
+};
+
+type WorkspaceManifest = {
+  version: '1';
+  workspace: {
+    id: StableWorkspaceSnapshot['id'];
+    name?: StableWorkspaceSnapshot['name'];
+    workspaceRev: StableWorkspaceSnapshot['workspaceRev'];
+    routeRev: StableWorkspaceSnapshot['routeRev'];
+    opSeq: StableWorkspaceSnapshot['opSeq'];
+  };
+  treeRootId: StableWorkspaceSnapshot['treeRootId'];
+  treeById: StableWorkspaceSnapshot['treeById'];
+  documents: Record<WorkspaceDocumentId, WorkspaceDocumentManifestEntry>;
+  activeDocumentId?: StableWorkspaceSnapshot['activeDocumentId'];
+  activeRouteNodeId?: StableWorkspaceSnapshot['activeRouteNodeId'];
+};
+
+const WORKSPACE_MANIFEST_PATH = '.mfe/workspace.json';
+const ROUTE_MANIFEST_PATH = '.mfe/route-manifest.json';
+const DOCUMENT_ROOT_PATH = '.mfe/documents';
+
+const normalizeSourcePath = (path: string): string =>
+  path.replaceAll('\\', '/').replace(/^\/+/, '');
+
+const toSourcePath = (path: string): string => {
+  const normalized = normalizeSourcePath(path);
+  return normalized.startsWith('.mfe/') ? normalized : `.mfe/${normalized}`;
+};
+
+const documentContentPath = (document: StableWorkspaceDocument): string => {
+  const normalizedDocumentPath = normalizeSourcePath(document.path);
+  return `${DOCUMENT_ROOT_PATH}/${normalizedDocumentPath}`;
+};
+
+const jsonStringifyStable = (value: unknown): string => {
+  const sortValue = (input: unknown): unknown => {
+    if (Array.isArray(input)) return input.map(sortValue);
+    if (!input || typeof input !== 'object') return input;
+    return Object.keys(input)
+      .sort()
+      .reduce<Record<string, unknown>>((result, key) => {
+        result[key] = sortValue((input as Record<string, unknown>)[key]);
+        return result;
+      }, {});
+  };
+
+  return `${JSON.stringify(sortValue(value), null, 2)}\n`;
+};
+
+const serializeDocumentContent = (
+  document: StableWorkspaceDocument
+): Pick<WorkspaceSourceFile, 'content' | 'mime'> => {
+  if (typeof document.content === 'string') {
+    return {
+      content: document.content.endsWith('\n')
+        ? document.content
+        : `${document.content}\n`,
+      mime: 'text/plain',
+    };
+  }
+
+  return {
+    content: jsonStringifyStable(document.content),
+    mime: 'application/json',
+  };
+};
+
+const parseJsonFile = <T>(
+  file: WorkspaceSourceFile | undefined,
+  path: string,
+  issues: WorkspaceProjectionIssue[]
+): T | undefined => {
+  if (!file) {
+    issues.push({
+      code: 'WKS_PROJECTION_FILE_MISSING',
+      path,
+      message: 'Required workspace source file is missing.',
+    });
+    return undefined;
+  }
+
+  try {
+    return JSON.parse(file.content) as T;
+  } catch (cause) {
+    issues.push({
+      code: 'WKS_PROJECTION_JSON_INVALID',
+      path,
+      message: 'Workspace source file must contain valid JSON.',
+      cause,
+    });
+    return undefined;
+  }
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const createManifest = (
+  snapshot: StableWorkspaceSnapshot
+): WorkspaceManifest => {
+  const documents = Object.entries(snapshot.docsById).reduce<
+    Record<WorkspaceDocumentId, WorkspaceDocumentManifestEntry>
+  >((result, [documentId, document]) => {
+    const { content: _content, ...metadata } = document;
+    result[documentId] = {
+      ...metadata,
+      contentPath: documentContentPath(document),
+    };
+    return result;
+  }, {});
+
+  return {
+    version: '1',
+    workspace: {
+      id: snapshot.id,
+      ...(snapshot.name ? { name: snapshot.name } : {}),
+      workspaceRev: snapshot.workspaceRev,
+      routeRev: snapshot.routeRev,
+      opSeq: snapshot.opSeq,
+    },
+    treeRootId: snapshot.treeRootId,
+    treeById: snapshot.treeById,
+    documents,
+    ...(snapshot.activeDocumentId
+      ? { activeDocumentId: snapshot.activeDocumentId }
+      : {}),
+    ...(snapshot.activeRouteNodeId
+      ? { activeRouteNodeId: snapshot.activeRouteNodeId }
+      : {}),
+  };
+};
+
+export const projectWorkspaceToMfeFiles = (
+  snapshot: StableWorkspaceSnapshot
+): WorkspaceProjectionWriteResult => {
+  const validation = validateStableWorkspaceSnapshot(snapshot);
+  if (!validation.valid) {
+    return {
+      ok: false,
+      issues: [
+        {
+          code: 'WKS_PROJECTION_INVALID_WORKSPACE',
+          path: '/',
+          message: 'Workspace snapshot must be valid before projection.',
+          validationIssues: validation.issues,
+        },
+      ],
+    };
+  }
+
+  const files: WorkspaceSourceFile[] = [
+    {
+      path: WORKSPACE_MANIFEST_PATH,
+      content: jsonStringifyStable(createManifest(snapshot)),
+      mime: 'application/json',
+      role: 'workspace-manifest',
+    },
+    {
+      path: ROUTE_MANIFEST_PATH,
+      content: jsonStringifyStable(snapshot.routeManifest),
+      mime: 'application/json',
+      role: 'route-manifest',
+    },
+  ];
+
+  Object.values(snapshot.docsById).forEach((document) => {
+    files.push({
+      path: documentContentPath(document),
+      ...serializeDocumentContent(document),
+      role: 'document',
+      documentId: document.id,
+    });
+  });
+
+  return {
+    ok: true,
+    files: files.sort((left, right) => left.path.localeCompare(right.path)),
+  };
+};
+
+export const readWorkspaceFromMfeFiles = (
+  files: WorkspaceSourceFile[]
+): WorkspaceProjectionReadResult => {
+  const issues: WorkspaceProjectionIssue[] = [];
+  const filesByPath = new Map(
+    files.map((file) => [toSourcePath(file.path), file])
+  );
+
+  const manifest = parseJsonFile<WorkspaceManifest>(
+    filesByPath.get(WORKSPACE_MANIFEST_PATH),
+    WORKSPACE_MANIFEST_PATH,
+    issues
+  );
+  const routeManifest = parseJsonFile<StableWorkspaceSnapshot['routeManifest']>(
+    filesByPath.get(ROUTE_MANIFEST_PATH),
+    ROUTE_MANIFEST_PATH,
+    issues
+  );
+
+  if (!manifest || !routeManifest) return { ok: false, issues };
+
+  if (
+    manifest.version !== '1' ||
+    !isRecord(manifest.workspace) ||
+    !isRecord(manifest.documents)
+  ) {
+    return {
+      ok: false,
+      issues: [
+        ...issues,
+        {
+          code: 'WKS_PROJECTION_MANIFEST_INVALID',
+          path: WORKSPACE_MANIFEST_PATH,
+          message: 'Workspace manifest does not match the projection format.',
+        },
+      ],
+    };
+  }
+
+  const docsById = Object.entries(manifest.documents).reduce<
+    StableWorkspaceSnapshot['docsById']
+  >((result, [documentId, documentManifest]) => {
+    const contentFile = filesByPath.get(documentManifest.contentPath);
+    if (!contentFile) {
+      issues.push({
+        code: 'WKS_PROJECTION_DOCUMENT_MISSING',
+        path: documentManifest.contentPath,
+        message: 'Workspace document content file is missing.',
+        documentId,
+      });
+      return result;
+    }
+
+    let content: unknown = contentFile.content;
+    if (contentFile.mime === 'application/json') {
+      try {
+        content = JSON.parse(contentFile.content);
+      } catch (cause) {
+        issues.push({
+          code: 'WKS_PROJECTION_JSON_INVALID',
+          path: contentFile.path,
+          message: 'Workspace document content must contain valid JSON.',
+          documentId,
+          cause,
+        });
+        return result;
+      }
+    }
+
+    const { contentPath: _contentPath, ...metadata } = documentManifest;
+    result[documentId] = {
+      ...metadata,
+      id: documentId,
+      content,
+    };
+    return result;
+  }, {});
+
+  if (issues.length) return { ok: false, issues };
+
+  const snapshot: StableWorkspaceSnapshot = {
+    id: manifest.workspace.id,
+    ...(manifest.workspace.name ? { name: manifest.workspace.name } : {}),
+    workspaceRev: manifest.workspace.workspaceRev,
+    routeRev: manifest.workspace.routeRev,
+    opSeq: manifest.workspace.opSeq,
+    treeRootId: manifest.treeRootId,
+    treeById: manifest.treeById,
+    docsById,
+    routeManifest,
+    ...(manifest.activeDocumentId
+      ? { activeDocumentId: manifest.activeDocumentId }
+      : {}),
+    ...(manifest.activeRouteNodeId
+      ? { activeRouteNodeId: manifest.activeRouteNodeId }
+      : {}),
+  };
+
+  const validation = validateStableWorkspaceSnapshot(snapshot);
+  if (!validation.valid) {
+    return {
+      ok: false,
+      issues: [
+        {
+          code: 'WKS_PROJECTION_INVALID_WORKSPACE',
+          path: WORKSPACE_MANIFEST_PATH,
+          message: 'Projected workspace snapshot failed VFS validation.',
+          validationIssues: validation.issues,
+        },
+      ],
+    };
+  }
+
+  return { ok: true, snapshot };
+};

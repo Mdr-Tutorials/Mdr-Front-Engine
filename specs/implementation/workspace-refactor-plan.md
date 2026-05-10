@@ -20,16 +20,17 @@
 
 ## 当前进展（2026-02-08）
 
-1. 后端已具备 workspace 首建与 legacy 自愈能力（新项目自动建 workspace，老项目读取时补建）。
-2. Blueprint 保存路径已切到“优先文档级保存 + capability 回退项目级保存（过渡期）”。
+1. 后端已具备 workspace 首建能力；hard cutover 后老项目不再自动补建或迁移。
+2. Blueprint 保存路径已切到“优先文档级保存”；hard cutover 后不保留项目级 MIR 回退。
 3. 前端保存状态反馈、能力协商等待、失败重试文案与 i18n 已接入。
 4. BlueprintEditor 已完成模块化拆分，主文件收敛为编排层。
+5. 当前开发阶段允许破坏性更新：旧单 MIR 项目全部舍弃，新项目只使用 Workspace。
 
 ## 0. 目标与边界
 
 ### 目标
 
-1. 从单 `mirDoc` 架构切换到 `workspace` 架构（目标无兼容层，过渡期允许 capability 回退）
+1. 从单 `mirDoc` 架构切换到 `workspace` 架构（hard cutover，无旧项目兼容、无项目级 MIR 回退）
 2. 用户只操作 Blueprint 可见对象（路由/页面/布局/组件），不操作 VFS
 3. 完成分区 rev 同步链路（`workspaceRev/routeRev/contentRev/metaRev`）
 4. 建立可序列化 Command/Intent 协议，为插件与协作预留扩展能力
@@ -57,7 +58,7 @@
 1. **Data & API**
 2. **Editor Core（Store/Command）**
 3. **Blueprint UX（Route/Layout/Outlet）**
-4. **Migration & Quality**
+4. **Hard Cutover & Quality**
 
 ## 2. Phase 计划
 
@@ -70,7 +71,7 @@
 1. 冻结 `workspace-model` 字段集（含分区 rev）
 2. 冻结 `intent envelope` 与 `command envelope` 最小字段
 3. 冻结 `route-manifest` v1（含 runtime 最小字段）
-4. 冻结 `MIR-v1.1/v1.2` 草案（含 `x-*` 扩展规则、data/list 扩展）
+4. 冻结 `MIR-v1.3` graph-only 合同（含 `x-*` 扩展规则、data/list 扩展）
 5. 冻结保留域命名与错误码：`core.nodegraph.*`、`core.animation.*`
 
 输出：
@@ -94,11 +95,9 @@
 2. 实现接口：
    - `GET /api/workspaces/:id`
    - `GET /api/workspaces/:id/capabilities`
-   - `PUT /api/workspaces/:id/documents/:documentId`
-   - `POST /api/workspaces/:id/intents`
-   - `POST /api/workspaces/:id/batch`
+   - `PATCH /api/workspaces/:id/commands`
 3. 实现分区 rev 校验与冲突返回（`DOCUMENT/WORKSPACE/ROUTE/HYBRID`）
-4. 接入 MIR v1.1/v1.2 保存校验
+4. 接入 Workspace、Route Manifest 和 MIR v1.3 graph-only 校验
 
 输出：
 
@@ -107,8 +106,8 @@
 
 验收：
 
-- [ ] 文档级写入不影响无关文档 rev
-- [ ] 路由意图可递增 `routeRev`
+- [ ] 文档级 command 不影响无关文档 rev
+- [ ] 路由 command 可递增 `routeRev`
 - [ ] 冲突响应字段完整
 
 ---
@@ -126,9 +125,9 @@
    - 支持 `forwardOps/reverseOps`
    - 支持事务合并
 3. 实现 Outbox：
-   - 本地即时应用
-   - 防抖批量同步
-4. 接入 capabilities 拉取与意图发送
+   - 本地即时应用 command transaction
+   - 防抖批量同步 command transaction
+4. 接入 capabilities 拉取与 command 发送
 5. 预留域命令默认 no-op（记录历史与遥测，不触发 UI 行为）
 
 输出：
@@ -170,29 +169,28 @@
 
 ---
 
-### Phase E：迁移与切换（Gate E）
+### Phase E：Hard Cutover（Gate E）
 
-目标：一次性迁移旧数据并全量切换。
+目标：删除旧单 MIR 编辑链路，新项目全量切换到 workspace-only。
 
 任务：
 
-1. 编写迁移器：`projects.mir_json -> workspace snapshot`
-2. 为失败项目生成迁移报告（不可自动修复项）
-3. 上线切换窗口：
-   - 停止旧写入
-   - 执行迁移
-   - 发布新客户端
-4. 预设回滚方案（数据库备份 + 版本回退）
+1. 新项目创建只 bootstrap workspace snapshot。
+2. 删除前端 `saveProjectMir` 和 project MIR fallback 调用。
+3. `GET /projects/:id/mir` 返回 retired single-MIR 格式错误或从编辑器路由中移除。
+4. 停止 `projects.mir_json` 作为编辑器读写来源。
+5. 打开旧项目时提示创建新的 workspace 项目。
 
 输出：
 
-- 所有可迁移项目进入 workspace 模型
+- 新项目全部进入 workspace-only 模型
+- 旧单 MIR 项目被明确拒绝
 
 验收：
 
-- [ ] 迁移成功率 >= 99%
-- [ ] 失败项目具备可读诊断
-- [ ] 切换后无旧接口写流量
+- [ ] 新项目创建后具备多文档 workspace 文件树
+- [ ] 旧单 MIR 项目打开时返回明确 retired 错误
+- [ ] 切换后无 project MIR 写流量
 
 ---
 
@@ -230,10 +228,10 @@
 - 触发条件：一周内两次以上字段临时变更
 - 止损：冻结合并，回到 Phase A 重新评审
 
-### 风险 2：迁移窗口不稳定
+### 风险 2：旧入口未完全删除
 
-- 触发条件：迁移失败率 > 1%
-- 止损：立即停止切换，启用回滚并输出失败样本报告
+- 触发条件：新项目或编辑器仍调用 `projects.mir_json` / `saveProjectMir`
+- 止损：阻断发布，删除旧入口调用后再继续
 
 ### 风险 3：命令重放不一致
 
@@ -245,12 +243,12 @@
 1. 后端 workspace API + rev 分区冲突处理
 2. 前端 workspace store + command executor + outbox
 3. Blueprint route-manifest 化 + 自动文档管理
-4. 迁移器与切换 runbook
+4. hard cutover runbook
 5. 测试矩阵与质量基线
 
 ## 5. Definition of Done
 
 1. 用户只在 Blueprint 层完成页面与路由编辑
 2. 系统内部自动管理文档与结构，无文件级 UI 暴露
-3. 默认保存链路不再依赖 `mirDoc`；迁移窗口结束后移除项目级回退写入
+3. 默认保存链路不再依赖 `mirDoc`；项目级 MIR 回退写入被删除
 4. 新增功能（插件意图、路由运行时）可通过扩展协议接入而不破坏核心模型

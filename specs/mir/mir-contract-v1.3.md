@@ -10,7 +10,7 @@
 
 v1.3 只解决一个核心问题：让 MIR UI 层从“只适合读和渲染的嵌套树”，升级为“适合长期编辑、PATCH、Undo/Redo、AI command、协作同步的稳定图结构”。
 
-v1.3 不继承旧项目兼容负担。已有 v1.0-v1.2 项目可以作废或通过一次性导入脚本转换；运行态、保存态、测试 fixture 统一改为 v1.3。
+v1.3 不继承旧项目兼容负担。已有 v1.0-v1.2 项目在当前开发阶段直接作废；运行态、保存态、测试 fixture 统一改为 v1.3。
 
 ## 2. 核心结构
 
@@ -43,12 +43,12 @@ type MIRDocumentV13 = {
 1. `ui.graph` 是唯一写入真相源。
 2. v1.3 文档禁止保存 `ui.root`。
 3. 编辑器、同步、Undo/Redo、AI 写入都必须修改 `ui.graph`。
-4. 渲染、代码生成、社区展示需要树时，必须调用 `materializeUiTree(ui.graph)` 得到临时树。
+4. 渲染、代码生成、社区展示需要树时，必须调用 `materializeUiTree(ui.graph)` 得到派生读模型。
 5. 后端收到包含 `ui.root` 的 v1.3 文档应拒绝，避免双真相源回流。
 
 ## 4. 长期不变量
 
-这些语义进入 v1.3 兼容承诺，未来版本只能新增能力，不应改写：
+这些语义进入 v1.3 稳定承诺，未来版本只能新增能力，不应改写：
 
 1. `nodesById` 表示节点身份和节点字段，不表示顺序。
 2. `childIdsById` 表示默认 children 区域的有序子节点。
@@ -102,7 +102,7 @@ JSON Schema 负责形状校验；MIR validator 负责图语义校验：
 
 ## 8. AI 规则
 
-LLM 可以读临时 materialized tree 或局部 subtree，但写入必须输出 command/patch。系统流程：
+LLM 可以读派生 materialized tree 或局部 subtree，但写入必须输出 command/patch。系统流程：
 
 ```txt
 read materialized tree -> LLM command -> dry-run on ui.graph -> validate -> apply
@@ -112,10 +112,11 @@ read materialized tree -> LLM command -> dry-run on ui.graph -> validate -> appl
 
 ## 9. 旧项目策略
 
-已有 v1.0-v1.2 项目不进入兼容承诺。开发期可以选择：
+已有 v1.0-v1.2 项目不进入稳定支持范围。开发期采用 hard cutover：
 
-1. 直接清空并用 v1.3 默认模板重建。
-2. 或提供一次性导入脚本：遍历旧 `ui.root`，生成 `ui.graph`，导入后只保存 v1.3。
+1. 打开旧单 MIR 项目时返回结构化 retired single-MIR 错误。
+2. 新建项目必须创建 workspace，并在 workspace document 中保存 v1.3 MIR。
+3. 不提供运行态兼容、不提供自动导入、不从 `ui.root` 重建默认编辑态。
 
 不要求 v1.3 -> v1.2 回退导出。
 
@@ -142,6 +143,6 @@ MIR-4001  MIR materialize 或校验失败
 1. 新增 `MIR-v1.3.json`。
 2. 实现 `createDefaultMirDocV13` 和 `materializeUiTree`。
 3. Validator 只接受 v1.3 graph。
-4. Store 删除 `ui.root` 运行态，所有读树场景临时 materialize。
-5. 编辑器从 `updateMirDoc` 迁移到 graph command/patch。
+4. Store 删除 `ui.root` 运行态，所有读树场景使用 materialized 派生读模型。
+5. 编辑器写入只走 graph command/patch。
 6. 后端保存只接受 v1.3，后续让 `forwardOps/reverseOps` 从记录字段变成可执行 PATCH。

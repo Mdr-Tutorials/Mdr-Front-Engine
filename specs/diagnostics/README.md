@@ -4,7 +4,7 @@
 
 - Draft
 - 日期：2026-05-03
-- 适用范围：MIR、Workspace、Route、Editor、Code、NodeGraph、Animation、External Library、Codegen、Backend、AI
+- 适用范围：MIR、Workspace、Route、Editor、UX、Code、NodeGraph、Animation、External Library、Codegen、Backend、AI
 - 后端错误响应：`specs/decisions/24.backend-diagnostic-envelope.md`
 
 ## 1. 目的
@@ -46,6 +46,7 @@ type MdrDiagnostic = {
     | 'workspace'
     | 'route'
     | 'editor'
+    | 'ux'
     | 'code'
     | 'nodegraph'
     | 'animation'
@@ -93,6 +94,7 @@ type MdrDiagnostic = {
 | `WKS-xxxx`  | Workspace        | VFS、文档保存、revision、同步冲突、capability  | `specs/diagnostics/workspace-diagnostic-codes.md`        |
 | `RTE-xxxx`  | Route            | Route manifest、Outlet、导航运行时             | `specs/diagnostics/route-diagnostic-codes.md`            |
 | `EDT-xxxx`  | Editor           | 编辑器交互、选择、拖拽、Inspector、画布状态    | `specs/diagnostics/editor-diagnostic-codes.md`           |
+| `UX-xxxx`   | UX               | 可访问性、交互、响应式布局、内容和视觉反馈     | `specs/diagnostics/ux-diagnostic-codes.md`               |
 | `COD-xxxx`  | Code             | 用户代码片段、符号解析、类型、宿主绑定、运行时 | `specs/diagnostics/code-diagnostic-codes.md`             |
 | `NGR-xxxx`  | NodeGraph        | 节点图端口、连线、执行、调试                   | `specs/diagnostics/nodegraph-diagnostic-codes.md`        |
 | `ANI-xxxx`  | Animation        | Timeline、binding、track、target node          | `specs/diagnostics/animation-diagnostic-codes.md`        |

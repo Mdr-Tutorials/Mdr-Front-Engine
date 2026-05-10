@@ -38,14 +38,21 @@
     - `specs/decisions/22.llm-integration-architecture.md`
 12. **作者态符号环境**
     - `specs/decisions/25.authoring-symbol-environment.md`
-13. **GitHub App 与 Git 集成**
+13. **UX 诊断体系**
+    - `specs/decisions/26.ux-diagnostics.md`
+    - `specs/diagnostics/ux-diagnostic-codes.md`
+14. **诊断展示契约**
+    - `specs/decisions/27.diagnostic-presentation-contract.md`
+15. **GitHub App 与 Git 集成**
     - `specs/decisions/23.github-app-integration.md`
-14. **诊断码与错误体系**
+16. **诊断码与错误体系**
     - `specs/diagnostics/README.md`
     - `specs/decisions/24.backend-diagnostic-envelope.md`
+    - `specs/decisions/27.diagnostic-presentation-contract.md`
     - `specs/diagnostics/mir-diagnostic-codes.md`
     - `specs/diagnostics/workspace-diagnostic-codes.md`
     - `specs/diagnostics/editor-diagnostic-codes.md`
+    - `specs/diagnostics/ux-diagnostic-codes.md`
     - `specs/diagnostics/code-diagnostic-codes.md`
     - `specs/diagnostics/route-diagnostic-codes.md`
     - `specs/diagnostics/nodegraph-diagnostic-codes.md`

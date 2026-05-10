@@ -16,6 +16,7 @@ const domainOrder = [
   'MIR',
   'WKS',
   'EDT',
+  'UX',
   'COD',
   'ELIB',
   'GEN',
@@ -44,6 +45,12 @@ const domainInfo = {
     title: 'Editor',
     area: '编辑器',
     description: '选择、拖拽、Inspector、画布、命令和 autosave',
+  },
+  UX: {
+    file: 'ux-diagnostic-codes.md',
+    title: 'UX',
+    area: '用户体验',
+    description: '可访问性、交互、响应式布局、内容、视觉反馈和体验检查器',
   },
   COD: {
     file: 'code-diagnostic-codes.md',
@@ -183,8 +190,7 @@ function parseStandardSpec(domain, source) {
       stage: 'unknown',
       retryable: false,
       trigger: '对应功能链路返回该诊断码。',
-      action:
-        '按页面提示重试；若问题复现，携带错误码与项目上下文上报。',
+      action: '按页面提示重试；若问题复现，携带错误码与项目上下文上报。',
     };
 
     for (let cursor = index + 1; cursor < lines.length; cursor += 1) {
@@ -277,7 +283,7 @@ function readDiagnostics() {
 
     grouped.set(
       domain,
-      diagnostics.sort((left, right) => left.code.localeCompare(right.code)),
+      diagnostics.sort((left, right) => left.code.localeCompare(right.code))
     );
   }
 
@@ -347,7 +353,7 @@ function renderDomainIndex(domain, diagnostics) {
 
   for (const diagnostic of diagnostics) {
     lines.push(
-      `| [\`${diagnostic.code}\`](/reference/diagnostics/${slugForCode(diagnostic.code)}) | ${diagnostic.title} | \`${diagnostic.severity}\` |`,
+      `| [\`${diagnostic.code}\`](/reference/diagnostics/${slugForCode(diagnostic.code)}) | ${diagnostic.title} | \`${diagnostic.severity}\` |`
     );
   }
 
@@ -396,7 +402,7 @@ function renderIndex(groupedDiagnostics) {
 
   for (const domain of domainOrder) {
     lines.push(
-      `- [${domainInfo[domain].title}](/reference/diagnostics/${slugForDomain(domain)})`,
+      `- [${domainInfo[domain].title}](/reference/diagnostics/${slugForDomain(domain)})`
     );
   }
 
@@ -414,12 +420,12 @@ function renderIndex(groupedDiagnostics) {
       `### ${domainInfo[domain].title}`,
       '',
       '| Code | 名称 | 严重程度 |',
-      '| --- | --- | --- |',
+      '| --- | --- | --- |'
     );
 
     for (const diagnostic of diagnostics) {
       lines.push(
-        `| [\`${diagnostic.code}\`](/reference/diagnostics/${slugForCode(diagnostic.code)}) | ${diagnostic.title} | \`${diagnostic.severity}\` |`,
+        `| [\`${diagnostic.code}\`](/reference/diagnostics/${slugForCode(diagnostic.code)}) | ${diagnostic.title} | \`${diagnostic.severity}\` |`
       );
     }
   }
@@ -441,7 +447,7 @@ function renderIndex(groupedDiagnostics) {
     '  }',
     '}',
     '```',
-    '',
+    ''
   );
 
   return lines.join('\n');
@@ -451,21 +457,24 @@ async function buildExpectedFiles() {
   const groupedDiagnostics = readDiagnostics();
   const expected = new Map();
 
-  expected.set(indexPath, await formatMarkdown(renderIndex(groupedDiagnostics)));
+  expected.set(
+    indexPath,
+    await formatMarkdown(renderIndex(groupedDiagnostics))
+  );
 
   for (const diagnostics of groupedDiagnostics.values()) {
     if (diagnostics.length > 0) {
       const domain = diagnostics[0].domain;
       expected.set(
         path.join(diagnosticPagesDir, `${slugForDomain(domain)}.md`),
-        await formatMarkdown(renderDomainIndex(domain, diagnostics)),
+        await formatMarkdown(renderDomainIndex(domain, diagnostics))
       );
     }
 
     for (const diagnostic of diagnostics) {
       expected.set(
         path.join(diagnosticPagesDir, `${slugForCode(diagnostic.code)}.md`),
-        await formatMarkdown(renderDiagnosticPage(diagnostic)),
+        await formatMarkdown(renderDiagnosticPage(diagnostic))
       );
     }
   }
@@ -536,24 +545,32 @@ async function check() {
 
   for (const actualPage of actualPages) {
     if (!expectedFiles.has(actualPage)) {
-      errors.push(`Unexpected diagnostic page: ${path.relative(rootDir, actualPage)}`);
+      errors.push(
+        `Unexpected diagnostic page: ${path.relative(rootDir, actualPage)}`
+      );
     }
   }
 
   for (const [filePath, expectedContent] of expectedFiles.entries()) {
     if (!fs.existsSync(filePath)) {
-      errors.push(`Missing generated file: ${path.relative(rootDir, filePath)}`);
+      errors.push(
+        `Missing generated file: ${path.relative(rootDir, filePath)}`
+      );
       continue;
     }
 
     const actualContent = readUtf8(filePath);
 
     if (actualContent !== expectedContent) {
-      errors.push(`Outdated generated file: ${path.relative(rootDir, filePath)}`);
+      errors.push(
+        `Outdated generated file: ${path.relative(rootDir, filePath)}`
+      );
     }
 
     if (hasSuspiciousReplacementQuestion(actualContent)) {
-      errors.push(`Suspicious question mark replacement: ${path.relative(rootDir, filePath)}`);
+      errors.push(
+        `Suspicious question mark replacement: ${path.relative(rootDir, filePath)}`
+      );
     }
   }
 
@@ -583,6 +600,8 @@ if (mode === 'generate') {
 } else if (mode === 'check') {
   await check();
 } else {
-  console.error('Usage: node scripts/generate-diagnostic-docs.mjs [generate|check]');
+  console.error(
+    'Usage: node scripts/generate-diagnostic-docs.mjs [generate|check]'
+  );
   process.exitCode = 1;
 }
