@@ -1,4 +1,4 @@
-.ExportMirPage {
+﻿.ExportCode {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -6,7 +6,7 @@
   height: 100%;
 }
 
-.ExportMirPageHeader {
+.ExportCodeHeader {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -14,26 +14,26 @@
   flex-wrap: wrap;
 }
 
-.ExportMirPageTitle {
+.ExportCodeTitle {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.ExportMirPageTitle h1 {
+.ExportCodeTitle h1 {
   margin: 0;
   font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.01em;
 }
 
-.ExportMirPageTitle p {
+.ExportCodeTitle p {
   margin: 0;
   color: var(--text-muted);
   font-size: 12px;
 }
 
-.ExportMirPageCopy {
+.ExportCodeCopy {
   border: none;
   background: rgba(0, 0, 0, 0.06);
   color: var(--text-primary);
@@ -44,16 +44,16 @@
   font-weight: 600;
 }
 
-.ExportMirPageCopy:hover {
+.ExportCodeCopy:hover {
   background: rgba(0, 0, 0, 0.08);
 }
 
-.ExportMirPageCopy:disabled {
+.ExportCodeCopy:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
 
-.ExportMirPageActions {
+.ExportCodeActions {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -61,7 +61,7 @@
   justify-content: flex-end;
 }
 
-.ExportMirPageTabs {
+.ExportCodeTabs {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -70,7 +70,7 @@
   background: rgba(0, 0, 0, 0.04);
 }
 
-.ExportMirPageTab {
+.ExportCodeTab {
   border: none;
   background: transparent;
   color: var(--text-secondary);
@@ -81,17 +81,17 @@
   font-weight: 600;
 }
 
-.ExportMirPageTab.Active {
+.ExportCodeTab.Active {
   color: var(--text-primary);
   background: rgba(0, 0, 0, 0.08);
 }
 
-.ExportMirPageBody {
+.ExportCodeBody {
   flex: 1;
   min-height: 0;
 }
 
-.ExportMirPageEmpty {
+.ExportCodeEmpty {
   border-radius: 12px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: rgba(0, 0, 0, 0.02);

@@ -25,9 +25,10 @@ type MountedCssEditorModalProps = {
   highlightedClassName?: string;
   highlightedLine?: number;
   highlightedColumn?: number;
+  error?: string;
   onChange: (value: string) => void;
   onClose: () => void;
-  onSave: () => void;
+  onSave: () => void | Promise<void>;
 };
 
 const DEFAULT_CSS_CONTENT = `/* Mounted CSS */\n`;
@@ -88,6 +89,7 @@ export function MountedCssEditorModal({
   highlightedClassName,
   highlightedLine,
   highlightedColumn,
+  error,
   onChange,
   onClose,
   onSave,
@@ -101,6 +103,7 @@ export function MountedCssEditorModal({
   const [editorTheme, setEditorTheme] = useState<'light' | 'dark'>(
     () => resolveTheme() as 'light' | 'dark'
   );
+  const [isSaving, setSaving] = useState(false);
   const invalidSyntaxMessage = t(
     'inspector.classProtocol.mountedCss.invalidSyntax',
     {
@@ -225,6 +228,16 @@ export function MountedCssEditorModal({
 
   if (!isOpen) return null;
 
+  const handleSave = async () => {
+    if (isSaving) return;
+    setSaving(true);
+    try {
+      await onSave();
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div
       className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40 p-4"
@@ -289,26 +302,36 @@ export function MountedCssEditorModal({
             />
           </div>
         </div>
-        <footer className="flex items-center justify-end gap-2 border-t border-(--border-default) px-3 py-2">
-          <button
-            type="button"
-            className="h-7 rounded-md border border-(--border-default) px-3 text-xs text-(--text-muted) hover:border-(--border-strong) hover:text-(--text-primary)"
-            onClick={onClose}
-          >
-            {t('inspector.classProtocol.mountedCss.cancel', {
-              defaultValue: 'Cancel',
-            })}
-          </button>
-          <button
-            type="button"
-            className="h-7 rounded-md bg-(--text-primary) px-3 text-xs text-(--text-inverse)"
-            onClick={onSave}
-            data-testid="mounted-css-save"
-          >
-            {t('inspector.classProtocol.mountedCss.save', {
-              defaultValue: 'Save CSS',
-            })}
-          </button>
+        <footer className="flex items-center justify-between gap-2 border-t border-(--border-default) px-3 py-2">
+          <div className="min-w-0 text-[11px] text-(--danger-color)">
+            {error ? (
+              <span role="alert" data-testid="mounted-css-error">
+                {error}
+              </span>
+            ) : null}
+          </div>
+          <div className="flex items-center justify-end gap-2">
+            <button
+              type="button"
+              className="h-7 rounded-md border border-(--border-default) px-3 text-xs text-(--text-muted) hover:border-(--border-strong) hover:text-(--text-primary)"
+              onClick={onClose}
+            >
+              {t('inspector.classProtocol.mountedCss.cancel', {
+                defaultValue: 'Cancel',
+              })}
+            </button>
+            <button
+              type="button"
+              className="h-7 rounded-md bg-(--text-primary) px-3 text-xs text-(--text-inverse)"
+              onClick={handleSave}
+              disabled={isSaving}
+              data-testid="mounted-css-save"
+            >
+              {t('inspector.classProtocol.mountedCss.save', {
+                defaultValue: 'Save CSS',
+              })}
+            </button>
+          </div>
         </footer>
       </div>
     </div>

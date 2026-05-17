@@ -4,6 +4,7 @@ import type {
   WorkspaceSnapshot,
 } from '@/editor/editorApi';
 import { normalizeMirDocument } from '@/mir/resolveMirDocument';
+import { isWorkspaceCodeDocumentContent } from '@/workspace';
 import {
   DEFAULT_ROUTE_MANIFEST,
   type WorkspaceRouteManifest,
@@ -102,12 +103,37 @@ const normalizeMirContent = (
   return normalizeMirDocument(content);
 };
 
+export const isMirWorkspaceDocumentType = (
+  type: WorkspaceDocumentRecord['type']
+): boolean =>
+  type === 'mir-page' || type === 'mir-layout' || type === 'mir-component';
+
+export const isWorkspaceMirDocument = (
+  document: WorkspaceDocumentRecord | undefined
+): document is WorkspaceDocumentRecord & { content: MIRDocument } =>
+  Boolean(document && isMirWorkspaceDocumentType(document.type));
+
 export const normalizeWorkspaceDocument = (
   document: WorkspaceDocumentRecord
-): WorkspaceDocumentRecord => ({
-  ...document,
-  content: normalizeMirContent(document.content),
-});
+): WorkspaceDocumentRecord => {
+  if (isMirWorkspaceDocumentType(document.type)) {
+    return {
+      ...document,
+      content: normalizeMirContent(document.content),
+    };
+  }
+
+  if (document.type === 'code') {
+    if (!isWorkspaceCodeDocumentContent(document.content)) {
+      throw new Error(
+        `Workspace code document ${document.id} must use the code content wrapper.`
+      );
+    }
+    return document;
+  }
+
+  return document;
+};
 
 const normalizeVfsNode = (
   value: unknown,

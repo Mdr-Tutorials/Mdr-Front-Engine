@@ -1,3 +1,4 @@
+export { CURRENT_THEME_SCHEMA_VERSION } from './schema/themeManifest.types';
 export type {
   ResolvedThemeManifest,
   ThemeColorScale,

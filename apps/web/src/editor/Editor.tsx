@@ -165,11 +165,6 @@ function Editor() {
           .then(({ workspace }) => {
             if (cancelled) return;
             hydrateWorkspaceSettings(workspace.settings);
-            if (!workspace.documents.length) {
-              clearWorkspaceState();
-              setMirDoc(project.mir);
-              return;
-            }
             setWorkspaceSnapshot(workspace);
             editorApi
               .getWorkspaceCapabilities(token, workspace.id, requestOptions)

@@ -1,4 +1,4 @@
-import { type ReactElement, useMemo, useState, useEffect } from 'react';
+﻿import { type ReactElement, useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
 import {
@@ -12,7 +12,14 @@ import {
 } from 'lucide-react';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import { generateReactBundle } from '@/mir/generator/mirToReact';
+import type { ReactGeneratorCodeArtifact } from '@/mir/generator/react/types';
 import { validateMirDocument } from '@/mir/validator/validator';
+import {
+  isWorkspaceCodeDocumentContent,
+  projectWorkspaceToMfeFiles,
+  type StableWorkspaceSnapshot,
+  type WorkspaceProjectionIssue,
+} from '@/workspace';
 import {
   flattenPublicFiles,
   readPublicTree,
@@ -23,9 +30,9 @@ import {
 } from '@/editor/features/resources/projectFileStore';
 import { CodeViewer } from './CodeViewer';
 import { resolveZipFilePayload } from './exportZip';
-import './ExportMirPage.scss';
+import './ExportCode.scss';
 
-type ExportTab = 'mir' | 'react';
+type ExportTab = 'react' | 'vfs';
 type ExportFileLanguage =
   | 'typescript'
   | 'json'
@@ -121,7 +128,7 @@ const resolveCodeViewerLanguage = (language?: ExportFileLanguage) => {
   return 'typescript';
 };
 
-export function ExportMirPage() {
+export function ExportCode() {
   const { t } = useTranslation('export');
   const { projectId } = useParams();
   const mirDoc = useEditorStore((state) => state.mirDoc);
@@ -129,20 +136,47 @@ export function ExportMirPage() {
     (state) =>
       (projectId ? state.projectsById[projectId]?.type : undefined) ?? 'project'
   );
+  const workspaceId = useEditorStore((state) => state.workspaceId);
+  const workspaceRev = useEditorStore((state) => state.workspaceRev);
+  const routeRev = useEditorStore((state) => state.routeRev);
+  const opSeq = useEditorStore((state) => state.opSeq);
+  const treeRootId = useEditorStore((state) => state.treeRootId);
+  const treeById = useEditorStore((state) => state.treeById);
+  const workspaceDocumentsById = useEditorStore(
+    (state) => state.workspaceDocumentsById
+  );
+  const routeManifest = useEditorStore((state) => state.routeManifest);
+  const activeDocumentId = useEditorStore((state) => state.activeDocumentId);
+  const activeRouteNodeId = useEditorStore((state) => state.activeRouteNodeId);
   const [copied, setCopied] = useState(false);
   const [downloadingZip, setDownloadingZip] = useState(false);
-  const [activeTab, setActiveTab] = useState<ExportTab>('mir');
+  const [activeTab, setActiveTab] = useState<ExportTab>('vfs');
   const [activeReactFile, setActiveReactFile] = useState('');
+  const [activeVfsFile, setActiveVfsFile] = useState('');
   const [expandedFolders, setExpandedFolders] = useState<
     Record<string, boolean>
   >({});
   const mirValidation = useMemo(() => validateMirDocument(mirDoc), [mirDoc]);
   const hasMirValidationError = mirValidation.hasError;
   const validatedMirDoc = mirValidation.document;
-
-  const mirJson = useMemo(() => {
-    return JSON.stringify(validatedMirDoc, null, 2);
-  }, [validatedMirDoc]);
+  const codeArtifacts = useMemo<ReactGeneratorCodeArtifact[]>(() => {
+    const artifacts: ReactGeneratorCodeArtifact[] = [];
+    Object.values(workspaceDocumentsById).forEach((document) => {
+      if (
+        document.type !== 'code' ||
+        !isWorkspaceCodeDocumentContent(document.content)
+      ) {
+        return;
+      }
+      artifacts.push({
+        id: document.id,
+        path: document.path,
+        language: document.content.language,
+        source: document.content.source,
+      });
+    });
+    return artifacts;
+  }, [workspaceDocumentsById]);
 
   const reactBundle = useMemo(() => {
     if (!validatedMirDoc?.ui?.graph) return null;
@@ -166,6 +200,7 @@ export function ExportMirPage() {
         packageResolver: {
           strategy: 'npm',
         },
+        codeArtifacts,
       });
     } catch (error) {
       const message = t('react.error', {
@@ -189,6 +224,7 @@ export function ExportMirPage() {
     hasMirValidationError,
     mirValidation.issues,
     projectType,
+    codeArtifacts,
     t,
   ]);
 
@@ -250,6 +286,55 @@ export function ExportMirPage() {
     () => buildFileTree(reactProjectFiles),
     [reactProjectFiles]
   );
+  const workspaceSnapshot = useMemo<StableWorkspaceSnapshot | null>(() => {
+    if (!workspaceId || !treeRootId) return null;
+    return {
+      id: workspaceId,
+      workspaceRev: workspaceRev ?? 0,
+      routeRev: routeRev ?? 0,
+      opSeq: opSeq ?? 0,
+      treeRootId,
+      treeById,
+      docsById: workspaceDocumentsById,
+      routeManifest,
+      ...(activeDocumentId ? { activeDocumentId } : {}),
+      ...(activeRouteNodeId ? { activeRouteNodeId } : {}),
+    };
+  }, [
+    activeDocumentId,
+    activeRouteNodeId,
+    opSeq,
+    routeManifest,
+    routeRev,
+    treeById,
+    treeRootId,
+    workspaceDocumentsById,
+    workspaceId,
+    workspaceRev,
+  ]);
+  const vfsProjection = useMemo<
+    { files: ExportCodeFile[]; issues: WorkspaceProjectionIssue[] } | undefined
+  >(() => {
+    if (!workspaceSnapshot) return undefined;
+    const projected = projectWorkspaceToMfeFiles(workspaceSnapshot);
+    if (projected.ok === false) {
+      return { files: [], issues: projected.issues };
+    }
+    return {
+      files: projected.files.map((file) => ({
+        path: file.path,
+        language: resolveProjectFileLanguage(file.path),
+        content: file.content,
+      })),
+      issues: [],
+    };
+  }, [workspaceSnapshot]);
+  const vfsProjectFiles = vfsProjection?.files ?? [];
+  const vfsProjectionIssues = vfsProjection?.issues ?? [];
+  const vfsFileTree = useMemo(
+    () => buildFileTree(vfsProjectFiles),
+    [vfsProjectFiles]
+  );
   const activeReactFileRecord = useMemo(
     () =>
       reactProjectFiles.find((file) => file.path === activeReactFile) ??
@@ -257,6 +342,13 @@ export function ExportMirPage() {
     [activeReactFile, reactProjectFiles]
   );
   const activeReactFileContent = activeReactFileRecord?.content ?? '';
+  const activeVfsFileRecord = useMemo(
+    () =>
+      vfsProjectFiles.find((file) => file.path === activeVfsFile) ??
+      vfsProjectFiles[0],
+    [activeVfsFile, vfsProjectFiles]
+  );
+  const activeVfsFileContent = activeVfsFileRecord?.content ?? '';
   const reactZipBaseName = useMemo(
     () =>
       sanitizeFileName(
@@ -284,23 +376,37 @@ export function ExportMirPage() {
     setActiveReactFile(reactProjectFiles[0].path);
   }, [activeReactFile, reactBundle?.entryFilePath, reactProjectFiles]);
 
-  const activeCode = activeTab === 'mir' ? mirJson : activeReactFileContent;
+  useEffect(() => {
+    if (!vfsProjectFiles.length) {
+      setActiveVfsFile('');
+      return;
+    }
+    const hasActiveFile = vfsProjectFiles.some(
+      (file) => file.path === activeVfsFile
+    );
+    if (hasActiveFile) return;
+    setActiveVfsFile(vfsProjectFiles[0].path);
+  }, [activeVfsFile, vfsProjectFiles]);
+
+  const activeCode =
+    activeTab === 'vfs' ? activeVfsFileContent : activeReactFileContent;
+  const activeFiles = activeTab === 'vfs' ? vfsProjectFiles : reactProjectFiles;
   const activeTitle =
-    activeTab === 'mir'
-      ? t('mir.title', { defaultValue: 'MIR' })
+    activeTab === 'vfs'
+      ? t('vfs.title', { defaultValue: 'VFS' })
       : t('react.title', { defaultValue: 'React' });
   const activeDescription =
-    activeTab === 'mir'
-      ? t('mir.description', {
-          defaultValue: '当前项目的 MIR JSON（临时页）',
+    activeTab === 'vfs'
+      ? t('vfs.description', {
+          defaultValue: '当前 Workspace VFS 的完整文件树',
         })
       : t('react.description', {
           defaultValue: '基于当前 MIR 生成的 React 项目代码（含 public/*）',
         });
   const activeEmpty =
-    activeTab === 'mir'
-      ? t('mir.empty', {
-          defaultValue: '暂无 MIR（先进入蓝图编辑器创建组件）',
+    activeTab === 'vfs'
+      ? t('vfs.empty', {
+          defaultValue: '暂无 Workspace VFS 文件',
         })
       : t('react.empty', {
           defaultValue: '暂无 React 代码（先生成 MIR）',
@@ -311,19 +417,20 @@ export function ExportMirPage() {
   }, [activeTab]);
 
   useEffect(() => {
-    if (!reactProjectFiles.length) {
+    const files = activeTab === 'vfs' ? vfsProjectFiles : reactProjectFiles;
+    if (!files.length) {
       setExpandedFolders({});
       return;
     }
     const next: Record<string, boolean> = {};
-    reactProjectFiles.forEach((file) => {
+    files.forEach((file) => {
       const segments = file.path.split('/').filter(Boolean);
       for (let index = 0; index < segments.length - 1; index += 1) {
         next[segments.slice(0, index + 1).join('/')] = true;
       }
     });
     setExpandedFolders(next);
-  }, [reactProjectFiles]);
+  }, [activeTab, reactProjectFiles, vfsProjectFiles]);
 
   const toggleFolder = (path: string) => {
     setExpandedFolders((current) => ({
@@ -336,8 +443,9 @@ export function ExportMirPage() {
     nodes.map((node) => {
       const isFolder = node.children.length > 0 && !node.file;
       const isExpanded = expandedFolders[node.path] ?? true;
-      const isActive =
-        Boolean(node.file) && activeReactFile === node.file?.path;
+      const activeFilePath =
+        activeTab === 'vfs' ? activeVfsFile : activeReactFile;
+      const isActive = Boolean(node.file) && activeFilePath === node.file?.path;
       const fileIcon =
         node.file?.language === 'json' ? (
           <FileJson2 size={13} />
@@ -362,7 +470,13 @@ export function ExportMirPage() {
                 toggleFolder(node.path);
                 return;
               }
-              if (node.file) setActiveReactFile(node.file.path);
+              if (node.file) {
+                if (activeTab === 'vfs') {
+                  setActiveVfsFile(node.file.path);
+                } else {
+                  setActiveReactFile(node.file.path);
+                }
+              }
             }}
           >
             {isFolder ? (
@@ -407,40 +521,40 @@ export function ExportMirPage() {
     });
 
   return (
-    <div className="ExportMirPage">
-      <div className="ExportMirPageHeader">
-        <div className="ExportMirPageTitle">
+    <div className="ExportCode">
+      <div className="ExportCodeHeader">
+        <div className="ExportCodeTitle">
           <h1>{activeTitle}</h1>
           <p>{activeDescription}</p>
         </div>
-        <div className="ExportMirPageActions">
+        <div className="ExportCodeActions">
           <div
-            className="ExportMirPageTabs"
+            className="ExportCodeTabs"
             role="tablist"
             aria-label={t('title', { defaultValue: '导出代码' })}
           >
             <button
               type="button"
-              className={`ExportMirPageTab ${activeTab === 'mir' ? 'Active' : ''}`}
-              onClick={() => setActiveTab('mir')}
-              role="tab"
-              aria-selected={activeTab === 'mir'}
-            >
-              {t('tabs.mir', { defaultValue: 'MIR' })}
-            </button>
-            <button
-              type="button"
-              className={`ExportMirPageTab ${activeTab === 'react' ? 'Active' : ''}`}
+              className={`ExportCodeTab ${activeTab === 'react' ? 'Active' : ''}`}
               onClick={() => setActiveTab('react')}
               role="tab"
               aria-selected={activeTab === 'react'}
             >
               {t('tabs.react', { defaultValue: 'React' })}
             </button>
+            <button
+              type="button"
+              className={`ExportCodeTab ${activeTab === 'vfs' ? 'Active' : ''}`}
+              onClick={() => setActiveTab('vfs')}
+              role="tab"
+              aria-selected={activeTab === 'vfs'}
+            >
+              {t('tabs.vfs', { defaultValue: 'VFS' })}
+            </button>
           </div>
           <button
             type="button"
-            className="ExportMirPageCopy"
+            className="ExportCodeCopy"
             disabled={
               !activeCode || (activeTab === 'react' && hasMirValidationError)
             }
@@ -458,7 +572,7 @@ export function ExportMirPage() {
           {activeTab === 'react' ? (
             <button
               type="button"
-              className="ExportMirPageCopy"
+              className="ExportCodeCopy"
               disabled={
                 !reactProjectFiles.length ||
                 downloadingZip ||
@@ -501,8 +615,8 @@ export function ExportMirPage() {
         </div>
       </div>
 
-      <div className="ExportMirPageBody">
-        {hasMirValidationError ? (
+      <div className="ExportCodeBody">
+        {activeTab === 'react' && hasMirValidationError ? (
           <div className="mb-2 rounded-md border border-red-300/60 bg-red-100/40 px-2 py-1 text-xs text-red-900 dark:border-red-700/60 dark:bg-red-900/20 dark:text-red-100">
             {mirValidation.issues.map((item) => (
               <p key={`${item.code}:${item.path}`} className="m-0">
@@ -520,8 +634,27 @@ export function ExportMirPage() {
             ))}
           </div>
         ) : null}
-        {!activeCode ? (
-          <div className="ExportMirPageEmpty">{activeEmpty}</div>
+        {activeTab === 'vfs' && vfsProjectionIssues.length ? (
+          <div className="mb-2 rounded-md border border-red-300/60 bg-red-100/40 px-2 py-1 text-xs text-red-900 dark:border-red-700/60 dark:bg-red-900/20 dark:text-red-100">
+            {vfsProjectionIssues.map((item, index) => (
+              <p key={`${item.code}:${item.path}:${index}`} className="m-0">
+                [{item.code}] {item.path}: {item.message}
+              </p>
+            ))}
+          </div>
+        ) : null}
+        {!activeFiles.length ? (
+          <div className="ExportCodeEmpty">{activeEmpty}</div>
+        ) : activeTab === 'vfs' && vfsProjectFiles.length ? (
+          <div className="flex h-full min-h-0 gap-2">
+            <aside className="w-52 shrink-0 overflow-auto rounded-md border border-black/10 p-1 dark:border-white/15">
+              {renderTreeNodes(vfsFileTree)}
+            </aside>
+            <CodeViewer
+              code={activeVfsFileContent}
+              lang={resolveCodeViewerLanguage(activeVfsFileRecord?.language)}
+            />
+          </div>
         ) : activeTab === 'react' && reactProjectFiles.length ? (
           <div className="flex h-full min-h-0 gap-2">
             <aside className="w-52 shrink-0 overflow-auto rounded-md border border-black/10 p-1 dark:border-white/15">
@@ -533,10 +666,7 @@ export function ExportMirPage() {
             />
           </div>
         ) : (
-          <CodeViewer
-            code={activeCode}
-            lang={activeTab === 'mir' ? 'json' : 'typescript'}
-          />
+          <CodeViewer code={activeCode} lang="typescript" />
         )}
       </div>
     </div>

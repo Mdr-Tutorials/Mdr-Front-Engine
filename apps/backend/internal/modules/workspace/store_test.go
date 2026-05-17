@@ -154,6 +154,82 @@ FOR UPDATE OF d, w`)
 	}
 }
 
+func TestWorkspaceStorePatchCodeDocumentContentSkipsMIRValidation(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("create sqlmock: %v", err)
+	}
+	defer db.Close()
+
+	store := NewWorkspaceStore(db)
+	issuedAt := time.Date(2026, time.February, 8, 10, 1, 30, 0, time.UTC)
+	command := WorkspaceCommandEnvelope{
+		ID:        "cmd_code_update_1",
+		Namespace: "core.code",
+		Type:      "source.update",
+		Version:   "1.0",
+		IssuedAt:  issuedAt,
+		ForwardOps: []WorkspacePatchOp{
+			{Op: "replace", Path: "/source", Value: json.RawMessage(`"export function openDialog(id) { return id; }"`)},
+		},
+		ReverseOps: []WorkspacePatchOp{
+			{Op: "replace", Path: "/source", Value: json.RawMessage(`"export function openDialog() {}"`)},
+		},
+		Target: WorkspaceCommandTarget{
+			WorkspaceID: "ws_1",
+			DocumentID:  "code_open_dialog",
+		},
+	}
+
+	lockQuery := regexp.QuoteMeta(`SELECT d.doc_type, d.content_json, d.content_rev, d.meta_rev, w.workspace_rev, w.route_rev, w.op_seq
+FROM workspace_documents d
+JOIN workspaces w ON w.id = d.workspace_id
+WHERE d.workspace_id = $1 AND d.id = $2
+FOR UPDATE OF d, w`)
+	updateDocument := regexp.QuoteMeta(`UPDATE workspace_documents
+SET content_json = $3::jsonb, content_rev = content_rev + 1, updated_at = NOW()
+WHERE workspace_id = $1 AND id = $2
+RETURNING content_rev, meta_rev`)
+	bumpSequenceOnly := regexp.QuoteMeta(`UPDATE workspaces
+SET op_seq = op_seq + 1, updated_at = NOW()
+WHERE id = $1
+RETURNING workspace_rev, route_rev, op_seq`)
+	insertOperation := regexp.QuoteMeta(`INSERT INTO workspace_operations (workspace_id, op_seq, domain, document_id, payload_json, created_at)
+VALUES ($1, $2, $3, $4, $5::jsonb, $6)`)
+
+	mock.ExpectBegin()
+	mock.ExpectQuery(lockQuery).
+		WithArgs("ws_1", "code_open_dialog").
+		WillReturnRows(sqlmock.NewRows([]string{"doc_type", "content_json", "content_rev", "meta_rev", "workspace_rev", "route_rev", "op_seq"}).
+			AddRow("code", []byte(`{"language":"ts","source":"export function openDialog() {}"}`), 3, 1, 9, 4, 33))
+	mock.ExpectQuery(updateDocument).
+		WithArgs("ws_1", "code_open_dialog", `{"language":"ts","source":"export function openDialog(id) { return id; }"}`).
+		WillReturnRows(sqlmock.NewRows([]string{"content_rev", "meta_rev"}).AddRow(4, 1))
+	mock.ExpectQuery(bumpSequenceOnly).
+		WithArgs("ws_1").
+		WillReturnRows(sqlmock.NewRows([]string{"workspace_rev", "route_rev", "op_seq"}).AddRow(9, 4, 34))
+	mock.ExpectExec(insertOperation).
+		WithArgs("ws_1", int64(34), "core.code.source.update@1.0", "code_open_dialog", sqlmock.AnyArg(), issuedAt.UTC()).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	result, err := store.PatchDocumentContent(context.Background(), PatchDocumentContentParams{
+		WorkspaceID:        "ws_1",
+		DocumentID:         "code_open_dialog",
+		ExpectedContentRev: 3,
+		Command:            command,
+	})
+	if err != nil {
+		t.Fatalf("patch code document content: %v", err)
+	}
+	if len(result.UpdatedDocuments) != 1 || result.UpdatedDocuments[0].ContentRev != 4 {
+		t.Fatalf("unexpected updated documents: %+v", result.UpdatedDocuments)
+	}
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Fatalf("sql expectations: %v", err)
+	}
+}
+
 func TestWorkspaceStoreSaveRouteManifestIncrementsWorkspaceAndRouteRev(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {

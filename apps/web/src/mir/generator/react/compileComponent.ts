@@ -18,6 +18,7 @@ import {
 } from '@/mir/shared/valueRef';
 import type {
   MirDocLike,
+  ReactGeneratorCodeArtifact,
   ReactCompileOptions,
   ReactComponentCompileResult,
 } from './types';
@@ -342,6 +343,7 @@ const rewriteElementWithAlias = (
 type UnsafeRecord = Record<string, unknown>;
 
 const INTERNAL_NODE_PROP_KEYS = new Set([
+  'codeBindings',
   'mountedCss',
   'styleMount',
   'styleMountCss',
@@ -394,15 +396,58 @@ const readMountedCssContent = (value: unknown): string | null => {
   return `${content}\n`;
 };
 
+const isCssCodeArtifact = (artifact: ReactGeneratorCodeArtifact) =>
+  artifact.language === 'css' || artifact.path.toLowerCase().endsWith('.css');
+
+const readMountedCssArtifactIds = (value: unknown): string[] => {
+  const candidates = Array.isArray(value) ? value : [value];
+  return candidates
+    .map((candidate) => {
+      const record = asRecord(candidate);
+      const reference = asRecord(record?.reference);
+      const artifactId = reference?.artifactId;
+      return typeof artifactId === 'string' && artifactId.trim()
+        ? artifactId.trim()
+        : null;
+    })
+    .filter((artifactId): artifactId is string => Boolean(artifactId));
+};
+
 const collectMountedCssFiles = (
-  root: ComponentNode
+  root: ComponentNode,
+  codeArtifacts: ReactGeneratorCodeArtifact[] = []
 ): Array<{ path: string; content: string }> => {
   const filesByPath = new Map<string, string>();
+  const artifactsById = new Map(
+    codeArtifacts.map((artifact) => [artifact.id, artifact])
+  );
 
   const collectFromNode = (node: ComponentNode) => {
     const anyNode = node as ComponentNode & { metadata?: unknown };
     const props = asRecord(anyNode.props);
     const metadata = asRecord(anyNode.metadata);
+    const codeBindings = asRecord(props?.codeBindings);
+    const mountedCssArtifactIds = readMountedCssArtifactIds(
+      codeBindings?.mountedCss
+    );
+
+    mountedCssArtifactIds.forEach((artifactId) => {
+      const artifact = artifactsById.get(artifactId);
+      if (!artifact || !isCssCodeArtifact(artifact)) return;
+      const content = artifact.source.trim();
+      if (!content) return;
+      const normalizedPath = toMountedCssFilePath(artifact.path, node.id);
+      const nextContent = `${content}\n`;
+      const previous = filesByPath.get(normalizedPath);
+      if (!previous) {
+        filesByPath.set(normalizedPath, nextContent);
+        return;
+      }
+      if (!previous.includes(nextContent)) {
+        filesByPath.set(normalizedPath, `${previous}\n${nextContent}`);
+      }
+    });
+
     const candidates = [
       props?.mountedCss,
       props?.styleMount,
@@ -508,7 +553,10 @@ export const compileMirToReactComponent = (
 ): ReactComponentCompileResult => {
   const bag = createDiagnosticBag();
   const canonical = buildCanonicalIR(mirDoc, bag);
-  const mountedCssFiles = collectMountedCssFiles(materializeMirRoot(mirDoc));
+  const mountedCssFiles = collectMountedCssFiles(
+    materializeMirRoot(mirDoc),
+    options?.codeArtifacts
+  );
 
   const componentName =
     options?.componentName ||

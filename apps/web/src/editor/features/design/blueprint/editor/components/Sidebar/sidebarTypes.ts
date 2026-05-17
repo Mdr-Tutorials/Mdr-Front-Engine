@@ -25,6 +25,7 @@ export type BlueprintEditorSidebarProps = {
     previewId: string,
     hasVariants: boolean
   ) => void;
+  onAddComponent: (itemId: string) => void;
   onSizeSelect: (itemId: string, sizeId: string) => void;
   onStatusSelect: (itemId: string, index: number) => void;
   onStatusCycleStart: (itemId: string, total: number) => void;

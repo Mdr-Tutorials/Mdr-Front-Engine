@@ -24,6 +24,7 @@ export function BlueprintEditorSidebar({
   onToggleGroup,
   onTogglePreview,
   onPreviewKeyDown,
+  onAddComponent,
   onSizeSelect,
   onStatusSelect,
   onStatusCycleStart,
@@ -210,6 +211,7 @@ export function BlueprintEditorSidebar({
           onToggleGroup={onToggleGroup}
           onTogglePreview={onTogglePreview}
           onPreviewKeyDown={onPreviewKeyDown}
+          onAddComponent={onAddComponent}
           onSizeSelect={onSizeSelect}
           onStatusSelect={onStatusSelect}
           onStatusCycleStart={onStatusCycleStart}

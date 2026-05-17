@@ -1,10 +1,12 @@
 import type {
   StableWorkspaceDocument,
   StableWorkspaceSnapshot,
+  WorkspaceCodeDocumentContent,
   WorkspaceDocumentId,
   WorkspaceValidationIssue,
 } from './types';
 import { validateStableWorkspaceSnapshot } from './validateWorkspaceVfs';
+import { isWorkspaceCodeDocumentContent } from './workspaceCodeDocument';
 
 export type WorkspaceSourceFileRole =
   | 'workspace-manifest'
@@ -23,6 +25,7 @@ export type WorkspaceSourceFile = {
 
 export type WorkspaceProjectionIssueCode =
   | 'WKS_PROJECTION_INVALID_WORKSPACE'
+  | 'WKS_PROJECTION_CODE_DOCUMENT_INVALID'
   | 'WKS_PROJECTION_FILE_MISSING'
   | 'WKS_PROJECTION_JSON_INVALID'
   | 'WKS_PROJECTION_MANIFEST_INVALID'
@@ -62,6 +65,7 @@ type WorkspaceDocumentManifestEntry = Omit<
   'content'
 > & {
   contentPath: string;
+  codeContent?: Omit<WorkspaceCodeDocumentContent, 'source'>;
 };
 
 type WorkspaceManifest = {
@@ -87,12 +91,31 @@ const DOCUMENT_ROOT_PATH = '.mfe/documents';
 const normalizeSourcePath = (path: string): string =>
   path.replaceAll('\\', '/').replace(/^\/+/, '');
 
-const toSourcePath = (path: string): string => {
+const toMfeSourcePath = (path: string): string => {
   const normalized = normalizeSourcePath(path);
   return normalized.startsWith('.mfe/') ? normalized : `.mfe/${normalized}`;
 };
 
+const createSourceFileMap = (
+  files: WorkspaceSourceFile[]
+): Map<string, WorkspaceSourceFile> => {
+  const filesByPath = new Map<string, WorkspaceSourceFile>();
+  files.forEach((file) => {
+    const normalized = normalizeSourcePath(file.path);
+    filesByPath.set(normalized, file);
+    filesByPath.set(toMfeSourcePath(normalized), file);
+  });
+  return filesByPath;
+};
+
 const documentContentPath = (document: StableWorkspaceDocument): string => {
+  if (
+    document.type === 'code' &&
+    isWorkspaceCodeDocumentContent(document.content)
+  ) {
+    return normalizeSourcePath(document.path);
+  }
+
   const normalizedDocumentPath = normalizeSourcePath(document.path);
   return `${DOCUMENT_ROOT_PATH}/${normalizedDocumentPath}`;
 };
@@ -115,6 +138,16 @@ const jsonStringifyStable = (value: unknown): string => {
 const serializeDocumentContent = (
   document: StableWorkspaceDocument
 ): Pick<WorkspaceSourceFile, 'content' | 'mime'> => {
+  if (
+    document.type === 'code' &&
+    isWorkspaceCodeDocumentContent(document.content)
+  ) {
+    return {
+      content: document.content.source,
+      mime: 'text/plain',
+    };
+  }
+
   if (typeof document.content === 'string') {
     return {
       content: document.content.endsWith('\n')
@@ -170,6 +203,17 @@ const createManifest = (
     result[documentId] = {
       ...metadata,
       contentPath: documentContentPath(document),
+      ...(document.type === 'code' &&
+      isWorkspaceCodeDocumentContent(document.content)
+        ? {
+            codeContent: {
+              language: document.content.language,
+              ...(document.content.metadata
+                ? { metadata: document.content.metadata }
+                : {}),
+            },
+          }
+        : {}),
     };
     return result;
   }, {});
@@ -213,6 +257,26 @@ export const projectWorkspaceToMfeFiles = (
     };
   }
 
+  const invalidCodeDocuments = Object.values(snapshot.docsById)
+    .filter(
+      (document) =>
+        document.type === 'code' &&
+        !isWorkspaceCodeDocumentContent(document.content)
+    )
+    .map<WorkspaceProjectionIssue>((document) => ({
+      code: 'WKS_PROJECTION_CODE_DOCUMENT_INVALID',
+      path: document.path,
+      message: 'Code workspace documents must use the code content wrapper.',
+      documentId: document.id,
+    }));
+
+  if (invalidCodeDocuments.length) {
+    return {
+      ok: false,
+      issues: invalidCodeDocuments,
+    };
+  }
+
   const files: WorkspaceSourceFile[] = [
     {
       path: WORKSPACE_MANIFEST_PATH,
@@ -247,9 +311,7 @@ export const readWorkspaceFromMfeFiles = (
   files: WorkspaceSourceFile[]
 ): WorkspaceProjectionReadResult => {
   const issues: WorkspaceProjectionIssue[] = [];
-  const filesByPath = new Map(
-    files.map((file) => [toSourcePath(file.path), file])
-  );
+  const filesByPath = createSourceFileMap(files);
 
   const manifest = parseJsonFile<WorkspaceManifest>(
     filesByPath.get(WORKSPACE_MANIFEST_PATH),
@@ -297,7 +359,21 @@ export const readWorkspaceFromMfeFiles = (
     }
 
     let content: unknown = contentFile.content;
-    if (contentFile.mime === 'application/json') {
+    if (documentManifest.type === 'code') {
+      if (!documentManifest.codeContent) {
+        issues.push({
+          code: 'WKS_PROJECTION_MANIFEST_INVALID',
+          path: WORKSPACE_MANIFEST_PATH,
+          message: 'Code document manifest entry must declare codeContent.',
+          documentId,
+        });
+        return result;
+      }
+      content = {
+        ...documentManifest.codeContent,
+        source: contentFile.content,
+      } satisfies WorkspaceCodeDocumentContent;
+    } else if (contentFile.mime === 'application/json') {
       try {
         content = JSON.parse(contentFile.content);
       } catch (cause) {
@@ -312,7 +388,11 @@ export const readWorkspaceFromMfeFiles = (
       }
     }
 
-    const { contentPath: _contentPath, ...metadata } = documentManifest;
+    const {
+      contentPath: _contentPath,
+      codeContent: _codeContent,
+      ...metadata
+    } = documentManifest;
     result[documentId] = {
       ...metadata,
       id: documentId,

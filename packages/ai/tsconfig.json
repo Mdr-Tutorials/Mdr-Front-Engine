@@ -7,7 +7,6 @@
     "emitDeclarationOnly": true,
     "outDir": "./dist",
     "noEmit": false,
-    "baseUrl": ".",
     "paths": {
       "@mdr/shared": ["../shared/src"]
     }

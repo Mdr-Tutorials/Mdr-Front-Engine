@@ -102,6 +102,7 @@ function BlueprintEditor() {
             onToggleGroup={sidebar.onToggleGroup}
             onTogglePreview={sidebar.onTogglePreview}
             onPreviewKeyDown={sidebar.onPreviewKeyDown}
+            onAddComponent={sidebar.onAddComponent}
             onSizeSelect={sidebar.onSizeSelect}
             onStatusSelect={sidebar.onStatusSelect}
             onStatusCycleStart={sidebar.onStatusCycleStart}

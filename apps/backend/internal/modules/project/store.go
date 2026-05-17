@@ -9,9 +9,11 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Mdr-Tutorials/mdr-front-engine/apps/backend/internal/platform/mircontract"
 )
 
-var defaultMIRDocument = json.RawMessage(`{"version":"1.3","ui":{"graph":{"version":1,"rootId":"root","nodesById":{"root":{"id":"root","type":"container"}},"childIdsById":{"root":[]}}}}`)
+var defaultMIRDocument = mircontract.DefaultDocument()
 
 type ProjectStore struct {
 	db *sql.DB
@@ -398,15 +400,15 @@ func normalizeMIR(mir json.RawMessage) (json.RawMessage, error) {
 	if err := json.Unmarshal(mir, &payload); err != nil {
 		return nil, err
 	}
-	if payload["version"] != "1.3" {
-		return nil, errors.New("MIR document version must be 1.3")
+	if payload["version"] != mircontract.CurrentVersion {
+		return nil, errors.New("MIR document version must be " + mircontract.CurrentVersion)
 	}
 	ui, ok := payload["ui"].(map[string]any)
 	if !ok {
 		return nil, errors.New("MIR document ui.graph is required")
 	}
 	if _, hasRoot := ui["root"]; hasRoot {
-		return nil, errors.New("MIR v1.3 must not contain ui.root")
+		return nil, errors.New("MIR " + mircontract.CurrentLabel + " must not contain ui.root")
 	}
 	graph, ok := ui["graph"].(map[string]any)
 	if !ok {

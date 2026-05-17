@@ -34,9 +34,9 @@ const ProjectSettingsPage = lazy(() =>
     default: module.ProjectSettingsPage,
   }))
 );
-const ExportMirPage = lazy(() =>
-  import('./editor/features/export/ExportMirPage').then((module) => ({
-    default: module.ExportMirPage,
+const ExportCode = lazy(() =>
+  import('./editor/features/export/ExportCode').then((module) => ({
+    default: module.ExportCode,
   }))
 );
 
@@ -102,7 +102,7 @@ export const createRoutes = (t: TFunction) => [
           },
           {
             path: 'export',
-            element: withEditorSuspense(<ExportMirPage />),
+            element: withEditorSuspense(<ExportCode />),
           },
           {
             path: 'deployment',

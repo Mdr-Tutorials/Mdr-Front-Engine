@@ -136,7 +136,7 @@ ORDER BY path ASC`)
 			"project",
 			"Bootstrap Project",
 			"",
-			[]byte(`{"version":"1.0","ui":{"root":{"id":"root","type":"container"}}}`),
+			[]byte(`{"version":"1.3","ui":{"graph":{"version":1,"rootId":"root","nodesById":{"root":{"id":"root","type":"container"}},"childIdsById":{"root":[]}}}}`),
 			false,
 			0,
 			now,
@@ -149,7 +149,7 @@ ORDER BY path ASC`)
 		"user_1",
 		"Bootstrap Project",
 		"root",
-		`{"rootId":"root","nodes":[]}`,
+		`{"treeById":{"doc_root_node":{"docId":"doc_root","id":"doc_root_node","kind":"doc","name":"mir.json","parentId":"root"},"root":{"children":["doc_root_node"],"id":"root","kind":"dir","name":"/","parentId":null}},"treeRootId":"root"}`,
 		sqlmock.AnyArg(),
 		sqlmock.AnyArg(),
 	).WillReturnResult(sqlmock.NewResult(1, 1))
@@ -164,8 +164,8 @@ ORDER BY path ASC`)
 		"doc_root",
 		"mir-page",
 		"Root",
-		"/",
-		`{"ui":{"root":{"id":"root","type":"container"}},"version":"1.0"}`,
+		"/mir.json",
+		`{"ui":{"graph":{"childIdsById":{"root":[]},"nodesById":{"root":{"id":"root","type":"container"}},"rootId":"root","version":1}},"version":"1.3"}`,
 	).WillReturnRows(sqlmock.NewRows([]string{
 		"workspace_id", "id", "doc_type", "name", "path", "content_rev", "meta_rev", "content_json", "updated_at",
 	}).AddRow(
@@ -173,10 +173,10 @@ ORDER BY path ASC`)
 		"doc_root",
 		"mir-page",
 		"Root",
-		"/",
+		"/mir.json",
 		1,
 		1,
-		[]byte(`{"version":"1.0","ui":{"root":{"id":"root","type":"container"}}}`),
+		[]byte(`{"version":"1.3","ui":{"graph":{"version":1,"rootId":"root","nodesById":{"root":{"id":"root","type":"container"}},"childIdsById":{"root":[]}}}}`),
 		now,
 	))
 	mock.ExpectQuery(workspaceQuery).
@@ -192,7 +192,7 @@ ORDER BY path ASC`)
 			1,
 			1,
 			"root",
-			[]byte(`{"rootId":"root","nodes":[]}`),
+			[]byte(`{"treeRootId":"root","treeById":{"doc_root_node":{"docId":"doc_root","id":"doc_root_node","kind":"doc","name":"mir.json","parentId":"root"},"root":{"children":["doc_root_node"],"id":"root","kind":"dir","name":"/","parentId":null}}}`),
 			now,
 			now,
 			[]byte(`{"version":"1","root":{"id":"root"}}`),
@@ -207,10 +207,10 @@ ORDER BY path ASC`)
 			"doc_root",
 			"mir-page",
 			"Root",
-			"/",
+			"/mir.json",
 			1,
 			1,
-			[]byte(`{"version":"1.0","ui":{"root":{"id":"root","type":"container"}}}`),
+			[]byte(`{"version":"1.3","ui":{"graph":{"version":1,"rootId":"root","nodesById":{"root":{"id":"root","type":"container"}},"childIdsById":{"root":[]}}}}`),
 			now,
 		))
 
@@ -430,6 +430,107 @@ VALUES ($1, $2, $3, $4, $5::jsonb, $6)`)
 		t.Fatalf("decode response: %v", err)
 	}
 	if payload["workspaceRev"] != float64(10) || payload["routeRev"] != float64(4) {
+		t.Fatalf("unexpected mutation payload: %v", payload)
+	}
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Fatalf("sql expectations: %v", err)
+	}
+}
+
+func TestHandleApplyWorkspaceIntentCreatesCodeDocument(t *testing.T) {
+	handler, mock, cleanup := newWorkspaceHandlerTestHandler(t)
+	defer cleanup()
+
+	now := time.Date(2026, time.February, 8, 10, 10, 0, 0, time.UTC)
+	lockWorkspace := regexp.QuoteMeta(`SELECT workspace_rev, route_rev, op_seq, tree_root_id, tree_json
+FROM workspaces
+WHERE id = $1
+FOR UPDATE`)
+	documentQuery := regexp.QuoteMeta(`SELECT workspace_id, id, doc_type, name, path, content_rev, meta_rev, content_json, updated_at
+FROM workspace_documents
+WHERE workspace_id = $1
+ORDER BY path ASC`)
+	insertDocument := regexp.QuoteMeta(`INSERT INTO workspace_documents (
+	workspace_id, id, doc_type, name, path, content_rev, meta_rev, content_json, updated_at
+) VALUES ($1, $2, $3, $4, $5, 1, 1, $6::jsonb, NOW())`)
+	updateWorkspace := regexp.QuoteMeta(`UPDATE workspaces
+SET tree_json = $2::jsonb, workspace_rev = workspace_rev + 1, op_seq = op_seq + 1, updated_at = NOW()
+WHERE id = $1
+RETURNING workspace_rev, route_rev, op_seq`)
+	insertOperation := regexp.QuoteMeta(`INSERT INTO workspace_operations (workspace_id, op_seq, domain, document_id, payload_json, created_at)
+VALUES ($1, $2, $3, $4, $5::jsonb, $6)`)
+
+	mock.ExpectBegin()
+	mock.ExpectQuery(lockWorkspace).
+		WithArgs("ws_1").
+		WillReturnRows(sqlmock.NewRows([]string{"workspace_rev", "route_rev", "op_seq", "tree_root_id", "tree_json"}).
+			AddRow(9, 4, 34, "root", []byte(`{"treeRootId":"root","treeById":{"root":{"id":"root","kind":"dir","name":"/","parentId":null,"children":[]}}}`)))
+	mock.ExpectQuery(documentQuery).
+		WithArgs("ws_1").
+		WillReturnRows(sqlmock.NewRows([]string{
+			"workspace_id", "id", "doc_type", "name", "path", "content_rev", "meta_rev", "content_json", "updated_at",
+		}))
+	mock.ExpectExec(insertDocument).
+		WithArgs(
+			"ws_1",
+			"code_mounted_css_button_1",
+			"code",
+			"button-1.css",
+			"/styles/mounted/button-1.css",
+			`{"language":"css","metadata":{"slotKind":"mounted-css"},"source":"/* Mounted CSS */\n"}`,
+		).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectQuery(updateWorkspace).
+		WithArgs("ws_1", sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"workspace_rev", "route_rev", "op_seq"}).AddRow(10, 4, 35))
+	mock.ExpectExec(insertOperation).
+		WithArgs(
+			"ws_1",
+			int64(35),
+			"core.workspace.code-document.create@1.0",
+			"code_mounted_css_button_1",
+			sqlmock.AnyArg(),
+			now,
+		).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	context, response := newWorkspaceHandlerContext(
+		http.MethodPost,
+		"/api/workspaces/ws_1/intents",
+		`{
+			"expectedWorkspaceRev": 9,
+			"intent": {
+				"id": "intent_code_create_1",
+				"namespace": "core.workspace",
+				"type": "code-document.create",
+				"version": "1.0",
+				"payload": {
+					"documentId": "code_mounted_css_button_1",
+					"nodeId": "node_code_mounted_css_button_1",
+					"path": "/styles/mounted/button-1.css",
+					"content": {
+						"language": "css",
+						"source": "/* Mounted CSS */\n",
+						"metadata": {"slotKind":"mounted-css"}
+					}
+				},
+				"issuedAt": "2026-02-08T10:10:00Z"
+			}
+		}`,
+		gin.Params{{Key: "workspaceId", Value: "ws_1"}},
+	)
+
+	handler.HandleApplyWorkspaceIntent(context)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", response.Code, response.Body.String())
+	}
+	var payload map[string]any
+	if err := json.Unmarshal(response.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if payload["workspaceRev"] != float64(10) || payload["opSeq"] != float64(35) {
 		t.Fatalf("unexpected mutation payload: %v", payload)
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {

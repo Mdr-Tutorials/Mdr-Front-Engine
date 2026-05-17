@@ -24,16 +24,24 @@ export type MountedCssFile = {
   content: string;
 };
 
+export type ReactGeneratorCodeArtifact = {
+  id: string;
+  path: string;
+  language: string;
+  source: string;
+};
+
 export type ReactGeneratorOptions = {
   resourceType?: ExportResourceType;
   componentName?: string;
   adapter?: TargetAdapter;
   packageResolver?: PackageResolverOptions;
+  codeArtifacts?: ReactGeneratorCodeArtifact[];
 };
 
 export type ReactCompileOptions = Pick<
   ReactGeneratorOptions,
-  'componentName' | 'adapter' | 'packageResolver'
+  'componentName' | 'adapter' | 'packageResolver' | 'codeArtifacts'
 >;
 
 export type ReactComponentCompileResult = {

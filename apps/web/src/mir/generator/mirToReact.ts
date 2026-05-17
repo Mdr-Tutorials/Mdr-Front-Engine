@@ -21,6 +21,7 @@ const bundleFactories: Record<string, BundleFactory> = {
         componentName: options?.componentName || 'App',
         adapter: options?.adapter,
         packageResolver: options?.packageResolver,
+        codeArtifacts: options?.codeArtifacts,
       })
     ),
   component: (mirDoc, options) =>

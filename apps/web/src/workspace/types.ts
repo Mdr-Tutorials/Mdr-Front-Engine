@@ -26,6 +26,21 @@ export type StableWorkspaceDocument = {
   capabilities?: string[];
 };
 
+export type WorkspaceCodeDocumentLanguage =
+  | 'ts'
+  | 'js'
+  | 'css'
+  | 'scss'
+  | 'glsl'
+  | 'wgsl'
+  | 'expr';
+
+export type WorkspaceCodeDocumentContent = {
+  language: WorkspaceCodeDocumentLanguage;
+  source: string;
+  metadata?: Record<string, unknown>;
+};
+
 export type StableWorkspaceVfsNode = {
   id: WorkspaceVfsNodeId;
   kind: 'dir' | 'doc';

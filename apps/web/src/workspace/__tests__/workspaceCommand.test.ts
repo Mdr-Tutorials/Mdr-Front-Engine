@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { createDefaultMirDoc } from '@/mir/resolveMirDocument';
 import {
   applyWorkspaceCommand,
+  createWorkspaceCodeDocumentCommand,
+  createWorkspaceCodeDocumentIntentRequest,
+  projectWorkspaceToMfeFiles,
   type StableWorkspaceSnapshot,
   type WorkspaceCommandEnvelope,
 } from '..';
@@ -19,7 +22,7 @@ const createWorkspace = (): StableWorkspaceSnapshot => ({
       kind: 'dir',
       name: '/',
       parentId: null,
-      children: ['pages'],
+      children: ['pages', 'src'],
     },
     pages: {
       id: 'pages',
@@ -35,6 +38,20 @@ const createWorkspace = (): StableWorkspaceSnapshot => ({
       parentId: 'pages',
       docId: 'page-home',
     },
+    src: {
+      id: 'src',
+      kind: 'dir',
+      name: 'src',
+      parentId: 'root',
+      children: ['code-node'],
+    },
+    'code-node': {
+      id: 'code-node',
+      kind: 'doc',
+      name: 'openDialog.ts',
+      parentId: 'src',
+      docId: 'code-open-dialog',
+    },
   },
   docsById: {
     'page-home': {
@@ -44,6 +61,17 @@ const createWorkspace = (): StableWorkspaceSnapshot => ({
       contentRev: 1,
       metaRev: 1,
       content: createDefaultMirDoc(),
+    },
+    'code-open-dialog': {
+      id: 'code-open-dialog',
+      type: 'code',
+      path: '/src/openDialog.ts',
+      contentRev: 1,
+      metaRev: 1,
+      content: {
+        language: 'ts',
+        source: 'export function openDialog() {}',
+      },
     },
   },
   routeManifest: {
@@ -108,6 +136,42 @@ describe('applyWorkspaceCommand', () => {
     );
   });
 
+  it('applies code document commands without MIR graph validation', () => {
+    const result = applyWorkspaceCommand(
+      createWorkspace(),
+      createCommand({
+        namespace: 'core.code',
+        type: 'source.update',
+        target: {
+          workspaceId: 'workspace-1',
+          documentId: 'code-open-dialog',
+        },
+        forwardOps: [
+          {
+            op: 'replace',
+            path: '/source',
+            value: 'export function openDialog(id: string) { return id; }',
+          },
+        ],
+        reverseOps: [
+          {
+            op: 'replace',
+            path: '/source',
+            value: 'export function openDialog() {}',
+          },
+        ],
+      })
+    );
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.snapshot.docsById['code-open-dialog'].contentRev).toBe(2);
+    expect(result.snapshot.docsById['code-open-dialog'].content).toHaveProperty(
+      'source',
+      'export function openDialog(id: string) { return id; }'
+    );
+  });
+
   it('rejects workspace commands that break VFS invariants', () => {
     const result = applyWorkspaceCommand(
       createWorkspace(),
@@ -122,7 +186,7 @@ describe('applyWorkspaceCommand', () => {
           {
             op: 'replace',
             path: '/treeById/root/children',
-            value: ['pages'],
+            value: ['pages', 'src'],
           },
         ],
       })
@@ -133,5 +197,101 @@ describe('applyWorkspaceCommand', () => {
     expect(result.issues.map((issue) => issue.code)).toContain(
       'WKS_COMMAND_VALIDATION_FAILED'
     );
+  });
+
+  it('creates code documents through a workspace command with a stable VFS path', () => {
+    const workspace = createWorkspace();
+    const command = createWorkspaceCodeDocumentCommand({
+      workspace,
+      commandId: 'command-create-code',
+      issuedAt: '2026-05-10T00:00:00.000Z',
+      parentNodeId: 'src',
+      documentId: 'code-fetch-user',
+      nodeId: 'code-fetch-user-node',
+      name: 'fetchUser.ts',
+      content: {
+        language: 'ts',
+        source: 'export async function fetchUser() { return null; }',
+      },
+    });
+
+    const result = applyWorkspaceCommand(workspace, command);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    expect(result.snapshot.treeById.src.children).toEqual([
+      'code-node',
+      'code-fetch-user-node',
+    ]);
+    expect(result.snapshot.treeById['code-fetch-user-node']).toMatchObject({
+      kind: 'doc',
+      parentId: 'src',
+      docId: 'code-fetch-user',
+    });
+    expect(result.snapshot.docsById['code-fetch-user']).toMatchObject({
+      id: 'code-fetch-user',
+      type: 'code',
+      path: '/src/fetchUser.ts',
+      content: {
+        language: 'ts',
+        source: 'export async function fetchUser() { return null; }',
+      },
+    });
+
+    const projected = projectWorkspaceToMfeFiles(result.snapshot);
+    expect(projected.ok).toBe(true);
+    if (!projected.ok) return;
+
+    expect(projected.files).toContainEqual(
+      expect.objectContaining({
+        path: 'src/fetchUser.ts',
+        content: 'export async function fetchUser() { return null; }',
+        documentId: 'code-fetch-user',
+      })
+    );
+  });
+
+  it('creates a backend intent request for persistent code document creation', () => {
+    const request = createWorkspaceCodeDocumentIntentRequest({
+      workspaceRev: 9,
+      intentId: 'intent-code-create',
+      issuedAt: '2026-05-10T00:00:00.000Z',
+      documentId: 'code-mounted-css-button-1',
+      nodeId: 'node-code-mounted-css-button-1',
+      path: '/styles/mounted/button-1.css',
+      content: {
+        language: 'css',
+        source: '/* Mounted CSS */\n',
+        metadata: {
+          slotKind: 'mounted-css',
+        },
+      },
+      clientMutationId: 'mutation-code-create',
+    });
+
+    expect(request).toEqual({
+      expectedWorkspaceRev: 9,
+      clientMutationId: 'mutation-code-create',
+      intent: {
+        id: 'intent-code-create',
+        namespace: 'core.workspace',
+        type: 'code-document.create',
+        version: '1.0',
+        payload: {
+          documentId: 'code-mounted-css-button-1',
+          nodeId: 'node-code-mounted-css-button-1',
+          path: '/styles/mounted/button-1.css',
+          content: {
+            language: 'css',
+            source: '/* Mounted CSS */\n',
+            metadata: {
+              slotKind: 'mounted-css',
+            },
+          },
+        },
+        issuedAt: '2026-05-10T00:00:00.000Z',
+      },
+    });
   });
 });

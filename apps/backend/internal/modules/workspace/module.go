@@ -45,6 +45,8 @@ func (module *Module) BootstrapProjectWorkspace(ctx context.Context, project *ba
 		ProjectID:   project.ID,
 		OwnerID:     project.OwnerID,
 		Name:        project.Name,
+		TreeRootID:  "root",
+		Tree:        json.RawMessage(`{"treeRootId":"root","treeById":{"root":{"id":"root","kind":"dir","name":"/","parentId":null,"children":["doc_root_node"]},"doc_root_node":{"id":"doc_root_node","kind":"doc","name":"mir.json","parentId":"root","docId":"doc_root"}}}`),
 	}); err != nil && !isUniqueViolation(err) {
 		return err
 	}
@@ -53,7 +55,7 @@ func (module *Module) BootstrapProjectWorkspace(ctx context.Context, project *ba
 		DocumentID:  "doc_root",
 		Type:        WorkspaceDocumentTypeMIRPage,
 		Name:        "Root",
-		Path:        "/",
+		Path:        "/mir.json",
 		Content:     project.MIR,
 	}); err != nil && !isUniqueViolation(err) {
 		return err

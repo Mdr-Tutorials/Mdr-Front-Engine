@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { isWorkspaceMirDocument } from '@/editor/store/editorStore.normalizers';
 import type { WorkspaceRouteNode } from '@/editor/store/useEditorStore';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import { materializeMirRoot } from '@/mir/graph';
@@ -26,7 +27,9 @@ export function useActiveRoutePreview() {
     const pageDocId = activeRouteNode?.pageDocId;
     if (!pageDocId) return null;
     const pageDoc = workspaceDocumentsById[pageDocId];
-    return pageDoc?.content ? materializeMirRoot(pageDoc.content) : null;
+    return isWorkspaceMirDocument(pageDoc)
+      ? materializeMirRoot(pageDoc.content)
+      : null;
   }, [activeRouteNode, workspaceDocumentsById]);
 
   return { activeRouteNode, outletContentNode };

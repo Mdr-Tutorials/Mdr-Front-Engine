@@ -62,6 +62,39 @@ func TestApplyWorkspacePatchRejectsForbiddenPath(t *testing.T) {
 	}
 }
 
+func TestApplyWorkspaceDocumentPatchAllowsCodeSource(t *testing.T) {
+	patched, err := applyWorkspaceDocumentPatch(
+		WorkspaceDocumentTypeCode,
+		mustRaw(`{"language":"ts","source":"export function openDialog() {}"}`),
+		[]WorkspacePatchOp{
+			{Op: "replace", Path: "/source", Value: mustRaw(`"export function openDialog(id) { return id; }"`)},
+		},
+	)
+	if err != nil {
+		t.Fatalf("apply code patch: %v", err)
+	}
+	var got map[string]any
+	if err := json.Unmarshal(patched, &got); err != nil {
+		t.Fatalf("unmarshal patched: %v", err)
+	}
+	if got["source"] != "export function openDialog(id) { return id; }" {
+		t.Fatalf("unexpected source: %#v", got["source"])
+	}
+}
+
+func TestApplyWorkspaceDocumentPatchRejectsMIRPathForCodeDocument(t *testing.T) {
+	_, err := applyWorkspaceDocumentPatch(
+		WorkspaceDocumentTypeCode,
+		mustRaw(`{"language":"ts","source":"export function openDialog() {}"}`),
+		[]WorkspacePatchOp{
+			{Op: "add", Path: "/ui/graph", Value: mustRaw(`{}`)},
+		},
+	)
+	if !errors.Is(err, ErrWorkspacePatchPathForbidden) {
+		t.Fatalf("expected forbidden path error, got %v", err)
+	}
+}
+
 func TestApplyWorkspacePatchIsPure(t *testing.T) {
 	source := mustRaw(`{"ui":{"graph":{"version":1,"rootId":"root","nodesById":{"root":{"id":"root","type":"container"}},"childIdsById":{"root":[]}}}}`)
 	_, err := applyWorkspacePatch(source, []WorkspacePatchOp{

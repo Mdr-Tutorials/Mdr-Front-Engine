@@ -1,6 +1,10 @@
 import type React from 'react';
 import type { ComponentNode } from '@/core/types/engine.types';
-import type { RenderState, UnsafeRecord } from './MIRRenderer.types';
+import type {
+  RendererCodeArtifact,
+  RenderState,
+  UnsafeRecord,
+} from './MIRRenderer.types';
 
 export const VOID_ELEMENTS = new Set([
   'input',
@@ -120,13 +124,45 @@ const readMountedCssContent = (value: unknown): string | null => {
     : null;
 };
 
+const readMountedCssArtifactIds = (value: unknown): string[] => {
+  const candidates = Array.isArray(value) ? value : [value];
+  return candidates
+    .map((candidate) => {
+      const record = asRecord(candidate);
+      const reference = asRecord(record?.reference);
+      const artifactId = reference?.artifactId;
+      return typeof artifactId === 'string' && artifactId.trim()
+        ? artifactId.trim()
+        : null;
+    })
+    .filter((artifactId): artifactId is string => Boolean(artifactId));
+};
+
+const isCssCodeArtifact = (artifact: RendererCodeArtifact) =>
+  artifact.language === 'css' || artifact.path.toLowerCase().endsWith('.css');
+
 export const collectMountedCssFromNode = (
   node: ComponentNode,
-  result: Array<{ key: string; content: string }> = []
+  result: Array<{ key: string; content: string }> = [],
+  artifactsById: Map<string, RendererCodeArtifact> = new Map()
 ) => {
   const anyNode = node as ComponentNode & { metadata?: unknown };
   const props = asRecord(anyNode.props);
   const metadata = asRecord(anyNode.metadata);
+  const codeBindings = asRecord(props?.codeBindings);
+  readMountedCssArtifactIds(codeBindings?.mountedCss).forEach(
+    (artifactId, index) => {
+      const artifact = artifactsById.get(artifactId);
+      if (!artifact || !isCssCodeArtifact(artifact)) return;
+      const content = artifact.source.trim();
+      if (!content) return;
+      result.push({
+        key: `${node.id}-code-${artifactId}-${index}`,
+        content,
+      });
+    }
+  );
+
   const mountedCandidates = [
     props?.mountedCss,
     props?.styleMount,
@@ -153,12 +189,36 @@ export const collectMountedCssFromNode = (
       content,
     });
   });
-  node.children?.forEach((child) => collectMountedCssFromNode(child, result));
+  node.children?.forEach((child) =>
+    collectMountedCssFromNode(child, result, artifactsById)
+  );
   return result;
+};
+
+export const collectMountedCssBlocks = (
+  rootNode: ComponentNode,
+  codeArtifacts: RendererCodeArtifact[] = [],
+  extraNodes: ComponentNode[] = []
+) => {
+  const artifactsById = new Map(
+    codeArtifacts.map((artifact) => [artifact.id, artifact])
+  );
+  const blocks = collectMountedCssFromNode(rootNode, [], artifactsById);
+  extraNodes.forEach((node) =>
+    collectMountedCssFromNode(node, blocks, artifactsById)
+  );
+  const seen = new Set<string>();
+  return blocks.filter((block) => {
+    const dedupeKey = block.content.trim();
+    if (!dedupeKey || seen.has(dedupeKey)) return false;
+    seen.add(dedupeKey);
+    return true;
+  });
 };
 
 export const stripInternalProps = (props: Record<string, unknown>) => {
   const next = { ...props };
+  delete next.codeBindings;
   delete next.mountedCss;
   delete next.styleMount;
   delete next.styleMountCss;

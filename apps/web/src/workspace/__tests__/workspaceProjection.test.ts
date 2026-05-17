@@ -21,7 +21,7 @@ const createWorkspace = (): StableWorkspaceSnapshot => ({
       kind: 'dir',
       name: '/',
       parentId: null,
-      children: ['pages', 'code'],
+      children: ['pages', 'src'],
     },
     pages: {
       id: 'pages',
@@ -37,10 +37,10 @@ const createWorkspace = (): StableWorkspaceSnapshot => ({
       parentId: 'pages',
       docId: 'page-home',
     },
-    code: {
-      id: 'code',
+    src: {
+      id: 'src',
       kind: 'dir',
-      name: 'code',
+      name: 'src',
       parentId: 'root',
       children: ['code-index-node'],
     },
@@ -48,7 +48,7 @@ const createWorkspace = (): StableWorkspaceSnapshot => ({
       id: 'code-index-node',
       kind: 'doc',
       name: 'index.ts',
-      parentId: 'code',
+      parentId: 'src',
       docId: 'code-index',
     },
   },
@@ -67,10 +67,16 @@ const createWorkspace = (): StableWorkspaceSnapshot => ({
       id: 'code-index',
       type: 'code',
       name: 'index.ts',
-      path: '/code/index.ts',
+      path: '/src/index.ts',
       contentRev: 1,
       metaRev: 1,
-      content: 'export const value = 1;\n',
+      content: {
+        language: 'ts',
+        source: 'export const value = 1;',
+        metadata: {
+          generated: false,
+        },
+      },
     },
   },
   routeManifest: {
@@ -96,10 +102,10 @@ describe('workspace projection', () => {
     if (!result.ok) return;
 
     expect(result.files.map((file) => file.path)).toEqual([
-      '.mfe/documents/code/index.ts',
       '.mfe/documents/pages/home.mir.json',
       '.mfe/route-manifest.json',
       '.mfe/workspace.json',
+      'src/index.ts',
     ]);
     expect(
       result.files.find((file) => file.documentId === 'page-home')
@@ -110,10 +116,77 @@ describe('workspace projection', () => {
     expect(
       result.files.find((file) => file.documentId === 'code-index')
     ).toMatchObject({
-      content: 'export const value = 1;\n',
+      content: 'export const value = 1;',
       mime: 'text/plain',
       role: 'document',
     });
+    expect(
+      result.files
+        .find((file) => file.path === '.mfe/workspace.json')
+        ?.content.includes('"codeContent"')
+    ).toBe(true);
+    expect(
+      result.files
+        .find((file) => file.path === '.mfe/workspace.json')
+        ?.content.includes('export const value = 1;')
+    ).toBe(false);
+  });
+
+  it('projects mounted CSS code documents at their VFS path', () => {
+    const workspace = createWorkspace();
+    workspace.treeById.root.children = [
+      ...workspace.treeById.root.children,
+      'styles',
+    ];
+    workspace.treeById.styles = {
+      id: 'styles',
+      kind: 'dir',
+      name: 'styles',
+      parentId: 'root',
+      children: ['mounted'],
+    };
+    workspace.treeById.mounted = {
+      id: 'mounted',
+      kind: 'dir',
+      name: 'mounted',
+      parentId: 'styles',
+      children: ['node-code-mounted-css-button-1'],
+    };
+    workspace.treeById['node-code-mounted-css-button-1'] = {
+      id: 'node-code-mounted-css-button-1',
+      kind: 'doc',
+      name: 'button-1.css',
+      parentId: 'mounted',
+      docId: 'code-mounted-css-button-1',
+    };
+    workspace.docsById['code-mounted-css-button-1'] = {
+      id: 'code-mounted-css-button-1',
+      type: 'code',
+      name: 'button-1.css',
+      path: '/styles/mounted/button-1.css',
+      contentRev: 1,
+      metaRev: 1,
+      content: {
+        language: 'css',
+        source: '.button { color: red; }',
+        metadata: {
+          slotKind: 'mounted-css',
+        },
+      },
+    };
+
+    const result = projectWorkspaceToMfeFiles(workspace);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    expect(result.files).toContainEqual(
+      expect.objectContaining({
+        path: 'styles/mounted/button-1.css',
+        content: '.button { color: red; }',
+        documentId: 'code-mounted-css-button-1',
+      })
+    );
   });
 
   it('round-trips .mfe source files back into a workspace snapshot', () => {
@@ -128,6 +201,39 @@ describe('workspace projection', () => {
     if (!read.ok) return;
 
     expect(read.snapshot).toEqual(workspace);
+  });
+
+  it('restores stable document ids from the manifest after code path changes', () => {
+    const workspace = createWorkspace();
+    const codeDocument = workspace.docsById['code-index'];
+    codeDocument.path = '/src/openDialog.ts';
+    codeDocument.name = 'openDialog.ts';
+    workspace.treeById['code-index-node'].name = 'openDialog.ts';
+
+    const projected = projectWorkspaceToMfeFiles(workspace);
+    expect(projected.ok).toBe(true);
+    if (!projected.ok) return;
+
+    expect(projected.files.map((file) => file.path)).toContain(
+      'src/openDialog.ts'
+    );
+
+    const read = readWorkspaceFromMfeFiles(projected.files);
+
+    expect(read.ok).toBe(true);
+    if (!read.ok) return;
+
+    expect(read.snapshot.docsById['code-index']).toMatchObject({
+      id: 'code-index',
+      path: '/src/openDialog.ts',
+      content: {
+        language: 'ts',
+        source: 'export const value = 1;',
+        metadata: {
+          generated: false,
+        },
+      },
+    });
   });
 
   it('rejects invalid workspaces before writing files', () => {
@@ -145,6 +251,24 @@ describe('workspace projection', () => {
     expect(
       result.issues[0].validationIssues?.map((issue) => issue.code)
     ).toContain('WKS_DOCUMENT_PATH_MISMATCH');
+  });
+
+  it('rejects code documents that do not use the code wrapper', () => {
+    const workspace = createWorkspace();
+    workspace.docsById['code-index'].content = 'export const value = 1;';
+
+    const result = projectWorkspaceToMfeFiles(workspace);
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+
+    expect(result.issues).toEqual([
+      expect.objectContaining({
+        code: 'WKS_PROJECTION_CODE_DOCUMENT_INVALID',
+        documentId: 'code-index',
+        path: '/src/index.ts',
+      }),
+    ]);
   });
 
   it('rejects missing declared document files while reading', () => {

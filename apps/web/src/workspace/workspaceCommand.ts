@@ -1,8 +1,12 @@
 import type {
+  StableWorkspaceDocument,
+  StableWorkspaceVfsNode,
   StableWorkspaceSnapshot,
   WorkspaceDocumentId,
   WorkspaceId,
+  WorkspaceVfsNodeId,
   WorkspaceValidationIssue,
+  WorkspaceCodeDocumentContent,
 } from './types';
 import { validateStableWorkspaceSnapshot } from './validateWorkspaceVfs';
 import { isMirDocumentContent } from './workspaceSelectors';
@@ -68,6 +72,47 @@ export type WorkspaceCommandApplyResult =
       ok: false;
       issues: WorkspaceCommandIssue[];
     };
+
+export type CreateWorkspaceCodeDocumentCommandInput = {
+  workspace: StableWorkspaceSnapshot;
+  commandId: string;
+  issuedAt: string;
+  parentNodeId: WorkspaceVfsNodeId;
+  documentId: WorkspaceDocumentId;
+  nodeId: WorkspaceVfsNodeId;
+  name: string;
+  content: WorkspaceCodeDocumentContent;
+  label?: string;
+};
+
+export type CreateWorkspaceCodeDocumentIntentInput = {
+  workspaceRev: number;
+  intentId: string;
+  issuedAt: string;
+  documentId: WorkspaceDocumentId;
+  nodeId?: WorkspaceVfsNodeId;
+  path: string;
+  content: WorkspaceCodeDocumentContent;
+  clientMutationId?: string;
+};
+
+export type WorkspaceCodeDocumentCreateIntentRequest = {
+  expectedWorkspaceRev: number;
+  intent: {
+    id: string;
+    namespace: 'core.workspace';
+    type: 'code-document.create';
+    version: '1.0';
+    payload: {
+      documentId: WorkspaceDocumentId;
+      nodeId?: WorkspaceVfsNodeId;
+      path: string;
+      content: WorkspaceCodeDocumentContent;
+    };
+    issuedAt: string;
+  };
+  clientMutationId?: string;
+};
 
 type PatchTarget = 'document' | 'workspace';
 type DocumentPatchDomain = Exclude<
@@ -207,6 +252,53 @@ const removeValue = (source: unknown, path: string): boolean => {
 const valuesEqual = (left: unknown, right: unknown): boolean =>
   JSON.stringify(left) === JSON.stringify(right);
 
+const ROOT_PATH = '/';
+
+const normalizePathSegment = (segment: string): string => segment.trim();
+
+const joinWorkspacePath = (parentPath: string, name: string): string => {
+  const normalizedName = normalizePathSegment(name);
+  if (!normalizedName || normalizedName === ROOT_PATH) return parentPath;
+  if (parentPath === ROOT_PATH) return `/${normalizedName}`;
+  return `${parentPath}/${normalizedName}`;
+};
+
+const collectWorkspacePaths = (
+  treeById: StableWorkspaceSnapshot['treeById'],
+  nodeId: WorkspaceVfsNodeId,
+  currentPath: string,
+  pathsByNodeId: Map<WorkspaceVfsNodeId, string>
+) => {
+  const node = treeById[nodeId];
+  if (!node || pathsByNodeId.has(nodeId)) return;
+
+  const nextPath =
+    node.parentId === null
+      ? ROOT_PATH
+      : joinWorkspacePath(currentPath, node.name);
+  pathsByNodeId.set(nodeId, nextPath);
+
+  if (node.kind === 'dir') {
+    (node.children ?? []).forEach((childId) =>
+      collectWorkspacePaths(treeById, childId, nextPath, pathsByNodeId)
+    );
+  }
+};
+
+const getWorkspaceNodePath = (
+  snapshot: StableWorkspaceSnapshot,
+  nodeId: WorkspaceVfsNodeId
+): string | null => {
+  const pathsByNodeId = new Map<WorkspaceVfsNodeId, string>();
+  collectWorkspacePaths(
+    snapshot.treeById,
+    snapshot.treeRootId,
+    ROOT_PATH,
+    pathsByNodeId
+  );
+  return pathsByNodeId.get(nodeId) ?? null;
+};
+
 const isMirWorkspaceDocumentType = (type: string): boolean =>
   type === 'mir-page' || type === 'mir-layout' || type === 'mir-component';
 
@@ -263,7 +355,8 @@ const isAllowedAnimationDocumentPath = (path: string): boolean =>
   path.startsWith('/x-');
 
 const isAllowedCodeDocumentPath = (path: string): boolean =>
-  path === '/content' ||
+  path === '/language' ||
+  path === '/source' ||
   path === '/metadata' ||
   path.startsWith('/metadata/') ||
   path.startsWith('/x-');
@@ -421,6 +514,96 @@ const validateEnvelope = (
 
   return issues;
 };
+
+export const createWorkspaceCodeDocumentCommand = ({
+  workspace,
+  commandId,
+  issuedAt,
+  parentNodeId,
+  documentId,
+  nodeId,
+  name,
+  content,
+  label,
+}: CreateWorkspaceCodeDocumentCommandInput): WorkspaceCommandEnvelope => {
+  const parentNode = workspace.treeById[parentNodeId];
+  const parentChildren = parentNode?.kind === 'dir' ? parentNode.children : [];
+  const parentPath = parentNode
+    ? getWorkspaceNodePath(workspace, parentNodeId)
+    : null;
+  const documentPath = joinWorkspacePath(parentPath ?? ROOT_PATH, name);
+  const document: StableWorkspaceDocument = {
+    id: documentId,
+    type: 'code',
+    name,
+    path: documentPath,
+    contentRev: 1,
+    metaRev: 1,
+    content,
+  };
+  const node: StableWorkspaceVfsNode = {
+    id: nodeId,
+    kind: 'doc',
+    name,
+    parentId: parentNodeId,
+    docId: documentId,
+  };
+
+  return {
+    id: commandId,
+    namespace: 'core.workspace',
+    type: 'code-document.create',
+    version: '1.0',
+    issuedAt,
+    target: { workspaceId: workspace.id },
+    domainHint: 'workspace',
+    ...(label ? { label } : {}),
+    forwardOps: [
+      { op: 'add', path: `/docsById/${documentId}`, value: document },
+      { op: 'add', path: `/treeById/${nodeId}`, value: node },
+      {
+        op: 'add',
+        path: `/treeById/${parentNodeId}/children/-`,
+        value: nodeId,
+      },
+    ],
+    reverseOps: [
+      {
+        op: 'remove',
+        path: `/treeById/${parentNodeId}/children/${parentChildren?.length ?? 0}`,
+      },
+      { op: 'remove', path: `/treeById/${nodeId}` },
+      { op: 'remove', path: `/docsById/${documentId}` },
+    ],
+  };
+};
+
+export const createWorkspaceCodeDocumentIntentRequest = ({
+  workspaceRev,
+  intentId,
+  issuedAt,
+  documentId,
+  nodeId,
+  path,
+  content,
+  clientMutationId,
+}: CreateWorkspaceCodeDocumentIntentInput): WorkspaceCodeDocumentCreateIntentRequest => ({
+  expectedWorkspaceRev: workspaceRev,
+  intent: {
+    id: intentId,
+    namespace: 'core.workspace',
+    type: 'code-document.create',
+    version: '1.0',
+    payload: {
+      documentId,
+      ...(nodeId ? { nodeId } : {}),
+      path,
+      content,
+    },
+    issuedAt,
+  },
+  ...(clientMutationId ? { clientMutationId } : {}),
+});
 
 export const applyWorkspaceCommand = (
   snapshot: StableWorkspaceSnapshot,

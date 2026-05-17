@@ -13,8 +13,8 @@ The project is still in active alpha development. The repository is the source c
 
 MdrFrontEngine is built around several long-term constraints:
 
-- **MIR as the source of truth**: UI, logic, animation, routing, and code generation should converge on a validated intermediate representation instead of diverging into editor-specific state.
-- **Visual editing without a ceiling**: visual workflows should support direct code, external packages, diagnostics, and generated production code instead of stopping at static mockups.
+- **MIR as the source of truth**: UI, logic, animation, routing, and code generation should converge on a validated intermediate representation.
+- **Visual editing without a ceiling**: visual workflows should support direct code, external packages, diagnostics, and generated production code.
 - **Local-first engineering**: the editor should remain useful in local development while still supporting backend-backed workspaces, sync, and future collaboration.
 - **Explicit architecture**: durable contracts are captured in `specs/` before they become hard-to-change implementation details.
 
@@ -55,7 +55,7 @@ MdrFrontEngine is built around several long-term constraints:
 | Animation editor                    | Planned / early implementation               |
 | Multi-framework code generation     | Incremental; React path is the current focus |
 
-Status in this table is intentionally conservative. For detailed plans and architectural decisions, see `specs/`.
+For detailed plans and architectural decisions, see `specs/`.
 
 ## Getting Started
 

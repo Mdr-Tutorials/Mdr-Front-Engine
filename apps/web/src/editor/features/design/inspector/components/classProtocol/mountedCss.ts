@@ -1,4 +1,7 @@
 import type { ComponentNode } from '@/core/types/engine.types';
+import type { CodeSlotBinding } from '@/authoring';
+import type { WorkspaceDocumentRecord } from '@/editor/editorApi';
+import { isWorkspaceCodeDocumentContent } from '@/workspace';
 
 export type MountedCssEntry = {
   id: string;
@@ -6,6 +9,7 @@ export type MountedCssEntry = {
   content?: string;
   classes: string[];
   classIndex: Record<string, { line?: number; column?: number }>;
+  binding?: CodeSlotBinding;
 };
 
 type UnsafeRecord = Record<string, unknown>;
@@ -88,10 +92,123 @@ const readMountCandidates = (node: ComponentNode): unknown[] => {
   return candidates;
 };
 
-export const resolveMountedCssEntries = (
+export const createMountedCssSlotId = (nodeId: string) =>
+  `blueprint.node.${nodeId}.mountedCss`;
+
+export const createMountedCssDocumentId = (nodeId: string) =>
+  `code_mounted_css_${nodeId.replace(/[^a-zA-Z0-9_-]+/g, '_')}`;
+
+export const createMountedCssNodeId = (nodeId: string) =>
+  `node_${createMountedCssDocumentId(nodeId)}`;
+
+export const createMountedCssPath = (nodeId: string) =>
+  `/styles/mounted/${nodeId}.css`;
+
+const readCodeBindings = (node: ComponentNode): Record<string, unknown> => {
+  const props = asRecord(node.props);
+  return asRecord(props?.codeBindings) ?? {};
+};
+
+export const resolveMountedCssBindings = (
   node: ComponentNode
+): CodeSlotBinding[] => {
+  const bindings = readCodeBindings(node);
+  const mountedCss = bindings.mountedCss;
+  const candidates = Array.isArray(mountedCss) ? mountedCss : [mountedCss];
+  return candidates
+    .map((candidate): CodeSlotBinding | null => {
+      const record = asRecord(candidate);
+      const reference = asRecord(record?.reference);
+      if (
+        typeof record?.slotId !== 'string' ||
+        !record.slotId.trim() ||
+        typeof reference?.artifactId !== 'string' ||
+        !reference.artifactId.trim()
+      ) {
+        return null;
+      }
+      return {
+        slotId: record.slotId.trim(),
+        reference: {
+          artifactId: reference.artifactId.trim(),
+          ...(typeof reference.exportName === 'string' &&
+          reference.exportName.trim()
+            ? { exportName: reference.exportName.trim() }
+            : {}),
+          ...(typeof reference.symbolName === 'string' &&
+          reference.symbolName.trim()
+            ? { symbolName: reference.symbolName.trim() }
+            : {}),
+        },
+      };
+    })
+    .filter((binding): binding is CodeSlotBinding => Boolean(binding));
+};
+
+export const upsertMountedCssBinding = (
+  node: ComponentNode,
+  binding: CodeSlotBinding
+): ComponentNode => {
+  const props = asRecord(node.props) ?? {};
+  const codeBindings = readCodeBindings(node);
+  const currentBindings = resolveMountedCssBindings(node);
+  const nextMountedCssBindings = currentBindings.some(
+    (item) => item.slotId === binding.slotId
+  )
+    ? currentBindings.map((item) =>
+        item.slotId === binding.slotId ? binding : item
+      )
+    : [...currentBindings, binding];
+  return {
+    ...node,
+    props: {
+      ...props,
+      codeBindings: {
+        ...codeBindings,
+        mountedCss: nextMountedCssBindings,
+      },
+    },
+  };
+};
+
+export const resolveMountedCssEntriesFromWorkspace = (
+  node: ComponentNode,
+  documentsById: Record<string, WorkspaceDocumentRecord>
 ): MountedCssEntry[] => {
-  const entries: MountedCssEntry[] = [];
+  const entries = resolveMountedCssBindings(node)
+    .map((binding) => {
+      const document = documentsById[binding.reference.artifactId];
+      if (
+        !document ||
+        document.type !== 'code' ||
+        !isWorkspaceCodeDocumentContent(document.content) ||
+        document.content.language !== 'css'
+      ) {
+        return null;
+      }
+      const content = document.content.source;
+      const classIndex = extractCssClassIndexFromContent(content);
+      return {
+        id: document.id,
+        path: document.path,
+        content,
+        classes: [...new Set(Object.keys(classIndex))],
+        classIndex,
+        binding,
+      } satisfies MountedCssEntry;
+    })
+    .filter(Boolean);
+  return entries as MountedCssEntry[];
+};
+
+export const resolveMountedCssEntries = (
+  node: ComponentNode,
+  documentsById: Record<string, WorkspaceDocumentRecord> = {}
+): MountedCssEntry[] => {
+  const entries: MountedCssEntry[] = resolveMountedCssEntriesFromWorkspace(
+    node,
+    documentsById
+  );
   readMountCandidates(node).forEach((candidate, index) => {
     if (Array.isArray(candidate)) {
       candidate.forEach((item, itemIndex) => {

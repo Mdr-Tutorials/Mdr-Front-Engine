@@ -108,6 +108,8 @@ func RunMigrations(ctx context.Context, db *sql.DB) error {
 			CONSTRAINT workspace_documents_content_rev_check CHECK (content_rev >= 1),
 			CONSTRAINT workspace_documents_meta_rev_check CHECK (meta_rev >= 1)
 		)`,
+		`ALTER TABLE workspace_documents DROP CONSTRAINT IF EXISTS workspace_documents_type_check`,
+		`ALTER TABLE workspace_documents ADD CONSTRAINT workspace_documents_type_check CHECK (doc_type IN ('mir-page', 'mir-layout', 'mir-component', 'mir-graph', 'mir-animation', 'code'))`,
 		`CREATE UNIQUE INDEX IF NOT EXISTS idx_workspace_documents_workspace_path ON workspace_documents(workspace_id, path)`,
 		`CREATE INDEX IF NOT EXISTS idx_workspace_documents_workspace_updated_at ON workspace_documents(workspace_id, updated_at DESC)`,
 		`CREATE TABLE IF NOT EXISTS workspace_operations (

@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { ComponentNode } from '@/core/types/engine.types';
 import type { MountedCssEntry } from './mountedCss';
-import {
-  mergeMountedCssEntryWithContent,
-  resolveMountedCssEntries,
-} from './mountedCss';
+import { createMountedCssPath } from './mountedCss';
 
 const DEFAULT_MOUNTED_CSS_CONTENT = '/* Mounted CSS */\n';
 
@@ -12,12 +9,14 @@ type UseMountedCssEditorStateParams = {
   selectedNode: ComponentNode | null;
   mountedCssEntries: MountedCssEntry[];
   updateSelectedNode: (updater: (node: ComponentNode) => ComponentNode) => void;
+  saveMountedCssToVfs?: (value: string) => Promise<boolean>;
 };
 
 export const useMountedCssEditorState = ({
   selectedNode,
   mountedCssEntries,
   updateSelectedNode,
+  saveMountedCssToVfs,
 }: UseMountedCssEditorStateParams) => {
   const [isMountedCssEditorOpen, setMountedCssEditorOpen] = useState(false);
   const [mountedCssEditorEntryId, setMountedCssEditorEntryId] = useState<
@@ -34,6 +33,7 @@ export const useMountedCssEditorState = ({
   >();
   const [mountedCssEditorFocusColumn, setMountedCssEditorFocusColumn] =
     useState<number | undefined>();
+  const [mountedCssEditorError, setMountedCssEditorError] = useState('');
 
   useEffect(() => {
     setMountedCssEditorOpen(false);
@@ -43,6 +43,7 @@ export const useMountedCssEditorState = ({
     setMountedCssEditorFocusClass(undefined);
     setMountedCssEditorFocusLine(undefined);
     setMountedCssEditorFocusColumn(undefined);
+    setMountedCssEditorError('');
   }, [selectedNode?.id]);
 
   const openMountedCssEditor = (target?: {
@@ -55,7 +56,7 @@ export const useMountedCssEditorState = ({
     const matchedEntry = target?.path
       ? mountedCssEntries.find((entry) => entry.path === target.path)
       : mountedCssEntries[0];
-    const fallbackPath = `src/styles/mounted/${selectedNode.id}.css`;
+    const fallbackPath = createMountedCssPath(selectedNode.id);
     setMountedCssEditorEntryId(matchedEntry?.id ?? null);
     setMountedCssEditorPath(matchedEntry?.path ?? fallbackPath);
     setMountedCssEditorValue(
@@ -64,6 +65,7 @@ export const useMountedCssEditorState = ({
     setMountedCssEditorFocusClass(target?.className);
     setMountedCssEditorFocusLine(target?.line);
     setMountedCssEditorFocusColumn(target?.column);
+    setMountedCssEditorError('');
     setMountedCssEditorOpen(true);
   };
 
@@ -72,59 +74,34 @@ export const useMountedCssEditorState = ({
     setMountedCssEditorFocusClass(undefined);
     setMountedCssEditorFocusLine(undefined);
     setMountedCssEditorFocusColumn(undefined);
+    setMountedCssEditorError('');
   };
 
-  const saveMountedCss = () => {
-    if (!selectedNode?.id) return;
-    const entryId = mountedCssEditorEntryId ?? `mounted-${Date.now()}`;
-    const entryPath =
-      mountedCssEditorPath || `src/styles/mounted/${selectedNode.id}.css`;
-    updateSelectedNode((current) => {
-      const currentEntries = resolveMountedCssEntries(current);
-      const existingIndex = currentEntries.findIndex(
-        (entry) =>
-          entry.id === mountedCssEditorEntryId ||
-          entry.path === mountedCssEditorPath
-      );
-      const baseEntry =
-        existingIndex >= 0
-          ? currentEntries[existingIndex]
-          : {
-              id: entryId,
-              path: entryPath,
-              content: DEFAULT_MOUNTED_CSS_CONTENT,
-              classes: [],
-              classIndex: {},
-            };
-      const mergedEntry = mergeMountedCssEntryWithContent(
-        baseEntry,
-        mountedCssEditorValue || DEFAULT_MOUNTED_CSS_CONTENT
-      );
-      const nextEntries =
-        existingIndex >= 0
-          ? currentEntries.map((entry, index) =>
-              index === existingIndex ? mergedEntry : entry
-            )
-          : [...currentEntries, mergedEntry];
-      return {
-        ...current,
-        props: {
-          ...(current.props ?? {}),
-          mountedCss: nextEntries.map((entry) => ({
-            id: entry.id,
-            path: entry.path,
-            content: entry.content,
-            classes: entry.classes,
-            classIndex: entry.classIndex,
-          })),
-        },
-      };
-    });
+  const resetMountedCssEditor = () => {
     setMountedCssEditorOpen(false);
     setMountedCssEditorEntryId(null);
     setMountedCssEditorFocusClass(undefined);
     setMountedCssEditorFocusLine(undefined);
     setMountedCssEditorFocusColumn(undefined);
+    setMountedCssEditorError('');
+  };
+
+  const saveMountedCss = async () => {
+    if (!selectedNode?.id) return;
+    try {
+      const savedToVfs = await saveMountedCssToVfs?.(
+        mountedCssEditorValue || DEFAULT_MOUNTED_CSS_CONTENT
+      );
+      if (savedToVfs) {
+        resetMountedCssEditor();
+        return;
+      }
+    } catch (error) {
+      console.warn('[blueprint] mounted CSS VFS save failed', error);
+    }
+    setMountedCssEditorError(
+      'Mounted CSS must be saved as a Workspace VFS code document.'
+    );
   };
 
   return {
@@ -134,6 +111,7 @@ export const useMountedCssEditorState = ({
     mountedCssEditorFocusClass,
     mountedCssEditorFocusLine,
     mountedCssEditorFocusColumn,
+    mountedCssEditorError,
     setMountedCssEditorValue,
     openMountedCssEditor,
     closeMountedCssEditor,

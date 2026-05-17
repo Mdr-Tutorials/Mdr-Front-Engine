@@ -3,8 +3,10 @@ import {
   createAuthoringDiagnosticProviderRegistry,
   createAuthoringEnvironment,
   createCodeArtifactProviderRegistry,
+  createCodeSlotRegistry,
   createCodeSymbolProviderRegistry,
   createEmptyAuthoringEnvironment,
+  createWorkspaceCodeArtifactProvider,
 } from '@/authoring';
 import { createDiagnostic, COD_DIAGNOSTIC_DEFINITIONS } from '@/diagnostics';
 import type {
@@ -12,6 +14,9 @@ import type {
   AuthoringDiagnosticProvider,
   CodeArtifact,
   CodeArtifactProvider,
+  CodeReference,
+  CodeSlotContract,
+  CodeSlotProvider,
   CodeScope,
   CodeSymbol,
   CodeSymbolProvider,
@@ -21,6 +26,7 @@ describe('authoring environment contract', () => {
   it('keeps code artifacts, symbols, and scopes addressable by stable owners', () => {
     const artifact: CodeArtifact = {
       id: 'artifact-1',
+      path: '/src/actions/onClick.ts',
       language: 'ts',
       owner: {
         kind: 'inspector-field',
@@ -88,6 +94,7 @@ describe('authoring environment contract', () => {
     };
     const artifact: CodeArtifact = {
       id: 'artifact-inspector-on-click',
+      path: '/src/actions/onClick.ts',
       language: 'ts',
       owner: context.targetRef,
       source: 'return true;',
@@ -196,6 +203,142 @@ describe('authoring environment contract', () => {
     expect(registry.getDiagnostics(context)).toEqual([]);
   });
 
+  it('projects workspace code documents into code artifacts', () => {
+    const provider = createWorkspaceCodeArtifactProvider({
+      id: 'workspace-1',
+      workspaceRev: 1,
+      routeRev: 1,
+      opSeq: 1,
+      treeRootId: 'root',
+      treeById: {
+        root: {
+          id: 'root',
+          kind: 'dir',
+          name: '/',
+          parentId: null,
+          children: ['src', 'pages'],
+        },
+        src: {
+          id: 'src',
+          kind: 'dir',
+          name: 'src',
+          parentId: 'root',
+          children: ['open-dialog-node'],
+        },
+        'open-dialog-node': {
+          id: 'open-dialog-node',
+          kind: 'doc',
+          name: 'openDialog.ts',
+          parentId: 'src',
+          docId: 'code-open-dialog',
+        },
+        pages: {
+          id: 'pages',
+          kind: 'dir',
+          name: 'pages',
+          parentId: 'root',
+          children: ['home-node'],
+        },
+        'home-node': {
+          id: 'home-node',
+          kind: 'doc',
+          name: 'home.mir.json',
+          parentId: 'pages',
+          docId: 'page-home',
+        },
+      },
+      docsById: {
+        'code-open-dialog': {
+          id: 'code-open-dialog',
+          type: 'code',
+          path: '/src/actions/openDialog.ts',
+          contentRev: 7,
+          metaRev: 1,
+          content: {
+            language: 'ts',
+            source: 'export function openDialog() {}',
+          },
+        },
+        'page-home': {
+          id: 'page-home',
+          type: 'mir-page',
+          path: '/pages/home.mir.json',
+          contentRev: 1,
+          metaRev: 1,
+          content: {},
+        },
+      },
+      routeManifest: { version: '1', root: { id: 'route-root' } },
+    });
+
+    expect(provider.listArtifacts({ surface: 'code-editor' })).toEqual([
+      {
+        id: 'code-open-dialog',
+        path: '/src/actions/openDialog.ts',
+        language: 'ts',
+        owner: { kind: 'workspace-module', documentId: 'code-open-dialog' },
+        source: 'export function openDialog() {}',
+        revision: '7',
+      },
+    ]);
+    expect(provider.getArtifact('code-open-dialog')).toMatchObject({
+      id: 'code-open-dialog',
+      path: '/src/actions/openDialog.ts',
+    });
+    expect(provider.getArtifact('missing-code')).toBeNull();
+  });
+
+  it('registers code slot providers without owning bindings or source', () => {
+    const ownerRef = {
+      kind: 'mir-node' as const,
+      documentId: 'doc-1',
+      nodeId: 'button-1',
+    };
+    const slot: CodeSlotContract = {
+      id: 'blueprint.button-1.onClick',
+      ownerRef,
+      kind: 'event-handler',
+      inputTypeRef: 'MouseEvent',
+      outputTypeRef: 'void',
+      capabilityIds: ['browser-event'],
+      defaultPlacement: ['inspector-field', 'code-editor', 'issues-panel'],
+    };
+    const provider: CodeSlotProvider = {
+      id: 'test-slot-provider',
+      source: { kind: 'mir', documentId: 'doc-1' },
+      listSlots: (context) =>
+        context.targetRef?.kind === 'mir-node' ? [slot] : [],
+      getSlot: (id) => (id === slot.id ? slot : null),
+    };
+    const registry = createCodeSlotRegistry();
+
+    registry.register(provider);
+
+    expect(
+      registry.listSlots({ surface: 'inspector', targetRef: ownerRef })
+    ).toEqual([slot]);
+    expect(registry.getSlot(slot.id)).toBe(slot);
+    expect(registry.listSlotsByOwner(ownerRef)).toEqual([slot]);
+
+    registry.unregister(provider.id);
+
+    expect(registry.listProviders()).toEqual([]);
+    expect(registry.getSlot(slot.id)).toBeNull();
+  });
+
+  it('uses artifact identity for persistent code references', () => {
+    const reference: CodeReference = {
+      artifactId: 'code-open-dialog',
+      exportName: 'openDialog',
+    };
+
+    expect(reference).toEqual({
+      artifactId: 'code-open-dialog',
+      exportName: 'openDialog',
+    });
+    expect('path' in reference).toBe(false);
+  });
+
   it('composes symbol and diagnostic registries into an authoring environment', () => {
     const context: AuthoringContext = {
       surface: 'code-editor',
@@ -249,10 +392,10 @@ describe('authoring environment contract', () => {
     ]);
     expect(environment.getDiagnostics(context)).toEqual([diagnostic]);
     expect(
-      environment.resolveReference({ name: '$state.count' }, context)
+      environment.resolveReference({ artifactId: 'artifact-1' }, context)
     ).toBeNull();
     expect(
-      environment.getDefinition({ name: '$state.count' }, context)
+      environment.getDefinition({ artifactId: 'artifact-1' }, context)
     ).toBeNull();
     expect(environment.getReferences(symbol.id, context)).toEqual([]);
   });

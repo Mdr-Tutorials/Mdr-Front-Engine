@@ -1,4 +1,9 @@
-import type { DiagnosticTargetRef, MdrDiagnostic } from '@/diagnostics';
+import type {
+  DiagnosticPlacement,
+  DiagnosticTargetRef,
+  MdrDiagnostic,
+  SourceSpan,
+} from '@/diagnostics';
 
 export type CodeArtifactLanguage =
   | 'ts'
@@ -35,6 +40,7 @@ export type CodeArtifactOwner =
 
 export type CodeArtifact = {
   id: string;
+  path: string;
   language: CodeArtifactLanguage;
   owner: CodeArtifactOwner;
   source: string;
@@ -114,9 +120,16 @@ export type AuthoringContext = {
   scopeId?: string;
 };
 
-export type CodeReference = {
+export type ScopedSymbolReference = {
   name: string;
   scopeId?: string;
+};
+
+export type CodeReference = {
+  artifactId: string;
+  exportName?: string;
+  symbolName?: string;
+  sourceSpan?: SourceSpan;
 };
 
 export type ResolvedReference = {
@@ -178,3 +191,45 @@ export type AuthoringDiagnosticProvider = {
   source: SymbolSource;
   getDiagnostics(context: AuthoringContext): MdrDiagnostic[];
 };
+
+export type CodeSlotKind =
+  | 'event-handler'
+  | 'validator'
+  | 'node-executor'
+  | 'animation-function'
+  | 'external-adapter'
+  | 'mounted-css'
+  | 'workspace-module';
+
+export type CodeSlotContract = {
+  id: string;
+  ownerRef: DiagnosticTargetRef;
+  kind: CodeSlotKind;
+  inputTypeRef?: string;
+  outputTypeRef?: string;
+  capabilityIds: string[];
+  defaultPlacement: DiagnosticPlacement[];
+};
+
+export type CodeSlotProvider = {
+  id: string;
+  source: SymbolSource;
+  listSlots(context: AuthoringContext): CodeSlotContract[];
+  getSlot(id: string): CodeSlotContract | null;
+};
+
+export type CodeSlotBinding = {
+  slotId: string;
+  reference: CodeReference;
+};
+
+export type TriggerBinding =
+  | { kind: 'open-url'; href: string }
+  | { kind: 'navigate-route'; routeId: string }
+  | { kind: 'run-nodegraph'; graphId: string; inputMapping?: unknown }
+  | {
+      kind: 'play-animation';
+      timelineId: string;
+      command: 'play' | 'pause' | 'seek';
+    }
+  | { kind: 'call-code'; slotId: string; reference: CodeReference };

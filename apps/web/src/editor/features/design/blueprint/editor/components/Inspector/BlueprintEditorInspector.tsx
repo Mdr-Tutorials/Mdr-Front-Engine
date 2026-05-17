@@ -103,6 +103,7 @@ export function BlueprintEditorInspector({
         highlightedClassName={mountedCssEditor.mountedCssEditorFocusClass}
         highlightedLine={mountedCssEditor.mountedCssEditorFocusLine}
         highlightedColumn={mountedCssEditor.mountedCssEditorFocusColumn}
+        error={mountedCssEditor.mountedCssEditorError}
         onChange={mountedCssEditor.setMountedCssEditorValue}
         onClose={mountedCssEditor.closeMountedCssEditor}
         onSave={mountedCssEditor.saveMountedCss}

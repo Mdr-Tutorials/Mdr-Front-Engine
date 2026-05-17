@@ -1,4 +1,8 @@
-import type { KeyboardEvent, ReactNode } from 'react';
+import type {
+  KeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  ReactNode,
+} from 'react';
 import { useDraggable } from '@dnd-kit/core';
 
 type DraggablePreviewCardProps = {
@@ -8,7 +12,8 @@ type DraggablePreviewCardProps = {
   role?: string;
   tabIndex?: number;
   ariaExpanded?: boolean;
-  onClick?: () => void;
+  onClick?: (event: ReactMouseEvent<HTMLDivElement>) => void;
+  onDoubleClick?: () => void;
   onKeyDown?: (event: KeyboardEvent<HTMLDivElement>) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
@@ -23,6 +28,7 @@ export const DraggablePreviewCard = ({
   tabIndex,
   ariaExpanded,
   onClick,
+  onDoubleClick,
   onKeyDown,
   onMouseEnter,
   onMouseLeave,
@@ -41,6 +47,7 @@ export const DraggablePreviewCard = ({
       tabIndex={tabIndex}
       aria-expanded={ariaExpanded}
       onClick={onClick}
+      onDoubleClick={onDoubleClick}
       onKeyDown={onKeyDown}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}

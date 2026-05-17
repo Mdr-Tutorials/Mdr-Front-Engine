@@ -13,7 +13,10 @@ import { VIEWPORT_ZOOM_RANGE } from '@/editor/features/design/blueprint/editor/m
 import { useBlueprintAutosave } from '@/editor/features/design/blueprint/editor/model/autosave';
 import { useBlueprintDragDrop } from '@/editor/features/design/blueprint/editor/model/dragdrop';
 import { executeBlueprintGraph } from '@/editor/features/design/blueprint/editor/model/graphExecutor';
-import { createNodeIdFactory } from '@/editor/features/design/blueprint/editor/model/palette';
+import {
+  createNodeFromPaletteItem,
+  createNodeIdFactory,
+} from '@/editor/features/design/blueprint/editor/model/palette';
 import type { ComponentNode, MIRDocument } from '@/core/types/engine.types';
 import { materializeMirRoot, normalizeTreeToUiGraph } from '@/mir/graph';
 import {
@@ -21,7 +24,9 @@ import {
   findNodeById,
   findParentId,
   insertAfterById,
+  insertChildAtIndex,
   insertIntoMirDoc,
+  supportsChildrenForNode,
   moveChildById,
   removeNodeById,
 } from '@/editor/features/design/blueprint/editor/model/tree';
@@ -516,6 +521,53 @@ export const useBlueprintEditorController = () => {
     setBlueprintState(blueprintKey, { selectedId: nodeId });
   };
 
+  const handleAddComponent = (itemId: string) => {
+    const targetId = selectedId ?? 'root';
+    let nextNodeId = '';
+    updateMirDoc((doc) => {
+      const root = materializeMirRoot(doc);
+      const createId = createNodeIdFactory(doc);
+      const newNode = createNodeFromPaletteItem(itemId, createId);
+      nextNodeId = newNode.id;
+
+      if (targetId !== root.id) {
+        const targetNode = findNodeById(root, targetId);
+        const isSameComponentType = targetNode?.type === newNode.type;
+        if (
+          targetNode?.id === targetId &&
+          supportsChildrenForNode(targetNode) &&
+          !isSameComponentType
+        ) {
+          const insertedChild = insertChildAtIndex(
+            root,
+            targetNode.id,
+            newNode,
+            targetNode.children?.length ?? 0
+          );
+          if (insertedChild.inserted) {
+            return {
+              ...doc,
+              ui: { graph: normalizeTreeToUiGraph(insertedChild.node) },
+            };
+          }
+        }
+
+        const insertedSibling = insertAfterById(root, targetId, newNode);
+        if (insertedSibling.inserted) {
+          return {
+            ...doc,
+            ui: { graph: normalizeTreeToUiGraph(insertedSibling.node) },
+          };
+        }
+      }
+
+      return insertIntoMirDoc(doc, root.id, newNode);
+    });
+    if (nextNodeId) {
+      handleNodeSelect(nextNodeId);
+    }
+  };
+
   // 拖拽链路：DndContext 事件 -> useBlueprintDragDrop -> updateMirDoc -> 选中态更新
   const {
     activePaletteItemId,
@@ -675,6 +727,7 @@ export const useBlueprintEditorController = () => {
       onToggleGroup: toggleGroup,
       onTogglePreview: togglePreview,
       onPreviewKeyDown: handlePreviewKeyDown,
+      onAddComponent: handleAddComponent,
       onSizeSelect: handleSizeSelect,
       onStatusSelect: handleStatusSelect,
       onStatusCycleStart: startStatusCycle,

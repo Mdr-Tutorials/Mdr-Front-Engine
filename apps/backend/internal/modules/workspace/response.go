@@ -45,6 +45,9 @@ func MapStoreError(err error) *RequestFailure {
 	if errors.Is(err, ErrWorkspacePatchInvalid) || errors.Is(err, ErrWorkspacePatchPathMissing) || errors.Is(err, ErrWorkspacePatchTestFailed) {
 		return NewRequestFailure(http.StatusUnprocessableEntity, ErrorWorkspacePatchFailed, err.Error(), nil)
 	}
+	if errors.Is(err, ErrWorkspaceVFSInvalid) {
+		return NewRequestFailure(http.StatusUnprocessableEntity, ErrorInvalidPayload, err.Error(), nil)
+	}
 	if errors.Is(err, ErrMIRV13ValidationFailed) {
 		return NewRequestFailure(http.StatusUnprocessableEntity, ErrorMIRValidationFailed, err.Error(), nil)
 	}
@@ -179,6 +182,7 @@ func DefaultCapabilities() map[string]bool {
 		"core.mir.graph.replace@1.0":               true,
 		"core.route.manifest.update@1.0":           true,
 		"core.settings.global.update@1.0":          true,
+		"core.workspace.code-document.create@1.0":  true,
 		"core.nodegraph.node.move@1.0":             false,
 		"core.nodegraph.edge.connect@1.0":          false,
 		"core.animation.timeline.keyframe.add@1.0": false,

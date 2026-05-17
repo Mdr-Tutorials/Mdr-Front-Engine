@@ -4,17 +4,19 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
+	"github.com/Mdr-Tutorials/mdr-front-engine/apps/backend/internal/platform/mircontract"
 )
 
-var ErrMIRV13ValidationFailed = errors.New("MIR v1.3 validation failed")
+var ErrMIRV13ValidationFailed = errors.New("MIR " + mircontract.CurrentLabel + " validation failed")
 
 func validateMIRV13Document(payload json.RawMessage) error {
 	var document map[string]any
 	if err := json.Unmarshal(payload, &document); err != nil {
 		return err
 	}
-	if document["version"] != "1.3" {
-		return fmt.Errorf("%w: version must be 1.3", ErrMIRV13ValidationFailed)
+	if document["version"] != mircontract.CurrentVersion {
+		return fmt.Errorf("%w: version must be %s", ErrMIRV13ValidationFailed, mircontract.CurrentVersion)
 	}
 	ui, ok := document["ui"].(map[string]any)
 	if !ok {

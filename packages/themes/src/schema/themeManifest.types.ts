@@ -1,4 +1,6 @@
-export type ThemeSchemaVersion = '1.0';
+export const CURRENT_THEME_SCHEMA_VERSION = '1.0' as const;
+
+export type ThemeSchemaVersion = typeof CURRENT_THEME_SCHEMA_VERSION;
 
 export type ThemeSource = 'official' | 'custom' | 'community';
 

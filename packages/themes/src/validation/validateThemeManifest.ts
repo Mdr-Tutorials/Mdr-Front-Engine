@@ -1,3 +1,4 @@
+import { CURRENT_THEME_SCHEMA_VERSION } from '../schema/themeManifest.types';
 import type {
   ThemeManifest,
   ThemeTokenPath,
@@ -38,10 +39,10 @@ export const validateThemeManifest = (
   validateRequiredString(input, 'source', errors);
   validateRequiredString(input, 'mode', errors);
 
-  if (input.schemaVersion !== '1.0') {
+  if (input.schemaVersion !== CURRENT_THEME_SCHEMA_VERSION) {
     errors.push({
       path: '$.schemaVersion',
-      message: 'Theme manifest schemaVersion must be "1.0".',
+      message: `Theme manifest schemaVersion must be "${CURRENT_THEME_SCHEMA_VERSION}".`,
     });
   }
 

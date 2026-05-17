@@ -6,6 +6,7 @@ import type {
 } from '@/editor/editorApi';
 import { resolveCanonicalWorkspaceDocumentId } from '@/mir/resolveMirDocument';
 import {
+  isWorkspaceMirDocument,
   normalizeRouteManifest,
   normalizeWorkspaceDocument,
   normalizeWorkspaceTree,
@@ -79,7 +80,9 @@ export const createWorkspaceSlice: StateCreator<
         [workspace.activeRouteNodeId, state.activeRouteNodeId]
       );
 
-      const nextMirDoc = activeDocument?.content ?? state.mirDoc;
+      const nextMirDoc = isWorkspaceMirDocument(activeDocument)
+        ? activeDocument.content
+        : state.mirDoc;
       return {
         workspaceId: workspace.id,
         workspaceRev: workspace.workspaceRev,
@@ -144,6 +147,9 @@ export const createWorkspaceSlice: StateCreator<
       const nextDocument = state.workspaceDocumentsById[normalizedDocumentId];
       if (!nextDocument) {
         return state;
+      }
+      if (!isWorkspaceMirDocument(nextDocument)) {
+        return { activeDocumentId: normalizedDocumentId };
       }
       const mirDocChanged = nextDocument.content !== state.mirDoc;
       return {

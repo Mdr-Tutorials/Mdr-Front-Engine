@@ -16,7 +16,7 @@ import type {
 } from './MIRRenderer.types';
 import {
   buildInitialState,
-  collectMountedCssFromNode,
+  collectMountedCssBlocks,
   collectNodeEvents,
   collectNodesById,
   deferSelectionNotification,
@@ -41,6 +41,7 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
   mirDoc,
   overrides = {},
   runtimeState,
+  codeArtifacts = [],
   actions = {},
   selectedId,
   onNodeSelect,
@@ -137,16 +138,15 @@ export const MIRRenderer: React.FC<MIRRendererProps> = ({
   );
   const nodeEventsById = useMemo(() => collectNodeEvents(rootNode), [rootNode]);
   const nodesById = useMemo(() => collectNodesById(rootNode), [rootNode]);
-  const mountedCssBlocks = useMemo(() => {
-    const blocks = collectMountedCssFromNode(rootNode);
-    const seen = new Set<string>();
-    return blocks.filter((block) => {
-      const dedupeKey = block.content.trim();
-      if (!dedupeKey || seen.has(dedupeKey)) return false;
-      seen.add(dedupeKey);
-      return true;
-    });
-  }, [rootNode]);
+  const mountedCssBlocks = useMemo(
+    () =>
+      collectMountedCssBlocks(
+        rootNode,
+        codeArtifacts,
+        outletContentNode ? [outletContentNode] : []
+      ),
+    [codeArtifacts, outletContentNode, rootNode]
+  );
 
   const dispatchBuiltInAction = useCallback(
     (actionName: string, options: BuiltInActionDispatchOptions) => {

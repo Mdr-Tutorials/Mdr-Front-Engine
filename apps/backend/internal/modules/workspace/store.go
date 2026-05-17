@@ -10,11 +10,14 @@ import (
 	"reflect"
 	"strings"
 	"time"
+
+	"github.com/Mdr-Tutorials/mdr-front-engine/apps/backend/internal/platform/mircontract"
 )
 
 var ErrWorkspaceNotFound = errors.New("workspace not found")
 var ErrWorkspaceDocumentNotFound = errors.New("workspace document not found")
 var ErrInvalidWorkspaceDocumentType = errors.New("invalid workspace document type")
+var ErrWorkspaceVFSInvalid = errors.New("invalid workspace vfs")
 
 type WorkspaceConflictType string
 
@@ -50,6 +53,7 @@ const (
 	WorkspaceDocumentTypeMIRComponent WorkspaceDocumentType = "mir-component"
 	WorkspaceDocumentTypeMIRGraph     WorkspaceDocumentType = "mir-graph"
 	WorkspaceDocumentTypeMIRAnimation WorkspaceDocumentType = "mir-animation"
+	WorkspaceDocumentTypeCode         WorkspaceDocumentType = "code"
 )
 
 type WorkspaceStore struct {
@@ -63,7 +67,8 @@ func NewWorkspaceStore(db *sql.DB) *WorkspaceStore {
 var defaultWorkspaceTree = json.RawMessage(`{"rootId":"root","nodes":[]}`)
 var defaultWorkspaceRouteManifest = json.RawMessage(`{"version":"1","root":{"id":"root"}}`)
 var defaultWorkspaceSettings = json.RawMessage(`{}`)
-var defaultMIRDocument = json.RawMessage(`{"version":"1.3","ui":{"graph":{"version":1,"rootId":"root","nodesById":{"root":{"id":"root","type":"container"}},"childIdsById":{"root":[]}}}}`)
+var defaultMIRDocument = mircontract.DefaultDocument()
+var defaultCodeDocument = json.RawMessage(`{"language":"ts","source":""}`)
 
 type WorkspaceRecord struct {
 	ID           string          `json:"id"`
@@ -129,6 +134,16 @@ type CreateWorkspaceDocumentParams struct {
 	Name        string
 	Path        string
 	Content     json.RawMessage
+}
+
+type CreateCodeDocumentMutationParams struct {
+	WorkspaceID          string
+	ExpectedWorkspaceRev int64
+	DocumentID           string
+	NodeID               string
+	Path                 string
+	Content              json.RawMessage
+	Command              WorkspaceCommandEnvelope
 }
 
 type WorkspacePatchOp struct {
@@ -274,7 +289,7 @@ func (store *WorkspaceStore) CreateDocument(ctx context.Context, params CreateWo
 		return nil, ErrInvalidWorkspaceDocumentType
 	}
 
-	contentJSON, err := normalizeJSONDocument(params.Content, defaultMIRDocument)
+	contentJSON, err := normalizeWorkspaceDocumentContent(params.Type, params.Content)
 	if err != nil {
 		return nil, err
 	}
@@ -392,6 +407,198 @@ ORDER BY path ASC`
 		RouteManifest: routeBytes,
 		Settings:      settingsBytes,
 		Documents:     documents,
+	}, nil
+}
+
+func (store *WorkspaceStore) CreateCodeDocument(ctx context.Context, params CreateCodeDocumentMutationParams) (*WorkspaceMutationResult, error) {
+	if store == nil || store.db == nil {
+		return nil, errors.New("workspace store is not initialized")
+	}
+	params.WorkspaceID = strings.TrimSpace(params.WorkspaceID)
+	params.DocumentID = strings.TrimSpace(params.DocumentID)
+	params.NodeID = strings.TrimSpace(params.NodeID)
+	if params.WorkspaceID == "" || params.DocumentID == "" {
+		return nil, errors.New("workspaceID and documentID are required")
+	}
+	if params.ExpectedWorkspaceRev <= 0 {
+		return nil, errors.New("expectedWorkspaceRev must be positive")
+	}
+	documentPath, err := normalizeWorkspacePath(params.Path)
+	if err != nil {
+		return nil, err
+	}
+	contentJSON, err := normalizeWorkspaceDocumentContent(WorkspaceDocumentTypeCode, params.Content)
+	if err != nil {
+		return nil, err
+	}
+	command, err := normalizeWorkspaceCommand(params.Command)
+	if err != nil {
+		return nil, err
+	}
+	if err := validateWorkspaceCommand(command, params.WorkspaceID, nil); err != nil {
+		return nil, err
+	}
+	if command.Target.DocumentID != "" && command.Target.DocumentID != params.DocumentID {
+		return nil, errors.New("command.target.documentId does not match documentID")
+	}
+
+	commandJSON, err := json.Marshal(command)
+	if err != nil {
+		return nil, err
+	}
+	payloadJSON := json.RawMessage(commandJSON)
+
+	ctx, cancel := withStoreTimeout(ctx)
+	defer cancel()
+
+	tx, err := store.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	const lockWorkspace = `SELECT workspace_rev, route_rev, op_seq, tree_root_id, tree_json
+FROM workspaces
+WHERE id = $1
+FOR UPDATE`
+
+	var currentWorkspaceRev int64
+	var currentRouteRev int64
+	var currentOpSeq int64
+	var treeRootID string
+	var treeBytes []byte
+	err = tx.QueryRowContext(ctx, lockWorkspace, params.WorkspaceID).Scan(&currentWorkspaceRev, &currentRouteRev, &currentOpSeq, &treeRootID, &treeBytes)
+	if err != nil {
+		_ = tx.Rollback()
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrWorkspaceNotFound
+		}
+		return nil, err
+	}
+	if currentWorkspaceRev != params.ExpectedWorkspaceRev {
+		_ = tx.Rollback()
+		log.Printf(
+			"[workspace] conflict create_code_document workspace=%s expectedWorkspaceRev=%d serverWorkspaceRev=%d serverRouteRev=%d serverOpSeq=%d",
+			params.WorkspaceID,
+			params.ExpectedWorkspaceRev,
+			currentWorkspaceRev,
+			currentRouteRev,
+			currentOpSeq,
+		)
+		return nil, &WorkspaceRevisionConflictError{
+			ConflictType:       WorkspaceConflictWorkspace,
+			WorkspaceID:        params.WorkspaceID,
+			ServerWorkspaceRev: currentWorkspaceRev,
+			ServerRouteRev:     currentRouteRev,
+			ServerOpSeq:        currentOpSeq,
+		}
+	}
+
+	const documentQuery = `SELECT workspace_id, id, doc_type, name, path, content_rev, meta_rev, content_json, updated_at
+FROM workspace_documents
+WHERE workspace_id = $1
+ORDER BY path ASC`
+	rows, err := tx.QueryContext(ctx, documentQuery, params.WorkspaceID)
+	if err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+	existingDocuments := make([]WorkspaceDocumentRecord, 0)
+	for rows.Next() {
+		document, scanErr := scanWorkspaceDocument(rows)
+		if scanErr != nil {
+			_ = rows.Close()
+			_ = tx.Rollback()
+			return nil, scanErr
+		}
+		if document.ID == params.DocumentID {
+			_ = rows.Close()
+			_ = tx.Rollback()
+			return nil, fmt.Errorf("%w: document id already exists", ErrWorkspaceVFSInvalid)
+		}
+		if normalizeComparablePath(document.Path) == normalizeComparablePath(documentPath) {
+			_ = rows.Close()
+			_ = tx.Rollback()
+			return nil, fmt.Errorf("%w: workspace path already exists", ErrWorkspaceVFSInvalid)
+		}
+		existingDocuments = append(existingDocuments, *document)
+	}
+	if err := rows.Err(); err != nil {
+		_ = rows.Close()
+		_ = tx.Rollback()
+		return nil, err
+	}
+	if err := rows.Close(); err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+
+	tree, err := parseWorkspaceVFSTree(treeBytes, treeRootID, existingDocuments)
+	if err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+	documentName := workspacePathName(documentPath)
+	if err := tree.addDocument(codeDocumentMount{
+		DocumentID: params.DocumentID,
+		NodeID:     params.NodeID,
+		Path:       documentPath,
+		Name:       documentName,
+	}); err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+	nextTreeJSON, err := tree.marshal()
+	if err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+
+	const insertDocument = `INSERT INTO workspace_documents (
+	workspace_id, id, doc_type, name, path, content_rev, meta_rev, content_json, updated_at
+) VALUES ($1, $2, $3, $4, $5, 1, 1, $6::jsonb, NOW())`
+	if _, err := tx.ExecContext(
+		ctx,
+		insertDocument,
+		params.WorkspaceID,
+		params.DocumentID,
+		string(WorkspaceDocumentTypeCode),
+		documentName,
+		documentPath,
+		string(contentJSON),
+	); err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+
+	const updateWorkspace = `UPDATE workspaces
+SET tree_json = $2::jsonb, workspace_rev = workspace_rev + 1, op_seq = op_seq + 1, updated_at = NOW()
+WHERE id = $1
+RETURNING workspace_rev, route_rev, op_seq`
+	var nextWorkspaceRev int64
+	var nextRouteRev int64
+	var nextOpSeq int64
+	if err := tx.QueryRowContext(ctx, updateWorkspace, params.WorkspaceID, string(nextTreeJSON)).Scan(&nextWorkspaceRev, &nextRouteRev, &nextOpSeq); err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+
+	if err := insertWorkspaceOperation(ctx, tx, params.WorkspaceID, nextOpSeq, commandDomain(command), &params.DocumentID, payloadJSON, command.IssuedAt); err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return &WorkspaceMutationResult{
+		WorkspaceID:  params.WorkspaceID,
+		WorkspaceRev: nextWorkspaceRev,
+		RouteRev:     nextRouteRev,
+		OpSeq:        nextOpSeq,
+		UpdatedDocuments: []WorkspaceDocumentRevision{
+			{ID: params.DocumentID, ContentRev: 1, MetaRev: 1},
+		},
 	}, nil
 }
 
@@ -575,12 +782,13 @@ func (store *WorkspaceStore) PatchDocumentContent(ctx context.Context, params Pa
 		return nil, err
 	}
 
-	const lockQuery = `SELECT d.content_json, d.content_rev, d.meta_rev, w.workspace_rev, w.route_rev, w.op_seq
+	const lockQuery = `SELECT d.doc_type, d.content_json, d.content_rev, d.meta_rev, w.workspace_rev, w.route_rev, w.op_seq
 FROM workspace_documents d
 JOIN workspaces w ON w.id = d.workspace_id
 WHERE d.workspace_id = $1 AND d.id = $2
 FOR UPDATE OF d, w`
 
+	var rawDocumentType string
 	var currentContent json.RawMessage
 	var currentContentRev int64
 	var currentMetaRev int64
@@ -589,6 +797,7 @@ FOR UPDATE OF d, w`
 	var currentOpSeq int64
 
 	err = tx.QueryRowContext(ctx, lockQuery, params.WorkspaceID, params.DocumentID).Scan(
+		&rawDocumentType,
 		&currentContent,
 		&currentContentRev,
 		&currentMetaRev,
@@ -618,16 +827,22 @@ FOR UPDATE OF d, w`
 		}
 	}
 
-	patchedContent, err := applyWorkspacePatch(currentContent, command.ForwardOps)
+	documentType := WorkspaceDocumentType(rawDocumentType)
+	if !isValidWorkspaceDocumentType(documentType) {
+		_ = tx.Rollback()
+		return nil, ErrInvalidWorkspaceDocumentType
+	}
+
+	patchedContent, err := applyWorkspaceDocumentPatch(documentType, currentContent, command.ForwardOps)
 	if err != nil {
 		_ = tx.Rollback()
 		return nil, err
 	}
-	if err := validateMIRV13Document(patchedContent); err != nil {
+	if err := validateWorkspaceDocumentContent(documentType, patchedContent); err != nil {
 		_ = tx.Rollback()
 		return nil, err
 	}
-	reversedContent, err := applyWorkspacePatch(patchedContent, command.ReverseOps)
+	reversedContent, err := applyWorkspaceDocumentPatch(documentType, patchedContent, command.ReverseOps)
 	if err != nil {
 		_ = tx.Rollback()
 		return nil, err
@@ -1124,6 +1339,54 @@ func normalizeJSONDocument(payload json.RawMessage, fallback json.RawMessage) (j
 	return normalized, nil
 }
 
+func normalizeWorkspaceDocumentContent(documentType WorkspaceDocumentType, payload json.RawMessage) (json.RawMessage, error) {
+	fallback := defaultMIRDocument
+	if documentType == WorkspaceDocumentTypeCode {
+		fallback = defaultCodeDocument
+	}
+	normalized, err := normalizeJSONDocument(payload, fallback)
+	if err != nil {
+		return nil, err
+	}
+	if err := validateWorkspaceDocumentContent(documentType, normalized); err != nil {
+		return nil, err
+	}
+	return normalized, nil
+}
+
+func validateWorkspaceDocumentContent(documentType WorkspaceDocumentType, payload json.RawMessage) error {
+	if documentType == WorkspaceDocumentTypeCode {
+		return validateWorkspaceCodeDocument(payload)
+	}
+	if isMIRWorkspaceDocumentType(documentType) {
+		return validateMIRV13Document(payload)
+	}
+	return nil
+}
+
+func validateWorkspaceCodeDocument(payload json.RawMessage) error {
+	var document map[string]any
+	if err := json.Unmarshal(payload, &document); err != nil {
+		return err
+	}
+	language, ok := document["language"].(string)
+	if !ok || strings.TrimSpace(language) == "" {
+		return errors.New("code document language is required")
+	}
+	source, ok := document["source"].(string)
+	if !ok {
+		return errors.New("code document source must be a string")
+	}
+	document["language"] = strings.TrimSpace(language)
+	document["source"] = source
+	if metadata, exists := document["metadata"]; exists {
+		if _, ok := metadata.(map[string]any); !ok {
+			return errors.New("code document metadata must be an object")
+		}
+	}
+	return nil
+}
+
 func jsonBytesEqual(left json.RawMessage, right json.RawMessage) bool {
 	var leftValue any
 	var rightValue any
@@ -1145,7 +1408,16 @@ func withStoreTimeout(ctx context.Context) (context.Context, context.CancelFunc)
 
 func isValidWorkspaceDocumentType(documentType WorkspaceDocumentType) bool {
 	switch documentType {
-	case WorkspaceDocumentTypeMIRPage, WorkspaceDocumentTypeMIRLayout, WorkspaceDocumentTypeMIRComponent, WorkspaceDocumentTypeMIRGraph, WorkspaceDocumentTypeMIRAnimation:
+	case WorkspaceDocumentTypeMIRPage, WorkspaceDocumentTypeMIRLayout, WorkspaceDocumentTypeMIRComponent, WorkspaceDocumentTypeMIRGraph, WorkspaceDocumentTypeMIRAnimation, WorkspaceDocumentTypeCode:
+		return true
+	default:
+		return false
+	}
+}
+
+func isMIRWorkspaceDocumentType(documentType WorkspaceDocumentType) bool {
+	switch documentType {
+	case WorkspaceDocumentTypeMIRPage, WorkspaceDocumentTypeMIRLayout, WorkspaceDocumentTypeMIRComponent:
 		return true
 	default:
 		return false

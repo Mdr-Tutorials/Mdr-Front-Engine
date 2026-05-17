@@ -13,7 +13,8 @@ const isPlainObject = (value: unknown): value is Record<string, unknown> =>
 
 /**
  * Pick the workspace document that should drive the editor's active mirDoc.
- * Order: (1) mir-page at root path, (2) first mir-page, (3) first document.
+ * Order: (1) mir-page at root path, (2) first mir-page. Code and other
+ * non-MIR documents must not be treated as fallback MIR documents.
  */
 export const resolveCanonicalWorkspaceDocumentId = (
   documents: WorkspaceLikeDocument[]
@@ -31,7 +32,7 @@ export const resolveCanonicalWorkspaceDocumentId = (
   const firstPage = documents.find((document) => document.type === 'mir-page');
   if (firstPage?.id) return firstPage.id;
 
-  return documents[0]?.id;
+  return undefined;
 };
 
 export const hasDirectMirShape = (source: unknown): boolean => {

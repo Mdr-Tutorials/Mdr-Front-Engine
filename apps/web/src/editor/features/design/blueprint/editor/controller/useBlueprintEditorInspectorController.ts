@@ -9,6 +9,9 @@ import { createDefaultActionParams } from '@/mir/actions/registry';
 import { isIconRef, resolveIconRef } from '@/mir/renderer/iconRegistry';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import type { WorkspaceRouteNode } from '@/editor/store/useEditorStore';
+import { useAuthStore } from '@/auth/useAuthStore';
+import { editorApi } from '@/editor/editorApi';
+import { createWorkspaceCodeDocumentIntentRequest } from '@/workspace';
 import { flattenRouteItems } from '@/editor/store/routeManifest';
 import {
   createDefaultBinding,
@@ -22,7 +25,14 @@ import {
 } from '@/editor/features/design/blueprint/layoutPatterns/dataAttributes';
 import { getExternalRuntimeMetaByType } from '@/editor/features/design/blueprint/external/runtime/metaStore';
 import { resolveInspectorPanels } from '@/editor/features/design/inspector/panels/registry';
-import { resolveMountedCssEntries } from '@/editor/features/design/inspector/components/classProtocol/mountedCss';
+import {
+  createMountedCssDocumentId,
+  createMountedCssNodeId,
+  createMountedCssPath,
+  createMountedCssSlotId,
+  resolveMountedCssEntries,
+  upsertMountedCssBinding,
+} from '@/editor/features/design/inspector/components/classProtocol/mountedCss';
 import { useMountedCssEditorState } from '@/editor/features/design/inspector/components/classProtocol/useMountedCssEditorState';
 import { getPrimaryTextField } from '@/editor/features/design/blueprint/editor/model/blueprintText';
 import {
@@ -38,6 +48,13 @@ export const resetInspectorExpansionPersistence = () => {
   persistedExpandedPanels = {};
 };
 
+const createIntentId = () => {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+    return crypto.randomUUID();
+  }
+  return `intent-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+};
+
 export const useBlueprintEditorInspectorController = () => {
   const { t } = useTranslation('blueprint');
   const translate = useCallback(
@@ -47,8 +64,23 @@ export const useBlueprintEditorInspectorController = () => {
   const navigate = useNavigate();
   const { projectId } = useParams();
   const blueprintKey = projectId ?? 'global';
+  const token = useAuthStore((state) => state.token);
   const mirDoc = useEditorStore((state) => state.mirDoc);
   const updateMirDoc = useEditorStore((state) => state.updateMirDoc);
+  const workspaceId = useEditorStore((state) => state.workspaceId);
+  const workspaceRev = useEditorStore((state) => state.workspaceRev);
+  const workspaceDocumentsById = useEditorStore(
+    (state) => state.workspaceDocumentsById
+  );
+  const workspaceCapabilities = useEditorStore(
+    (state) => state.workspaceCapabilities
+  );
+  const workspaceCapabilitiesLoaded = useEditorStore(
+    (state) => state.workspaceCapabilitiesLoaded
+  );
+  const setWorkspaceSnapshot = useEditorStore(
+    (state) => state.setWorkspaceSnapshot
+  );
   const routeManifest = useEditorStore((state) => state.routeManifest);
   const activeRouteNodeId = useEditorStore((state) => state.activeRouteNodeId);
   const bindOutletToRoute = useEditorStore((state) => state.bindOutletToRoute);
@@ -203,8 +235,11 @@ export const useBlueprintEditorInspectorController = () => {
       ? selectedNode.props.className
       : '';
   const mountedCssEntries = useMemo(
-    () => (selectedNode ? resolveMountedCssEntries(selectedNode) : []),
-    [selectedNode]
+    () =>
+      selectedNode
+        ? resolveMountedCssEntries(selectedNode, workspaceDocumentsById)
+        : [],
+    [selectedNode, workspaceDocumentsById]
   );
   const SelectedIconComponent = selectedIconComponent;
   const linkCapability = useMemo(
@@ -503,10 +538,100 @@ export const useBlueprintEditorInspectorController = () => {
     });
   };
 
+  const saveMountedCssToVfs = useCallback(
+    async (value: string) => {
+      if (!selectedNode?.id || !token || !workspaceId || workspaceRev == null) {
+        return false;
+      }
+      if (
+        workspaceCapabilitiesLoaded &&
+        workspaceCapabilities['core.workspace.code-document.create@1.0'] !==
+          true
+      ) {
+        return false;
+      }
+
+      const existingEntry = mountedCssEntries[0];
+      const source = value || '/* Mounted CSS */\n';
+      if (existingEntry?.binding?.reference.artifactId) {
+        const documentId = existingEntry.binding.reference.artifactId;
+        const document = workspaceDocumentsById[documentId];
+        if (!document || document.type !== 'code') return false;
+        const previousSource =
+          typeof document.content === 'object' &&
+          document.content !== null &&
+          'source' in document.content &&
+          typeof document.content.source === 'string'
+            ? document.content.source
+            : '';
+        await editorApi.patchWorkspaceDocument(token, workspaceId, documentId, {
+          expectedContentRev: document.contentRev,
+          command: {
+            id: createIntentId(),
+            namespace: 'core.code',
+            type: 'source.update',
+            version: '1.0',
+            issuedAt: new Date().toISOString(),
+            forwardOps: [{ op: 'replace', path: '/source', value: source }],
+            reverseOps: [
+              { op: 'replace', path: '/source', value: previousSource },
+            ],
+            target: { workspaceId, documentId },
+          },
+        });
+        const { workspace } = await editorApi.getWorkspace(token, workspaceId);
+        setWorkspaceSnapshot(workspace);
+        return true;
+      }
+
+      const documentId = createMountedCssDocumentId(selectedNode.id);
+      const request = createWorkspaceCodeDocumentIntentRequest({
+        workspaceRev,
+        intentId: createIntentId(),
+        issuedAt: new Date().toISOString(),
+        documentId,
+        nodeId: createMountedCssNodeId(selectedNode.id),
+        path: createMountedCssPath(selectedNode.id),
+        content: {
+          language: 'css',
+          source,
+          metadata: {
+            slotKind: 'mounted-css',
+            ownerKind: 'mir-node',
+            ownerId: selectedNode.id,
+          },
+        },
+      });
+      await editorApi.applyWorkspaceIntent(token, workspaceId, request);
+      const { workspace } = await editorApi.getWorkspace(token, workspaceId);
+      setWorkspaceSnapshot(workspace);
+      updateSelectedNode((current) =>
+        upsertMountedCssBinding(current, {
+          slotId: createMountedCssSlotId(current.id),
+          reference: { artifactId: documentId },
+        })
+      );
+      return true;
+    },
+    [
+      mountedCssEntries,
+      selectedNode?.id,
+      setWorkspaceSnapshot,
+      token,
+      updateSelectedNode,
+      workspaceCapabilities,
+      workspaceCapabilitiesLoaded,
+      workspaceDocumentsById,
+      workspaceId,
+      workspaceRev,
+    ]
+  );
+
   const mountedCssEditor = useMountedCssEditorState({
     selectedNode,
     mountedCssEntries,
     updateSelectedNode,
+    saveMountedCssToVfs,
   });
 
   const sectionContextValue = useMemo(

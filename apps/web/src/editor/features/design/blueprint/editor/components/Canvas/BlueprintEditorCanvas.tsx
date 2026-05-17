@@ -12,7 +12,9 @@ import { useDroppable } from '@dnd-kit/core';
 import { useEditorStore } from '@/editor/store/useEditorStore';
 import { useSettingsStore } from '@/editor/store/useSettingsStore';
 import { MIRRenderer } from '@/mir/renderer/MIRRenderer';
+import type { RendererCodeArtifact } from '@/mir/renderer/MIRRenderer.types';
 import { materializeMirRoot } from '@/mir/graph';
+import { isWorkspaceCodeDocumentContent } from '@/workspace';
 import {
   createOrderedComponentRegistry,
   getRuntimeRegistryRevision,
@@ -78,7 +80,28 @@ export function BlueprintEditorCanvas({
     getRuntimeRegistryRevision()
   );
   const mirDoc = useEditorStore((state) => state.mirDoc);
+  const workspaceDocumentsById = useEditorStore(
+    (state) => state.workspaceDocumentsById
+  );
   const mirRoot = useMemo(() => materializeMirRoot(mirDoc), [mirDoc]);
+  const codeArtifacts = useMemo<RendererCodeArtifact[]>(() => {
+    const artifacts: RendererCodeArtifact[] = [];
+    Object.values(workspaceDocumentsById).forEach((document) => {
+      if (
+        document.type !== 'code' ||
+        !isWorkspaceCodeDocumentContent(document.content)
+      ) {
+        return;
+      }
+      artifacts.push({
+        id: document.id,
+        path: document.path,
+        language: document.content.language,
+        source: document.content.source,
+      });
+    });
+    return artifacts;
+  }, [workspaceDocumentsById]);
   const { activeRouteNode, outletContentNode } = useActiveRoutePreview();
   const routeDiagnostics = useMemo(
     () => createRouteCanvasDiagnostics(activeRouteNode, mirRoot),
@@ -427,6 +450,7 @@ export function BlueprintEditorCanvas({
                 <MIRRenderer
                   mirDoc={mirDoc}
                   runtimeState={runtimeState}
+                  codeArtifacts={codeArtifacts}
                   overrides={{ currentPath }}
                   outletContentNode={outletContentNode}
                   outletTargetNodeId={activeRouteNode?.outletNodeId}

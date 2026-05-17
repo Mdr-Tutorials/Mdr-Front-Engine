@@ -18,15 +18,27 @@ var (
 )
 
 type jsonPointer []string
+type workspacePatchPathValidator func(path string) error
 
 func applyWorkspacePatch(content json.RawMessage, ops []WorkspacePatchOp) (json.RawMessage, error) {
+	return applyWorkspacePatchWithValidator(content, ops, validateWorkspacePatchPath)
+}
+
+func applyWorkspaceDocumentPatch(documentType WorkspaceDocumentType, content json.RawMessage, ops []WorkspacePatchOp) (json.RawMessage, error) {
+	if documentType == WorkspaceDocumentTypeCode {
+		return applyWorkspacePatchWithValidator(content, ops, validateWorkspaceCodePatchPath)
+	}
+	return applyWorkspacePatch(content, ops)
+}
+
+func applyWorkspacePatchWithValidator(content json.RawMessage, ops []WorkspacePatchOp, validatePath workspacePatchPathValidator) (json.RawMessage, error) {
 	var document any
 	if err := decodeJSONValue(content, &document); err != nil {
 		return nil, err
 	}
 	next := deepCloneJSONValue(document)
 	for index, op := range ops {
-		patched, err := applyWorkspacePatchOperation(next, op)
+		patched, err := applyWorkspacePatchOperation(next, op, validatePath)
 		if err != nil {
 			return nil, fmt.Errorf("patch operation %d: %w", index, err)
 		}
@@ -61,11 +73,34 @@ func validateWorkspacePatchPath(path string) error {
 	return ErrWorkspacePatchPathForbidden
 }
 
-func applyWorkspacePatchOperation(document any, op WorkspacePatchOp) (any, error) {
+func validateWorkspaceCodePatchPath(path string) error {
+	pointer, err := parseJSONPointer(path)
+	if err != nil {
+		return err
+	}
+	if len(pointer) == 0 {
+		return ErrWorkspacePatchPathForbidden
+	}
+	switch pointer[0] {
+	case "language", "source":
+		if len(pointer) == 1 {
+			return nil
+		}
+	case "metadata":
+		return nil
+	default:
+		if strings.HasPrefix(pointer[0], "x-") {
+			return nil
+		}
+	}
+	return ErrWorkspacePatchPathForbidden
+}
+
+func applyWorkspacePatchOperation(document any, op WorkspacePatchOp, validatePath workspacePatchPathValidator) (any, error) {
 	op.Op = strings.TrimSpace(strings.ToLower(op.Op))
 	op.Path = strings.TrimSpace(op.Path)
 	op.From = strings.TrimSpace(op.From)
-	if err := validateWorkspacePatchPath(op.Path); err != nil {
+	if err := validatePath(op.Path); err != nil {
 		return nil, err
 	}
 	path, err := parseJSONPointer(op.Path)
@@ -101,7 +136,7 @@ func applyWorkspacePatchOperation(document any, op WorkspacePatchOp) (any, error
 		}
 		return document, nil
 	case "copy":
-		from, err := parseAndValidateFromPointer(op.From)
+		from, err := parseAndValidateFromPointer(op.From, validatePath)
 		if err != nil {
 			return nil, err
 		}
@@ -111,7 +146,7 @@ func applyWorkspacePatchOperation(document any, op WorkspacePatchOp) (any, error
 		}
 		return addJSONValue(document, path, deepCloneJSONValue(value))
 	case "move":
-		from, err := parseAndValidateFromPointer(op.From)
+		from, err := parseAndValidateFromPointer(op.From, validatePath)
 		if err != nil {
 			return nil, err
 		}
@@ -133,11 +168,11 @@ func applyWorkspacePatchOperation(document any, op WorkspacePatchOp) (any, error
 	}
 }
 
-func parseAndValidateFromPointer(raw string) (jsonPointer, error) {
+func parseAndValidateFromPointer(raw string, validatePath workspacePatchPathValidator) (jsonPointer, error) {
 	if strings.TrimSpace(raw) == "" {
 		return nil, fmt.Errorf("%w: from is required", ErrWorkspacePatchInvalid)
 	}
-	if err := validateWorkspacePatchPath(raw); err != nil {
+	if err := validatePath(raw); err != nil {
 		return nil, err
 	}
 	return parseJSONPointer(raw)

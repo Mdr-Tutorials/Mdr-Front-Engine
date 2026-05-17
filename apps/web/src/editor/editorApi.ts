@@ -4,6 +4,8 @@ import {
   validateMirDocument,
   type MirValidationIssue,
 } from '@/mir/validator/validator';
+import type { WorkspaceCodeDocumentContent } from '@/workspace';
+import { isWorkspaceCodeDocumentContent } from '@/workspace';
 
 export type ProjectResourceType = 'project' | 'component' | 'nodegraph';
 
@@ -28,7 +30,10 @@ export type WorkspaceDocumentType =
   | 'mir-layout'
   | 'mir-component'
   | 'mir-graph'
-  | 'mir-animation';
+  | 'mir-animation'
+  | 'code'
+  | 'asset'
+  | 'project-config';
 
 export type WorkspacePatchOperation = {
   op: 'add' | 'remove' | 'replace' | 'move' | 'copy' | 'test';
@@ -72,7 +77,7 @@ export type WorkspaceDocumentRecord = {
   path: string;
   contentRev: number;
   metaRev: number;
-  content: MIRDocument;
+  content: MIRDocument | WorkspaceCodeDocumentContent | unknown;
   updatedAt?: string;
 };
 
@@ -154,17 +159,42 @@ const validateProjectDetail = (
   return { ...project, mir: validateAndUnwrapMir(origin, project.mir) };
 };
 
+const isMirWorkspaceDocumentType = (type: WorkspaceDocumentType): boolean =>
+  type === 'mir-page' || type === 'mir-layout' || type === 'mir-component';
+
+const validateWorkspaceDocument = (
+  workspaceId: string,
+  document: WorkspaceDocumentRecord
+): WorkspaceDocumentRecord => {
+  if (isMirWorkspaceDocumentType(document.type)) {
+    return {
+      ...document,
+      content: validateAndUnwrapMir(
+        `workspace.${workspaceId}/document.${document.id}`,
+        document.content
+      ),
+    };
+  }
+
+  if (document.type === 'code') {
+    if (!isWorkspaceCodeDocumentContent(document.content)) {
+      throw new Error(
+        `Workspace code document ${document.id} must use the code content wrapper.`
+      );
+    }
+    return document;
+  }
+
+  return document;
+};
+
 const validateWorkspaceSnapshot = (
   workspace: WorkspaceSnapshot
 ): WorkspaceSnapshot => {
   if (!workspace?.documents?.length) return workspace;
-  const documents = workspace.documents.map((document) => ({
-    ...document,
-    content: validateAndUnwrapMir(
-      `workspace.${workspace.id}/document.${document.id}`,
-      document.content
-    ),
-  }));
+  const documents = workspace.documents.map((document) =>
+    validateWorkspaceDocument(workspace.id, document)
+  );
   return { ...workspace, documents };
 };
 

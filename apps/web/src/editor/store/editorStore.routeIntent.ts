@@ -7,6 +7,7 @@ import {
   updateRouteNodeById,
 } from './routeManifest';
 import {
+  isWorkspaceMirDocument,
   normalizeRouteManifest,
   resolveActiveRouteNodeId,
 } from './editorStore.normalizers';
@@ -41,6 +42,12 @@ export type RouteIntentResult = {
   activeDocumentId?: string;
   mirDoc: MIRDocument;
 };
+
+const resolveMirDocFromDocument = (
+  document: WorkspaceDocumentRecord | undefined,
+  fallback: MIRDocument
+): MIRDocument =>
+  isWorkspaceMirDocument(document) ? document.content : fallback;
 
 export const applyRouteIntentToState = (
   state: RouteIntentState,
@@ -102,7 +109,10 @@ export const applyRouteIntentToState = (
       treeById: nextTreeById,
       activeDocumentId: nextActiveDocumentId,
       mirDoc: nextActiveDocumentId
-        ? (nextDocumentsById[nextActiveDocumentId]?.content ?? state.mirDoc)
+        ? resolveMirDocFromDocument(
+            nextDocumentsById[nextActiveDocumentId],
+            state.mirDoc
+          )
         : state.mirDoc,
     };
   }
@@ -158,7 +168,10 @@ export const applyRouteIntentToState = (
       treeById: nextTreeById,
       activeDocumentId: nextActiveDocumentId,
       mirDoc: nextActiveDocumentId
-        ? (nextDocumentsById[nextActiveDocumentId]?.content ?? state.mirDoc)
+        ? resolveMirDocFromDocument(
+            nextDocumentsById[nextActiveDocumentId],
+            state.mirDoc
+          )
         : state.mirDoc,
     };
   }
@@ -199,7 +212,7 @@ export const applyRouteIntentToState = (
       treeRootId: nextTreeRootId,
       treeById: nextTreeById,
       activeDocumentId: nextActiveDocumentId,
-      mirDoc: layoutDocument.content,
+      mirDoc: resolveMirDocFromDocument(layoutDocument, state.mirDoc),
     };
   }
 
@@ -228,7 +241,10 @@ export const applyRouteIntentToState = (
       nextActiveDocumentId = Object.keys(nextDocumentsById)[0];
     }
     const nextMirDoc = nextActiveDocumentId
-      ? (nextDocumentsById[nextActiveDocumentId]?.content ?? state.mirDoc)
+      ? resolveMirDocFromDocument(
+          nextDocumentsById[nextActiveDocumentId],
+          state.mirDoc
+        )
       : state.mirDoc;
     return {
       routeManifest: normalizeRouteManifest(nextRouteManifest),

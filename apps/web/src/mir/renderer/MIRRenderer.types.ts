@@ -5,6 +5,13 @@ import type { ComponentRegistry } from './registry';
 export type RenderState = Record<string, unknown>;
 export type RenderParams = Record<string, unknown>;
 
+export type RendererCodeArtifact = {
+  id: string;
+  path: string;
+  language: string;
+  source: string;
+};
+
 export type ActionContext = {
   state: RenderState;
   setState: React.Dispatch<React.SetStateAction<RenderState>>;
@@ -50,6 +57,7 @@ export interface MIRRendererProps {
   mirDoc: import('@/core/types/engine.types').MIRDocument;
   overrides?: Record<string, unknown>;
   runtimeState?: Record<string, unknown>;
+  codeArtifacts?: RendererCodeArtifact[];
   actions?: ActionHandlers;
   selectedId?: string;
   onNodeSelect?: (nodeId: string, event: React.SyntheticEvent) => void;

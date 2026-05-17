@@ -2,6 +2,7 @@ export {
   projectWorkspaceToMfeFiles,
   readWorkspaceFromMfeFiles,
 } from './workspaceProjection';
+export { isWorkspaceCodeDocumentContent } from './workspaceCodeDocument';
 export {
   isMirDocumentContent,
   selectActiveDocument,
@@ -13,7 +14,11 @@ export {
   selectWorkspaceSnapshot,
   selectWorkspaceTree,
 } from './workspaceSelectors';
-export { applyWorkspaceCommand } from './workspaceCommand';
+export {
+  applyWorkspaceCommand,
+  createWorkspaceCodeDocumentCommand,
+  createWorkspaceCodeDocumentIntentRequest,
+} from './workspaceCommand';
 export {
   canRedoWorkspaceHistory,
   canUndoWorkspaceHistory,
@@ -35,6 +40,9 @@ export type {
   WorkspaceCommandIssue,
   WorkspaceCommandIssueCode,
   WorkspacePatchOperation,
+  CreateWorkspaceCodeDocumentCommandInput,
+  CreateWorkspaceCodeDocumentIntentInput,
+  WorkspaceCodeDocumentCreateIntentRequest,
 } from './workspaceCommand';
 export type {
   WorkspaceHistoryDocumentDomain,
@@ -60,6 +68,8 @@ export type {
   StableWorkspaceRouteManifest,
   StableWorkspaceSnapshot,
   StableWorkspaceVfsNode,
+  WorkspaceCodeDocumentContent,
+  WorkspaceCodeDocumentLanguage,
   WorkspaceDocumentId,
   WorkspaceId,
   WorkspaceValidationIssue,

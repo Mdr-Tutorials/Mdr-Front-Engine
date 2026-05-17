@@ -9,6 +9,7 @@ import (
 
 	backendauth "github.com/Mdr-Tutorials/mdr-front-engine/apps/backend/internal/modules/auth"
 	backendresponse "github.com/Mdr-Tutorials/mdr-front-engine/apps/backend/internal/platform/http/response"
+	"github.com/Mdr-Tutorials/mdr-front-engine/apps/backend/internal/platform/mircontract"
 	"github.com/gin-gonic/gin"
 )
 
@@ -113,7 +114,7 @@ func (handler *Handler) HandleGetProject(c *gin.Context) {
 		return
 	}
 	if _, err := normalizeMIR(project.MIR); err != nil {
-		respondError(c, http.StatusUnprocessableEntity, "MIR-4001", "This project uses a legacy MIR document and cannot be opened in v1.3.")
+		respondError(c, http.StatusUnprocessableEntity, "MIR-4001", mircontract.LegacyDocumentOpenMessage)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"project": project})
@@ -166,7 +167,7 @@ func (handler *Handler) HandleGetProjectMIR(c *gin.Context) {
 		return
 	}
 	if _, err := normalizeMIR(project.MIR); err != nil {
-		respondError(c, http.StatusUnprocessableEntity, "MIR-4001", "This project uses a legacy MIR document and cannot be opened in v1.3.")
+		respondError(c, http.StatusUnprocessableEntity, "MIR-4001", mircontract.LegacyDocumentOpenMessage)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"id": project.ID, "mir": project.MIR, "updatedAt": project.UpdatedAt})

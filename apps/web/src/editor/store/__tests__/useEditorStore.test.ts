@@ -183,6 +183,118 @@ describe('useEditorStore workspace state', () => {
     expect(state.treeById['doc-missing']).toBeUndefined();
   });
 
+  it('preserves code document content without normalizing it as MIR', () => {
+    const store = useEditorStore.getState();
+    const previousMirDoc = store.mirDoc;
+    store.setWorkspaceSnapshot(
+      createWorkspaceSnapshot(
+        'ws-1',
+        [
+          {
+            id: 'page-root',
+            type: 'mir-page',
+            path: '/pages/home.mir.json',
+            contentRev: 1,
+            metaRev: 1,
+            content: createDocumentContent('root'),
+          },
+          {
+            id: 'code-open-dialog',
+            type: 'code',
+            path: '/src/openDialog.ts',
+            contentRev: 1,
+            metaRev: 1,
+            content: {
+              language: 'ts',
+              source: 'export function openDialog() {}',
+            },
+          },
+        ],
+        {
+          tree: {
+            treeRootId: 'root',
+            treeById: {
+              root: {
+                id: 'root',
+                kind: 'dir',
+                name: '/',
+                parentId: null,
+                children: ['pages', 'src'],
+              },
+              pages: {
+                id: 'pages',
+                kind: 'dir',
+                name: 'pages',
+                parentId: 'root',
+                children: ['page-root-node'],
+              },
+              'page-root-node': {
+                id: 'page-root-node',
+                kind: 'doc',
+                name: 'home.mir.json',
+                parentId: 'pages',
+                docId: 'page-root',
+              },
+              src: {
+                id: 'src',
+                kind: 'dir',
+                name: 'src',
+                parentId: 'root',
+                children: ['code-open-dialog-node'],
+              },
+              'code-open-dialog-node': {
+                id: 'code-open-dialog-node',
+                kind: 'doc',
+                name: 'openDialog.ts',
+                parentId: 'src',
+                docId: 'code-open-dialog',
+              },
+            },
+          },
+        }
+      )
+    );
+
+    store.setActiveDocumentId('code-open-dialog');
+
+    const state = useEditorStore.getState();
+    expect(state.workspaceDocumentsById['code-open-dialog']?.content).toEqual({
+      language: 'ts',
+      source: 'export function openDialog() {}',
+    });
+    expect(state.activeDocumentId).toBe('code-open-dialog');
+    expect(state.mirDoc).not.toHaveProperty('language');
+    expect(previousMirDoc).not.toBe(state.mirDoc);
+  });
+
+  it('does not choose a code document as the active MIR document', () => {
+    const store = useEditorStore.getState();
+    const previousMirDoc = store.mirDoc;
+    store.setWorkspaceSnapshot(
+      createWorkspaceSnapshot('ws-1', [
+        {
+          id: 'code-open-dialog',
+          type: 'code',
+          path: '/src/openDialog.ts',
+          contentRev: 1,
+          metaRev: 1,
+          content: {
+            language: 'ts',
+            source: 'export function openDialog() {}',
+          },
+        },
+      ])
+    );
+
+    const state = useEditorStore.getState();
+    expect(state.activeDocumentId).toBeUndefined();
+    expect(state.workspaceDocumentsById['code-open-dialog']?.content).toEqual({
+      language: 'ts',
+      source: 'export function openDialog() {}',
+    });
+    expect(state.mirDoc).toBe(previousMirDoc);
+  });
+
   it('creates fallback workspace tree when snapshot tree is unavailable', () => {
     const store = useEditorStore.getState();
     store.setWorkspaceSnapshot(
