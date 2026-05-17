@@ -1,164 +1,182 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides Claude Code-specific guidance for working in this repository.
 
-## Project Overview
+**Primary rule source:** read `AGENTS.md` first. It contains the cross-agent project architecture, MIR write/read model, and coding rules. This file should stay complementary: Claude-specific workflow notes, command shortcuts, and implementation map only.
 
-MdrFrontEngine (MFE) is an open-source visual front-end development platform. Its core innovation is **MIR (Mdr Intermediate Representation)** — the single source of truth. Three editors (Blueprint, Node Graph, Animation) all converge into MIR, which compiles to production code for React, Vue, Angular, SolidJS, Svelte, Qwik, and more via Mitosis.
+## Claude Operating Rules
 
-```mermaid
-flowchart TD
-    MIR((MIR Core<br>唯一真相源))
+1. Follow `AGENTS.md` for architecture and coding policy.
+2. At the start of a new coding session, run `git fetch` and check whether the current branch is behind its remote before editing. Integrate remote changes non-destructively if needed.
+3. Before writing code, load relevant Trellis project guidance:
 
-    Blueprint[蓝图编辑器<br>UI层] -->|"ui"| MIR
-    NodeGraph[节点图编辑器<br>Logic层] -->|"logic"| MIR
-    AnimEditor[动画编辑器<br>Animation层] -->|"animation"| MIR
+   ```bash
+   python ./.trellis/scripts/get_context.py --mode packages
+   ```
 
-    CodeEditor[代码编辑器<br>Intellisense]
-    CodeEditor --> ComplexLogic[复杂逻辑] --> NodeGraph
-    CodeEditor --> ComplexAnim[复杂动画] --> AnimEditor
-    CodeEditor --> AttachedCSS[挂载CSS] --> Blueprint
+   Then read the relevant `.trellis/spec/<package>/<layer>/index.md` files and `.trellis/spec/guides/index.md`.
 
-    Assets[资源与依赖<br>esm.sh / 内置组件 / HTML原生] --> MIR
-    LLM[LLM辅助开发] --> MIR
+4. Use UTF-8 for reading and writing documentation.
+5. Prefer `git ls-files`, `git diff --name-only`, and `git grep` for repository discovery. Avoid broad recursive scans that enter `node_modules`.
+6. Do not commit or push unless explicitly asked.
+7. If dependency installation or updates modify `pnpm-lock.yaml`, accept the package-manager-generated lockfile changes instead of manually editing the lockfile.
+8. Do not force all documentation into English. Match the target audience and existing file context: root `README.md` is English, `README.zh-CN.md` is Simplified Chinese, and Chinese specs / decisions may remain Chinese.
 
-    MIR <--> Backend[Go后端]
-    MIR -->|"MIR文件树"| Git[Git版本控制]
+## Project Summary
 
-    MIR --> Compiler[编译器] --> Frameworks[React / Vue / Angular<br>Solid / Svelte / Qwik / htmx...]
-    Frameworks --> Build[构建] --> Deploy[部署]
+MdrFrontEngine is an industrial browser-side visual front-end development tool. The product shape is three visual editors plus a shared **Code Authoring Environment**:
+
+```text
+Blueprint / NodeGraph / Animation / Inspector / Resources / AI / Issues
+    -> Code Authoring Environment
+    -> Workspace VFS
+    -> CodeArtifact / CodeSymbol / CodeScope / Diagnostics
 ```
 
-## Commands
+The durable data architecture centers on **MIR** as the validated source of truth:
+
+```text
+Editors / AI
+    -> Command / Intent / Patch
+    -> MIR ui.graph
+    -> Schema + graph semantic validation
+    -> Workspace VFS / Backend / Git
+    -> materializeUiTree when Renderer or Code Generator needs a tree view
+```
+
+The current MIR write format is the normalized `ui.graph` model:
+
+- `rootId`
+- `nodesById`
+- `childIdsById`
+- `regionsById`
+
+Editors and AI flows should not directly overwrite tree-shaped UI state. Tree views are temporary read models.
+
+## Code Authoring Environment
+
+- Code Authoring Environment is shared infrastructure for code-owned authoring; it is not a fourth peer business editor.
+- Use it for event handlers, custom executors, animation functions, mounted CSS, shaders, external-library adapters, and ordinary Workspace code files.
+- Visual editors should connect to code through explicit code slots and stable `CodeReference` / `CodeArtifact` ownership, not by storing arbitrary source strings in local UI state.
+- Authoring Symbol Environment is the shared index/query layer inside Code Authoring Environment. It owns `CodeArtifact`, `CodeSymbol`, `CodeScope`, `DiagnosticTargetRef`, `SourceSpan`, reference, completion, and diagnostic semantics.
+- When Blueprint, NodeGraph, Animation, Inspector, Resources, AI, or Issues need symbols or diagnostics, use the Code Authoring Environment or stable authoring queries. Do not scan another editor's internal store directly.
+- Check `specs/decisions/28.code-authoring-environment.md` for ownership and capability boundaries, then `specs/decisions/25.authoring-symbol-environment.md` for symbol and diagnostic contracts.
+
+## Repository Map
+
+- `apps/web` - primary browser editor: Blueprint, Node Graph, Animation, Code Authoring Environment, Inspector, MIR runtime, external library runtime.
+- `apps/backend` - Go backend: auth, projects, Workspace VFS, sync, backend MIR validation, integrations.
+- `apps/cli` - CLI tooling.
+- `apps/docs` - standalone VitePress documentation site. Do not use it as the root README.
+- `apps/vscode` - VS Code extension for MIR language/debugging support.
+- `packages/ai` - AI provider abstractions and shared AI utilities.
+- `packages/shared` - shared types, schemas, and validation utilities.
+- `packages/ui` - shared UI package, styled with SCSS.
+- `packages/themes` - theme manifests and semantic design tokens.
+- `packages/mir-compiler` - MIR code generation package.
+- `specs` - architecture decisions, MIR contracts, diagnostic codes, RFCs, and implementation plans.
+
+## Common Commands
 
 ### Development
 
 ```bash
-pnpm dev              # Start all apps (Web + Backend + Docs)
-pnpm dev:web          # Web editor only (port 5173)
-pnpm dev:backend      # Go backend with hot reload (Air)
-pnpm dev:docs         # VitePress docs site
-pnpm dev:cli          # CLI tool
-pnpm dev:vscode       # VSCode extension
+pnpm dev:web
+pnpm dev:backend
+pnpm dev:backend:hot
+pnpm dev:docs
+pnpm dev:cli
+pnpm dev:vscode
+pnpm storybook:ui
 ```
 
-### Build & Quality
+### Build and Quality
 
 ```bash
-pnpm build            # Build all
-pnpm build:web        # Build web editor only
-pnpm test             # Run all tests
-pnpm test:web         # Run web tests only
-pnpm test:web:watch   # Watch mode
-pnpm test:web:coverage # Coverage (v8, thresholds: 80% stmts/lines for design features)
-pnpm lint             # Lint all
-pnpm format           # Format all (Prettier + Go fmt)
-pnpm storybook:ui     # Component library Storybook
+pnpm build
+pnpm build:web
+pnpm build:backend
+pnpm build:docs
+pnpm lint
+pnpm test
+pnpm test:web
+pnpm test:e2e:smoke
+pnpm format
+pnpm docs:diagnostics:check
 ```
 
-### Running a single test
+### Targeted Web Checks
+
+If the local `pnpm --filter @mdr/web test` shim fails because `apps/web/node_modules/vitest/vitest.mjs` is missing, use the workspace Vitest entrypoint from `apps/web`:
 
 ```bash
-pnpm --filter @mdr/web vitest run --config vitest.config.ts <test-file-pattern>
+node ..\..\node_modules\vitest\vitest.mjs --config vitest.config.ts --run --maxWorkers=1
 ```
 
-### Tailwind migration
+For type checking:
 
 ```bash
-pnpm tw:migrate       # Run Tailwind CSS upgrade tool
+pnpm --filter @mdr/web exec tsc -b --pretty false
 ```
 
-## Architecture
+## Frontend Conventions
 
-### Monorepo Structure (pnpm + Turborepo)
+- Use `@/...` imports inside packages where the alias is configured; avoid deep relative imports when a package-local alias exists.
+- `@mdr/ui` styles use SCSS.
+- Other app-level styles use Tailwind CSS 4 conventions.
+- Use Tailwind custom-property shorthand such as `text-(--text-primary)` and `bg-(--bg-raised)`, not `text-[var(--text-primary)]`.
+- Keep the monochrome-ui design direction. UI and UX may reference Figma and Dify while staying consistent with the existing product surface.
+- Add documentation comments only before core methods/components in important modules when they clarify call-chain logic.
+- Split files that become too long.
 
-- **apps/web** — Core visual editor (React 19 + Vite + TypeScript). This is the primary product.
-- **apps/backend** — Go (Gin + PostgreSQL) HTTP server. Auth, project, workspace modules.
-- **apps/cli** — Commander-based CLI tool.
-- **apps/docs** — VitePress documentation site.
-- **apps/vscode** — VSCode extension for MIR language support + debugger.
-- **packages/shared** — MIR schema types + Ajv validation. `@mdr/shared` is consumed by web via path alias.
-- **packages/ui** — Shared SCSS component library + Storybook.
-- **packages/themes** — Theme SCSS variables.
-- **packages/i18n** — i18next resources.
-- **packages/mir-compiler** — MIR compiler core package.
-- **packages/eslint-plugin-mdr** — Custom ESLint plugin.
-- **packages/vscode-debugger** — VSCode debug adapter.
+## Testing Policy
 
-### MIR Pipeline (apps/web/src/mir/)
+Do not add coupled tests. Avoid assertions that depend on:
 
-All editor operations converge into MIR. The pipeline:
+- DOM hierarchy
+- internal class names
+- exact tag structure
+- `querySelector`
+- `closest`
+- `parentElement`
+- snapshots
+- implementation details
 
-1. **schema/** — MIR TypeScript type definitions
-2. **converter/** — AST-to-MIR conversion
-3. **validator/** — MIR schema validation (Ajv)
-4. **renderer/** — MIRRenderer renders MIR to live React components (component registry, icon registry, capabilities)
-5. **generator/** — MIR-to-code generation (mirToCode.ts, mirToReact.ts, react/ subdirectory)
-6. **resolveMirDocument.ts** — MIR document resolution before rendering
+Prefer tests around user-visible behavior, public APIs, state outcomes, and stable semantics. If a brittle test blocks a focused change, deletion can be the right answer when the covered behavior is not stable or meaningful.
 
-### Three-Editor Architecture (apps/web/src/editor/features/)
+## Architecture Notes
 
-Each editor writes to MIR and reads from MIR:
+### Web Editor Areas
 
-- **design/** — Blueprint Editor: visual UI construction, drag-drop, palette, tree view, canvas, inspector, sidebar, viewport bar, autosave, external library runtime
-- **development/** — Node Graph Editor: ReactFlow-based node graph (reactflow/ subdirectory)
-- **animation/** — Animation Editor: timeline, keyframes, transitions, CSS/SVG filters
+- `apps/web/src/editor/features/design` - Blueprint editor, palette, tree, canvas, inspector, resources, external libraries.
+- `apps/web/src/editor/features/development` - Node Graph editor.
+- `apps/web/src/editor/features/animation` - Animation editor.
+- `apps/web/src/editor/store` - editor and supporting Zustand stores.
+- `apps/web/src/mir` - MIR schema, validation, rendering, and generation.
+- `apps/web/src/authoring` - stable Authoring Symbol Environment primitives and provider registries used by Code Authoring Environment.
 
-### State Management (apps/web/src/editor/store/)
+### Backend Areas
 
-Zustand stores, split into focused modules:
+- `apps/backend/internal/modules/auth` - auth and session behavior.
+- `apps/backend/internal/modules/project` - project metadata.
+- `apps/backend/internal/modules/workspace` - Workspace VFS, routes, intents, patches, MIR validation.
+- `apps/backend/internal/modules/integrations` - third-party integrations such as GitHub App work.
 
-- **useEditorStore** — Core editor state (project, mirDoc, workspace snapshot, tree, route intent). Split into: `editorStore.tree.ts` (tree operations), `editorStore.normalizers.ts` (MIR normalizers), `editorStore.routeIntent.ts` (route-based intent), `editorStore.types.ts` (type definitions)
-- **useSettingsStore** — Workspace/editor settings with hydration from backend
-- Other stores: `useAuthStore` (auth), `breakpointStore` (debug), `nodeGraphRenderStore`, `metaStore` (external lib runtime), `i18nStore`
+### Specs to Check First
 
-### Core Execution Engine (apps/web/src/core/)
+- `specs/mir/mir-contract-v1.3.md` for current MIR graph contract.
+- `specs/decisions/README.md` for architecture decision navigation.
+- `specs/decisions/28.code-authoring-environment.md` for code-owned ownership, code slots, library capability levels, and shared authoring boundaries.
+- `specs/decisions/25.authoring-symbol-environment.md` for authoring symbols, scopes, references, and diagnostic contracts.
+- `specs/implementation/authoring-symbol-environment-phase1.md` for Phase 1 authoring contracts.
+- `specs/diagnostics/README.md` for diagnostic namespaces and code definitions.
 
-- **executor/** — Graph execution engine
-- **nodes/** — Built-in node definitions for node graph
-- **worker/** — Web worker for execution
+## Documentation Boundaries
 
-### Routing (apps/web/src/App.tsx)
+- Root `README.md` is the repository entry point.
+- `README.zh-CN.md` is the Simplified Chinese version of the root README.
+- `apps/docs` is the standalone documentation site.
+- `apps/docs/README.md` explains how to work on the docs site itself.
+- `specs/` is for durable engineering contracts, ADRs, RFCs, and implementation plans.
 
-React Router 7 with lazy-loaded editor sub-routes under `/editor`:
-
-- `/editor` — EditorHome (dashboard)
-- `/editor/project/:projectId` — ProjectHome
-- `/editor/project/:projectId/blueprint` — BlueprintEditor
-- `/editor/project/:projectId/nodegraph` — NodeGraphEditor
-- `/editor/project/:projectId/animation` — AnimationEditor
-
-Global shortcuts Alt+1–Alt+9 navigate between project sub-routes.
-
-### Path Aliases (vite.config.ts + vitest.config.ts)
-
-Both Vite and Vitest use the same aliases:
-
-- `@/` → `apps/web/src/`
-- `@mdr/shared` → `packages/shared/src/`
-- `@mdr/ui` → `packages/ui/src/`
-- `@mdr/themes` → `packages/themes/`
-
-Vite uses `rolldown-vite@7.1.14` (Rust-based bundler) as an override.
-
-## Coding Conventions
-
-1. Use `@/...` imports within `apps/web`, not relative paths.
-2. CSS class naming: PascalCase with `Mdr` prefix for components (e.g. `.MdrButton`, `.MdrSmall`). Nested classes use full words.
-3. `@mdr/ui` components use SCSS; everything else uses **Tailwind CSS 4** syntax. Use `text-(--bg-canvas)` not `text-[var(--bg-canvas)]`.
-4. Keep monochrome UI design style. UX can reference Figma and Dify.
-5. Document comments only on core methods/components of important modules — explain the call chain logic, not what the code does.
-6. Split files that get too long.
-7. Format code with `pnpm format` before committing.
-8. Commit messages: English, `type(scope): description` format.
-9. Only commit/push when explicitly asked.
-10. Design specs and architecture decisions are in `specs/decisions/`. MIR JSON Schema contracts in `specs/mir/`.
-
-## Key Technical Notes
-
-- Vite overrides: `rolldown-vite@7.1.14` via package.json `overrides` field
-- Node polyfills: `vite-plugin-node-polyfills` for browser environment (Buffer, process, global)
-- Vitest environment: jsdom, setup file at `src/test-utils/setup.ts`
-- Mitosis (`@builder.io/mitosis`) handles multi-framework code output from MIR
-- External libraries loaded via esm.sh bridge (`apps/web/src/esm-bridge/`)
-- i18next with browser language detection (`apps/web/src/i18n/`)
+When editing documentation, avoid duplicating the same authoritative content in multiple places. Link to the owner document instead.

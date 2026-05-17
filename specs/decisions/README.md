@@ -36,7 +36,8 @@
     - `specs/decisions/20.node-graph-port-semantics.md`
 11. **LLM 集成架构**
     - `specs/decisions/22.llm-integration-architecture.md`
-12. **作者态符号环境**
+12. **代码作者环境与作者态符号环境**
+    - `specs/decisions/28.code-authoring-environment.md`
     - `specs/decisions/25.authoring-symbol-environment.md`
 13. **UX 诊断体系**
     - `specs/decisions/26.ux-diagnostics.md`
